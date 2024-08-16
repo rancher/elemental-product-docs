@@ -1,0 +1,51 @@
+= Elemental components
+:sidebar_label: Elemental components
+
+The components required to provide the xref:architecture-services.adoc[Elemental services] are:
+
+* the <<elemental-command-line-tool,`elemental`>> command line tool
+* the <<elemental-operator-daemon,`elemental-operator`>> daemon
+* the <<elemental-register-command-line-tool,`elemental-register`>> command line tool
+* the <<elemental-system-agent-daemon,`elemental-system-agent`>> daemon
+* one or more <<elemental-os-container-image,Elemental OS container images>>
+
+[discrete]
+=== `elemental` command line tool
+
+The `elemental` tool is part of the +++<Vars name="elemental_toolkit_name" link="elemental_toolkit_url">++++++</Vars>+++ project.
+It performs the actual OS installation and upgrade operations on the host and is used to execute the xref:cloud-config-reference.adoc[cloud-config] directives added in the xref:custom-resources.adoc[Elemental CRDs].
+
+The `elemental` binary is included in all the base OS images distributed with Elemental.
+
+[discrete]
+=== `elemental-operator` daemon
+
+The *elemental-operator* daemon performs two main tasks:
+
+. embeds the Elemental Kubernetes controllers to manage all the xref:custom-resources.adoc[Elemental CRDs]
+. exposes the _registration endpoints_ to allow the host to register and download the OS installation configuration during the xref:architecture-machineonboarding.adoc[machine onboarding]
+
+The `elemental-operator` daemon is deployed on the Rancher cluster as a `Deployment` via the xref:elementaloperatorchart-reference.adoc[Elemental Operator Helm Chart].
+
+[discrete]
+=== `elemental-register` command line tool
+
+The *elemental-register* binary is the client used to register the host against the _registration endpoints_ exposed by the <<elemental-operator-daemon,elemental-operator>>. It collects and forwards the host data to allow the <<elemental-operator-daemon,elemental-operator>> to fill the xref:smbios.adoc[SMBIOS] and the xref:hardwarelabels.adoc[Hardware] label templates.
+
+If the registraton phase is performed successfully, the *elemental-register* gets the full configuration stored in the xref:machineregistration-reference.adoc[MachineRegistration] from the *elemental-operator*.
+As the last step, the *elemental-register* client calls the <<elemental-command-line-tool,elemental>> binary passing the retrieved configuration to kick off the OS installation.
+
+[discrete]
+=== `elemental-system-agent` daemon
+
+The `elemental-system-agent` is built from the https://github.com/rancher/system-agent[Rancher System Agent project] and allows Elemental to deploy _plans_ to assist with the host provisioning.
+Notably, the `rancher-system-agent` installation and configuration required for the xref:architecture-clusterdeployment.adoc[Kubernetes Cluster provisioning service] is performed through an `elemental-system-agent` _plan_.
+
+[discrete]
+=== Elemental OS container image
+
+An +++<Vars name="elemental_toolkit_name" link="elemental_toolkit_url">++++++</Vars>+++ OS image is an OCI container image containing all the files that will make up the OS of the target host. It contains not only all the binaries and libraries, but also the kernel and the boot files required by a linux system.
+
+The Elemental OS image is an opinionated +++<Vars name="elemental_toolkit_name" link="elemental_toolkit_url">++++++</Vars>+++ OS image which is based on https://www.suse.com/products/micro/[SLE Micro] and contains specific Elemental configurations and binaries (the <<elemental-command-line-tool,elemental>> and the <<elemental-register-command-line-tool,elemental-register>> ones).
+
+The Elemental OS images are tracked in the xref:managedosversion-reference.adoc[ManagedOSVersions] resources. The xref:managedosversion-reference.adoc[ManagedOSVersions] resources are dynamically created from xref:managedosversionchannel-reference.adoc[ManagedOSVersionChannel] resources. A defaultxref:managedosversionchannel-reference.adoc[ManagedOSVersionChannel] resource is deployed with each Elemental Operator installation.
