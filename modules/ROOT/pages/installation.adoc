@@ -1,32 +1,32 @@
 = Installation
-:sidebar_label: Installation
+include::partial$global-variables.adoc[]
 
 == Overview
 
 Elemental stack provides OS management using OCI containers and Kubernetes. The Elemental
-stack installation encompasses the installation of the +++<Vars name="elemental_operator_name">++++++</Vars>+++ into the
+stack installation encompasses the installation of the {elemental_operator_name} into the
 management cluster and the creation and use of installation media to provide
 the OS into the Cluster Nodes. See xref:architecture.adoc[Architecture] section to
 read about the interaction of the components.
 
 The installation configuration is mostly applied and set as part of the registration process.
-The registration process is done by the `elemental-register` (the +++<Vars name="elemental_operator_name">++++++</Vars>+++ client part)
+The registration process is done by the `elemental-register` (the {elemental_operator_name} client part)
 who is the responsible to register nodes in a Rancher management cluster and fetch the installation configuration.
 
 Please refer to the xref:quickstart-cli.adoc[Quick Start] guide for simple step by step deployment instructions.
 
 == Elemental Operator Installation
 
-The +++<Vars name="elemental_operator_name">++++++</Vars>+++ is responsible for managing the Elemental versions and
-maintaining a machine inventory to assist with edge or bare metal installations. +++<Vars name="elemental_operator_name">++++++</Vars>+++
+The {elemental_operator_name} is responsible for managing the Elemental versions and
+maintaining a machine inventory to assist with edge or bare metal installations. {elemental_operator_name}
 requires a cluster including the Rancher Manager and it can be installed with a helm chart.
 
-See +++<Vars name="elemental_operator_name">++++++</Vars>+++ xref:elementaloperatorchart-reference.adoc[helm chart reference] for install,
+See {elemental_operator_name} xref:elementaloperatorchart-reference.adoc[helm chart reference] for install,
 uninstall, upgrade and configuration details.
 
 == Prepare Kubernetes Resources
 
-Once the +++<Vars name="elemental_operator_name">++++++</Vars>+++ is up and running within the management cluster a couple of kubernetes
+Once the {elemental_operator_name} is up and running within the management cluster a couple of kubernetes
 resources are required in order to prepare an Elemental based cluster deployment.
 
 * xref:machineinventoryselectortemplate-reference.adoc[MachineInventorySelectorTemplate]:
@@ -109,7 +109,7 @@ Once the operating system is installed the OS partition table, according to defa
 | All contents of the persistent folders
 |===
 
-Note this is the basic structure of any OS built by the +++<Vars name="elemental_toolkit_name" link="elemental_toolkit_url">++++++</Vars>+++
+Note this is the basic structure of any OS built by the {elemental_toolkit_url}[{elemental_toolkit_name}].
 
 == Elemental Immutable Root
 

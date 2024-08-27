@@ -1,5 +1,4 @@
 = Customize Elemental Installation
-:sidebar_label: Customize Elemental Installation
 
 Elemental installed OS images can be customized in different ways.
 
@@ -73,7 +72,8 @@ the installation, hence it must exists within the installation media, commonly a
 By default, Elemental live systems mount the ISO root at `/run/initramfs/live` which is also the default path set for `config-url` in `MachineRegistrations`:
 See the example below:
 
-```yaml showLineNumbers
+[,yaml]
+----
 apiVersion: elemental.cattle.io/v1beta1
 kind: MachineRegistration
 metadata:
@@ -89,8 +89,8 @@ spec:
         ...
         config-urls:
         - "/run/initramfs/live/oem/custom_config.yaml"
-
 ----
+
 Elemental live ISOs, when booted, have the ISO root mounted at `/run/initramfs/live`.
 According to that, the ISO for the example above is expected to include the `/oem/custom_config.yaml` file.
 
@@ -131,7 +131,8 @@ For that use case the following files are required:
 Let's create an `overlay` directory to create the directory tree that needs to be
 added into the ISO root. In that case the `overlay` directory could contain:
 
-```yaml showLineNumbers
+[,yaml]
+----
 overlay/
   data/
     extra_drivers/
@@ -142,7 +143,8 @@ overlay/
 
 The `overlay/iso-config/install_hooks.yaml` could be as:
 
-```yaml showLineNumbers
+[,yaml]
+----
 name: "Install extra drivers"
 stages:
   before-install:
@@ -154,7 +156,6 @@ stages:
     # extra_drivers folder is at `/usr/local/extra_drivers` from the OS image chroot
     - commands:
       - rpm -iv /usr/local/extra_drivers/some_driver.rpm
-
 ----
 
 Note the installation hooks only cover installation procedures, for upgrades equivalent
@@ -180,7 +181,8 @@ For this example, the following files are required:
 Let's create an `overlay` directory to create the directory tree that needs to be
 added into the ISO root. In that case the `overlay` directory could contain:
 
-```yaml showLineNumbers
+[,yaml]
+----
 overlay/
   oem/
     lvm_volumes_in_fstab.yaml
@@ -190,7 +192,8 @@ overlay/
 
 The installation hook `overlay/iso-config/lvm_volumes_hook.yaml`:
 
-```yaml showLineNumbers
+[,yaml]
+----
 name: "Create LVM logic volumes over some physical disks"
 stages:
   post-install:
@@ -204,7 +207,6 @@ stages:
         lvcreate -L 8G -n elementalVol1 elementalLVM
         lvcreate -l 100%FREE -n elementalVol2 elementalLVM
 
-....
     # Trigger udev detection
     if [ ! -e "/dev/elementalLVM/elementalVol1" ] || [ ! -e "/dev/elementalLVM/elementalVol2" ]; then
       sleep 10
@@ -217,8 +219,8 @@ stages:
 
     # Format logical volumes with a known label for later use in fstab
     mkfs.xfs -L eVol1 /dev/elementalLVM/elementalVol1
-    mkfs.xfs -L eVol2 /dev/elementalLVM/elementalVol2 ```
-....
+    mkfs.xfs -L eVol2 /dev/elementalLVM/elementalVol2
+----
 
 The LVM devices are created and formatted as desired. This is a good
 example of an installation hook, as this setup is only needed once, at installation
@@ -232,7 +234,9 @@ can't be used in an installation hook.
 
 Here's an example of `overlay/oem/lvm_volumes_in_fstab.yaml`:
 
-```yaml showLineNumbers
+[,yaml]
+----
+
 name: "Mount LVM volumes"
 stages:
   initramfs:
@@ -241,7 +245,6 @@ stages:
       - |
         echo "LABEL=eVol1 /usr/local/eVol1  xfs defaults  0 0" >> /etc/fstab
         echo "LABEL=eVol2 /usr/local/eVol2  xfs defaults  0 0" >> /etc/fstab
-
 ----
 
 [NOTE]
@@ -262,7 +265,8 @@ management cluster.
 Assuming an `overlay` folder was created in the current directory containing all
 additional files to be appended, the following `xorriso` command adds the extra files:
 
-```bash showLineNumbers
+[,bash]
+----
 xorriso -indev elemental.x86_64.iso -outdev elemental.custom.x86_64.iso -map overlay / -boot_image any replay
 ----
 

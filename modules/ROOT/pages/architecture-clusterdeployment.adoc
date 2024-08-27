@@ -1,6 +1,3 @@
-=
-:sidebar_label: Kubernetes cluster provisioning
-
 == Kubernetes cluster provisioning
 
 The goal of the Kubernetes Cluster deployment phase is to create a new RKE2 or K3s cluster using the available xref:machineinventory-reference.adoc[MachineInventories], i.e., the hosts that have successfully completed the xref:architecture-machineonboarding.adoc[Machine onboarding] phase.

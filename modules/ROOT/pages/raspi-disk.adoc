@@ -1,7 +1,4 @@
-=
-:sidebar_label: Building raw disk images for Raspberry Pi
-
-=== How to build raw disk images for Raspberry Pi
+== How to build raw disk images for Raspberry Pi
 
 This guide will show how we can build a raw disk image that can be written to an SD-card and booted without any other installation media.
 
@@ -13,7 +10,9 @@ The SD-card must be reasonably large (32 GB or more) and *fast* (!!).
 ====
 
 
-```yaml title="SeedImage resource" showLineNumbers
+.SeedImage resource
+[,yaml]
+----
 apiVersion: elemental.cattle.io/v1beta1
 kind: SeedImage
 metadata:
@@ -28,12 +27,12 @@ spec:
     kind: MachineRegistration
     name: fire-nodes
     namespace: fleet-default
-
 ----
 
 Check the logs for the build pod using:
 
-```shell
+[,shell]
+----
 kubectl logs -n fleet-default fire-img -f -c build
 ----
 

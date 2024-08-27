@@ -1,10 +1,6 @@
-=
-:sidebar_label: Configure Wi-Fi
+== How to configure Wi-Fi
 
-=== How to configure Wi-Fi
-
-[CAUTION]
-.important note
+[IMPORTANT]
 ====
 This guide describes how to configure Wi-Fi on a freshly installed operating system.
 For some reasons, like no wired network connection availabe, you may want to also use Wi-Fi when you boot from the ISO.
@@ -14,12 +10,10 @@ You can refer to the same instructions as below on how to create it.
 ====
 
 
-[IMPORTANT]
-.info
+[NOTE]
 ====
 The information on this page is just a specific use case of using cloud-config. For more generic info on how to create arbitrary files check our xref:cloud-config-reference.adoc[cloud-config] page
 ====
-
 
 SLE Micro currently uses https://networkmanager.dev/[NetworkManager] to manage network connections.
 
@@ -31,6 +25,7 @@ The connection files are stored under `/etc/NetworkManager/system-connections/` 
 
 For example for a network with the SSID `testSSID` and the WPA-PSK key `123456789` and using the interface `wlan0` you would write the following `.connection` file:
 
+[,console]
 ----
 [connection]
 id=testConnection
@@ -69,7 +64,9 @@ which includes the format of the connection file and all the different options y
 
 Which we should encode to base64 and paste in the content in our xref:machineregistration-reference.adoc[registration] cloud-config section as such:
 
-`yaml title="wifi cloud config" showLineNumbers
+.wifi cloud config
+[,yaml]
+----
 apiVersion: elemental.cattle.io/v1beta1
 kind: MachineRegistration
 metadata:
@@ -83,7 +80,7 @@ spec:
         - encoding: b64
           content: W2Nvbm5lY3Rpb25dCmlkPXRlc3RDb25uZWN0aW9uCnR5cGU9d2lmaQppbnRlcmZhY2UtbmFtZT13bGFuMApwZXJtaXNzaW9ucz0KdGltZXN0YW1wPTE2NzE1NDk2NDEKClt3aWZpXQptYWMtYWRkcmVzcy1ibGFja2xpc3Q9Cm1vZGU9aW5mcmFzdHJ1Y3R1cmUKc3NpZD10ZXN0Cgpbd2lmaS1zZWN1cml0eV0Ka2V5LW1nbXQ9bm9uZQp3ZXAta2V5LXR5cGU9MQp3ZXAta2V5MD0xMjM0NTY3ODkxCgpbaXB2NF0KZG5zLXNlYXJjaD0KbWV0aG9kPWF1dG8KCltpcHY2XQphZGRyLWdlbi1tb2RlPXN0YWJsZS1wcml2YWN5CmRucy1zZWFyY2g9Cm1ldGhvZD1hdXRvCgpbcHJveHldCg==
           path: /etc/NetworkManager/system-connections/wifi1.connection
-`
+----
 
 This would get the `/etc/NetworkManager/system-connections/wifi1.connection` file deployed on the node during installation with the connection content and NetworkManager would
 read and enable the connection on boot.

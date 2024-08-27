@@ -1,6 +1,3 @@
-=
-:sidebar_label: Elemental plans
-
 == Introduction
 
 Elemental uses the https://github.com/rancher/system-agent[Rancher System Agent], renamed to Elemental System Agent, to initially bootstrap the node with a simple plan.
@@ -39,7 +36,8 @@ Both one time instructions and periodic instructions can run either a direct com
 
 You can add local plans to Elemental as part of the `MachineRegistration` CRD, in the `cloud-config` section as follows:
 
-```yaml showLineNumbers
+[,yaml]
+----
 apiVersion: elemental.cattle.io/v1beta1
 kind: MachineRegistration
 metadata:
@@ -77,20 +75,19 @@ spec:
   machineName: my-machine
   machineInventoryLabels:
     element: fire
-
 ----
 
 ## Plan examples
 
 The following plans are provided as a quick reference and are not guaranteed to work in your environment. To learn more about plans please check [Rancher System Agent](https://github.com/rancher/system-agent).
 
-
-
 [tabs]
+======
+Example 1: one time instructions::
++
 ====
-<TabItem value="example1" label="Example 1: one time instructions" default>
-
-```json showLineNumbers
+[,json]
+----
 {"instructions":
     [
         {
@@ -106,20 +103,59 @@ The following plans are provided as a quick reference and are not guaranteed to 
     ]
 }
 ----
+====
 
-
-
-Tab Example 2: periodic instructions::
+Example 2: periodic instructions::
 +
-```json showLineNumbers {"periodicInstructions": [ { "name":"set hostname", "image":"ghcr.io/rancher-sandbox/elemental-example-plan:main" "command": "run.sh" } ] } ```
+====
+[,json]
+----
+{"periodicInstructions":
+    [
+        {
+            "name":"set hostname",
+            "image":"ghcr.io/rancher-sandbox/elemental-example-plan:main"
+            "command": "run.sh"
+        }
+    ]
+}
+----
+====
 
-Tab Example 3: files::
+Example 3: files::
 +
-```json showLineNumbers {"files": [ { "content":"Welcome to the system", "path":"/etc/motd", "permissions": "0644" } ] } ```
+====
+[,json]
+----
+{"files":
+    [
+        {
+            "content":"Welcome to the system",
+            "path":"/etc/motd",
+            "permissions": "0644"
+        }
+    ]
+}
+----
+====
 
 Tab Example 4: probes::
 +
-```json showLineNumbers {"probes": "probe1": { "name": "Service Up", "httpGet": { "url": "http://10.0.0.1/healthz", "insecure": "false", "clientCert": "\....", "clientKey": "\....", "caCert": "\....." } } } ```
-
-
 ====
+[,json]
+----
+{"probes":
+    "probe1": {
+        "name": "Service Up",
+        "httpGet": {
+            "url": "http://10.0.0.1/healthz",
+            "insecure": "false",
+            "clientCert": "....",
+            "clientKey": "....",
+            "caCert": "....."
+        }   
+    }
+}
+----
+====
+======

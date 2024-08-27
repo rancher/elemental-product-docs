@@ -3,5 +3,6 @@ title: Elemental documentation
 version: main
 display_version: 'main'
 start_page: ROOT:index.adoc
+source-highlighter: highlight.js
 nav:
 - modules/ROOT/nav.adoc

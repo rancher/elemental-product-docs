@@ -1,16 +1,15 @@
-=
-:doctype: book
-:sidebar_label: ManagedOSImage reference
-
-import ClusterTarget from "!!raw-loader!@site/examples/upgrade/upgrade-cluster-target.yaml"
-
 = ManagedOSImage reference
 
 The ManagedOSImage resource is responsible of defining an OS image or image version that needs to be applied to each node in a set of targeted Clusters.
 
-There are several keys that can be configured under a `ManagedOSImage` resource spec.+++<CodeBlock language="yaml" title="upgrade-cluster-target.yaml" showLineNumbers="">+++\{ClusterTarget}+++</CodeBlock>+++
+There are several keys that can be configured under a `ManagedOSImage` resource spec.
 
-[discrete]
+.upgrade-cluster-target.yaml
+[,yaml]
+----
+include::example$upgrade/upgrade-cluster-target.yaml[]
+----
+
 ==== ManagedOSImageSpec reference
 
 |===
@@ -72,19 +71,27 @@ There are several keys that can be configured under a `ManagedOSImage` resource 
 | Declares clusters to deploy the upgrade plan to. See <<clustertargets,reference>>.
 |===
 
-[discrete]
 ==== cloudConfig
 
 This describes a cloud-init or yip config that will be copied to each upgraded node to the `/oem/90_operator.yaml` path. +
 This config will be applied by the system after reboot. +
 For more information and examples, see the `MachineRegistration` `spec.config.cloud-config` xref:./cloud-config-reference.adoc[reference].
 
-[discrete]
 ==== nodeSelector
 
-This https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors[Label Selector] can be used to restrict the upgrades to only a certain set of nodes within the targeted Clusters.+++<details>++++++<summary>+++Example+++</summary>+++ ```yaml showLineNumbers nodeSelector: matchExpressions: - {key: my-node/label, operator: Exists} ```+++</details>+++
+This https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors[Label Selector] can be used to restrict the upgrades to only a certain set of nodes within the targeted Clusters.
 
-[discrete]
+.Click here for details
+[%collapsible]
+====
+[,yaml]
+----
+nodeSelector:
+  matchExpressions:
+  - {key: my-node/label, operator: Exists}
+----
+====
+
 ==== drain
 
 Configure if and how nodes should be drained. +
@@ -137,7 +144,6 @@ The drain settings directly translates to the https://kubernetes.io/docs/referen
 | Label selector to filter pods on the node. Only selected pods will be evicted.
 |===
 
-[discrete]
 ==== prepare
 
 Defines a `prepare` Init container that is ran before the `upgrade` container executing the upgrade job on a node. +
@@ -183,7 +189,6 @@ Note that the node filesystem is mounted at `/host` inside the container.
 | The security options the ephemeral container should be run with.
 |===
 
-[discrete]
 ===== prepare.volumes
 
 Each volume definition will translate to a https://kubernetes.io/docs/concepts/storage/volumes/#hostpath-volume-types[hostPath] volume (`source`) which will be mounted in the container (`destination`). +
@@ -206,9 +211,20 @@ Note that by default the host root filesystem `/` will always be mounted at `/ho
 | string
 | empty
 | HostPath volume mount path.
-|===+++<details>++++++<summary>+++Example+++</summary>+++ ```yaml showLineNumbers volumes: - name: my-custom-volume source: /foo destination: /foo ```+++</details>+++
+|===
 
-[discrete]
+.Click here for details
+[%collapsible]
+====
+[,yaml]
+----
+volumes:
+  - name: my-custom-volume
+    source: /foo
+    destination: /foo
+----
+====
+
 ==== upgradeContainer
 
 Defines the `upgrade` container executing the upgrade job on a node. +
@@ -216,22 +232,28 @@ The keys directly translate to the https://kubernetes.io/docs/reference/kubernet
 Note that the node filesystem is mounted at `/host` inside the container.
 
 [CAUTION]
-.warning
 ====
 When using any Elemental or xref:./custom-images.adoc[Elemental based image] you are expected to only edit the `env` key to optionally set the `FORCE`, `UPGRADE_RECOVERY`, or `UPGRADE_RECOVERY_ONLY` variables. +
 For more info you can read the link:./upgrade.adoc#upgrade-via-command-line-interface[upgrade] documentation. +
 Any other change to the `upgradeContainer` may result in issues during upgrades. +
 ====
 
-
-[discrete]
 ==== clusterRolloutStrategy
 
 This controls the rollout of the bundle across clusters. +
 For more information you can read the https://fleet.rancher.io/0.9/ref-crds#rolloutstrategy[reference documentation].
 
-[discrete]
 ==== clusterTargets
 
 Select Clusters to be targeted for the OS image upgrade. +
-For more information you can read the https://fleet.rancher.io/0.9/ref-crds#bundletarget[reference documentation].+++<details>++++++<summary>+++Example+++</summary>+++ ```yaml showLineNumbers clusterTargets: - clusterName: volcano ```+++</details>+++
+For more information you can read the https://fleet.rancher.io/0.9/ref-crds#bundletarget[reference documentation].
+
+.Click here for details
+[%collapsible]
+====
+[,yaml]
+----
+clusterTargets:
+  - clusterName: volcano
+----
+====

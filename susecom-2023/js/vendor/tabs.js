@@ -1,1 +1,1 @@
-../../node_modules/@asciidoctor/tabs/dist/js/tabs.js
+../../../node_modules/@asciidoctor/tabs/dist/js/tabs.js

@@ -1,21 +1,19 @@
-=
-:doctype: book
-:sidebar_label: Configure a VLAN
-
 === How to configure a VLAN
 
 ==== Generate a VLAN connection profile on a live host
 
 Let's configure NetworkManager to add a VLAN interface on top of the eth0 device with a VLAN ID = 1
 
-```shell title="Example: generate a VLAN connection profile with nmcli" showLineNumbers
-
-= nmcli connection add type vlan vlan.id 1 vlan.parent eth0
-
+.Example: generate a VLAN connection profile with nmcli
+[,shell]
+----
+nmcli connection add type vlan vlan.id 1 vlan.parent eth0
 ----
 
-```shell title="Example: retrieve VLAN connection profile keyfile content" showLineNumbers
-# cat /etc/NetworkManager/system-connections/vlan.nmconnection
+.Example: retrieve VLAN connection profile keyfile content
+[,shell]
+----
+cat /etc/NetworkManager/system-connections/vlan.nmconnection
 [connection]
 id=vlan
 uuid=7a9908f4-bed9-4401-8de4-4e7631b5d39e
@@ -38,10 +36,11 @@ method=auto
 [proxy]
 ----
 
-[discrete]
 ==== Elemental MachineRegistration with VLAN injected cloud-config
 
-```yaml title="Example: MachineRegistration with injected VLAN connection profile" showLineNumbers
+.Example: MachineRegistration with injected VLAN connection profile
+[,yaml]
+----
 apiVersion: elemental.cattle.io/v1beta1
 kind: MachineRegistration
 metadata:
@@ -60,7 +59,6 @@ spec:
             uuid=7a9908f4-bed9-4401-8de4-4e7631b5d39e
             type=vlan
 
-....
         [vlan]
         flags=1
         id=1
@@ -73,5 +71,5 @@ spec:
         addr-gen-mode=stable-privacy
         method=auto
    path: /etc/NetworkManager/system-connections/vlan.nmconnection
-   permissions: 600 [...] ```
-....
+   permissions: 600 [...]
+----

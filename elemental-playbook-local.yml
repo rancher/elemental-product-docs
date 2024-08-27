@@ -17,3 +17,4 @@ ui:
 asciidoc:
   extensions:
     - asciidoctor-kroki
+    - '@asciidoctor/tabs'

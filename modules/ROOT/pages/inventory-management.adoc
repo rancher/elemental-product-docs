@@ -1,7 +1,3 @@
-=
-:sidebar_label: Inventory Management
-:version_badge: 1.3.0
-
 == Inventory Management
 
 The Elemental operator can hold an inventory of machines and

@@ -1,6 +1,3 @@
-=
-:sidebar_label: Configure NTP
-
 == NTP configuration with Elemental
 
 === Overview
@@ -26,7 +23,9 @@ We will need to:
 * restart the `systemd-timesyncd` service to use the new configuration
 
 As an example, let's see how to configure `ntp.ripe.net` as the primary NTP server (lines 6-14):
-```yaml showLineNumbers
+
+[,yaml]
+----
 config:
   cloud-config:
     users:
@@ -47,10 +46,10 @@ config:
       reboot: true
 machineInventoryLabels:
   element: fire
-
 ----
 
 ### Configure NTP from DHCP
+
 In order to get the NTP server from the network via the NTP DHCP option, we need
 a NetworkManager dispatcher script to reconfigure dynamically the `systemd-timesync` service when
 needed.
@@ -61,7 +60,8 @@ We will have both to:
 
 See lines 6-34 in the following MachineRegistration configuration example:
 
-```yaml showLineNumbers
+[,yaml]
+----
 config:
   cloud-config:
     users:

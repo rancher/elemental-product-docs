@@ -1,6 +1,3 @@
-=
-:sidebar_label: Machine onboarding
-
 == Machine onboarding
 
 The goal of the Machine Onboarding service is to register a new machine in the Elemental Operator catalog (xref:machineinventory-reference.adoc[MachineInventory] resources) and provision the host with the OS, applying the desired configuration.

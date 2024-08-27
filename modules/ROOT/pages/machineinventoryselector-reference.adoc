@@ -1,5 +1,4 @@
 = MachineInventorySelector reference
-:sidebar_label: MachineInventorySelector reference
 
 A MachineInventorySelector selects MachineInventories based on applied selectors (usually pattern matching on MachineInventory label values).
 

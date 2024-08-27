@@ -1,5 +1,4 @@
 = Release Notes
-:sidebar_label: Release Notes
 
 The Elemental project stack is made of various components such as the `Operator` and `UI` for example.
 
@@ -30,7 +29,5 @@ Here's the different components, their latest version and a link to the respecti
 [NOTE]
 .Information on docs versioning
 ====
-
 The docs versioning is based on the `Elemental Operator` component as it's the user "entrypoint" to the Elemental project stack.
 ====
-

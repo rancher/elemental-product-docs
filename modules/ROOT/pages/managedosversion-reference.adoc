@@ -1,11 +1,12 @@
 = ManagedOSVersion reference
-:sidebar_label: ManagedOSVersion reference
 
 The `ManagedOSVersion` resource is responsible of defining an OS image version that can be used with `SeedImage` or `ManagedOSImage` resources.
 
 There are several keys that can be configured under a `ManagedOSVersion` resource spec.
 
-```yaml title="managedosversion-example.yaml" showLineNumbers
+.managedosversion-example.yaml
+[,yaml]
+----
 apiVersion: elemental.cattle.io/v1beta1
 kind: ManagedOSVersion
 metadata:
@@ -19,50 +20,103 @@ spec:
     upgradeImage: registry.suse.com/suse/sle-micro/5.5:2.0.2
   type: container
   version: v2.0.2
-
 ----
 
-#### ManagedOSVersionSpec reference
+==== ManagedOSVersionSpec reference
 
-| Key              | Type   | Default value | Description                                                                  |
-|------------------|--------|---------------|------------------------------------------------------------------------------|
-| metadata         | object | null          | This defines some data about the OS image. See [reference](#metadata)        |
-| minVersion       | string | null          | Not used                                                                     |
-| type             | string | empty         | Defines the OS image type, could be `container` or `iso`                     |
-| version          | string | empty         | OS image version                                                             |
-| upgradeContainer | object | null          | An upgrade container that can be defined. See [reference](#upgradecontainer) |
+|===
+| Key | Type | Default value | Description
 
-<details>
-  <summary>ISO image example</summary>
+| metadata
+| object
+| null
+| This defines some data about the OS image. See [reference](#metadata)
 
-  ```yaml showLineNumbers
-  metadata:
-    displayName: SLE Micro ISO x86_64
-    uri: registry.suse.com/suse/sl-micro/6.0/baremetal-iso-image:2.2.0
-  type: iso
-  version: v2.2.0
+| minVersion
+| string
+| null
+| Not used
+
+| type
+| string
+| empty
+| Defines the OS image type, could be `container` or `iso`
+
+| version
+| string
+| empty
+| OS image version
+
+| upgradeContainer
+| object
+| null
+| An upgrade container that can be defined. See [reference](#upgradecontainer)
+|===
+
+.Click here for details
+[%collapsible]
+====
+.ISO image example
+[,yaml]
 ----
+metadata:
+  displayName: SLE Micro ISO x86_64
+  uri: registry.suse.com/suse/sl-micro/6.0/baremetal-iso-image:2.2.0
+type: iso
+version: v2.2.0
+----
+====
 
-</details>+++<details>++++++<summary>+++Container image example+++</summary>+++ ```yaml showLineNumbers metadata: displayName: SLE Micro upgradeImage: registry.suse.com/suse/sl-micro/6.0/baremetal-os-container:2.2.0 type: container version: v2.2.0 ```+++</details>+++
+.Click here for details
+[%collapsible]
+====
+.Container image example
+[,yaml]
+----
+metadata:
+  displayName: SLE Micro upgrade
+  upgradeImage: registry.suse.com/suse/sl-micro/6.0/baremetal-os-container:2.2.0
+type: container
+version: v2.2.0
+----
+====
 
-[discrete]
 ==== metadata
 
 This describes the needed informations to define an OS image in Elemental.
 
 If `type` is set to `container`:
-| Key          | Type   | Default value | Description                                                  |
-|----------|------|----------|------------------------------------------|
-| displayName  | string | empty         | OS image name as seen in Rancher UI                          |
-| upgradeImage | string | empty         | Fully qualified Containter image (OCI reference or HTTP URI) |
+
+|===
+| Key | Type | Default value | Description
+
+| displayName
+| string
+| empty
+| OS image name as seen in Rancher UI
+
+| upgradeImage
+| string
+| empty
+| Fully qualified Containter image (OCI reference or HTTP URI)
+|===
 
 If `type` is set to `iso`:
-| Key          | Type   | Default value | Description                         |
-|----------|------|----------|-------------------------|
-| displayName  | string | empty         | OS image name as seen in Rancher UI |
-| uri          | string | empty         | Fully qualified ISO image           |
 
-[discrete]
+|===
+| Key | Type | Default value | Description
+
+| displayName
+| string
+| empty
+| OS image name as seen in Rancher UI
+
+| uri
+| string
+| empty
+| Fully qualified ISO image
+|===
+
 ==== upgradeContainer
 
 This allows to overwrite the default `upgrade` field of System Upgrade Controller plans (see link:/upgrade-lifecycle.adoc#components[upgrade compontents]) based on this ManagedOSVersion.

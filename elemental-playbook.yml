@@ -6,7 +6,7 @@ site:
 content:
   sources:
     - url: https://github.com/rancher/elemental-product-docs.git
-      branches: [main]
+      branches: [main, 1.5]
 
 ui:
   bundle:
@@ -17,3 +17,4 @@ ui:
 asciidoc:
   extensions:
     - asciidoctor-kroki
+    - '@asciidoctor/tabs'

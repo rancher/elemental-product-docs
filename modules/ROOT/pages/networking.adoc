@@ -1,6 +1,3 @@
-=
-:sidebar_label: Configure Networking
-
 == Network configuration with Elemental
 
 Elemental cloud-config support does not include declarative networking at the moment.
@@ -14,15 +11,13 @@ To define custom network configuration for your Elemental OS deployment the requ
 * Identify the content of the desired NetworkManager connection profile configuration files
 * Include a `write_files` cloud-config snippet in the Elemental link:machineregistration-reference[MachineRegistration] resource to create configuration files with content identified in the previous step
 
-[IMPORTANT]
-.info
+[NOTE]
 ====
 The cloud-config configuration put in the Elemental link:machineregistration-reference[MachineRegistration] is applied on the installed system only, not on the generated ISO/Image.
 This means that when booting from the Elemental ISO/Image the link:machineregistration-reference[MachineRegistration] cloud-config is not applied on the host: it will be applied only after the OS is installed and rebooted.
 
 Host configuration during Elemental ISO/Image boot is possible adding the cloud-config customization in the link:seedimage-reference[SeedImage] resource instead of the link:machineregistration-reference[MachineRegistration] one.
 ====
-
 
 === Identify NetworkManager connection profile configuration files content
 
@@ -41,25 +36,30 @@ There are multiple different ways to interact with NetworkManager and create con
 
 Finally, to generate NetworkManager keyfiles _offline_ using a declarative approach, one could use the https://github.com/suse-edge/nm-configurator[nm-configurator] project.
 
-```shell title="Example: generate a static IPv4 ethernet connection porfile with nmcli" showLineNumbers
-nmcli connection add +
-  con-name fixed-ip +
-  type ethernet +
-  ipv4.method manual +
-  ipv4.addresses 192.168.1.2/24 +
-  ipv4.gateway 192.168.1.1 +
-  ipv4.dns 192.168.1.1
-
+.Example: generate a static IPv4 ethernet connection porfile with nmcli
+[,shell]
 ----
+nmcli connection add \
+  con-name fixed-ip \
+  type ethernet \
+  ipv4.method manual \
+  ipv4.addresses 192.168.1.2/24 \
+  ipv4.gateway 192.168.1.1 \
+  ipv4.dns 192.168.1.1
+----
+
 After running the above command, you will find your keyfile at
 `/etc/NetworkManager/system-connections/fixed-ip.nmconnection`.
 
 ### Elemental cloud-config
+
 The NetworkManager connection profile keyfiles can be injected in a [MachineRegistration](machineregistration-reference) using the `write_files` module.
 
 The `content` can be either plain text or base64 encoded (`encoding: b64`).
 
-```yaml title="Example: MachineRegistration with static IPv4 ethernet connection profile" showLineNumbers
+.Example: MachineRegistration with static IPv4 ethernet connection profile
+[,yaml]
+----
 apiVersion: elemental.cattle.io/v1beta1
 kind: MachineRegistration
 metadata:
@@ -100,4 +100,3 @@ spec:
 ====
 The connection profile keyfile file permissions should allow read and write access to the root user only, otherwise NetworkManager will refuse to load the connection profile: ensure to set `permissions` to `600` for NetworkManager keyfiles, otherwise your connection profiles will not be loaded.
 ====
-

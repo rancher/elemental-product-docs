@@ -1,7 +1,7 @@
 = Custom Resources
-:sidebar_label: Custom Resources
+include::partial$global-variables.adoc[]
 
-The +++<Vars name="elemental_operator_name">++++++</Vars>+++ allows control of the Elemental Nodes by extending the Kubernetes APIs with a set of _elemental.cattle.io_ https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/[Kubernetes CRDs]:
+The {elemental_operator_name} allows control of the Elemental Nodes by extending the Kubernetes APIs with a set of _elemental.cattle.io_ https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/[Kubernetes CRDs]:
 
 * xref:machineregistration-reference.adoc[MachineRegistration]
 * xref:machineinventory-reference.adoc[MachineInventory]

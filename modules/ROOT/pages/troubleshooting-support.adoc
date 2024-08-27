@@ -1,5 +1,4 @@
 = Elemental Support
-:sidebar_label: Support
 
 The `elemental-support` is a utility program that collects all information about the machine where the Elemental stack is running.
 

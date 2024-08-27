@@ -1,9 +1,3 @@
-=
-:doctype: book
-:sidebar_label: Trusted Platform Module (TPM)
-
-import RegistrationTpm from "!!raw-loader!@site/examples/quickstart/registration-tpm.yaml"
-
 = Trusted Platform Module 2.0 (TPM)
 
 Trusted Platform Module (TPM, also known as ISO/IEC 11889) is an international standard for a secure cryptoprocessor, a dedicated microcontroller designed to secure hardware through integrated cryptographic keys. The term can also refer to a chip conforming to the standard.
@@ -16,25 +10,25 @@ Easy way to add TPM to virtual machine is to use Libvirt with Virt-manager
 
 After starting virt-manager create new virtual machine
 
-image::images/tpm1.png[Create new VM]
+image::tpm1.png[Create new VM]
 
 === Verify and edit hardware module list
 
 On the hardware configuration screen, verify list of modules and click *_Add Hardware_* button
 
-image::images/tpm2.png[Devices list]
+image::tpm2.png[Devices list]
 
 === Add TPM module to VM
 
 From the list of emulated devices choose TPM module and add it to VM
 
-image::images/tpm3.png[Add TPM module]
+image::tpm3.png[Add TPM module]
 
 === Finish VM configuration
 
 On the last screen verify once again if TPM module was added properly
 
-image::images/tpm4.png[Verify TPM]
+image::tpm4.png[Verify TPM]
 
 == Add TPM emulation to bare metal machine
 
@@ -46,4 +40,9 @@ If you plan to deploy more than 1 machine with TPM emulation, make sure to set `
 so the seed used for the TPM emulation is randomized per machine. Otherwise, you will get the same TPM Hash for all deployed machines and only the last
 one to be registered will be valid.
 ====
-+++<CodeBlock language="yaml" title="registration-tpm.yaml" showLineNumbers="">+++\{RegistrationTpm}+++</CodeBlock>+++
+
+.registration-tpm.yaml
+[,yaml]
+----
+include::example$quickstart/registration-tpm.yaml[]
+----

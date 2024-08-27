@@ -1,5 +1,4 @@
 = MachineInventorySelectorTemplate reference
-:sidebar_label: MachineInventorySelectorTemplate reference
 
 The MachineInventorySelectorTemplate is a user defined resource that will be used as the blueprint to create the required xref:machineinventoryselector-reference.adoc[MachineInventorySelectors].
 
@@ -7,7 +6,9 @@ It is the resource responsible of defining the matching criteria to pair an inve
 
 The relevant key is the `selector` which includes label selector expressions.
 
-```yaml title="MachineInventorySelectorTemplate" showLineNumbers
+.MachineInventorySelectorTemplate
+[,yaml]
+----
 apiVersion: elemental.cattle.io/v1beta1
 kind: MachineInventorySelectorTemplate
 metadata:
@@ -18,7 +19,6 @@ spec:
     spec:
       selector:
         ...
-
 ----
 
 `template.spec.selector` can include `matchLabels` and or `matchExpressions` keys.
@@ -27,25 +27,24 @@ spec:
 
 It is a map of `{key,value}` pairs `(map[string]string)`. When multiple labels are provided all labels must match.
 
-<details>
-  <summary>Example</summary>
-
-  ```yaml showLineNumbers
-  ...
-  spec:
-    template:
-      spec:
-        selector:
-          matchLabels:
-            element: fire
-            manufacturer: somevalue
+.Click here for details
+[%collapsible]
+====
+[yaml]
 ----
-
-</details>
+...
+spec:
+  template:
+    spec:
+      selector:
+        matchLabels:
+          element: fire
+          manufacturer: somevalue
+----
+====
 
 A Cluster defined with the above selector will only attempt to provision nodes inventoried including these two labels.
 
-[discrete]
 ==== template.spec.selector.matchExpressions
 
 It is a list of label selectors, each label selectors can be defined as:
@@ -64,6 +63,25 @@ It is a list of label selectors, each label selectors can be defined as:
 | values
 | []string
 | Values is an array of string values. If the operator is 'In' or 'NotIn', the values array must be non-empty. If the operator is 'Exists' or 'DoesNotExist', the values array must be empty
-|===+++<details>++++++<summary>+++Example+++</summary>+++ ```yaml showLineNumbers \... spec: template: spec: selector: matchExpressions: - key: element operator: In values: [ 'fire' ] - key: manufacturer operator: Exists ```+++</details>+++
+|===
+
+.Click here for details
+[%collapsible]
+====
+[,yaml]
+----
+...
+spec:
+  template:
+    spec:
+      selector:
+        matchExpressions:
+        - key: element
+          operator: In
+          values: [ 'fire' ]
+        - key: manufacturer
+          operator: Exists
+----
+====
 
 A Cluster defined with the above selector will only attempt to provision nodes inventoried with the `element=fire` label and including a `manufacturer` label defined with any value.

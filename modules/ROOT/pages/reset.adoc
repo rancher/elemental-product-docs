@@ -1,18 +1,14 @@
-=
-:sidebar_label: Machine Reset
-:version_badge: 1.3.0
-
 == Machine Reset
 
 There are two ways to reset Elemental machines to their original state or decommission them:
 
 . When deleting a Cluster, all associated machines will be reset
-
-image::images/reset-cluster-deletion.png[Delete a Cluster to reset all machines]
++
+image::reset-cluster-deletion.png[Delete a Cluster to reset all machines]
 
 . When managing a Cluster, simply delete the Node that needs to be reset
-
-image::images/reset-single-node-deletion.png[Delete a single node to reset it]
++
+image::reset-single-node-deletion.png[Delete a single node to reset it]
 
 === Reset workflow
 

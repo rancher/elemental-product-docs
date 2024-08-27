@@ -1,8 +1,6 @@
 = Troubleshooting restore
-:sidebar_label: Restore
 
-[CAUTION]
-.warning
+[WARNING]
 ====
 When a restore is performed, do not restart the `rancher-system-agent` on elemental nodes as it can stale and end with the following error:
 
@@ -16,20 +14,22 @@ Before you initiate a restore, you need to copy `/var/lib/rancher/agent/rancher2
 
 Once the file is copied, download the `rancher-agent-token-update.sh` script from the https://github.com/rancher/elemental[Elemental repository]:
 
-```shell showLineNumbers
+[,shell]
+----
 wget -q https://raw.githubusercontent.com/rancher/elemental/main/scripts/rancher-agent-token-update && chmod +x rancher-agent-token-update
-
 ----
 
 Execute the script without any additional options:
 
-```shell showLineNumbers
+[,shell]
+----
 ./rancher-agent-token-update
 ----
 
 After the restore successfully completed, copy `rancher2_connection_info.json` back to the elemental node to the path
 `/var/lib/rancher/agent/rancher2_connection_info.json`. Finally, restart the `rancher-system-agent` service:
 
-`shell showLineNumbers
+[,shell]
+----
 systemctl restart rancher-system-agent
-`
+----

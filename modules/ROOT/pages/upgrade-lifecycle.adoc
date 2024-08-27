@@ -1,7 +1,6 @@
 = Upgrade Lifecycle
-:sidebar_label: Upgrade Lifecycle
 
-image::images/upgrade-lifecycle.png[Upgrade Flow]
+image::upgrade-lifecycle.png[Upgrade Flow]
 
 == Components
 

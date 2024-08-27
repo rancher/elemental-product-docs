@@ -1,7 +1,4 @@
-=
-:sidebar_label: Add a custom certificate
-
-=== How to add a custom certificate
+== How to add a custom certificate
 
 Prerequisite: A certificate in `.pem` format
 
@@ -13,7 +10,6 @@ Goal: Make a custom certificate available system-wide
 Kubernetes workloads should bring their certificates within the
 container image instead.
 ====
-
 
 In order to install a custom certificate we need to
 

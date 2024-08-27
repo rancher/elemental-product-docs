@@ -1,11 +1,12 @@
 = ManagedOSVersionChannel reference
-:sidebar_label: ManagedOSVersionChannel reference
 
 The `ManagedOSVersionChannel` resource is responsible of defining OS image channel.
 
 There are several keys that can be configured under a `ManagedOSVersionChannel` resource spec.
 
-`yaml title="managedosversionchannel-example.yaml" showLineNumbers
+.managedosversionchannel-example.yaml
+[,yaml]
+----
 apiVersion: elemental.cattle.io/v1beta1
 kind: ManagedOSVersionChannel
 metadata:
@@ -16,9 +17,8 @@ spec:
     image: registry.suse.com/rancher/elemental-channel:1.4.2
   syncInterval: 1h
   type: custom
-`
+----
 
-[discrete]
 ==== ManagedOSVersionChannelSpec reference
 
 |===
@@ -55,9 +55,8 @@ spec:
 | Enables this channel. Allowing syncing of OS versions.
 |===
 
-[discrete]
 ==== upgradeContainer
 
-This allows to overwrite the default `upgrade` field of System Upgrade Controller plans (see link:/upgrade-lifecycle.adoc#components[upgrade compontents]) based on this ManagedOSVersion.
+This allows to overwrite the default `upgrade` field of System Upgrade Controller plans (see xref:upgrade-lifecycle.adoc#_components[upgrade compontents]) based on this ManagedOSVersion.
 These keys are translated by the System Upgrade Controller to a Kubernetes https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#Container[container] specification.
 This is the container responsible of running an OS upgrade.

@@ -1,7 +1,4 @@
-=
-:sidebar_label: Include cloud-config from removable devices
-
-=== How to include cloud-config files from removable devices
+== How to include cloud-config files from removable devices
 
 Elemental nodes supports loading xref:cloud-config-reference.adoc[cloud-config] files from specific block devices.
 In particular supports loading cloud-config files from an ISO having `CIDATA` as the volume ID or any vFAT formatted
@@ -13,7 +10,9 @@ As an example an ISO including a cloud-config file can be created on a Linux hos
 Create a `user-data` file with the cloud-config data in it. In the example below we just set a
 proxy:
 
-```yaml title="user-data" showLineNumbers
+.user-data
+[,yaml]
+----
 #cloud-config
 write_files:
 
@@ -24,7 +23,7 @@ content: |
   HTTP_PROXY=http://some.domain.org:8080
   HTTPS_PROXY=https://some.domain.org:8080
   NO_PROXY="localhost, 127.0.0.1"
-```
+----
 
 Once the `user-data` file exists create an ISO including only this file by using the `mkisofs` Linux utility:
 
@@ -43,7 +42,7 @@ Since the data is copied to `/oem` it will be persistent, hence on follow up reb
 not required to be present any more. If still present on follow up reboots, it just overwrites any
 aleady pre-existing data.
 
-==== Include non cloud-config data
+=== Include non cloud-config data
 
 If the `user-data` is not containing cloud-config data the Elemental client will just copy it as
 is to `/oem/user-data`. Only `*.yaml` files are parsed when executing cloud-init stages, so in that
@@ -53,7 +52,9 @@ If the `user-data` contains a script the Elemental client will, in addition, try
 Elemental client determines if `user-data` is a script or not is by the presence of a _Shebang_ in the
 first line. For example, the previous `user-data` file could be rewritten as:
 
-```bash title="user-data" showLineNumbers
+.user-data
+[,bash]
+----
 #!/bin/bash
 
 cat <<EOF >> /etc/sysconfig/proxy
@@ -62,4 +63,4 @@ HTTP_PROXY=http://some.domain.org:8080
 HTTPS_PROXY=https://some.domain.org:8080
 NO_PROXY="localhost, 127.0.0.1"
 EOF
-```
+----

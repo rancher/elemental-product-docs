@@ -1,26 +1,37 @@
-=
-:sidebar_label: Channels
-
-import MangedOSVersionChannelJson from "!!raw-loader!@site/examples/upgrade/managed-os-version-channel-json.yaml"
-import ManagedOSVersionChannelCustom from "!!raw-loader!@site/examples/upgrade/managed-os-version-channel-custom.yaml"
-import Versions from "../examples/upgrade/versions.raw!=!raw-loader!@site/examples/upgrade/versions.json"
+include::partial$global-variables.adoc[]
 
 == Channels
 
-The +++<Vars name="elemental_operator_name">++++++</Vars>+++ allows subscription to one or more xref:./managedosversionchannel-reference.adoc[ManagedOSVersionChannels], to automatically populate a list of xref:./managedosversion-reference.adoc[ManagedOSVersions] ready to be consumed to build new ISOs using a xref:./seedimage-reference.adoc[SeedImage], or to upgrade existing Elemental nodes to new OS versions using the xref:./managedosimage-reference.adoc[ManagedOSImage].
+The {elemental_operator_name} allows subscription to one or more xref:./managedosversionchannel-reference.adoc[ManagedOSVersionChannels], to automatically populate a list of xref:./managedosversion-reference.adoc[ManagedOSVersions] ready to be consumed to build new ISOs using a xref:./seedimage-reference.adoc[SeedImage], or to upgrade existing Elemental nodes to new OS versions using the xref:./managedosimage-reference.adoc[ManagedOSImage].
 
-A channel is normally distributed as an OCI container image, but it is also possible to reference the URI of a JSON file directly containing a list of `ManagedOSVersion`. Note that the best practice is to distribute channels using images, so that distribution is consistent with all other images needed by the +++<Vars name="elemental_operator_name">++++++</Vars>+++. This can be beneficial for example when deploying in an Airgapped environment.
+A channel is normally distributed as an OCI container image, but it is also possible to reference the URI of a JSON file directly containing a list of `ManagedOSVersion`. Note that the best practice is to distribute channels using images, so that distribution is consistent with all other images needed by the {elemental_operator_name}. This can be beneficial for example when deploying in an Airgapped environment.
 
 [tabs]
-====
+======
 Tab Json syncer::
 +
-This syncer will fetch a json from url and parse it into valid `ManagedOSVersion` resources. +++<CodeBlock language="yaml" title="managed-os-version-channel-json.yaml" showLineNumbers="">+++\{MangedOSVersionChannelJson}+++</CodeBlock> 
+====
+This syncer will fetch a json from url and parse it into valid `ManagedOSVersion` resources. 
+
+.managed-os-version-channel-json.yaml
+[,yaml]
+----
+include::example$upgrade/managed-os-version-channel-json.yaml[]
+----
+====
 
 Tab Custom syncer::
 +
-A custom syncer allows more flexibility on how to gather `ManagedOSVersion` by allowing custom commands with custom images. This type of syncer allows to run a given command with arguments and env vars in a custom image and output a json file to `/data/output`. The generated data is then automounted by the syncer and then parsed so it can gather create the proper versions. Elemental project provides channels to list all `ManagedOSVersions` released as a custom syncer. See the channel resource definition below: +++<CodeBlock language="yaml" title="managed-os-version-channel.yaml" showLineNumbers="">+++\{ManagedOSVersionChannelCustom}+++</CodeBlock>
 ====
+A custom syncer allows more flexibility on how to gather `ManagedOSVersion` by allowing custom commands with custom images. This type of syncer allows to run a given command with arguments and env vars in a custom image and output a json file to `/data/output`. The generated data is then automounted by the syncer and then parsed so it can gather create the proper versions. Elemental project provides channels to list all `ManagedOSVersions` released as a custom syncer. See the channel resource definition below: 
+
+.managed-os-version-channel-custom.yaml
+[,yaml]
+----
+include::example$upgrade/managed-os-version-channel-custom.yaml[]
+----
+====
+======
 
 === Available Channels
 
@@ -76,7 +87,7 @@ Elemental distributes different OS flavors that can better fit specific use case
 
 === Channels lifecycle and best practices
 
-Once a new `ManagedOSVersionChannel` is created, the +++<Vars name="elemental_operator_name">++++++</Vars>+++ will periodically sync the channel provided JSON list, and convert it to new `ManagedOSVersions`. +
+Once a new `ManagedOSVersionChannel` is created, the {elemental_operator_name} will periodically sync the channel provided JSON list, and convert it to new `ManagedOSVersions`. +
 All synced `ManagedOSVersions` will be owned by the `ManagedOSVersionChannel`. Deleting the `ManagedOSVersionChannel` will lead to the deletion of all `ManagedOSVersions` on cascade.
 
 Note that the `ManagedOSVersionChannel` supports automatic clean up of no longer in sync `ManagedOSVersions`, when the `ManagedOSVersionChannel.spec.deleteNoLongerInSyncVersions` option is enabled.
@@ -85,7 +96,7 @@ When a `ManagedOSVersion` is scheduled for deletion, a finalizer will make sure 
 
 If a `ManagedOSVersion` can not be deleted, you can find out by which resources it is referenced:
 
-[,bash]
+[,shell]
 ----
 kubectl -n fleet-default get managedosimages -l elemental.cattle.io/managed-os-version-name=my-deleted-os-version
 ----
@@ -96,19 +107,26 @@ It is recommended to name any channel as: `+{BaseOS}-{BaseOSVersion}-{Flavor}+`.
 This should allow the user to use the `ManagedOSVersion` name as the specific Elemental build version of the image, while keeping a reference on the Base OS and Base OS version from the parent channel. +
 On the Rancher UI this will look something like the following image:
 
-image::images/channel-naming.png[Channel naming]
+image:channel-naming.png[Channel naming]
 
 === Making your own Channels
 
 The only requirement to make your own custom syncer is to make it output a JSON file to `/data/output` and keep the correct JSON structure.
 
-The file is a JSON array containing ISO and Container entries. +
+The file is a JSON array containing ISO and Container entries.
 Each entry in the array is mapped 1:1 with a xref:./managedosversion-reference.adoc[ManagedOSVersion] object.
 
 `"type": "iso"` entries must contain a bootable Elemental ISO and are used by xref:./seedimage-reference.adoc[SeedImages], while `"type": "container"` entries are used by xref:./managedosimage-reference.adoc[ManagedOSImage] for Elemental upgrades.
 
 If in doubt, the https://github.com/rancher-sandbox/elemental-channels[elemental-channels] project can be used as a reference implementation on how to build and maintain your own channels.
 
-When creating new entries, be mindful of the naming strategy you choose, in order to avoid collisions with other channels, since they may end up syncing different `ManagedOSVersion` with the same name. +
-A best practice is to use the convention: `+{Flavor}-{Version}-{Type}+` +
-A sample of the JSON format is as follows:+++<CodeBlock language="json" title="versions.json" showLineNumbers="">+++\{Versions}+++</CodeBlock>+++
+When creating new entries, be mindful of the naming strategy you choose, in order to avoid collisions with other channels, since they may end up syncing different `ManagedOSVersion` with the same name.
+A best practice is to use the convention: `{Flavor}-{Version}-{Type}`
+
+A sample of the JSON format is as follows:
+
+.versions.json
+[,json]
+----
+include::example$upgrade/versions.json[]
+----

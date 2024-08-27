@@ -1,6 +1,5 @@
 = Overview
-:sidebar_label: Overview
-:slug: /
+include::partial$global-variables.adoc[]
 
 Elemental is a software stack enabling centralized, full cloud-native OS management with Kubernetes.
 
@@ -12,21 +11,18 @@ The Elemental Stack consists of a handful of packages on top of SLE Micro:
 * *elemental-cli* - Installs any elemental-toolkit based derivative. Basically an installer based on our A/B install and upgrade system.
 * *rancher-system-agent* - Runs on the installed system and gets instructions ("Plans") from Rancher Manager what to install and run on the system.
 
-Cluster Node OSes are built and maintained via container images through the +++<Vars name="elemental_cli_name">++++++</Vars>+++ and they can be installed on new hosts using the +++<Vars link="elemental_ui_url" name="elemental_ui_name">++++++</Vars>+++ for https://www.rancher.com/products/rancher[Rancher Manager] or the +++<Vars link="elemental_cli_url" name="elemental_cli_name">++++++</Vars>+++.
+Cluster Node OSes are built and maintained via container images through the {elemental_cli_name} and they can be installed on new hosts using the {elemental_ui_url}[{elemental_ui_name}] for https://www.rancher.com/products/rancher[Rancher Manager] or the {elemental_cli_url}[{elemental_cli_name}].
 
-The +++<Vars link="elemental_operator_url" name="elemental_operator_name">++++++</Vars>+++ and the +++<Vars link="ranchersystemagent_url" name="ranchersystemagent_name">++++++</Vars>+++ enable Rancher Manager to fully control Elemental clusters, from the installation and management of the OS on the Nodes to the provisioning of new K3s or RKE2 clusters in a centralized way.
+The {elemental_operator_url}[{elemental_operator_name}] and the {ranchersystemagent_url}[{ranchersystemagent_name}] enable Rancher Manager to fully control Elemental clusters, from the installation and management of the OS on the Nodes to the provisioning of new K3s or RKE2 clusters in a centralized way.
 
-[discrete]
 === Elemental on x86-64 hardware
 
 Elemental is production ready and fully supported on x86-64 starting with Rancher v2.7.0.
 
-[discrete]
 === Elemental on ARM hardware
 
 ARM (aarch64) is functional in the development stage. ARM is currently only tested on Raspberry Pi 4 Model B with k3s 1.24.8 (or later). Feedback is welcome.
 
-[discrete]
 === Elemental on other hardware
 
 Elemental is currently targeting 'edge' scenarios and does therefore not support other hardware. We will re-assess this as the market evolves.
@@ -41,6 +37,6 @@ Get an Elemental Cluster up and running with your preferred method
 [NOTE]
 .What's next?
 ====
-Want more details? Take a look at the link:architecture[Architecture] section or reach out to the +++<Vars link="elemental_slack_url" name="elemental_slack_name">++++++</Vars>+++ Slack channel.
+Want more details? Take a look at the link:architecture[Architecture] section or reach out to the {elemental_slack_url}[{elemental_slack_name}] Slack channel.
 ====
 
