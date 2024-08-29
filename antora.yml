@@ -2,7 +2,7 @@ name: elemental-product-docs
 title: Elemental documentation
 version: main
 display_version: 'main'
-start_page: ROOT:index.adoc
+start_page: en:index.adoc
 source-highlighter: highlight.js
 nav:
-- modules/ROOT/nav.adoc
+- modules/en/nav.adoc
