@@ -162,7 +162,6 @@ wget --no-check-certificate `kubectl get machineregistration -n fleet-default fi
 ----
 ====
 
-
 The contents of the registration config file are nothing more than the registration URL that the node needs to register, the proper server certificate and few options for the registration process.
 
 Once generated, a seed image can be used to provision any number of machines.
@@ -188,14 +187,14 @@ Preparing the seed image (aarch64) manually::
 ======
 Elemental's support for Raspberry Pi is primarily for demonstration purposes at this point. Therefore the installation process is modelled similar to x86-64. You boot from a seed image (an USB stick in this case) and install to a storage medium (SD-card for Raspberry Pi). 
 
-==== Retrieving the prebuilt seed image 
+*Retrieving the prebuilt seed image*
 
 [,shell]
 ----
 wget -q https://download.opensuse.org/repositories/isv:/Rancher:/Elemental:/Stable/containers/rpi.raw
 ----
 
-===== Verifying the download 
+_Verifying the download_ 
 
 In order to verify the integrity of the downloaded artifacts, you should do a checksum verification: 
 
@@ -206,7 +205,7 @@ wget -q https://download.opensuse.org/repositories/isv:/Rancher:/Elemental:/Stab
 
 This should print `rpi.raw: OK` as output. 
 
-==== Injecting the registration information 
+*Injecting the registration information*
 
 Adding the `initial-registration.yaml` isn't scripted yet. This is still a manual process: 
 
@@ -234,11 +233,11 @@ sudo umount $\{DEST}
 rmdir $\{DEST}
 ----
 
-==== Writing the seed image to a USB stick 
+*Writing the seed image to a USB stick*
 
 The `.raw` image needs to be written to a USB stick to boot from. This can be done with `dd` on the Linux command line if you're comfortable with this command. [openSUSE](https://www.opensuse.org) has nice instructions on how to write an image to a storage medium for [Linux](https://en.opensuse.org/SDB:Live_USB_stick), [Windows](https://en.opensuse.org/SDB:Create_a_Live_USB_stick_using_Windows), and [OS X](https://en.opensuse.org/SDB:Create_a_Live_USB_stick_using_macOS). 
 
-==== Booting the Raspberry Pi 
+*Booting the Raspberry Pi*
 
 Now unmount the USB stick and plug it into your Raspberry Pi. 
 

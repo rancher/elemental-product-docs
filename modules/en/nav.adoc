@@ -10,7 +10,7 @@
 * Installation
 ** xref:installation.adoc[Installation]
 ** xref:custom-install.adoc[Customize installation]
-** xref:customize-hostname.adoc[Customize hostname]
+** xref:hostname.adoc[Customize hostname]
 ** xref:networking-vlans.adoc[Configure VLANs]
 ** xref:wifi.adoc[Configure WiFi]
 ** xref:ntp.adoc[Configure NTP]
