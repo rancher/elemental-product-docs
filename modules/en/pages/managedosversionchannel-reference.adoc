@@ -1,0 +1,62 @@
+= ManagedOSVersionChannel reference
+
+The `ManagedOSVersionChannel` resource is responsible of defining OS image channel.
+
+There are several keys that can be configured under a `ManagedOSVersionChannel` resource spec.
+
+.managedosversionchannel-example.yaml
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: ManagedOSVersionChannel
+metadata:
+  name: elemental-channel
+  namespace: fleet-default
+spec:
+  options:
+    image: registry.suse.com/rancher/elemental-channel:1.4.2
+  syncInterval: 1h
+  type: custom
+----
+
+==== ManagedOSVersionChannelSpec reference
+
+|===
+| Key | Type | Default value | Description
+
+| options
+| object
+| null
+| Defines the optional informations that can be added in an OS channel
+
+| syncInterval
+| string
+| 1h
+| Defines when to sync the OS channel
+
+| type
+| string
+| empty
+| Defines the channel type, only `custom` is supported now
+
+| upgradeContainer
+| object
+| null
+| An upgrade container that can be defined. See <<upgradecontainer,reference>>
+
+| deleteNoLongerInSyncVersions
+| bool
+| false
+| Automatically delete deprecated OS versions that are no longer included in the channel
+
+| enabled
+| bool
+| true
+| Enables this channel. Allowing syncing of OS versions.
+|===
+
+==== upgradeContainer
+
+This allows to overwrite the default `upgrade` field of System Upgrade Controller plans (see xref:upgrade-lifecycle.adoc#_components[upgrade compontents]) based on this ManagedOSVersion.
+These keys are translated by the System Upgrade Controller to a Kubernetes https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#Container[container] specification.
+This is the container responsible of running an OS upgrade.

@@ -1,0 +1,13 @@
+= Custom Resources
+include::partial$global-variables.adoc[]
+
+The {elemental_operator_name} allows control of the Elemental Nodes by extending the Kubernetes APIs with a set of _elemental.cattle.io_ https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/[Kubernetes CRDs]:
+
+* xref:machineregistration-reference.adoc[MachineRegistration]
+* xref:machineinventory-reference.adoc[MachineInventory]
+* xref:machineinventoryselector-reference.adoc[MachineInventorySelector]
+* xref:machineinventoryselectortemplate-reference.adoc[MachineInventorySelectorTemplate]
+* xref:managedosimage-reference.adoc[ManagedOSImage]
+* xref:managedosversion-reference.adoc[ManagedOSVersion]
+* xref:managedosversionchannel-reference.adoc[ManagedOSVersionChannel]
+* xref:seedimage-reference.adoc[SeedImage]
