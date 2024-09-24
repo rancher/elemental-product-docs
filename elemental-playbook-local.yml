@@ -7,7 +7,7 @@ content:
   sources:
     - url: ./
       branches: [main]
-      start_paths: [docs/1.5]
+      start_paths: [docs/*]
 
 ui:
   bundle:
