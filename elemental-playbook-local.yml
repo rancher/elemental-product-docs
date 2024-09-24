@@ -1,13 +1,13 @@
 site:
   title: Elemental documentation
   url: /
-  start_page: 1.5@elemental-product-docs:en:index.adoc
+  start_page: 1.6@elemental-product-docs:en:index.adoc
 
 content:
   sources:
     - url: ./
       branches: [main]
-      start_paths: [docs/*]
+      start_paths: [docs/1.6, docs/1.5]
 
 ui:
   bundle:
