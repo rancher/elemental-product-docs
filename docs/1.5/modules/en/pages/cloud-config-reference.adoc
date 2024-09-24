@@ -1,5 +1,4 @@
 = Cloud-config Reference
-:sidebar_label: Cloud-config reference
 
 Node OS images build using the https://github.com/elemental-toolkit[Elemental Toolkit] are expected
 to be initialized and configured by using https://github.com/rancher/yip[yip]. Yip is a small utility to

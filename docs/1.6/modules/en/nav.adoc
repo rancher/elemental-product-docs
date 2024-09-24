@@ -16,6 +16,7 @@
 ** xref:ntp.adoc[Configure NTP]
 ** xref:removable-device-cloudconfig.adoc[Include cloud-config from removable devices]
 ** xref:custom-certificate.adoc[Add custom certificates]
+** xref:raspi-disk.adoc[Install on Raspberry Pi]
 * Node operational tasks
 ** xref:upgrade.adoc[Upgrade]
 ** xref:reset.adoc[Machine reset]
@@ -24,6 +25,7 @@
 ** xref:backup.adoc[Backup]
 ** xref:restore.adoc[Restore]
 ** xref:airgap.adoc[Airgap install]
+** xref:channels.adoc[Channels]
 * Troubleshooting
 ** xref:troubleshooting-support.adoc[Support]
 ** xref:troubleshooting-restore.adoc[Restore]

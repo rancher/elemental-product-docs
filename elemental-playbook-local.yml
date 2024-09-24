@@ -6,8 +6,8 @@ site:
 content:
   sources:
     - url: ./
-      branches: [main]
-      start_paths: [docs/1.6, docs/1.5]
+      branches: [version-1.6]
+      start_paths: [docs/*]
 
 ui:
   bundle:
