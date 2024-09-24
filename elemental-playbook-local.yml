@@ -1,12 +1,13 @@
 site:
   title: Elemental documentation
   url: /
-  start_page: elemental-product-docs::index.adoc
+  start_page: 1.5@elemental-product-docs:en:index.adoc
 
 content:
   sources:
     - url: ./
       branches: [main]
+      start_paths: [docs/1.5]
 
 ui:
   bundle:
@@ -18,3 +19,7 @@ asciidoc:
   extensions:
     - asciidoctor-kroki
     - '@asciidoctor/tabs'
+
+antora:
+  extensions:
+  - require: '@antora/lunr-extension'
