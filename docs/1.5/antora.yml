@@ -1,7 +1,7 @@
 name: elemental-product-docs
 title: Elemental documentation
-version: main
-display_version: 'main'
+version: 1.5
+display_version: '1.5'
 start_page: en:index.adoc
 source-highlighter: highlight.js
 nav:

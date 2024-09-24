@@ -1,12 +1,13 @@
 site:
   title: Elemental documentation
   url: /
-  start_page: elemental-product-docs::index.adoc
+  start_page: 1.5@elemental-product-docs:en:index.adoc
 
 content:
   sources:
     - url: https://github.com/rancher/elemental-product-docs.git
-      branches: [main, 1.5]
+      branches: [main]
+      start_paths: [docs/*]
 
 ui:
   bundle:
@@ -18,3 +19,7 @@ asciidoc:
   extensions:
     - asciidoctor-kroki
     - '@asciidoctor/tabs'
+
+antora:
+  extensions:
+  - require: '@antora/lunr-extension'
