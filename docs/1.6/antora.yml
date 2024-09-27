@@ -1,5 +1,5 @@
-name: elemental-product-docs
-title: Elemental documentation
+name: os-manager
+title: OS Manager
 version: 1.6
 display_version: '1.6'
 start_page: en:index.adoc
@@ -22,3 +22,4 @@ asciidoc:
     elemental_register_name: Elemental Register client
     ranchersystemagent_name: Rancher System Agent
     ranchersystemagent_url: https://github.com/rancher/system-agent
+    product-name: SUSE® Rancher Prime OS Manager
