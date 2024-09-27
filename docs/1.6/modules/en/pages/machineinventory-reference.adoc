@@ -6,4 +6,4 @@ The MachineInventory stores the TPM hash of the tracked host, retrieved during t
 A MachineInventory has two conditions:
 
 * `AdoptionReady`, which indicates the machine has been adopted by a selector to be part of a cluster.
-* `Ready`, which indicates that the machine has been registered and provisioned with an Elemental OS.
+* `Ready`, which indicates that the machine has been registered and provisioned with an SUSE® Rancher Prime OS Manager OS.

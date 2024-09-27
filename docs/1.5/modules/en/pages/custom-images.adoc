@@ -2,7 +2,7 @@
 
 == Remastering an OS image with a custom Dockerfile
 
-Since OS images provided by Elemental are container images, they can also be used as a base image
+Since OS images provided by SUSE® Rancher Prime OS Manager are container images, they can also be used as a base image
 in a Dockerfile in order to create a new container image.
 
 Imagine some additional packages from an extra repository is required, the following example
@@ -10,7 +10,7 @@ showcases how this could be added:
 
 [,docker]
 ----
-# The version of Elemental to modify
+# The version of SUSE® Rancher Prime OS Manager to modify
 
 FROM registry.suse.com/suse/sle-micro/5.5:latest
 
@@ -61,7 +61,7 @@ docker run -it myrepo/custom-build:v1.1.1 bash
 
 ## Create a custom bootable installation ISO
 
-Elemental leverages container images to build its root filesystems; therefore, it is possible
+SUSE® Rancher Prime OS Manager leverages container images to build its root filesystems; therefore, it is possible
 to use it in a multi-stage environment to create custom bootable media that bundles a custom container image.
 
 [,docker]
@@ -121,9 +121,9 @@ link:seedimage-reference[SeedImage] resource.
 
 == List custom images as a ManagedOSVersion resource
 
-In Elemental listing OS container images and ISO container images as ManagedOSVersion
+In SUSE® Rancher Prime OS Manager listing OS container images and ISO container images as ManagedOSVersion
 resources is not mandatory but handy. Specially from a UI perspective this makes
-the custom images visible and easy to use from the Elemental UI extension.
+the custom images visible and easy to use from the SUSE® Rancher Prime OS Manager UI extension.
 
 Continuing the example from the previous section a custom OS container referenced as
 `myrepo/custom-build:v1.1.1` was built and eventually pushed to a registry. Then this

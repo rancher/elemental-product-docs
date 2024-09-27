@@ -1,4 +1,4 @@
-== Install Elemental in an Air-Gapped Environment
+== Install SUSE® Rancher Prime OS Manager in an Air-Gapped Environment
 
 === Assumptions
 
@@ -7,25 +7,25 @@ In particular, a private registry should be available in the air-gapped infrastr
 
 === Overview
 
-In order to run Elemental in an air-gapped environment the following artifacts are needed:
+In order to run SUSE® Rancher Prime OS Manager in an air-gapped environment the following artifacts are needed:
 
-* the Elemental Operator charts
+* the SUSE® Rancher Prime OS Manager Operator charts
 * the container images referenced in the charts (the _elemental-operator_ and _seedimage-builder_ images)
 * the containerized OS images
 
 Moreover, it could be handy to create a _channel image_ referencing the containerized OS images available.
 The official channel image (the _elemental-channel_ one) references absolute URLs of the OS images on the official suse registry, so it cannot be used as-is in an air-gapped scenario.
 
-=== Elemental Air-Gapped installation from the command line
+=== SUSE® Rancher Prime OS Manager Air-Gapped installation from the command line
 
 All the required steps can be accomplished by executing the
 https://raw.githubusercontent.com/rancher/elemental-operator/main/scripts/elemental-airgap.sh[`elemental-airgap.sh` script]
 from a host with Internet access.
 
-The Elemental charts are a required parameter to the script and can be provided as downloaded archives, URLs or as one of
+The SUSE® Rancher Prime OS Manager charts are a required parameter to the script and can be provided as downloaded archives, URLs or as one of
 the `stable`, `staging` and `dev` keywords, to let the script retrieve the correct chart version for you.
 
-`elemental-airgap.sh` inspects the Elemental Operator chart, identifies all the required container images, downloads and saves them in a single docker archive.
+`elemental-airgap.sh` inspects the SUSE® Rancher Prime OS Manager Operator chart, identifies all the required container images, downloads and saves them in a single docker archive.
 It also builds a new OS channel image with the OS image URLs pointing to the private registry passed as argument
 (which is a mandatory argument too).
 
@@ -37,7 +37,7 @@ wget https://raw.githubusercontent.com/rancher/elemental-operator/main/scripts/e
 chmod 755 elemental-airgap.sh
 ----
 
-Let's now download all the artifacts and build a custom channel from the latest stable release of Elemental:
+Let's now download all the artifacts and build a custom channel from the latest stable release of SUSE® Rancher Prime OS Manager:
 
 [tabs]
 ====
@@ -69,7 +69,7 @@ once completed (the script may take a while) both the charts and the container i
 ======
 ====
 
-==== Elemental installation 
+==== SUSE® Rancher Prime OS Manager installation 
 
 The files and archives created by the script should be copied to a host which: 
 
@@ -89,7 +89,7 @@ If the private registry requires authentication you need to log with docker into
 docker login <REGISTRY.YOURDOMAIN.COM:PORT>
 ----
 
-Two steps are needed to perform the Elemental installation: 
+Two steps are needed to perform the SUSE® Rancher Prime OS Manager installation: 
 
 * load the archive with all the required container images on the private registry: this could be done using the `rancher-load-images.sh` script distributed with the Rancher release and already used for the Rancher air-gapped deployment: 
 
@@ -127,7 +127,7 @@ If the private registry requires authentication you need to log with Hauler into
 hauler login <REGISTRY.YOURDOMAIN.COM:PORT>-u $USERNAME -p $PASSWORD
 ----
 
-Three steps are needed to perform the Elemental installation: 
+Three steps are needed to perform the SUSE® Rancher Prime OS Manager installation: 
 
 
 * Load the 'elemental-haul.tar.zst' Haul archive in the Hauler instance in the airgapped infrastructure: 
@@ -173,13 +173,13 @@ helm upgrade --create-namespace -n cattle-elemental-system \
 The `elemental-airgap.sh` scripts prints out the required commands shown above but using the actual chart version and the provided registry URL to allow to easily copy and paste the exact commands.
 ====
 
-=== Elemental Air-Gapped installation from the Rancher Marketplace 
+=== SUSE® Rancher Prime OS Manager Air-Gapped installation from the Rancher Marketplace 
 
-A Rancher air-gapped installation includes also the Elemental Operator charts and the operator and seedimage container images. 
+A Rancher air-gapped installation includes also the SUSE® Rancher Prime OS Manager Operator charts and the operator and seedimage container images. 
 
 To collect the missing OS images and to build an OS channel image for your private registry execute the https://raw.githubusercontent.com/rancher/elemental-operator/main/scripts/elemental-airgap.sh[`elemental-airgap.sh` script] from an host with Internet access, using the `-co` option. 
 
-As an example, let's target the `elemental-channel` image from the latest stable release of Elemental. The script will take care of downloading the Elemental operator chart (if needed), extract the OS channel image URL, download it, inspect all the OS images referenced, download all of them and create a new OS channel with links to the private registry of the air-gapped scenario. 
+As an example, let's target the `elemental-channel` image from the latest stable release of SUSE® Rancher Prime OS Manager. The script will take care of downloading the SUSE® Rancher Prime OS Manager operator chart (if needed), extract the OS channel image URL, download it, inspect all the OS images referenced, download all of them and create a new OS channel with links to the private registry of the air-gapped scenario. 
 
 [tabs]
 ========
@@ -213,7 +213,7 @@ once completed (the script may take a while) the container images will be packed
 ======
 ========
 
-==== Elemental installation 
+==== SUSE® Rancher Prime OS Manager installation 
 
 The generated archive should be loaded to the air-gapped private registry. 
 
@@ -242,7 +242,7 @@ NEXT STEPS:
     --registry <REGISTRY.YOURDOMAIN.COM:PORT>
 ----
 
-Once the OS and channel images are loaded, you should skip the point (2) from the script output (which will install the Elemental charts from the downloaded archives) and instead perform the Elemental Operator installation from the Rancher UI.  
+Once the OS and channel images are loaded, you should skip the point (2) from the script output (which will install the SUSE® Rancher Prime OS Manager charts from the downloaded archives) and instead perform the SUSE® Rancher Prime OS Manager Operator installation from the Rancher UI.  
 ======
 
 Install from a Hauler archive::
@@ -269,7 +269,7 @@ hauler store load 'elemental-haul.tar.zst'
 hauler store copy registry://<REGISTRY.YOURDOMAIN.COM:PORT>
 ----
 
-Once the OS and channel images are loaded, you should skip the point (3) from the script output (which will install the Elemental charts from the downloaded archives) and instead perform the Elemental Operator installation from the Rancher UI.
+Once the OS and channel images are loaded, you should skip the point (3) from the script output (which will install the SUSE® Rancher Prime OS Manager charts from the downloaded archives) and instead perform the SUSE® Rancher Prime OS Manager Operator installation from the Rancher UI.
 ======
 ========
 
@@ -277,8 +277,8 @@ When requested, put the full path of the OS channel image just uploaded in your 
 
 image:airgap-os-channel-image.png[]
 
-=== Elemental UI Extension 
+=== SUSE® Rancher Prime OS Manager UI Extension 
 
-Rancher 2.7.x doesn't support UI extensions plugin in air-gapped environments, and so the Elemental UI is not available in Rancher 2.7.x. 
+Rancher 2.7.x doesn't support UI extensions plugin in air-gapped environments, and so the SUSE® Rancher Prime OS Manager UI is not available in Rancher 2.7.x. 
 
-The Elemental UI plugin will be present in the available UI extensions in Rancher 2.8.0.
+The SUSE® Rancher Prime OS Manager UI plugin will be present in the available UI extensions in Rancher 2.8.0.

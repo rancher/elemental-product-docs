@@ -1,6 +1,6 @@
 = Backup
 
-Since Elemental runs as part of Rancher, the Elemental resources are bundled in the Rancher backup.
+Since SUSE® Rancher Prime OS Manager runs as part of Rancher, the SUSE® Rancher Prime OS Manager resources are bundled in the Rancher backup.
 For more details about Rancher backups, restore, and disaster recovery options, please follow the official https://ranchermanager.docs.rancher.com/pages-for-subheaders/backup-restore-configuration[Rancher documentation].
 
 == Install rancher-backup operator for Rancher
@@ -10,7 +10,7 @@ Follow the https://docs.ranchermanager.rancher.io/how-to-guides/new-user-guides/
 Note that for single node Rancher installations the backup workflow is different. +
 You may follow the official https://ranchermanager.docs.rancher.com/v2.6/how-to-guides/new-user-guides/backup-restore-and-disaster-recovery/back-up-docker-installed-rancher[documentation] to learn more.
 
-== Backup Elemental with rancher-backup operator
+== Backup SUSE® Rancher Prime OS Manager with rancher-backup operator
 
 Create a `backup object` (adapted to your needs) to backup Rancher running on a Kubernetes cluster.
 
