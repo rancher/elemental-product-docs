@@ -1,12 +1,12 @@
 = Upgrade
 include::partial$global-variables.adoc[]
 
-All components in Elemental are managed using Kubernetes. Below is how
+All components in SUSE® Rancher Prime OS Manager are managed using Kubernetes. Below is how
 to use Kubernetes approaches to upgrade the components.
 
-== Elemental node upgrade
+== SUSE® Rancher Prime OS Manager node upgrade
 
-Elemental nodes are upgraded with the {elemental_operator_name}. Refer to the
+SUSE® Rancher Prime OS Manager nodes are upgraded with the {elemental_operator_name}. Refer to the
 xref:operatorchart-reference.adoc[{elemental_operator_name}] documentation for complete information.
 
 Upgrade can be achieve either with CLI or UI:
@@ -116,11 +116,11 @@ For more details and a list of available channels, or to even make your own, ple
 
 == Upgrade via user interface
 
-To upgrade via the UI, you have to go in the Elemental Advanced menu, then click on `Update Groups`.
+To upgrade via the UI, you have to go in the SUSE® Rancher Prime OS Manager Advanced menu, then click on `Update Groups`.
 
 Choose a name, select clusters to target and choose between the two upgrade ways:
 
-image::upgrade-ui-menu.png[Elemental Upgrade Menu]
+image::upgrade-ui-menu.png[SUSE® Rancher Prime OS Manager Upgrade Menu]
 
 [tabs]
 ======
@@ -137,7 +137,7 @@ image:upgrade-ui-version-channel.png[Create OS Version Channel]
 
 After a short syncing time, you will see your `OS Versions` appears in the `OS Versions` menu. 
 
-image:upgrade-ui-os-version.png[Elemental OS Version menu] 
+image:upgrade-ui-os-version.png[SUSE® Rancher Prime OS Manager OS Version menu] 
 
 Finally, you can select the `OS Versions` when you create your `Upgrade Group` according to the following screenshot: 
 

@@ -12,7 +12,7 @@ If you face this problem, please follow the procedure below.
 
 Before you initiate a restore, you need to copy `/var/lib/rancher/agent/rancher2_connection_info.json` from the elemental node to a place where you have access with Rancher UI.
 
-Once the file is copied, download the `rancher-agent-token-update.sh` script from the https://github.com/rancher/elemental[Elemental repository]:
+Once the file is copied, download the `rancher-agent-token-update.sh` script from the https://github.com/rancher/elemental[SUSE® Rancher Prime OS Manager repository]:
 
 [,shell]
 ----

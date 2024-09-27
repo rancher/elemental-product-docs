@@ -14,7 +14,7 @@ metadata:
   name: my-upgrade
   namespace: fleet-default
 spec:
-  # Set to the new Elemental version you would like to upgrade to or track the latest tag
+  # Set to the new SUSE® Rancher Prime OS Manager version you would like to upgrade to or track the latest tag
   osImage: "registry.suse.com/rancher/sle-micro/5.5:latest"
   clusterTargets:
     - clusterName: my-cluster
@@ -72,10 +72,10 @@ spec:
 ----
 ====
 
-== Elemental Cluster side
+== SUSE® Rancher Prime OS Manager Cluster side
 
-Any Elemental node correctly registered and part of the target cluster will fetch the bundle and start applying it. +
-This operation is performed by the Rancher's `system-upgrade-controller` running on the Elemental Cluster. +
+Any SUSE® Rancher Prime OS Manager node correctly registered and part of the target cluster will fetch the bundle and start applying it. +
+This operation is performed by the Rancher's `system-upgrade-controller` running on the SUSE® Rancher Prime OS Manager Cluster. +
 To monitor the correct operation of this controller, you can read its logs:
 
 [,shell]
@@ -115,7 +115,7 @@ kubectl -n cattle-system logs job.batch/apply-os-upgrader-my-upgrade-on-my-host-
 
 Note that the upgrade process is performed in two stages. +
 You will notice that the same job is ran twice and the first one ends with the `Uknown` Status and will not complete. +
-*This is to be expected*, as Elemental relies on the job to be ran again after the machine restarts, so that it can verify the new version was installed correctly. +
+*This is to be expected*, as SUSE® Rancher Prime OS Manager relies on the job to be ran again after the machine restarts, so that it can verify the new version was installed correctly. +
 You will notice a second run of the job, this time completing correctly.
 
 [,shell]

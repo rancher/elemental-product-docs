@@ -1,6 +1,6 @@
 = Channels
 
-The {elemental_operator_name} allows subscription to one or more xref:managedosversionchannel-reference.adoc[ManagedOSVersionChannels], to automatically populate a list of xref:managedosversion-reference.adoc[ManagedOSVersions] ready to be consumed to build new ISOs using a xref:seedimage-reference.adoc[SeedImage], or to upgrade existing Elemental nodes to new OS versions using the xref:managedosimage-reference.adoc[ManagedOSImage].
+The {elemental_operator_name} allows subscription to one or more xref:managedosversionchannel-reference.adoc[ManagedOSVersionChannels], to automatically populate a list of xref:managedosversion-reference.adoc[ManagedOSVersions] ready to be consumed to build new ISOs using a xref:seedimage-reference.adoc[SeedImage], or to upgrade existing SUSE® Rancher Prime OS Manager nodes to new OS versions using the xref:managedosimage-reference.adoc[ManagedOSImage].
 
 A channel is normally distributed as an OCI container image, but it is also possible to reference the URI of a JSON file directly containing a list of `ManagedOSVersion`. Note that the best practice is to distribute channels using images, so that distribution is consistent with all other images needed by the {elemental_operator_name}. This can be beneficial for example when deploying in an Airgapped environment.
 
@@ -21,7 +21,7 @@ include::example$upgrade/managed-os-version-channel-json.yaml[]
 Custom syncer::
 +
 ====
-A custom syncer allows more flexibility on how to gather `ManagedOSVersion` by allowing custom commands with custom images. This type of syncer allows to run a given command with arguments and env vars in a custom image and output a json file to `/data/output`. The generated data is then automounted by the syncer and then parsed so it can gather create the proper versions. Elemental project provides channels to list all `ManagedOSVersions` released as a custom syncer. See the channel resource definition below: 
+A custom syncer allows more flexibility on how to gather `ManagedOSVersion` by allowing custom commands with custom images. This type of syncer allows to run a given command with arguments and env vars in a custom image and output a json file to `/data/output`. The generated data is then automounted by the syncer and then parsed so it can gather create the proper versions. SUSE® Rancher Prime OS Manager project provides channels to list all `ManagedOSVersions` released as a custom syncer. See the channel resource definition below: 
 
 .managed-os-version-channel-custom.yaml
 [,yaml]
@@ -33,7 +33,7 @@ include::example$upgrade/managed-os-version-channel-custom.yaml[]
 
 == Available Channels
 
-Elemental maintains a list of channels that can be used out of the box.
+SUSE® Rancher Prime OS Manager maintains a list of channels that can be used out of the box.
 
 |===
 | Base OS | BaseOS Version | Flavor | Channel URI
@@ -61,7 +61,7 @@ Elemental maintains a list of channels that can be used out of the box.
 
 == Flavors
 
-Elemental distributes different OS flavors that can better fit specific use cases.
+SUSE® Rancher Prime OS Manager distributes different OS flavors that can better fit specific use cases.
 
 |===
 | Flavor | Description | Reference
@@ -102,7 +102,7 @@ kubectl -n fleet-default get managedosimages -l elemental.cattle.io/managed-os-v
 When using multiple channels it's important to keep a proper naming strategy to always have a quick, human readable reference on the owned `ManagedOSVersions`. +
 It is recommended to name any channel as: `+{BaseOS}-{BaseOSVersion}-{Flavor}+`.
 
-This should allow the user to use the `ManagedOSVersion` name as the specific Elemental build version of the image, while keeping a reference on the Base OS and Base OS version from the parent channel. +
+This should allow the user to use the `ManagedOSVersion` name as the specific SUSE® Rancher Prime OS Manager build version of the image, while keeping a reference on the Base OS and Base OS version from the parent channel. +
 On the Rancher UI this will look something like the following image:
 
 image:channel-naming.png[Channel naming]
@@ -114,7 +114,7 @@ The only requirement to make your own custom syncer is to make it output a JSON 
 The file is a JSON array containing ISO and Container entries.
 Each entry in the array is mapped 1:1 with a xref:managedosversion-reference.adoc[ManagedOSVersion] object.
 
-`"type": "iso"` entries must contain a bootable Elemental ISO and are used by xref:seedimage-reference.adoc[SeedImages], while `"type": "container"` entries are used by xref:managedosimage-reference.adoc[ManagedOSImage] for Elemental upgrades.
+`"type": "iso"` entries must contain a bootable SUSE® Rancher Prime OS Manager ISO and are used by xref:seedimage-reference.adoc[SeedImages], while `"type": "container"` entries are used by xref:managedosimage-reference.adoc[ManagedOSImage] for SUSE® Rancher Prime OS Manager upgrades.
 
 If in doubt, the https://github.com/rancher-sandbox/elemental-channels[elemental-channels] project can be used as a reference implementation on how to build and maintain your own channels.
 

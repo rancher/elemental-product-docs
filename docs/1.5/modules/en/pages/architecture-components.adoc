@@ -1,28 +1,28 @@
 include::partial$global-variables.adoc[]
 
-The components required to provide the xref:architecture-services.adoc[Elemental services] are:
+The components required to provide the xref:architecture-services.adoc[SUSE® Rancher Prime OS Manager services] are:
 
 * the <<_elemental_command_line_tool,`elemental`>> command line tool
 * the <<_elemental_operator_daemon,`elemental-operator`>> daemon
 * the <<_elemental_register_command_line_tool,`elemental-register`>> command line tool
 * the <<_elemental_system_agent_daemon,`elemental-system-agent`>> daemon
-* one or more <<_elemental_os_container_image,Elemental OS container images>>
+* one or more <<_elemental_os_container_image,SUSE® Rancher Prime OS Manager OS container images>>
 
 == `elemental` command line tool
 
 The `elemental` tool is part of the link:{elemental_toolkit_url}[{elemental_toolkit_name}] project.
-It performs the actual OS installation and upgrade operations on the host and is used to execute the xref:cloud-config-reference.adoc[cloud-config] directives added in the xref:custom-resources.adoc[Elemental CRDs].
+It performs the actual OS installation and upgrade operations on the host and is used to execute the xref:cloud-config-reference.adoc[cloud-config] directives added in the xref:custom-resources.adoc[SUSE® Rancher Prime OS Manager CRDs].
 
-The `elemental` binary is included in all the base OS images distributed with Elemental.
+The `elemental` binary is included in all the base OS images distributed with SUSE® Rancher Prime OS Manager.
 
 == `elemental-operator` daemon
 
 The *elemental-operator* daemon performs two main tasks:
 
-. embeds the Elemental Kubernetes controllers to manage all the xref:custom-resources.adoc[Elemental CRDs]
+. embeds the SUSE® Rancher Prime OS Manager Kubernetes controllers to manage all the xref:custom-resources.adoc[SUSE® Rancher Prime OS Manager CRDs]
 . exposes the _registration endpoints_ to allow the host to register and download the OS installation configuration during the xref:architecture-machineonboarding.adoc[machine onboarding]
 
-The `elemental-operator` daemon is deployed on the Rancher cluster as a `Deployment` via the xref:operatorchart-reference.adoc[Elemental Operator Helm Chart].
+The `elemental-operator` daemon is deployed on the Rancher cluster as a `Deployment` via the xref:operatorchart-reference.adoc[SUSE® Rancher Prime OS Manager Operator Helm Chart].
 
 == `elemental-register` command line tool
 
@@ -33,13 +33,13 @@ As the last step, the *elemental-register* client calls the <<_elemental_command
 
 == `elemental-system-agent` daemon
 
-The `elemental-system-agent` is built from the https://github.com/rancher/system-agent[Rancher System Agent project] and allows Elemental to deploy _plans_ to assist with the host provisioning.
+The `elemental-system-agent` is built from the https://github.com/rancher/system-agent[Rancher System Agent project] and allows SUSE® Rancher Prime OS Manager to deploy _plans_ to assist with the host provisioning.
 Notably, the `rancher-system-agent` installation and configuration required for the xref:architecture-clusterdeployment.adoc[Kubernetes Cluster provisioning service] is performed through an `elemental-system-agent` _plan_.
 
-== Elemental OS container image
+== SUSE® Rancher Prime OS Manager OS container image
 
 An link:{elemental_toolkit_url}[{elemental_toolkit_name}] OS image is an OCI container image containing all the files that will make up the OS of the target host. It contains not only all the binaries and libraries, but also the kernel and the boot files required by a linux system.
 
-The Elemental OS image is an opinionated link:{elemental_toolkit_url}[{elemental_toolkit_name}] OS image which is based on https://www.suse.com/products/micro/[SLE Micro] and contains specific Elemental configurations and binaries (the <<_elemental_command_line_tool,elemental>> and the <<_elemental_register_command_line_tool,elemental-register>> ones).
+The SUSE® Rancher Prime OS Manager OS image is an opinionated link:{elemental_toolkit_url}[{elemental_toolkit_name}] OS image which is based on https://www.suse.com/products/micro/[SLE Micro] and contains specific SUSE® Rancher Prime OS Manager configurations and binaries (the <<_elemental_command_line_tool,elemental>> and the <<_elemental_register_command_line_tool,elemental-register>> ones).
 
-The Elemental OS images are tracked in the xref:managedosversion-reference.adoc[ManagedOSVersions] resources. The xref:managedosversion-reference.adoc[ManagedOSVersions] resources are dynamically created from xref:managedosversionchannel-reference.adoc[ManagedOSVersionChannel] resources. A defaultxref:managedosversionchannel-reference.adoc[ManagedOSVersionChannel] resource is deployed with each Elemental Operator installation.
+The SUSE® Rancher Prime OS Manager OS images are tracked in the xref:managedosversion-reference.adoc[ManagedOSVersions] resources. The xref:managedosversion-reference.adoc[ManagedOSVersions] resources are dynamically created from xref:managedosversionchannel-reference.adoc[ManagedOSVersionChannel] resources. A defaultxref:managedosversionchannel-reference.adoc[ManagedOSVersionChannel] resource is deployed with each SUSE® Rancher Prime OS Manager Operator installation.

@@ -1,6 +1,6 @@
 = Services
 
-Elemental functionality is provided through the following list of services:
+SUSE® Rancher Prime OS Manager functionality is provided through the following list of services:
 
-* xref:architecture-machineonboarding.adoc[Machine Onboarding]: allows hosts to be OS provisioned and registered in the Elemental Operator catalog.
-* xref:architecture-clusterdeployment.adoc[Kubernetes Cluster Deployment]: triggers the creation of a Kubernetes Cluster on the available host registered in the Elemental Operator catalog.
+* xref:architecture-machineonboarding.adoc[Machine Onboarding]: allows hosts to be OS provisioned and registered in the SUSE® Rancher Prime OS Manager Operator catalog.
+* xref:architecture-clusterdeployment.adoc[Kubernetes Cluster Deployment]: triggers the creation of a Kubernetes Cluster on the available host registered in the SUSE® Rancher Prime OS Manager Operator catalog.

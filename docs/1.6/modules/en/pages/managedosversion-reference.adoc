@@ -83,7 +83,7 @@ version: v2.2.0
 
 == metadata
 
-This describes the needed informations to define an OS image in Elemental.
+This describes the needed informations to define an OS image in SUSE® Rancher Prime OS Manager.
 
 If `type` is set to `container`:
 

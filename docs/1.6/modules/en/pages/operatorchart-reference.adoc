@@ -1,6 +1,6 @@
-= Elemental Operator Helm Chart
+= SUSE® Rancher Prime OS Manager Operator Helm Chart
 
-The {elemental_operator_url}[{elemental_operator_name}] is responsible for managing the Elemental versions and maintaining a machine inventory to assist with edge or bare metal installations.
+The {elemental_operator_url}[{elemental_operator_name}] is responsible for managing the SUSE® Rancher Prime OS Manager versions and maintaining a machine inventory to assist with edge or bare metal installations.
 
 The associated chart bootstraps an elemental-operator deployment on the https://rancher.com/docs/rancher/v2.6/[Rancher Manager v2.6] cluster using the https://helm.sh[Helm] package manager.
 

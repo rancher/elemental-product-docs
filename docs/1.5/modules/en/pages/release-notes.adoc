@@ -1,27 +1,27 @@
 = Release Notes
 
-The Elemental project stack is made of various components such as the `Operator` and `UI` for example.
+The SUSE® Rancher Prime OS Manager project stack is made of various components such as the `Operator` and `UI` for example.
 
-Each of these components have an independent development lifecycle with its own versioning. Once a new version is ready, meaning it fully integrates with the others components of the Elemental project stack, a release is made.
+Each of these components have an independent development lifecycle with its own versioning. Once a new version is ready, meaning it fully integrates with the others components of the SUSE® Rancher Prime OS Manager project stack, a release is made.
 
 Here's the different components, their latest version and a link to the respective release notes on GitHub:
 
 |===
 | Name | Version | Release Notes
 
-| https://github.com/rancher/elemental-operator/[Elemental Operator]
+| https://github.com/rancher/elemental-operator/[SUSE® Rancher Prime OS Manager Operator]
 | v1.6.3
 | https://github.com/rancher/elemental-operator/releases/tag/v1.6.3[Link]
 
-| https://github.com/rancher/elemental-toolkit/[Elemental Toolkit]
+| https://github.com/rancher/elemental-toolkit/[SUSE® Rancher Prime OS Manager Toolkit]
 | v2.1.1
 | https://github.com/rancher/elemental-toolkit/releases/tag/v2.1.1[Link]
 
-| https://github.com/rancher/elemental[Elemental Linux]
+| https://github.com/rancher/elemental[SUSE® Rancher Prime OS Manager Linux]
 | v2.1.1
 | https://github.com/rancher/elemental/releases/tag/v2.1.1[Link]
 
-| https://github.com/rancher/elemental-ui[Elemental UI]
+| https://github.com/rancher/elemental-ui[SUSE® Rancher Prime OS Manager UI]
 | v1.3.1
 | https://github.com/rancher/elemental-ui/releases/tag/elemental-1.3.1[Link]
 |===
@@ -29,5 +29,5 @@ Here's the different components, their latest version and a link to the respecti
 [NOTE]
 .Information on docs versioning
 ====
-The docs versioning is based on the `Elemental Operator` component as it's the user "entrypoint" to the Elemental project stack.
+The docs versioning is based on the `SUSE® Rancher Prime OS Manager Operator` component as it's the user "entrypoint" to the SUSE® Rancher Prime OS Manager project stack.
 ====

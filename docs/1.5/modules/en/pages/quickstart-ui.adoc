@@ -1,13 +1,13 @@
-= Elemental the visual way
+= SUSE® Rancher Prime OS Manager the visual way
 
 [NOTE]
 ====
 The following instructions need Rancher 2.8.x at least.
 ====
 
-This quickstart will show you how to deploy the Elemental plugin and operator into an existing Rancher Manager instance.
+This quickstart will show you how to deploy the SUSE® Rancher Prime OS Manager plugin and operator into an existing Rancher Manager instance.
 
-Once installed, you'll be able to provision a new Elemental cluster based on RKE2 or K3s.
+Once installed, you'll be able to provision a new SUSE® Rancher Prime OS Manager cluster based on RKE2 or K3s.
 
 However, if you want to install staging or dev operator, you can only do it in link:quickstart-cli#non-stable-installations[CLI mode].
 
@@ -43,7 +43,7 @@ If the `Available` tab shows no entries, refresh the page. The `elemental` plugi
 
 * Click on the `Install` button, a popup will appear and click on `Install` again to continue.
 
-image::quickstart-ui-elemental-plugin-install.png[Elemental plugin install]
+image::quickstart-ui-elemental-plugin-install.png[SUSE® Rancher Prime OS Manager plugin install]
 
 * On the `Installed` tab, the `elemental` plugin is now listed.
 
@@ -60,12 +60,12 @@ image::quickstart-ui-elemental-plugin-menu.png[Rancher Manager OS Management men
 
 [NOTE]
 ====
-The following guide will show you how to install the operator through the Elemental UI. But you can also install it directly from the Marketplace.
+The following guide will show you how to install the operator through the SUSE® Rancher Prime OS Manager UI. But you can also install it directly from the Marketplace.
 ====
 
 Click on the OS Management button in the navigation menu.
 
-If the operator is not already installed, the elemental ui will let you deploy it by clicking on the `Install Elemental Operator` button:
+If the operator is not already installed, the elemental ui will let you deploy it by clicking on the `Install SUSE® Rancher Prime OS Manager Operator` button:
 
 image::quickstart-ui-extension-operator-button.png[Button to deploy elemental operator]
 
@@ -73,15 +73,15 @@ It will redirect you to the Rancher Marketplace to install the operator.
 
 Click on the `Next` button:
 
-image::quickstart-ui-extension-operator-install-1.png[Install Elemental operator screenshot 1]
+image::quickstart-ui-extension-operator-install-1.png[Install SUSE® Rancher Prime OS Manager operator screenshot 1]
 
 In this screen, you can customize or use the default values, click on `Install` to continue:
 
-image::quickstart-ui-extension-operator-install-2.png[Install Elemental operator screenshot 2]
+image::quickstart-ui-extension-operator-install-2.png[Install SUSE® Rancher Prime OS Manager operator screenshot 2]
 
 You should see ``elemental-operator-crds``and `elemental-operator` deployed in the `cattle-elemental-system` namespace:
 
-image::quickstart-ui-extension-operator-install-3.png[Install Elemental operator screenshot 3]
+image::quickstart-ui-extension-operator-install-3.png[Install SUSE® Rancher Prime OS Manager operator screenshot 3]
 
 [CAUTION]
 ====
@@ -122,8 +122,8 @@ This seed image can then be used to provision an infinite number of machines.
 
 The seed image is created as a Kubernetes resource above and can be built using the `Build Media` button, but first, you have to select ISO or RAW image.
 
-In opposite to ISO where it needs two devices (device with ISO and another disk where to install Elemental), RAW image allows to boot from a single device and directly install the operating system in the device.
-RAW image only contains a boot and a recovery partition and it boots first into recovery mode to install Elemental (for information, the process is similar to the link:reset#reset-workflow[reset] one).
+In opposite to ISO where it needs two devices (device with ISO and another disk where to install SUSE® Rancher Prime OS Manager), RAW image allows to boot from a single device and directly install the operating system in the device.
+RAW image only contains a boot and a recovery partition and it boots first into recovery mode to install SUSE® Rancher Prime OS Manager (for information, the process is similar to the link:reset#reset-workflow[reset] one).
 
 image::quickstart-ui-registration-endpoint-build-media.png[Build Media in Registration Endpoints]
 
@@ -159,23 +159,23 @@ For instance if you only want to see your AMD machines, you can filter on `CPUMo
 
 image::quickstart-ui-machine-inventory-filtering.png[Machine Inventory filtering]
 
-== Create your first Elemental Cluster
+== Create your first SUSE® Rancher Prime OS Manager Cluster
 
-Now let's use those `Machine Inventory` to create a cluster by clicking on `Create Elemental Cluster` :
+Now let's use those `Machine Inventory` to create a cluster by clicking on `Create SUSE® Rancher Prime OS Manager Cluster` :
 
-image::quickstart-ui-create-cluster-button.png[Create Elemental Cluster button]
+image::quickstart-ui-create-cluster-button.png[Create SUSE® Rancher Prime OS Manager Cluster button]
 
-For your Elemental cluster, you can either choose K3s or RKE2 for Kubernetes.
+For your SUSE® Rancher Prime OS Manager cluster, you can either choose K3s or RKE2 for Kubernetes.
 
-image::quickstart-ui-create-cluster-standard-screen-.png[Elemental Cluster Creation Screen]
+image::quickstart-ui-create-cluster-standard-screen-.png[SUSE® Rancher Prime OS Manager Cluster Creation Screen]
 
 Most of the options are coming from Rancher, that's why we will not detail all the possibilities.
 Feel free to check the https://ranchermanager.docs.rancher.com/pages-for-subheaders/rancher-server-configuration[Rancher Manager documentation] if you want to know more.
 
 However, it is important to highlight the `Inventory of Machines Selector Template` section.
 
-It lets you choose which `Machine Inventory` you want to use to create your Elemental cluster using the previously defined `Machine Inventory Labels` :
+It lets you choose which `Machine Inventory` you want to use to create your SUSE® Rancher Prime OS Manager cluster using the previously defined `Machine Inventory Labels` :
 
 image::quickstart-ui-create-cluster-machine-selector-template.png[Use Machine Inventory Selector Template]
 
-As our three Machine Inventories contain the label `CPUVendor` with the key `AuthenticAMD`, the three machines will be used to create the Elemental cluster.
+As our three Machine Inventories contain the label `CPUVendor` with the key `AuthenticAMD`, the three machines will be used to create the SUSE® Rancher Prime OS Manager cluster.

@@ -1,9 +1,9 @@
 = Overview
 include::partial$global-variables.adoc[]
 
-Elemental is a software stack enabling centralized, full cloud-native OS management with Kubernetes.
+SUSE® Rancher Prime OS Manager is a software stack enabling centralized, full cloud-native OS management with Kubernetes.
 
-The Elemental Stack consists of a handful of packages on top of SLE Micro:
+The SUSE® Rancher Prime OS Manager Stack consists of a handful of packages on top of SLE Micro:
 
 * *elemental-toolkit* - Includes a set of OS utilities to enable OS management via containers. Includes dracut modules, bootloader configuration, cloud-init style configuration services, etc.
 * *elemental-operator* - Connects to Rancher Manager and handles MachineRegistration and MachineInventory CRDs.
@@ -13,26 +13,26 @@ The Elemental Stack consists of a handful of packages on top of SLE Micro:
 
 Cluster Node OSes are built and maintained via container images through the {elemental_cli_name} and they can be installed on new hosts using the {elemental_ui_url}[{elemental_ui_name}] for https://www.rancher.com/products/rancher[Rancher Manager] or the {elemental_cli_url}[{elemental_cli_name}].
 
-The {elemental_operator_url}[{elemental_operator_name}] and the {ranchersystemagent_url}[{ranchersystemagent_name}] enable Rancher Manager to fully control Elemental clusters, from the installation and management of the OS on the Nodes to the provisioning of new K3s or RKE2 clusters in a centralized way.
+The {elemental_operator_url}[{elemental_operator_name}] and the {ranchersystemagent_url}[{ranchersystemagent_name}] enable Rancher Manager to fully control SUSE® Rancher Prime OS Manager clusters, from the installation and management of the OS on the Nodes to the provisioning of new K3s or RKE2 clusters in a centralized way.
 
-=== Elemental on x86-64 hardware
+=== SUSE® Rancher Prime OS Manager on x86-64 hardware
 
-Elemental is production ready and fully supported on x86-64 starting with Rancher v2.7.0.
+SUSE® Rancher Prime OS Manager is production ready and fully supported on x86-64 starting with Rancher v2.7.0.
 
-=== Elemental on ARM hardware
+=== SUSE® Rancher Prime OS Manager on ARM hardware
 
 ARM (aarch64) is functional in the development stage. ARM is currently only tested on Raspberry Pi 4 Model B with k3s 1.24.8 (or later). Feedback is welcome.
 
-=== Elemental on other hardware
+=== SUSE® Rancher Prime OS Manager on other hardware
 
-Elemental is currently targeting 'edge' scenarios and does therefore not support other hardware. We will re-assess this as the market evolves.
+SUSE® Rancher Prime OS Manager is currently targeting 'edge' scenarios and does therefore not support other hardware. We will re-assess this as the market evolves.
 
 == Ready to give it a try?
 
-Get an Elemental Cluster up and running with your preferred method
+Get an SUSE® Rancher Prime OS Manager Cluster up and running with your preferred method
 
-* With Rancher manager link:quickstart-ui[Elemental plugin]
-* With the link:quickstart-cli[Elemental CLI]
+* With Rancher manager link:quickstart-ui[SUSE® Rancher Prime OS Manager plugin]
+* With the link:quickstart-cli[SUSE® Rancher Prime OS Manager CLI]
 
 [NOTE]
 .What's next?

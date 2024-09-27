@@ -1,8 +1,8 @@
-== NTP configuration with Elemental
+== NTP configuration with SUSE® Rancher Prime OS Manager
 
 === Overview
 
-The default OS channel shipped with Elemental provides NTP support via `systemd-timesyncd`.
+The default OS channel shipped with SUSE® Rancher Prime OS Manager provides NTP support via `systemd-timesyncd`.
 
 This page covers configuring `systemd-timesyncd` with the provided SLE Micro images, which is
 pre-configured with some default (fallback) NTP servers: (_[0-3].suse.pool.ntp.org_).
