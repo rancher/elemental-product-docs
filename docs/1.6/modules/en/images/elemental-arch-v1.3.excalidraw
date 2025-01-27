@@ -59,14 +59,14 @@
       "updated": 1666732812823,
       "link": null,
       "locked": false,
-      "text": "SUSE® Rancher Prime OS Manager\nOS install",
+      "text": "Elemental\nOS install",
       "fontSize": 20,
       "fontFamily": 3,
       "textAlign": "center",
       "verticalAlign": "top",
       "baseline": 45,
       "containerId": null,
-      "originalText": "SUSE® Rancher Prime OS Manager\nOS install"
+      "originalText": "Elemental\nOS install"
     },
     {
       "type": "rectangle",
@@ -206,14 +206,14 @@
       "updated": 1666732812823,
       "link": null,
       "locked": false,
-      "text": "SUSE® Rancher Prime OS Manager\nOperator",
+      "text": "Elemental\nOperator",
       "fontSize": 36,
       "fontFamily": 1,
       "textAlign": "left",
       "verticalAlign": "top",
       "baseline": 78,
       "containerId": null,
-      "originalText": "SUSE® Rancher Prime OS Manager\nOperator"
+      "originalText": "Elemental\nOperator"
     },
     {
       "id": "kohXvv5bHcq0RrOxiq4dS",
@@ -249,14 +249,14 @@
       "updated": 1666732812823,
       "link": null,
       "locked": false,
-      "text": "SUSE® Rancher Prime OS Manager OS image",
+      "text": "Elemental OS image",
       "fontSize": 28,
       "fontFamily": 1,
       "textAlign": "left",
       "verticalAlign": "top",
       "baseline": 25,
       "containerId": null,
-      "originalText": "SUSE® Rancher Prime OS Manager OS image"
+      "originalText": "Elemental OS image"
     },
     {
       "id": "D_cXsPRcD8raV2_Gto9wO",
@@ -283,14 +283,14 @@
       "updated": 1666732886617,
       "link": null,
       "locked": false,
-      "text": "SUSE® Rancher Prime OS Manager ISO",
+      "text": "Elemental ISO",
       "fontSize": 36,
       "fontFamily": 1,
       "textAlign": "left",
       "verticalAlign": "top",
       "baseline": 32,
       "containerId": null,
-      "originalText": "SUSE® Rancher Prime OS Manager ISO"
+      "originalText": "Elemental ISO"
     },
     {
       "id": "t6rbItJAyUqa8gWOO0Lux",
@@ -382,14 +382,14 @@
       "updated": 1666732812823,
       "link": null,
       "locked": false,
-      "text": "SUSE® Rancher Prime OS Manager Toolkit",
+      "text": "Elemental Toolkit",
       "fontSize": 28,
       "fontFamily": 1,
       "textAlign": "left",
       "verticalAlign": "top",
       "baseline": 25,
       "containerId": null,
-      "originalText": "SUSE® Rancher Prime OS Manager Toolkit"
+      "originalText": "Elemental Toolkit"
     },
     {
       "id": "gvf_N7XV7AEM8C9mM2yP6",
@@ -464,14 +464,14 @@
       "updated": 1666732812823,
       "link": null,
       "locked": false,
-      "text": "SUSE® Rancher Prime OS Manager\ninstallation\nconfig",
+      "text": "Elemental\ninstallation\nconfig",
       "fontSize": 20,
       "fontFamily": 1,
       "textAlign": "center",
       "verticalAlign": "top",
       "baseline": 70,
       "containerId": null,
-      "originalText": "SUSE® Rancher Prime OS Manager\ninstallation\nconfig"
+      "originalText": "Elemental\ninstallation\nconfig"
     },
     {
       "id": "ZxNU2WUvnCwnfhxY_dGdd",
@@ -930,12 +930,12 @@
       "locked": false,
       "fontSize": 20,
       "fontFamily": 1,
-      "text": "SUSE® Rancher Prime OS Manager\nCLI",
+      "text": "Elemental\nCLI",
       "baseline": 44,
       "textAlign": "center",
       "verticalAlign": "top",
       "containerId": null,
-      "originalText": "SUSE® Rancher Prime OS Manager\nCLI"
+      "originalText": "Elemental\nCLI"
     },
     {
       "id": "wsxrGwZTRHIBhdbiYd4XJ",
@@ -1428,12 +1428,12 @@
       "locked": false,
       "fontSize": 20,
       "fontFamily": 1,
-      "text": "SUSE® Rancher Prime OS Manager CLI",
+      "text": "Elemental CLI",
       "baseline": 18,
       "textAlign": "center",
       "verticalAlign": "top",
       "containerId": null,
-      "originalText": "SUSE® Rancher Prime OS Manager CLI"
+      "originalText": "Elemental CLI"
     },
     {
       "id": "WbgapanAgqE3bJSxICKoo",
@@ -1473,14 +1473,14 @@
       "updated": 1666732828530,
       "link": null,
       "locked": false,
-      "text": "SUSE® Rancher Prime OS Manager\nRegister\nClient",
+      "text": "Elemental\nRegister\nClient",
       "fontSize": 20,
       "fontFamily": 1,
       "textAlign": "center",
       "verticalAlign": "top",
       "baseline": 70,
       "containerId": null,
-      "originalText": "SUSE® Rancher Prime OS Manager\nRegister\nClient"
+      "originalText": "Elemental\nRegister\nClient"
     },
     {
       "type": "text",
@@ -1514,12 +1514,12 @@
       "locked": false,
       "fontSize": 20,
       "fontFamily": 3,
-      "text": "boot from live\nSUSE® Rancher Prime OS Manager OS ISO",
+      "text": "boot from live\nElemental OS ISO",
       "baseline": 45,
       "textAlign": "center",
       "verticalAlign": "top",
       "containerId": null,
-      "originalText": "boot from live\nSUSE® Rancher Prime OS Manager OS ISO"
+      "originalText": "boot from live\nElemental OS ISO"
     },
     {
       "id": "3Simi0Iu3M6ZyEVsfJV7C",
