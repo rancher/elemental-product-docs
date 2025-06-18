@@ -9,7 +9,7 @@ This quickstart will show you how to deploy the SUSE® Rancher Prime OS Manager 
 
 Once installed, you'll be able to provision a new SUSE® Rancher Prime OS Manager cluster based on RKE2 or K3s.
 
-However, if you want to install staging or dev operator, you can only do it in link:quickstart-cli#non-stable-installations[CLI mode].
+However, if you want to install staging or dev operator, you can only do it in xref:quickstart-cli.adoc#_non_stable_installations[CLI mode].
 
 == Enable the Rancher Manager Extensions Support
 
@@ -103,7 +103,7 @@ image::quickstart-ui-registration-endpoint-create-details.png[Create a Registrat
 ====
 `name: elemental-cluster1`: change this as per your need
 
-`device-selector`: The link:machineregistration-reference#configelementalinstalldevice-selector[device-selector] field can be used to dynamically pick device during installation. The field contains a list of rules to select the device you want.
+`device-selector`: The xref:machineregistration-reference.adoc#configelementalinstalldevice-selector[device-selector] field can be used to dynamically pick device during installation. The field contains a list of rules to select the device you want.
 
 `snapshotter`: Type of device used to manage snapshots in OS images.
 ====
@@ -123,7 +123,7 @@ This seed image can then be used to provision an infinite number of machines.
 The seed image is created as a Kubernetes resource above and can be built using the `Build Media` button, but first, you have to select ISO or RAW image.
 
 In opposite to ISO where it needs two devices (device with ISO and another disk where to install SUSE® Rancher Prime OS Manager), RAW image allows to boot from a single device and directly install the operating system in the device.
-RAW image only contains a boot and a recovery partition and it boots first into recovery mode to install SUSE® Rancher Prime OS Manager (for information, the process is similar to the link:reset#reset-workflow[reset] one).
+RAW image only contains a boot and a recovery partition and it boots first into recovery mode to install SUSE® Rancher Prime OS Manager (for information, the process is similar to the xref:reset.adoc#_reset_workflow[reset] one).
 
 image::quickstart-ui-registration-endpoint-build-media.png[Build Media in Registration Endpoints]
 
@@ -147,7 +147,7 @@ Custom columns are based on `Machine Inventory Labels` which you can add when yo
 
 image::quickstart-ui-registration-endpoint-hardware-labels.png[Machine Registration Endpoint Hardware Labels]
 
-On the following screenshot, link:hardwarelabels#hardware-labels[`Hardware Labels`] are used as custom columns:
+On the following screenshot, xref:hardwarelabels.adoc#_hardware_labels[`Hardware Labels`] are used as custom columns:
 
 You can also add custom columns by clicking on the three dots menu.
 

@@ -6,7 +6,7 @@ The components required to provide the xref:architecture-services.adoc[SUSE® Ra
 * the <<_elemental_operator_daemon,`elemental-operator`>> daemon
 * the <<_elemental_register_command_line_tool,`elemental-register`>> command line tool
 * the <<_elemental_system_agent_daemon,`elemental-system-agent`>> daemon
-* one or more <<_elemental_os_container_image,SUSE® Rancher Prime OS Manager OS container images>>
+* one or more <<_suse_rancher_prime_os_manager_os_container_image,SUSE® Rancher Prime OS Manager OS container images>>
 
 == `elemental` command line tool
 

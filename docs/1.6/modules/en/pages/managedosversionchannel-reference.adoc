@@ -42,7 +42,7 @@ spec:
 | upgradeContainer
 | object
 | null
-| An upgrade container that can be defined. See <<upgradecontainer,reference>>
+| An upgrade container that can be defined. See <<_upgradecontainer,reference>>
 
 | deleteNoLongerInSyncVersions
 | bool

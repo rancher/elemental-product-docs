@@ -1,6 +1,6 @@
 = Troubleshooting upgrade
 
-For a high level overview of the upgrade lifecycle and components, please refer to the xref:upgrade-lifecycle[related document].
+For a high level overview of the upgrade lifecycle and components, please refer to the xref:upgrade-lifecycle.adoc[related document].
 
 == Rancher side
 

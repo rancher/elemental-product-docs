@@ -25,7 +25,7 @@ Proxy settings must be configured in the following locations:
 The `elemental-system-agent` needs proxy settings to reach the Rancher Manager.
 To achieve that, you need to fill the cloud-init section of the Machine Registration Endpoint.
 
-You can do it either with link:quickstart-ui#add-a-machine-registration-endpoint[UI] or link:quickstart-cli#prepare-your-kubernetes-resources[CLI].
+You can do it either with xref:quickstart-ui.adoc#_add_a_machine_registration_endpoint[UI] or xref:quickstart-cli.adoc#_prepare_your_kubernetes_resources[CLI].
 
 [tabs]
 ======
@@ -47,7 +47,7 @@ image:proxy-settings-machine-registration-ui.png[Add proxy settings in Machine R
 
 == SUSE® Rancher Prime OS Manager-register
 
-link:architecture-components#elemental-register-command-line-tool[SUSE® Rancher Prime OS Manager-register] is the first communication endpoint between the new host and Rancher Manager, this is the first place where proxy settings need to be set.
+xref:architecture-components.adoc#_elemental_register_command_line_tool[SUSE® Rancher Prime OS Manager-register] is the first communication endpoint between the new host and Rancher Manager, this is the first place where proxy settings need to be set.
 
 [CAUTION]
 ====
@@ -55,7 +55,7 @@ At the time of writing, it's only possible to configure proxy settings for the I
 ====
 
 The process happens when you boot your SUSE® Rancher Prime OS Manager ISO for the first time, in order to configure the proxy settings you have to include a `cloud-init` definition in the ISO.
-To do that, you have to create a link:seedimage-reference[SeedImage] definition.
+To do that, you have to create a xref:seedimage-reference.adoc[SeedImage] definition.
 
 [,yaml]
 ----

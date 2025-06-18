@@ -23,11 +23,11 @@ all local filesystems and mountpoints defined in fstab are mounted and ready.
 to run actions and configurations that require network connectivity. For instance this stage is used to run the very first node registration and
 and installation from a live ISO.
 . *`boot`*: this stage is executed as part of the `multi-user.target` and before the `getty.target`. This is the default stage to run cloud-config
-data provided using the supported cloud-init syntax. See link:cloud-config-reference.adoc#compatibility-with-cloud-init-format[cloud-init compatibility] section.
+data provided using the supported cloud-init syntax. See xref:cloud-config-reference.adoc#_compatibility_with_cloud_init_format[cloud-init compatibility] section.
 
 By default, `elemental` reads the yaml configuration files from the following paths in order: `/system/oem`, `/oem` and `/usr/local/cloud-config`.
 
-In SUSE® Rancher Prime OS Manager Operator, all kubernetes resources including a `cloud-config` field can be expressed in either <<configuration-syntax,yip>> or <<compatibility-with-cloud-init-format,cloud-init compatible>> syntax. This includes resources such as `MachineRegistration`, `SeedImage`, and `ManagedOSImage`.
+In SUSE® Rancher Prime OS Manager Operator, all kubernetes resources including a `cloud-config` field can be expressed in either <<_configuration_syntax,yip>> or <<_compatibility_with_cloud_init_format,cloud-init compatible>> syntax. This includes resources such as `MachineRegistration`, `SeedImage`, and `ManagedOSImage`.
 
 [NOTE]
 ====

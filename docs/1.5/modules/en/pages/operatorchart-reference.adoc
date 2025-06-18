@@ -1,5 +1,4 @@
 = SUSE® Rancher Prime OS Manager Operator Helm Chart
-include::partial$global-variables.adoc[]
 
 The {elemental_operator_url}[{elemental_operator_name}] is responsible for managing the SUSE® Rancher Prime OS Manager versions and maintaining a machine inventory to assist with edge or bare metal installations.
 
@@ -30,7 +29,7 @@ helm install --create-namespace -n cattle-elemental-system elemental-operator \
 
 The command deploys elemental-operator on the Kubernetes cluster in the default configuration.
 
-_See <<configuration,configuration>> below._
+_See <<_configuration,configuration>> below._
 
 _See https://helm.sh/docs/helm/helm_install/[helm install] for command documentation._
 
@@ -43,7 +42,7 @@ helm uninstall -n cattle-elemental-system elemental-operator
 
 This removes all the Kubernetes components associated with the chart and deletes the release.
 
-_See [helm uninstall](https://helm.sh/docs/helm/helm_uninstall/) for command documentation._
+_See https://helm.sh/docs/helm/helm_uninstall/[helm uninstall] for command documentation._
 
 ## Upgrading Chart
 
@@ -58,7 +57,7 @@ _See https://helm.sh/docs/helm/helm_upgrade/[helm upgrade] for command documenta
 
 == Configuration
 
-See https://helm.sh/docs/intro/using_helm/#customizing-the-chart-before-installing[Customizing the Chart Before Installing]. To see all configurable options with detailed comments, visit the chart's <<values,values>>, or run these configuration commands:
+See https://helm.sh/docs/intro/using_helm/#customizing-the-chart-before-installing[Customizing the Chart Before Installing]. To see all configurable options with detailed comments, visit the chart's <<_values,values>>, or run these configuration commands:
 
 `console showLineNumbers
 helm show values oci://registry.suse.com/rancher/elemental-operator-chart

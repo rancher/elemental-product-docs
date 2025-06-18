@@ -28,12 +28,12 @@ include::example$upgrade/upgrade-cluster-target.yaml[]
 | cloudConfig
 | object
 | null
-| A cloud-init or yip config to apply to the nodes during upgrades. See <<cloudconfig,reference>>.
+| A cloud-init or yip config to apply to the nodes during upgrades. See <<_cloudconfig,reference>>.
 
 | nodeSelector
 | object
 | null
-| This selector can be used to target specific nodes within the `clusterTargets`. See <<nodeselector,reference>>.
+| This selector can be used to target specific nodes within the `clusterTargets`. See <<_nodeselector,reference>>.
 
 | concurrency
 | int
@@ -48,27 +48,27 @@ include::example$upgrade/upgrade-cluster-target.yaml[]
 | drain
 | object
 | See ref
-| Configure if and how nodes should be drained before applying the upgrade. See <<drain,reference>>.
+| Configure if and how nodes should be drained before applying the upgrade. See <<_drain,reference>>.
 
 | prepare
 | object
 | null
-| The prepare init container, if specified, is run before cordon/drain which is run before the upgrade container. See <<prepare,reference>>.
+| The prepare init container, if specified, is run before cordon/drain which is run before the upgrade container. See <<_prepare,reference>>.
 
 | upgradeContainer
 | object
 | null
-| The upgrade container that will run the upgrade on the nodes. See <<upgradecontainer,reference>>.
+| The upgrade container that will run the upgrade on the nodes. See <<_upgradecontainer,reference>>.
 
 | clusterRolloutStrategy
 | object
 | null
-| RolloverStrategy controls the rollout of the upgrade bundle across clusters. See <<clusterrolloutstrategy,reference>>.
+| RolloverStrategy controls the rollout of the upgrade bundle across clusters. See <<_clusterrolloutstrategy,reference>>.
 
 | clusterTargets
 | list
 | null
-| Declares clusters to deploy the upgrade plan to. See <<clustertargets,reference>>.
+| Declares clusters to deploy the upgrade plan to. See <<_clustertargets,reference>>.
 |===
 
 == cloudConfig
@@ -181,7 +181,7 @@ Note that the node filesystem is mounted at `/host` inside the container.
 | volumes
 | list
 | empty
-| List of `hostPath` volumes. See <<preparevolumes,reference>>.
+| List of `hostPath` volumes. See <<_prepare_volumes,reference>>.
 
 | securityContext
 | object

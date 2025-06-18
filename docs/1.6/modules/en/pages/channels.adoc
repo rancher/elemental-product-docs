@@ -119,7 +119,7 @@ Each entry in the array is mapped 1:1 with a xref:managedosversion-reference.ado
 If in doubt, the https://github.com/rancher-sandbox/elemental-channels[elemental-channels] project can be used as a reference implementation on how to build and maintain your own channels.
 
 When creating new entries, be mindful of the naming strategy you choose, in order to avoid collisions with other channels, since they may end up syncing different `ManagedOSVersion` with the same name.
-A best practice is to use the convention: `{Flavor}-{Version}-{Type}`
+A best practice is to use the convention: `\{Flavor}-\{Version}-\{Type}`
 
 A sample of the JSON format is as follows:
 

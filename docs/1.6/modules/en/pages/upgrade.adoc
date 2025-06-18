@@ -10,8 +10,8 @@ xref:operatorchart-reference.adoc[{elemental_operator_name}] documentation for c
 
 Upgrade can be achieve either with CLI or UI:
 
-* <<upgrade-via-command-line-interface,Command Line Interface>>
-* <<upgrade-via-user-interface,User Interface>>
+* <<_upgrade_via_command_line_interface,Command Line Interface>>
+* <<_upgrade_via_user_interface,User Interface>>
 
 == Upgrade via command line interface
 
@@ -130,7 +130,7 @@ In this case, a `OS Version Channels` is used to auto populated `OS Versions` re
 
 The channel bellow is provide by us but you can bring your own channel as well. 
 
-See section <<managing-available-versions,Managing available versions>> to understand how the `ManagedOSVersion` are managed. 
+See section <<_managing_available_versions,Managing available versions>> to understand how the `ManagedOSVersion` are managed. 
 
 image:upgrade-ui-version-channel.png[Create OS Version Channel] 
 

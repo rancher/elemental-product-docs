@@ -34,7 +34,7 @@ To apply this pattern, the following files need to be included in the ISO or gen
 
 . A https://rancher.github.io/elemental-toolkit/docs/customizing/general_configuration/[configuration file]
 for the elemental client. The file must be named `config.yaml` and located by default in `/etc/elemental`.
-This path can be configured as part of the installation parameters of a link:/machineregistration-reference[MachineRegistration] resource.
+This path can be configured as part of the installation parameters of a xref:machineregistration-reference.adoc[MachineRegistration] resource.
 . The additional `cloud-init` files to be included into the installed system. They
 allow to perform custom operations at boot time.
 . The installation hooks are evalutated at install time. They allow to perform custom operations
@@ -63,7 +63,7 @@ The above example sets an additional extra partition during the installation.
 
 In order to include additional cloud-init files during the installation they need
 to be added to the installation data into the MachineRegistration resource. More specific
-the `config-urls` field is used for this exact purpose. See link:/machineregistration-reference[MachineRegistration reference] page.
+the `config-urls` field is used for this exact purpose. See xref:machineregistration-reference.adoc[MachineRegistration reference] page.
 
 `config-urls` is a list of string literals where each item is an HTTP URL or a local path pointing to a
 cloud-init file. The local path is evaluated during
