@@ -154,7 +154,7 @@ spec:
 
 You can now xref:custom-images.adoc#_create_a_custom_bootable_installation_iso[build an ISO container] from this OS container image. For more information on how to customize Elemental images, please refer to the xref:custom-images.adoc[documentation].  
 
-[,docker]
+[,dockerfile]
 ----
 FROM myrepo/static-network-os:v1.1.1 AS os
 FROM myrepo/static-network-os:v1.1.1 AS builder
