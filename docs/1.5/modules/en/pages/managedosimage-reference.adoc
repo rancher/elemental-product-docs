@@ -10,7 +10,7 @@ There are several keys that can be configured under a `ManagedOSImage` resource 
 include::example$upgrade/upgrade-cluster-target.yaml[]
 ----
 
-== ManagedOSImageSpec reference
+== `ManagedOSImageSpec` reference
 
 |===
 | Key | Type | Default value | Description
@@ -71,13 +71,13 @@ include::example$upgrade/upgrade-cluster-target.yaml[]
 | Declares clusters to deploy the upgrade plan to. See <<_clustertargets,reference>>.
 |===
 
-== cloudConfig
+== `cloudConfig`
 
 This describes a cloud-init or yip config that will be copied to each upgraded node to the `/oem/90_operator.yaml` path. +
 This config will be applied by the system after reboot. +
 For more information and examples, see the `MachineRegistration` `spec.config.cloud-config` xref:cloud-config-reference.adoc[reference].
 
-== nodeSelector
+== `nodeSelector`
 
 This https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors[Label Selector] can be used to restrict the upgrades to only a certain set of nodes within the targeted Clusters.
 
@@ -92,7 +92,7 @@ nodeSelector:
 ----
 ====
 
-== drain
+== `drain`
 
 Configure if and how nodes should be drained. +
 To disable drain during upgrades you can configure this field to `null`. +
@@ -144,7 +144,7 @@ The drain settings directly translates to the https://kubernetes.io/docs/referen
 | Label selector to filter pods on the node. Only selected pods will be evicted.
 |===
 
-== prepare
+== `prepare`
 
 Defines a `prepare` Init container that is ran before the `upgrade` container executing the upgrade job on a node. +
 The keys directly translate to the https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#Container[container] specification. +
@@ -189,7 +189,7 @@ Note that the node filesystem is mounted at `/host` inside the container.
 | The security options the ephemeral container should be run with.
 |===
 
-=== prepare.volumes
+=== `prepare.volumes`
 
 Each volume definition will translate to a https://kubernetes.io/docs/concepts/storage/volumes/#hostpath-volume-types[hostPath] volume (`source`) which will be mounted in the container (`destination`). +
 Note that by default the host root filesystem `/` will always be mounted at `/host`.
@@ -225,7 +225,7 @@ volumes:
 ----
 ====
 
-== upgradeContainer
+== `upgradeContainer`
 
 Defines the `upgrade` container executing the upgrade job on a node. +
 The keys directly translate to the https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#Container[container] specification. +
@@ -238,12 +238,12 @@ For more info you can read the xref:upgrade.adoc#_upgrade_via_command_line_inter
 Any other change to the `upgradeContainer` may result in issues during upgrades. +
 ====
 
-== clusterRolloutStrategy
+== `clusterRolloutStrategy`
 
 This controls the rollout of the bundle across clusters. +
 For more information you can read the https://fleet.rancher.io/0.9/ref-crds#rolloutstrategy[reference documentation].
 
-== clusterTargets
+== `clusterTargets`
 
 Select Clusters to be targeted for the OS image upgrade. +
 For more information you can read the https://fleet.rancher.io/0.9/ref-crds#bundletarget[reference documentation].

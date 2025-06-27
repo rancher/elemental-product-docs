@@ -12,7 +12,7 @@ Rancher 2.8 or higher installed and running. See the quick start guides.
 
 We need to create an ISO image to bootstrap nodes and register against the Rancher instance. For that a registration end point (xref:machineregistration-reference.adoc[MachineRegistration] resource) is required.
 
-See this example of MachineRegistration:
+See this example of `MachineRegistration`:
 
 [,yaml]
 .registration.yaml

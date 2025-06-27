@@ -38,12 +38,12 @@ spec:
             ...
 ----
 
-== config.cloud-config
+== `config.cloud-config`
 
 Contains the cloud-configuration to be injected in the node.
 Both yip and cloud-init syntax are supported. See the xref:cloud-config-reference.adoc[Cloud Config Reference] for full information.
 
-== config.network
+== `config.network`
 
 Contains the Declarative Networking configuration supporting integration with https://github.com/kubernetes-sigs/cluster-api/blob/main/docs/proposals/20220125-ipam-integration.md#ipam-provider[CAPI IPAM providers]. +
 See the xref:networking.adoc[Declarative Network Reference] for full information.
@@ -67,7 +67,7 @@ See the xref:networking.adoc[Declarative Network Reference] for full information
 | The network config template. Syntax varies depending on the `configurator` in use.
 |===
 
-== config.elemental.registration
+== `config.elemental.registration`
 
 Contains the configuration used for the connection and the initial registration to the {elemental_operator_name}.
 
@@ -121,7 +121,7 @@ The following values are for development purposes only.
 | Fixed seed to use with 'emulate-tpm'. Set to -1 to get a random seed. See xref:tpm.adoc[TPM] for more information
 |===
 
-== config.elemental.install
+== `config.elemental.install`
 
 Contains the installation configuration that would be applied via `elemental-register --install` when booted from an ISO and passed to https://github.com/rancher/elemental-toolkit/blob/main/docs/elemental_install.md[`elemental install`]
 
@@ -227,7 +227,7 @@ spec:
 ----
 ====
 
-== config.elemental.install.device-selector
+== `config.elemental.install.device-selector`
 
 The `device-selector` field can be used to dynamically pick device during installation. The field contains a list of rules that looks like the following:
 
@@ -297,7 +297,7 @@ The currently supported keys are:
 
 The rules are AND:ed together, which means all rules must match the targeted device.
 
-== config.elemental.install.snapshotter
+== `config.elemental.install.snapshotter`
 
 You can configure how Elemental manages snapshots on the installed machine. New snapshots are created for example when xref:upgrade.adoc[upgrading] the machine with a new OS image.
 
@@ -313,7 +313,7 @@ The loopdevice snapshotter will unpack new images on a ext4 filesystem, while th
 
 |===
 
-== config.elemental.reset
+== `config.elemental.reset`
 
 Contains the reset configuration that would be applied via `elemental-register --reset`, when booted from the recovery partition and passed to https://github.com/rancher/elemental-toolkit/blob/main/docs/elemental_reset.md[`elemental reset`]
 
@@ -385,7 +385,7 @@ spec:
 ----
 ====
 
-== machineName
+== `machineName`
 
 This refers to the name that will be set to the node and the kubernetes resources that require a hostname (rke2 deployed pods for example, they use the node hostname as part of the pod names)
 `String` type.
@@ -413,7 +413,7 @@ spec:
 ----
 ====
 
-== machineInventoryLabels
+== `machineInventoryLabels`
 
 Labels that will be set to the `MachineInventory` that is created from this `MachineRegistration`
 `Key: value` type. These labels will be used to establish a selection criteria in xref:machineinventoryselectortemplate-reference.adoc[MachineInventorySelectorTemplate].
@@ -448,7 +448,7 @@ spec:
 ----
 ====
 
-== machineInventoryAnnotations
+== `machineInventoryAnnotations`
 
 Annotations that will be set to the `MachineInventory` that is created from this `MachineRegistration`
 `Key: value` type

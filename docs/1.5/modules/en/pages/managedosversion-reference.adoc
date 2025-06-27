@@ -22,7 +22,7 @@ spec:
   version: v2.0.2
 ----
 
-== ManagedOSVersionSpec reference
+== `ManagedOSVersionSpec` reference
 
 |===
 | Key | Type | Default value | Description
@@ -117,7 +117,7 @@ If `type` is set to `iso`:
 | Fully qualified ISO image
 |===
 
-== upgradeContainer
+== `upgradeContainer`
 
 This allows to overwrite the default `upgrade` field of System Upgrade Controller plans (see xref:upgrade-lifecycle.adoc#_components[upgrade compontents]) based on this ManagedOSVersion.
 These keys are translated by the System Upgrade Controller to a Kubernetes https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#Container[container] specification.
