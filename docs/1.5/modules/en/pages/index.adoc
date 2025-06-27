@@ -36,6 +36,6 @@ Get an SUSE® Rancher Prime OS Manager Cluster up and running with your preferre
 [NOTE]
 .What's next?
 ====
-Want more details? Take a look at the xref:architecture.adoc[Architecture] section or reach out to the {elemental_slack_url}[{elemental_slack_name}] Slack channel.
+Want more details? Take a look at the xref:architecture.adoc[Architecture] section or reach out to the {elemental_slack_url}[{elemental_slack_name}].
 ====
 
