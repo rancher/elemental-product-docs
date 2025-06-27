@@ -233,7 +233,7 @@ Note that the node filesystem is mounted at `/host` inside the container.
 
 [CAUTION]
 ====
-When using any SUSE® Rancher Prime OS Manager or xref:custom-images.adoc[SUSE® Rancher Prime OS Manager based image] you are expected to only edit the `env` key to optionally set the `FORCE`, `UPGRADE_RECOVERY`, or `UPGRADE_RECOVERY_ONLY` variables. +
+When using any {product-name} or xref:custom-images.adoc[{product-name} based image] you are expected to only edit the `env` key to optionally set the `FORCE`, `UPGRADE_RECOVERY`, or `UPGRADE_RECOVERY_ONLY` variables. +
 For more info you can read the xref:upgrade.adoc#_upgrade_via_command_line_interface[upgrade] documentation. +
 Any other change to the `upgradeContainer` may result in issues during upgrades. +
 ====

@@ -3,7 +3,7 @@ include::partial$global-variables.adoc[]
 
 == Overview
 
-SUSE® Rancher Prime OS Manager stack provides OS management using OCI containers and Kubernetes. The SUSE® Rancher Prime OS Manager
+{product-name} stack provides OS management using OCI containers and Kubernetes. The {product-name}
 stack installation encompasses the installation of the {elemental_operator_name} into the
 management cluster and the creation and use of installation media to provide
 the OS into the Cluster Nodes. See xref:architecture.adoc[Architecture] section to
@@ -15,9 +15,9 @@ who is the responsible to register nodes in a Rancher management cluster and fet
 
 Please refer to the xref:quickstart-cli.adoc[Quick Start] guide for simple step by step deployment instructions.
 
-== SUSE® Rancher Prime OS Manager Operator Installation
+== {product-name} Operator Installation
 
-The {elemental_operator_name} is responsible for managing the SUSE® Rancher Prime OS Manager versions and
+The {elemental_operator_name} is responsible for managing the {product-name} versions and
 maintaining a machine inventory to assist with edge or bare metal installations. {elemental_operator_name}
 requires a cluster including the Rancher Manager and it can be installed with a helm chart.
 
@@ -27,7 +27,7 @@ uninstall, upgrade and configuration details.
 == Prepare Kubernetes Resources
 
 Once the {elemental_operator_name} is up and running within the management cluster a couple of kubernetes
-resources are required in order to prepare an SUSE® Rancher Prime OS Manager based cluster deployment.
+resources are required in order to prepare an {product-name} based cluster deployment.
 
 * xref:machineinventoryselectortemplate-reference.adoc[MachineInventorySelectorTemplate]:
 This resource identifies the criteria to match registered boxes (listed as part of the MachineInventory)
@@ -35,12 +35,12 @@ against available Rancher 2.6 Clusters. As soon as there is a match the selected
 ownership of the registered box.
 * xref:machineregistration-reference.adoc[MachineRegistration]:
 This resource defines OS deployment details for any machine attempting to register. The machine
-registration is the entrance for SUSE® Rancher Prime OS Manager nodes as it handles the authentication (based on TPM),
+registration is the entrance for {product-name} nodes as it handles the authentication (based on TPM),
 the OS deployment and the node inclusion into to the MachineInventory so it can be added
 to a cluster when there is a match based on a MachineInventorySelectorTemplate. The MachineRegistration
 object includes the machine registration URL that nodes use to register against it.
 
-A Rancher Cluster resource is also required to deploy SUSE® Rancher Prime OS Manager, it can be manually created as exemplified in
+A Rancher Cluster resource is also required to deploy {product-name}, it can be manually created as exemplified in
 the xref:quickstart-cli.adoc[Quick Start] guide or created from the Rancher 2.6 UI.
 
 == Prepare Installation Media
@@ -111,9 +111,9 @@ Once the operating system is installed the OS partition table, according to defa
 
 Note this is the basic structure of any OS built by the {elemental_toolkit_url}[{elemental_toolkit_name}].
 
-== SUSE® Rancher Prime OS Manager Immutable Root
+== {product-name} Immutable Root
 
-One of the characteristics of SUSE® Rancher Prime OS Manager OSes is the setup of an immutable root
+One of the characteristics of {product-name} OSes is the setup of an immutable root
 filesystem where some ephemeral or persistent locations are applied on top of
 it. The default folders structure is listed in the matrix below.
 

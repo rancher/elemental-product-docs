@@ -1,6 +1,6 @@
 = Machine Reset
 
-There are two ways to reset SUSE® Rancher Prime OS Manager machines to their original state or decommission them:
+There are two ways to reset {product-name} machines to their original state or decommission them:
 
 . When deleting a Cluster, all associated machines will be reset
 +

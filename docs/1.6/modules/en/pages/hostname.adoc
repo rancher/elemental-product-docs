@@ -1,14 +1,14 @@
 = Customize hostname
 
-== SUSE® Rancher Prime OS Manager hostname management overview
+== {product-name} hostname management overview
 
-When a host boots from the SUSE® Rancher Prime OS Manager ISO, the hostname is temporarily set (_transient hostname_) to the one provided from the DHCP server.
-If the DHCP server doesn't provide a hostname, the SUSE® Rancher Prime OS Manager ISO provides a transient hostname
+When a host boots from the {product-name} ISO, the hostname is temporarily set (_transient hostname_) to the one provided from the DHCP server.
+If the DHCP server doesn't provide a hostname, the {product-name} ISO provides a transient hostname
 in the form: `rancher-$\{RANDOM}`.
 
 As soon as the boot process is finished, the registration phase kicks in: the host connects to
-the SUSE® Rancher Prime OS Manager Operator, which creates a `MachineInventory` for the host.
-Each host registered with the SUSE® Rancher Prime OS Manager Operator is tracked by a `MachineInventory` resource.
+the {product-name} Operator, which creates a `MachineInventory` for the host.
+Each host registered with the {product-name} Operator is tracked by a `MachineInventory` resource.
 
 *The `name` of the `MachineInventory` resource associated with the node is the permanent (static) hostname*
 *eventually set to the host*.
@@ -53,7 +53,7 @@ In order to keep the hostname assigned from the DHCP server before the host regi
 the `MachineRegistration` xref:machineregistration-reference.adoc#_machinename[`machineName field`] should be set
 to the `${System Data/Runtime/Hostname}` xref:hardwarelabels.adoc[Hardware Label].
 
-This way SUSE® Rancher Prime OS Manager will use the current hostname as the `MachineInventory` name during
+This way {product-name} will use the current hostname as the `MachineInventory` name during
 the registration phase, which will be later set as the static hostname of the host during the
 provisioning phase.
 
