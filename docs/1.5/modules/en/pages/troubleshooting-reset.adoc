@@ -120,7 +120,7 @@ The cloud-init instructions should look like the following:
 
 [,yaml]
 ----
-name: SUSE® Rancher Prime OS Manager Reset
+name: {product-name} Reset
 stages:
     network.after:
         - if: '[ -f /run/cos/recovery_mode ]'

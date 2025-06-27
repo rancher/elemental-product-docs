@@ -1,7 +1,7 @@
-= SUSE® Rancher Prime OS Manager the command line way
+= {product-name} the command line way
 
 Follow this guide to have an auto-deployed cluster via rke2/k3s and managed by Rancher
-with the only help of an SUSE® Rancher Prime OS Manager ISO.
+with the only help of an {product-name} ISO.
 
 include::partial$quickstart-prereqs.adoc[]
 
@@ -11,7 +11,7 @@ include::partial$operator-install.adoc[]
 
 Node deployment starts with a `MachineRegistration`, identifying a set of machines sharing the same configuration (disk drives, network, etc.).
 
-The `MachineRegistration` is needed to perform the deployment of the SUSE® Rancher Prime OS Manager OS on the target hosts. When booting up, each host registers to the SUSE® Rancher Prime OS Manager Operator which tracks the new host with a `MachineInventory` resource.
+The `MachineRegistration` is needed to perform the deployment of the {product-name} OS on the target hosts. When booting up, each host registers to the {product-name} Operator which tracks the new host with a `MachineInventory` resource.
 
 Then it continues with having a Cluster resource that uses a `MachineInventorySelectorTemplate` to know which machines are for that cluster.
 
@@ -68,7 +68,7 @@ For deployment on Raspberry Pi, you need to enable emulated TPM (except you have
 ====
 ======
 
-The `MachineRegistration` defines the registration and installation configuration. Once created, the SUSE® Rancher Prime OS Manager operator exposes a unique URL to be used with the `elemental-register` binary to reach out to the management cluster and register the machine during installation: if the registration is successful, the operator creates a `MachineInventory` tracking the machine, which can be used to provision the machine as a node of our cluster. We define the label matching our selector here, although it can also be added later to the created `MachineInventory`s.
+The `MachineRegistration` defines the registration and installation configuration. Once created, the {product-name} operator exposes a unique URL to be used with the `elemental-register` binary to reach out to the management cluster and register the machine during installation: if the registration is successful, the operator creates a `MachineInventory` tracking the machine, which can be used to provision the machine as a node of our cluster. We define the label matching our selector here, although it can also be added later to the created `MachineInventory`s.
 
 [WARNING]
 ====
@@ -88,7 +88,7 @@ Seed Image (x86_64)::
 include::example$quickstart/seedimage.yaml[]
 ----
 
-The `SeedImage` is required to generate the *seed image* (like a bootable ISO) that will boot and start the SUSE® Rancher Prime OS Manager provisioning on the target machines.
+The `SeedImage` is required to generate the *seed image* (like a bootable ISO) that will boot and start the {product-name} provisioning on the target machines.
 
 Now that we have defined all the configuration files let's apply them to create the proper resources in Kubernetes:
 
@@ -104,7 +104,7 @@ kubectl apply -f seedimage.yaml
 Seed Image for Raspberry Pi::
 +
 ====
-The `SeedImage` resource, which automates the creation of an SUSE® Rancher Prime OS Manager bootable image (the *seed image*), does not support Raspberry Pi ISOs yet (click [here](raspi-disk.md) for a guide to build a raw disk image).
+The `SeedImage` resource, which automates the creation of an {product-name} bootable image (the *seed image*), does not support Raspberry Pi ISOs yet (click [here](raspi-disk.md) for a guide to build a raw disk image).
 
 We will generate a *seed image* manually in the [next section](quickstart-cli.md#preparing-the-installation-seed-image).
 
@@ -120,10 +120,10 @@ kubectl apply -f registration.yaml
 ======
 ========
 
-Using quickstart files from SUSE® Rancher Prime OS Manager docs repo directly::
+Using quickstart files from {product-name} docs repo directly::
 +
 ========
-You can directly apply the quickstart example resource files from the [SUSE® Rancher Prime OS Manager docs repository](https://github.com/rancher/elemental-docs). 
+You can directly apply the quickstart example resource files from the [{product-name} docs repository](https://github.com/rancher/elemental-docs). 
 
 [WARNING]
 ====
@@ -147,7 +147,7 @@ The `seedimage.yaml` does not support aarch64 currently.
 
 == Preparing the installation (seed) image
 
-This is the last step: you need an SUSE® Rancher Prime OS Manager seed image that includes the initial registration config, so it can be auto registered, installed and fully deployed as part of your cluster.
+This is the last step: you need an {product-name} seed image that includes the initial registration config, so it can be auto registered, installed and fully deployed as part of your cluster.
 
 [NOTE]
 .note
@@ -185,7 +185,7 @@ The first command waits for the ISO to be built and ready, the second one downlo
 Preparing the seed image (aarch64) manually::
 +
 ======
-SUSE® Rancher Prime OS Manager's support for Raspberry Pi is primarily for demonstration purposes at this point. Therefore the installation process is modelled similar to x86-64. You boot from a seed image (an USB stick in this case) and install to a storage medium (SD-card for Raspberry Pi). 
+{product-name}'s support for Raspberry Pi is primarily for demonstration purposes at this point. Therefore the installation process is modelled similar to x86-64. You boot from a seed image (an USB stick in this case) and install to a storage medium (SD-card for Raspberry Pi). 
 
 *Retrieving the prebuilt seed image*
 
@@ -209,7 +209,7 @@ This should print `rpi.raw: OK` as output.
 
 Adding the `initial-registration.yaml` isn't scripted yet. This is still a manual process: 
 
-The written USB stick will have two partitions. `RPI_BOOT` contains the boot loader files and `COS_LIVE` the SUSE® Rancher Prime OS Manager files. Mount the `COS_LIVE` partition and write `initial-registration.yaml` as `livecd-cloud-config.yaml` to this partition. 
+The written USB stick will have two partitions. `RPI_BOOT` contains the boot loader files and `COS_LIVE` the {product-name} files. Mount the `COS_LIVE` partition and write `initial-registration.yaml` as `livecd-cloud-config.yaml` to this partition. 
 
 If you've mounted the USB stick with a file manager, this command should work to copy the registration information: 
 
@@ -292,7 +292,7 @@ You should be able to follow along what the machine is doing via:
 
 * During ISO boot:
  ** ssh into the machine (user/pass: root/ros):
-  *** running `journalctl -f -t elemental` shows you the progress of the registration (_elemental-register_) and the installation of SUSE® Rancher Prime OS Manager (_elemental install_).
+  *** running `journalctl -f -t elemental` shows you the progress of the registration (_elemental-register_) and the installation of {product-name} (_elemental install_).
 * Once the system is installed:
  ** On the Rancher UI \-> `Cluster Management` allows you to see your new cluster and the `Provisioning Log` in the cluster details
  ** ssh into the machine (user/pass: Whatever your configured on the registration.yaml under `Spec.config.cloud-config.users`):

@@ -2,10 +2,10 @@
 
 The goal of the Kubernetes Cluster deployment phase is to create a new RKE2 or K3s cluster using the available xref:machineinventory-reference.adoc[MachineInventories], i.e., the hosts that have successfully completed the xref:architecture-machineonboarding.adoc[Machine onboarding] phase.
 
-The SUSE® Rancher Prime OS Manager Kubernetes cluster deployment involves the following steps:
+The {product-name} Kubernetes cluster deployment involves the following steps:
 
 * The user creates a xref:machineinventoryselectortemplate-reference.adoc[MachineInventorySelectorTemplate] resource: it allows to define a _selector_ to identify a subset of the available xref:machineinventory-reference.adoc[MachineInventories] based on the value of their labels.
 * The user defines a xref:cluster-reference.adoc[Rancher cluster] and adds to the `machinePools` definition a reference to the xref:machineinventoryselectortemplate-reference.adoc[MachineInventorySelectorTemplate] created in the step before.
 * The https://ranchermanager.docs.rancher.com/how-to-guides/new-user-uuides/launch-kubernetes-with-rancher#rke2[Rancher RKE2/K3s Cluster provisioning] reacts to the Rancher cluster resource creation by generating a number of xref:machineinventoryselector-reference.adoc[MachineInventorySelectors] resources equal to the _quantity_ specified in the _machinePools_.
-* The SUSE® Rancher Prime OS Manager Operator pairs each generated xref:machineinventoryselector-reference.adoc[MachineInventorySelector] resource with an available xref:machineinventory-reference.adoc[MachineInventory] and installs the https://github.com/rancher/system-agent[rancher-system-agent] daemon on the host tracked by the xref:machineinventory-reference.adoc[MachineInventory].
+* The {product-name} Operator pairs each generated xref:machineinventoryselector-reference.adoc[MachineInventorySelector] resource with an available xref:machineinventory-reference.adoc[MachineInventory] and installs the https://github.com/rancher/system-agent[rancher-system-agent] daemon on the host tracked by the xref:machineinventory-reference.adoc[MachineInventory].
 The https://ranchermanager.docs.rancher.com/how-to-guides/new-user-uuides/launch-kubernetes-with-rancher#rke2[Rancher RKE2/K3s Cluster provisioning] takes over the K3s/RKE provisiong using https://github.com/rancher/system-agent[rancher-system-agent] _plans_: it installs the required components (e.g., containerd, K3s, ...) and creates the configuration files till the successful deployment of the new Kubernetes cluster.

@@ -36,7 +36,7 @@ method=auto
 [proxy]
 ----
 
-== SUSE® Rancher Prime OS Manager MachineRegistration with VLAN injected cloud-config
+== {product-name} MachineRegistration with VLAN injected cloud-config
 
 .Example: MachineRegistration with injected VLAN connection profile
 [,yaml]
