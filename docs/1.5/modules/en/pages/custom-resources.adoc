@@ -1,7 +1,7 @@
 = Custom Resources
 include::partial$global-variables.adoc[]
 
-The {elemental_operator_name} allows control of the SUSE® Rancher Prime OS Manager Nodes by extending the Kubernetes APIs with a set of _elemental.cattle.io_ https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/[Kubernetes CRDs]:
+The {elemental_operator_name} allows control of the {product-name} Nodes by extending the Kubernetes APIs with a set of _elemental.cattle.io_ https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/[Kubernetes CRDs]:
 
 * xref:machineregistration-reference.adoc[MachineRegistration]
 * xref:machineinventory-reference.adoc[MachineInventory]

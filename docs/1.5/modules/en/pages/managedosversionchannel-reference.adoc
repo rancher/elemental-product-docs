@@ -19,7 +19,7 @@ spec:
   type: custom
 ----
 
-==== ManagedOSVersionChannelSpec reference
+== `ManagedOSVersionChannelSpec` reference
 
 |===
 | Key | Type | Default value | Description
@@ -42,7 +42,7 @@ spec:
 | upgradeContainer
 | object
 | null
-| An upgrade container that can be defined. See <<upgradecontainer,reference>>
+| An upgrade container that can be defined. See <<_upgradecontainer,reference>>
 
 | deleteNoLongerInSyncVersions
 | bool
@@ -55,7 +55,7 @@ spec:
 | Enables this channel. Allowing syncing of OS versions.
 |===
 
-==== upgradeContainer
+== `upgradeContainer`
 
 This allows to overwrite the default `upgrade` field of System Upgrade Controller plans (see xref:upgrade-lifecycle.adoc#_components[upgrade compontents]) based on this ManagedOSVersion.
 These keys are translated by the System Upgrade Controller to a Kubernetes https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#Container[container] specification.

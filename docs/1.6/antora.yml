@@ -8,7 +8,7 @@ nav:
 - modules/en/nav.adoc
 asciidoc:
   attributes:
-    elemental_slack_name: #elemental
+    elemental_slack_name: '#elemental channel on the Rancher-Users Slack'
     elemental_slack_url: https://rancher-users.slack.com/channels/elemental
     elemental_toolkit_name: SUSE® Rancher Prime OS Manager Toolkit
     elemental_toolkit_url: https://rancher.github.io/elemental-toolkit

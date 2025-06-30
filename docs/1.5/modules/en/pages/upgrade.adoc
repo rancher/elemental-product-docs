@@ -1,18 +1,17 @@
 = Upgrade
-include::partial$global-variables.adoc[]
 
-All components in SUSE® Rancher Prime OS Manager are managed using Kubernetes. Below is how
+All components in {product-name} are managed using Kubernetes. Below is how
 to use Kubernetes approaches to upgrade the components.
 
-== SUSE® Rancher Prime OS Manager node upgrade
+== {product-name} node upgrade
 
-SUSE® Rancher Prime OS Manager nodes are upgraded with the {elemental_operator_name}. Refer to the
+{product-name} nodes are upgraded with the {elemental_operator_name}. Refer to the
 xref:operatorchart-reference.adoc[{elemental_operator_name}] documentation for complete information.
 
 Upgrade can be achieve either with CLI or UI:
 
-* <<upgrade-via-command-line-interface,Command Line Interface>>
-* <<upgrade-via-user-interface,User Interface>>
+* <<_upgrade_via_command_line_interface,Command Line Interface>>
+* <<_upgrade_via_user_interface,User Interface>>
 
 == Upgrade via command line interface
 
@@ -112,15 +111,13 @@ If both `osImage` and `ManagedOSVersion` are defined in the same `ManagedOSImage
 
 It is possible to create xref:managedosversion-reference.adoc[ManagedOSVersions] directly, or to subscribe to xref:managedosversionchannel-reference.adoc[ManagedOSVersionChannels] to automatically sync `ManagedOSVersions` from them.
 
-For more details and a list of available channels, or to even make your own, please read the xref:channels.adoc[documentation].
-
 == Upgrade via user interface
 
-To upgrade via the UI, you have to go in the SUSE® Rancher Prime OS Manager Advanced menu, then click on `Update Groups`.
+To upgrade via the UI, you have to go in the {product-name} Advanced menu, then click on `Update Groups`.
 
 Choose a name, select clusters to target and choose between the two upgrade ways:
 
-image::upgrade-ui-menu.png[SUSE® Rancher Prime OS Manager Upgrade Menu]
+image::upgrade-ui-menu.png[{product-name} Upgrade Menu]
 
 [tabs]
 ======
@@ -131,13 +128,13 @@ In this case, a `OS Version Channels` is used to auto populated `OS Versions` re
 
 The channel bellow is provide by us but you can bring your own channel as well. 
 
-See section <<managing-available-versions,Managing available versions>> to understand how the `ManagedOSVersion` are managed. 
+See section <<_managing_available_versions,Managing available versions>> to understand how the `ManagedOSVersion` are managed. 
 
 image:upgrade-ui-version-channel.png[Create OS Version Channel] 
 
 After a short syncing time, you will see your `OS Versions` appears in the `OS Versions` menu. 
 
-image:upgrade-ui-os-version.png[SUSE® Rancher Prime OS Manager OS Version menu] 
+image:upgrade-ui-os-version.png[{product-name} OS Version menu] 
 
 Finally, you can select the `OS Versions` when you create your `Upgrade Group` according to the following screenshot: 
 

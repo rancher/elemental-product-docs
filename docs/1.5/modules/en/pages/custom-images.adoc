@@ -2,7 +2,7 @@
 
 == Remastering an OS image with a custom Dockerfile
 
-Since OS images provided by SUSE® Rancher Prime OS Manager are container images, they can also be used as a base image
+Since OS images provided by {product-name} are container images, they can also be used as a base image
 in a Dockerfile in order to create a new container image.
 
 Imagine some additional packages from an extra repository is required, the following example
@@ -10,33 +10,27 @@ showcases how this could be added:
 
 [,docker]
 ----
-# The version of SUSE® Rancher Prime OS Manager to modify
-
+# The version of {product-name} to modify
 FROM registry.suse.com/suse/sle-micro/5.5:latest
 
 # Custom commands
-
-RUN rpm --import +++<repo-signing-key-url>+++&& \ zypper addrepo --refresh +++<repo_url>+++extra_repo && \ zypper install -y +++<extra_package>++++++</extra_package>++++++</repo_url>++++++</repo-signing-key-url>+++
+RUN rpm --import <repo-signing-key-url> && \
+    zypper addrepo --refresh <repo_url> extra_repo && \
+    zypper install -y <extra_package>
 
 # IMPORTANT: /etc/os-release is used for versioning/upgrade. The
-
 # values here should reflect the tag of the image currently being built
-
 ARG IMAGE_REPO=norepo
 ARG IMAGE_TAG=latest
 RUN \
-    sed -i -e "s/{caret}IMAGE_REPO=._/IMAGE_REPO="$\{IMAGE_REPO}"/g" /etc/os-release && \
-    sed -i -e "s/{caret}IMAGE_TAG=._/IMAGE_TAG="$\{IMAGE_TAG}"/g" /etc/os-release && \
-    sed -i -e "s/{caret}IMAGE=.*/IMAGE="$\{IMAGE_REPO}:$\{IMAGE_TAG}"/g" /etc/os-release
+    sed -i -e "s|^IMAGE_REPO=.*|IMAGE_REPO=\"${IMAGE_REPO}\"|g" /etc/os-release && \
+    sed -i -e "s|^IMAGE_TAG=.*|IMAGE_TAG=\"${IMAGE_TAG}\"|g" /etc/os-release && \
+    sed -i -e "s|^IMAGE=.*|IMAGE=\"${IMAGE_REPO}:${IMAGE_TAG}\"|g" /etc/os-release
 
 # IMPORTANT: it is good practice to recreate the initrd and re-apply `elemental-init`
-
 # command that was used in the base image. This ensures that any eventual change that should
-
 # be synced in initrd included binaries is also applied there and consistent.
-
 RUN elemental init --force immutable-rootfs,grub-config,dracut-config,cloud-config-essentials,elemental-setup
-
 ----
 
 Where `latest` is the base version we want to customize.
@@ -61,7 +55,7 @@ docker run -it myrepo/custom-build:v1.1.1 bash
 
 ## Create a custom bootable installation ISO
 
-SUSE® Rancher Prime OS Manager leverages container images to build its root filesystems; therefore, it is possible
+{product-name} leverages container images to build its root filesystems; therefore, it is possible
 to use it in a multi-stage environment to create custom bootable media that bundles a custom container image.
 
 [,docker]
@@ -96,9 +90,9 @@ Build it with regular `docker build` command:
 
 [,bash]
 ----
-docker build -t myrepo/custom-build:v1.1.1 +
-              --build-arg IMAGE_REPO=myrepo/custom-build-iso +
-              --build-arg IMAGE_TAG=v1.1.1 +
+docker build -t myrepo/custom-build:v1.1.1 \
+              --build-arg IMAGE_REPO=myrepo/custom-build-iso \
+              --build-arg IMAGE_TAG=v1.1.1 \
               .
 ----
 
@@ -116,14 +110,13 @@ The new customized installation media can be found in `elemental-<arch>.iso`.
 The above container run is equivalent to what _elemental-operator_ does to extract
 the ISO from a container to build a new one including the registration URL,
 hence this is also a good check mark to verify the container can be pushed to a
-registry and used by the _elemental-operator_ as a `baseImage` for a
-link:seedimage-reference[SeedImage] resource.
+registry and used by the _elemental-operator_ as a `baseImage` for a xref:seedimage-reference.adoc[SeedImage] resource.
 
 == List custom images as a ManagedOSVersion resource
 
-In SUSE® Rancher Prime OS Manager listing OS container images and ISO container images as ManagedOSVersion
+In {product-name} listing OS container images and ISO container images as ManagedOSVersion
 resources is not mandatory but handy. Specially from a UI perspective this makes
-the custom images visible and easy to use from the SUSE® Rancher Prime OS Manager UI extension.
+the custom images visible and easy to use from the {product-name} UI extension.
 
 Continuing the example from the previous section a custom OS container referenced as
 `myrepo/custom-build:v1.1.1` was built and eventually pushed to a registry. Then this
