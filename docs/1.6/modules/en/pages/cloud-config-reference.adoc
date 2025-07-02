@@ -43,7 +43,7 @@ Post stages: post-install, post-upgrade, post-reset, post-disk These stages are 
 
 [NOTE]
 ====
-Note installation hooks are not applied as part of the xref:machineregistration-reference.adoc#_config_cloud_config[`MachineRegistration.config.cloud-config`]. In order to provide installation hooks they can be included as part of the xref:[`SeedImage.cloud-config`], as they need to be present in the installation media. The only exception is `after-install-chroot` which can be provided as part of a [`MachineRegistration.config.cloud-config`] because the hook runs in the deployed image chroot and by that time cloud-config is already installed into the system.
+Note installation hooks are not applied as part of the xref:machineregistration-reference.adoc#_config_cloud_config[`MachineRegistration.config.cloud-config`]. In order to provide installation hooks they can be included as part of the xref:[`SeedImage.cloud-config`], as they need to be present in the installation media.
 ====
 
 == Configuration syntax
