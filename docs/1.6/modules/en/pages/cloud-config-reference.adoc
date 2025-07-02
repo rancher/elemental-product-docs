@@ -1,29 +1,15 @@
 = Cloud-config Reference
 
-Node OS images build using the https://github.com/elemental-toolkit[{product-name} Toolkit] are expected
-to be initialized and configured by using https://github.com/rancher/yip[yip]. Yip is a small utility to
-apply a set of actions and configurations to the system described with yaml files. Yip is integrated and consumed
-as a library within the elemental client binary (see `elemental run-stage --help`). Yip groups the configurations
-and actions to apply in arbitrary _stages_, for instance the `elemental run-stage network` command call would only
-apply defined actions and configuration for the stage named `network`. Note from Yip perspective stages can be run at
-any time as they are simply grouping a set of actions under an arbitrary name.
+Node OS images built using the https://github.com/elemental-toolkit[{product-name} Toolkit] are expected to be initialized and configured by using https://github.com/rancher/yip[yip]. Yip is a small utility to apply a set of actions and configurations to the system described with yaml files. Yip is integrated and consumed as a library within the elemental client binary (see `elemental run-stage --help`). Yip groups the configurations and actions to apply in arbitrary _stages_, for instance the `elemental run-stage network` command call would only apply defined actions and configuration for the stage named `network`. Note from Yip perspective stages can be run at any time as they are simply grouping a set of actions under an arbitrary name.
 
 {product-name} Toolkit integrates five predefined stages into the OS boot process.
 
-. *`rootfs`*: this stage runs on early boot inside the init ram disk, just after mounting the root device (typically at `/sysroot`).
-This stage can be used to define first-boot steps like expanding or creating persistent partitions. Ephemeral and
-persistent paths are typically defined at this stage. Executed as part of the `initrd-root-fs.target`.
-. *`initramfs`*: this stage runs inside the init ram disk too, but on a later stage just before switching root. This stage runs in a chrooted
-environment to the actual root device. This stage is handy to set some system parameters that might be relevant to systemd
-after switching root. For instance, additional systemd unit files could be added here before the systemd from the actual root is executed.
-Executed as part of the `initrd.target`.
-. *`fs`*: this stage is the first one executed after switching root and it is executed as part of the `sysinit.target` which runs once all
-all local filesystems and mountpoints defined in fstab are mounted and ready.
-. *`network`*: this stage is executed as part of the `multi-user.target` and after the `network-online.target` is reached. This stage can be used
-to run actions and configurations that require network connectivity. For instance this stage is used to run the very first node registration and
-and installation from a live ISO.
-. *`boot`*: this stage is executed as part of the `multi-user.target` and before the `getty.target`. This is the default stage to run cloud-config
-data provided using the supported cloud-init syntax. See xref:cloud-config-reference.adoc#_compatibility_with_cloud_init_format[cloud-init compatibility] section.
+. *`pre-rootfs`*: This stage runs on early boot inside the init ram disk, just before mounting the root device (typically at `/sysroot`). This stage can be used to define first-boot steps that are required before mounting the root device. A good example is expanding the root device partition. Executed as part of the `initrd-root-device.target`.
+. *`rootfs`*: This stage runs on early boot inside the init ram disk, just after mounting the root device (typically at `/sysroot`). This stage can be used to define first-boot steps like creating new partitions. Ephemeral and persistent paths are typically defined at this stage. Executed as part of the `initrd-root-fs.target`.
+. *`initramfs`*: This stage runs inside the init ram disk too, but on a later stage just before switching root. This stage runs in a chrooted environment to the actual root device. This stage is handy to set some system parameters that might be relevant to systemd after switching root. For instance, additional systemd unit files could be added here before the systemd from the actual root is executed. Executed as part of the `initrd.target`.
+. *`fs`*: This stage is the first one executed after switching root and it is executed as part of the `sysinit.target` which runs once all all local filesystems and mountpoints defined in fstab are mounted and ready.
+. *`network`*: This stage is executed as part of the `multi-user.target` and after the `network-online.target` is reached. This stage can be used to run actions and configurations that require network connectivity. For instance this stage is used to run the very first node registration and and installation from a live ISO.
+. *`boot`*: This stage is executed as part of the multi-user.target and before the getty.target. This is the default stage to run cloud-config data provided using the supported cloud-init syntax. See xref:cloud-config-reference.adoc#_compatibility_with_cloud_init_format[cloud-init compatibility] section.
 
 By default, `elemental` reads the yaml configuration files from the following paths in order: `/system/oem`, `/oem` and `/usr/local/cloud-config`.
 
@@ -31,15 +17,38 @@ In {product-name} Operator, all kubernetes resources including a `cloud-config` 
 
 [NOTE]
 ====
-In contrast to similar projects such as _Cloud Init_, Yip does not keep records or caches of executed stages and steps,
-all stages and its associated configuration is executed at every boot.
+In contrast to similar projects such as _Cloud Init_, Yip does not keep records or caches of executed stages and steps, all stages and its associated configuration is executed at every boot.
 ====
 
+== Elemental client cloud-config hooks
+
+In addition to the defined cloud-config stages at boot described in the previous section the Elemental client also honors some specific stages, referenced as hooks, to customize the behavior of these subcommands: `install`, `upgrade`, `reset` and `build-disk`. Each of these subcommands has it's own set of four different cloud-config stages executed at analog phases of the specific subcommand execution.
+
+Hooks are essetially a way to provide permanent changes to system that can't be easily expressed as part of an OCI container or that are not easily achievable with the `elemental` client configuration options. A good example could be handling the firmware in EFI partition for Raspberry Pi devices.
+
+[WARNING]
+====
+Note most hooks are executed in the host environment with privileges, so they are potentially destructive operations. In most cases regular cloud-config operations at boot time are sufficient to setup the system. Also to include additional software in an image the preferred option is to build a xref:custom-images.adoc[derivative image] and not abuse of hooks to install additional software.
+====
+
+=== Hook stages
+
+Before stages: before-install, before-upgrade, before-reset, before-disk These stages are executed once the working directories and environment are prepared but before starting the actual action. In install, upgrade and reset steps this happens once all the associated partitions are created and mounted, but before stating the deployment of any image.
+
+After chrooted stages: after-install-chroot, after-upgrade-chroot, after-reset-chroot, after-disk-chroot These stages are executed after deploying the target system into the working area into a chroot environment rooted to the actual deployed image. Since this happens in a chroot env the elemental client analyses the hooks present in the deployed image, not in the host. Only /oem is shared with the host if available.
+
+After stages: after-install, after-upgrade, after-reset, after-disk These stages are executed after deploying the target system into the working area from the host environment. At this stages all partitions are still mounted and available in RW mode. This particular set of stages analyses the hooks present in the host and into the equivalent set of paths chrooted to the deployed image. The hook however is not executed in a chroot environment. This is helpful to provide `after-*` hooks within the deployed image.
+
+Post stages: post-install, post-upgrade, post-reset, post-disk These stages are executed at end before exiting the command and running a cleanup process. At this stage the image is already deployed and locked in a read-only subvolume or filesystem. Partitions are still mounted at this stage.
+
+[NOTE]
+====
+Note installation hooks are not applied as part of the xref:machineregistration-reference.adoc#_config_cloud_config[`MachineRegistration.config.cloud-config`]. In order to provide installation hooks they can be included as part of the xref:[`SeedImage.cloud-config`], as they need to be present in the installation media.
+====
 
 == Configuration syntax
 
-Yip has its own syntax, it essentially requires to define _stages_ and a list of steps for each stage. Steps are executed in
-order and each step can be a combination different action types (e.g run commands, create files, set hostname, etc.).
+Yip has its own syntax, it essentially requires to define _stages_ and a list of steps for each stage. Steps are executed in order and each step can be a combination different action types (e.g run commands, create files, set hostname, etc.).
 
 Consider the following example:
 
@@ -67,13 +76,9 @@ stages:
     - /tmp/script.sh
 ----
 
-In the above example there are two stages: `initramfs` and `boot`. +
-The `initramfs` stage initializes a sample user. +
-The `boot` stage includes two steps, one to create an executable script file and a second one
-that actually runs the script.
+In the above example there are two stages: `initramfs` and `boot`. The `initramfs` stage initializes a sample user. The `boot` stage includes two steps, one to create an executable script file and a second one that actually runs the script.
 
-Yip also supports `*.before` and `*.after` suffix modifiers to any given stage. For instance, running the `network` stage
-results into running first `network.before` stages found in config files and then `network` and finally `network.after`.
+Yip also supports `*.before` and `*.after` suffix modifiers to any given stage. For instance, running the `network` stage results into running first `network.before` stages found in config files and then `network` and finally `network.after`.
 
 See the full reference of applicable keys in steps documented in
 https://github.com/rancher/yip?tab=readme-ov-file#configuration-reference[yip project] itself.
@@ -128,10 +133,10 @@ spec:
 
 == Compatibility with Cloud Init format
 
-A subset of the official http://cloudinit.readthedocs.org/en/latest/topics/format.html#cloud-config-data[cloud-config spec] is implemented by yip.
-More specific the supported cloud-init keys are: `users`, `ssh_authorized_keys`, `runcmd`, `hostname` and `write_files` are implemented.
+A subset of the official http://cloudinit.readthedocs.org/en/latest/topics/format.html#cloud-config-data[cloud-config spec] is implemented by yip. More specifically, the supported cloud-init keys are: `users`, `ssh_authorized_keys`, `runcmd`, `hostname` and `write_files` are implemented.
 
 If a yaml file starts with `#cloud-config` it is parsed as a standard cloud-init, associated it to the yip `boot` stage.
+
 For example:
 
 [,yaml]
