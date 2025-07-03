@@ -103,7 +103,7 @@ image::quickstart-ui-registration-endpoint-create-details.png[Create a Registrat
 ====
 `name: elemental-cluster1`: change this as per your need
 
-`device-selector`: The xref:machineregistration-reference.adoc#configelementalinstalldevice-selector[device-selector] field can be used to dynamically pick device during installation. The field contains a list of rules to select the device you want.
+`device-selector`: The xref:machineregistration-reference.adoc#_config_elemental_install_device_selector[device-selector] field can be used to dynamically pick device during installation. The field contains a list of rules to select the device you want.
 
 `snapshotter`: Type of device used to manage snapshots in OS images.
 ====
@@ -147,7 +147,7 @@ Custom columns are based on `Machine Inventory Labels` which you can add when yo
 
 image::quickstart-ui-registration-endpoint-hardware-labels.png[Machine Registration Endpoint Hardware Labels]
 
-On the following screenshot, xref:hardwarelabels.adoc#_hardware_labels[`Hardware Labels`] are used as custom columns:
+On the following screenshot, xref:hardwarelabels.adoc[`Hardware Labels`] are used as custom columns:
 
 You can also add custom columns by clicking on the three dots menu.
 
