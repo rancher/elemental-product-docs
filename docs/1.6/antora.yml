@@ -23,7 +23,6 @@ asciidoc:
     elemental_register_name: SUSE® Rancher Prime OS Manager Register client
     ranchersystemagent_name: Rancher System Agent
     ranchersystemagent_url: https://github.com/rancher/system-agent
-    product-name: SUSE® Rancher Prime OS Manager
     # Product Names
     elemental-product-name: "SUSE® Rancher Prime: OS Manager"
     fleet-product-name: "SUSE® Rancher Prime: Continuous Delivery"
