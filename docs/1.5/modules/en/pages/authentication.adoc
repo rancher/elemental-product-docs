@@ -3,7 +3,7 @@ include::partial$global-variables.adoc[]
 
 Authentication happens during Machine onboarding, when the Machine _registers_ to the {elemental_operator_name}.
 
-{product-name} by default authenticates hosts through the _Trusted Platform Module_ (TPM):
+{elemental-product-name} by default authenticates hosts through the _Trusted Platform Module_ (TPM):
 the machine is authenticated through _attestation_, i.e., the machine proofs its identity through its
 TPM device.
 
@@ -26,7 +26,7 @@ xref:machineregistration-reference.adoc#_config_elemental_registration[config:el
 
 [CAUTION]
 ====
-The only secure and officially supported *authentication* method in {product-name} is the default one, based on TPM attestation.
+The only secure and officially supported *authentication* method in {elemental-product-name} is the default one, based on TPM attestation.
 The TPM alternatives can be used for demo purposes or local deployments but are not reccomended for production use as the onboarding machines identity is not securely verified.
 ====
 
@@ -83,5 +83,5 @@ The SMBIOS `System information/UUID` value should be filled by the hardware vend
 
 The SMBIOS data is not always reliable. This depends on the manufacturer. You may experience the UUID being missing, or the same UUID being applied to multiple devices within the same batch.
 
-It is up to the administrator to ensure that the machines have unique `System information/UUID` SMBIOS values (the  `dmidecode` tool could be of help), otherwise the machines will keep overwriting the same `MachineInventory` resource and the {product-name} provisioning will fail.
+It is up to the administrator to ensure that the machines have unique `System information/UUID` SMBIOS values (the  `dmidecode` tool could be of help), otherwise the machines will keep overwriting the same `MachineInventory` resource and the {elemental-product-name} provisioning will fail.
 ====

@@ -1,4 +1,4 @@
-== Install {product-name} Operator
+== Install {elemental-product-name} Operator
 
 `elemental-operator` is the management endpoint, running the management cluster and taking care of creating inventories, registrations for machines and much more.
 
@@ -24,14 +24,14 @@ elemental-operator-64f88fc695-b8qhn   1/1     Running   0          16s
 [IMPORTANT]
 .Helm v3.8.0+ required
 ----
-The {product-name} Operator chart is distributed via an OCI registry: Helm correctly supports OCI based registries starting from the v3.8.0 release.
+The {elemental-product-name} Operator chart is distributed via an OCI registry: Helm correctly supports OCI based registries starting from the v3.8.0 release.
 ----
 
 
 [CAUTION]
 .Swap charts installation order when upgrading from elemental-operator release < 1.2.4
 ----
-When upgrading from an elemental-operator release embedding the {product-name} CRDs (version < 1.2.4) the elemental-operator-crds chart installation will fail.
+When upgrading from an elemental-operator release embedding the {elemental-product-name} CRDs (version < 1.2.4) the elemental-operator-crds chart installation will fail.
 You will need to upgrade the elemental-operator chart first, and only then install the elemental-operator-crds chart.
 ----
 

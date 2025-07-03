@@ -1,6 +1,6 @@
 == Introduction
 
-{product-name} uses the https://github.com/rancher/system-agent[Rancher System Agent], renamed to {product-name} System Agent, to initially bootstrap the node with a simple plan.
+{elemental-product-name} uses the https://github.com/rancher/system-agent[Rancher System Agent], renamed to {elemental-product-name} System Agent, to initially bootstrap the node with a simple plan.
 
 The plan will apply the following configurations:
 
@@ -13,13 +13,13 @@ in there will also be applied during the initial node start after the installati
 
 [TIP]
 ====
-The local plans run only during the initial {product-name} bootstrap *before* Kubernetes is installed on the node.
+The local plans run only during the initial {elemental-product-name} bootstrap *before* Kubernetes is installed on the node.
 ====
 
 
 == Types of Plans
 
-The type of plans that {product-name} can use are:
+The type of plans that {elemental-product-name} can use are:
 
 * One time instructions: Only run once
 * Periodic instructions: They run periodically
@@ -32,9 +32,9 @@ Both one time instructions and periodic instructions can run either a direct com
 ====
 
 
-== Adding local plans on {product-name}
+== Adding local plans on {elemental-product-name}
 
-You can add local plans to {product-name} as part of the `MachineRegistration` CRD, in the `cloud-config` section as follows:
+You can add local plans to {elemental-product-name} as part of the `MachineRegistration` CRD, in the `cloud-config` section as follows:
 
 [,yaml]
 ----

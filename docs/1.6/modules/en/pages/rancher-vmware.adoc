@@ -1,4 +1,4 @@
-= How to use {product-name} with Rancher and VMware
+= How to use {elemental-product-name} with Rancher and VMware
 
 == Excerpt
 
@@ -140,8 +140,8 @@ Next add the ISO that we created earlier in the VM and boot it up.
 
 It should boot up with the ISO and start installing Elemental:
 
-image::rancher-vmware-elemental-install-grub.png[{product-name} OS install grub menu]
+image::rancher-vmware-elemental-install-grub.png[{elemental-product-name} OS install grub menu]
 
-image::rancher-vmware-elemental-install-logs.png[{product-name} OS install logs]
+image::rancher-vmware-elemental-install-logs.png[{elemental-product-name} OS install logs]
 
 And once it is complete it will reboot the VM and it will show up as active under the machine inventory in Rancher.

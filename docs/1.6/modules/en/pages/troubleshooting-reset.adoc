@@ -120,7 +120,7 @@ The cloud-init instructions should look like the following:
 
 [,yaml]
 ----
-name: {product-name} Reset
+name: {elemental-product-name} Reset
 stages:
     network.after:
         - if: '[ -f /run/cos/recovery_mode ]'

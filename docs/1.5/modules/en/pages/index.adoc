@@ -1,8 +1,8 @@
 = Overview
 
-{product-name} is a software stack enabling centralized, full cloud-native OS management with Kubernetes.
+{elemental-product-name} is a software stack enabling centralized, full cloud-native OS management with Kubernetes.
 
-The {product-name} Stack consists of a handful of packages on top of SLE Micro:
+The {elemental-product-name} Stack consists of a handful of packages on top of SLE Micro:
 
 * *elemental-toolkit* - Includes a set of OS utilities to enable OS management via containers. Includes dracut modules, bootloader configuration, cloud-init style configuration services, etc.
 * *elemental-operator* - Connects to Rancher Manager and handles MachineRegistration and MachineInventory CRDs.
@@ -12,26 +12,26 @@ The {product-name} Stack consists of a handful of packages on top of SLE Micro:
 
 Cluster Node OSes are built and maintained via container images through the {elemental_cli_name} and they can be installed on new hosts using the {elemental_ui_url}[{elemental_ui_name}] for https://www.rancher.com/products/rancher[Rancher Manager] or the {elemental_cli_url}[{elemental_cli_name}].
 
-The {elemental_operator_url}[{elemental_operator_name}] and the {ranchersystemagent_url}[{ranchersystemagent_name}] enable Rancher Manager to fully control {product-name} clusters, from the installation and management of the OS on the Nodes to the provisioning of new K3s or RKE2 clusters in a centralized way.
+The {elemental_operator_url}[{elemental_operator_name}] and the {ranchersystemagent_url}[{ranchersystemagent_name}] enable Rancher Manager to fully control {elemental-product-name} clusters, from the installation and management of the OS on the Nodes to the provisioning of new K3s or RKE2 clusters in a centralized way.
 
-== {product-name} on x86-64 hardware
+== {elemental-product-name} on x86-64 hardware
 
-{product-name} is production ready and fully supported on x86-64 starting with Rancher v2.7.0.
+{elemental-product-name} is production ready and fully supported on x86-64 starting with Rancher v2.7.0.
 
-== {product-name} on ARM hardware
+== {elemental-product-name} on ARM hardware
 
 ARM (aarch64) is functional in the development stage. ARM is currently only tested on Raspberry Pi 4 Model B with k3s 1.24.8 (or later). Feedback is welcome.
 
-== {product-name} on other hardware
+== {elemental-product-name} on other hardware
 
-{product-name} is currently targeting 'edge' scenarios and does therefore not support other hardware. We will re-assess this as the market evolves.
+{elemental-product-name} is currently targeting 'edge' scenarios and does therefore not support other hardware. We will re-assess this as the market evolves.
 
 == Ready to give it a try?
 
-Get an {product-name} Cluster up and running with your preferred method
+Get an {elemental-product-name} Cluster up and running with your preferred method
 
-* With Rancher manager xref:quickstart-ui.adoc[{product-name} plugin]
-* With the xref:quickstart-cli.adoc[{product-name} CLI]
+* With Rancher manager xref:quickstart-ui.adoc[{elemental-product-name} plugin]
+* With the xref:quickstart-cli.adoc[{elemental-product-name} CLI]
 
 [NOTE]
 .What's next?

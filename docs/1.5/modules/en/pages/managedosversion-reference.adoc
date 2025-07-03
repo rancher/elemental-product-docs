@@ -83,7 +83,7 @@ version: v2.2.0
 
 == metadata
 
-This describes the needed informations to define an OS image in {product-name}.
+This describes the needed informations to define an OS image in {elemental-product-name}.
 
 If `type` is set to `container`:
 

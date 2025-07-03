@@ -2,7 +2,7 @@
 
 == Remastering an OS image with a custom Dockerfile
 
-Since OS images provided by {product-name} are container images, they can also be used as a base image
+Since OS images provided by {elemental-product-name} are container images, they can also be used as a base image
 in a Dockerfile in order to create a new container image.
 
 Imagine some additional packages from an extra repository is required, the following example
@@ -10,7 +10,7 @@ showcases how this could be added:
 
 [,docker]
 ----
-# The version of {product-name} to modify
+# The version of {elemental-product-name} to modify
 FROM registry.suse.com/suse/sle-micro/5.5:latest
 
 # Custom commands
@@ -55,7 +55,7 @@ docker run -it myrepo/custom-build:v1.1.1 bash
 
 ## Create a custom bootable installation ISO
 
-{product-name} leverages container images to build its root filesystems; therefore, it is possible
+{elemental-product-name} leverages container images to build its root filesystems; therefore, it is possible
 to use it in a multi-stage environment to create custom bootable media that bundles a custom container image.
 
 [,docker]
@@ -114,9 +114,9 @@ registry and used by the _elemental-operator_ as a `baseImage` for a xref:seedim
 
 == List custom images as a ManagedOSVersion resource
 
-In {product-name} listing OS container images and ISO container images as ManagedOSVersion
+In {elemental-product-name} listing OS container images and ISO container images as ManagedOSVersion
 resources is not mandatory but handy. Specially from a UI perspective this makes
-the custom images visible and easy to use from the {product-name} UI extension.
+the custom images visible and easy to use from the {elemental-product-name} UI extension.
 
 Continuing the example from the previous section a custom OS container referenced as
 `myrepo/custom-build:v1.1.1` was built and eventually pushed to a registry. Then this

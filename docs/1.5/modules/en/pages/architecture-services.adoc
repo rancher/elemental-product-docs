@@ -1,6 +1,6 @@
 = Services
 
-{product-name} functionality is provided through the following list of services:
+{elemental-product-name} functionality is provided through the following list of services:
 
-* xref:architecture-machineonboarding.adoc[Machine Onboarding]: allows hosts to be OS provisioned and registered in the {product-name} Operator catalog.
-* xref:architecture-clusterdeployment.adoc[Kubernetes Cluster Deployment]: triggers the creation of a Kubernetes Cluster on the available host registered in the {product-name} Operator catalog.
+* xref:architecture-machineonboarding.adoc[Machine Onboarding]: allows hosts to be OS provisioned and registered in the {elemental-product-name} Operator catalog.
+* xref:architecture-clusterdeployment.adoc[Kubernetes Cluster Deployment]: triggers the creation of a Kubernetes Cluster on the available host registered in the {elemental-product-name} Operator catalog.

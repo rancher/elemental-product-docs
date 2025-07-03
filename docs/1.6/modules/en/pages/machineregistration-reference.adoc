@@ -4,13 +4,13 @@ The MachineRegistration resource allows:
 
 * to configure the registration process
 * to provide OS installation parameters
-* to define the xref:architecture-services.adoc[{product-name} services] enabled for the registering machine
+* to define the xref:architecture-services.adoc[{elemental-product-name} services] enabled for the registering machine
 Once created it generates the registration URL used by nodes to register and start the xref:architecture-machineonboarding.adoc[machine onboarding] process.
 
 The MachineRegistration has a `Ready` condition which turns to true when the {elemental_operator_name} has successfully generated the registration URL and an associated `ServiceAccount`. From this point on the target host can connect to the registration URL to kick off the provisioning process.
 
 An HTTP GET request against the registration URL returns the _registration file_: a .yaml file containing the registration data (i.e., the _spec:config:elemental:registration_ section from the just created MachineRegistration).
-The registration file contains all the required data to allow the target host to perform self registration and start the {product-name} provisioning.
+The registration file contains all the required data to allow the target host to perform self registration and start the {elemental-product-name} provisioning.
 
 There are several keys that can be configured under a `MachineRegistration` resource spec.
 
@@ -418,7 +418,7 @@ spec:
 Labels that will be set to the `MachineInventory` that is created from this `MachineRegistration`
 `Key: value` type. These labels will be used to establish a selection criteria in xref:machineinventoryselectortemplate-reference.adoc[MachineInventorySelectorTemplate].
 
-{product-name} nodes will run `elemental-register` every 24 hours. +
+{elemental-product-name} nodes will run `elemental-register` every 24 hours. +
 It is possible to update the `machineInventoryLabels` so that all registered nodes will apply the new labels on the next successfull registration update.
 
 [IMPORTANT]
