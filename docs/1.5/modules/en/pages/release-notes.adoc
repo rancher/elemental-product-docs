@@ -1,27 +1,27 @@
 = Release Notes
 
-The {product-name} project stack is made of various components such as the `Operator` and `UI` for example.
+The {elemental-product-name} project stack is made of various components such as the `Operator` and `UI` for example.
 
-Each of these components have an independent development lifecycle with its own versioning. Once a new version is ready, meaning it fully integrates with the others components of the {product-name} project stack, a release is made.
+Each of these components have an independent development lifecycle with its own versioning. Once a new version is ready, meaning it fully integrates with the others components of the {elemental-product-name} project stack, a release is made.
 
 Here's the different components, their latest version and a link to the respective release notes on GitHub:
 
 |===
 | Name | Version | Release Notes
 
-| https://github.com/rancher/elemental-operator/[{product-name} Operator]
+| https://github.com/rancher/elemental-operator/[{elemental-product-name} Operator]
 | v1.6.3
 | https://github.com/rancher/elemental-operator/releases/tag/v1.6.3[Link]
 
-| https://github.com/rancher/elemental-toolkit/[{product-name} Toolkit]
+| https://github.com/rancher/elemental-toolkit/[{elemental-product-name} Toolkit]
 | v2.1.1
 | https://github.com/rancher/elemental-toolkit/releases/tag/v2.1.1[Link]
 
-| https://github.com/rancher/elemental[{product-name} Linux]
+| https://github.com/rancher/elemental[{elemental-product-name} Linux]
 | v2.1.1
 | https://github.com/rancher/elemental/releases/tag/v2.1.1[Link]
 
-| https://github.com/rancher/elemental-ui[{product-name} UI]
+| https://github.com/rancher/elemental-ui[{elemental-product-name} UI]
 | v1.3.1
 | https://github.com/rancher/elemental-ui/releases/tag/elemental-1.3.1[Link]
 |===
@@ -29,5 +29,5 @@ Here's the different components, their latest version and a link to the respecti
 [NOTE]
 .Information on docs versioning
 ====
-The docs versioning is based on the `{product-name} Operator` component as it's the user "entrypoint" to the {product-name} project stack.
+The docs versioning is based on the `{elemental-product-name} Operator` component as it's the user "entrypoint" to the {elemental-product-name} project stack.
 ====

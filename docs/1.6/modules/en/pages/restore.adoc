@@ -1,14 +1,14 @@
 = Restore
 
-Follow this guide to restore an {product-name} configuration from a backup with Rancher.
+Follow this guide to restore an {elemental-product-name} configuration from a backup with Rancher.
 
 == Prepare rancher-backup operator and backup files for restoring
 
 Go to official https://docs.ranchermanager.rancher.io/how-to-guides/new-user-guides/backup-restore-and-disaster-recovery/restore-rancher[Rancher documentation] and make sure that `rancher-backup operator` is installed and has access to backup files.
 
-You first have to follow this xref:backup.adoc[documentation] to do a backup of {product-name} resources.
+You first have to follow this xref:backup.adoc[documentation] to do a backup of {elemental-product-name} resources.
 
-== Restore the {product-name} configuration with rancher-backup operator
+== Restore the {elemental-product-name} configuration with rancher-backup operator
 
 Create a `restore object` (adapted to your needs) to restore the backup tarball.
 

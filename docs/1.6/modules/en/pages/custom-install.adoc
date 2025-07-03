@@ -1,6 +1,6 @@
-= Customize {product-name} Installation
+= Customize {elemental-product-name} Installation
 
-{product-name} installed OS images can be customized in different ways.
+{elemental-product-name} installed OS images can be customized in different ways.
 
 One option is to remaster container OS images by simply using a docker build.
 SLE Micro images are regular container images, so it is absolutely possible to create
@@ -21,8 +21,8 @@ is added.
 
 === Common customization pattern
 
-{product-name} installation can be customized in three different non-exclusive ways. First, including
-some custom {product-name} client configuration file, second, by including additional cloud-init files to execute at
+{elemental-product-name} installation can be customized in three different non-exclusive ways. First, including
+some custom {elemental-product-name} client configuration file, second, by including additional cloud-init files to execute at
 boot time, and finally, by including  `cloud-init` files such as installation hooks or boot stages evaluated during
 the live system boot itself.
 
@@ -42,9 +42,9 @@ during the installation process (include extra software, set additional disks...
 way `cloud-init` files can be included to perform custom operations during the live installation
 media boot time.
 
-==== Custom {product-name} client configuration file
+==== Custom {elemental-product-name} client configuration file
 
-https://github.com/rancher/elemental-toolkit/blob/main/docs/elemental.md[{product-name} client] `install`, `upgrade` and `reset` commands can be configured with a https://rancher.github.io/elemental-toolkit/docs/customizing/general_configuration/[custom configuration file] located by default in `/etc/elemental/config.yaml`.
+https://github.com/rancher/elemental-toolkit/blob/main/docs/elemental.md[{elemental-product-name} client] `install`, `upgrade` and `reset` commands can be configured with a https://rancher.github.io/elemental-toolkit/docs/customizing/general_configuration/[custom configuration file] located by default in `/etc/elemental/config.yaml`.
 If you have multiple yaml files, you need to add them in the `/etc/elemental/config.d` directory.
 
 A simple example to set hooks location could be:
@@ -69,7 +69,7 @@ the `config-urls` field is used for this exact purpose. See xref:machineregistra
 cloud-init file. The local path is evaluated during
 the installation, hence it must exists within the installation media, commonly an ISO image.
 
-By default, {product-name} live systems mount the ISO root at `/run/initramfs/live` which is also the default path set for `config-url` in `MachineRegistrations`:
+By default, {elemental-product-name} live systems mount the ISO root at `/run/initramfs/live` which is also the default path set for `config-url` in `MachineRegistrations`:
 See the example below:
 
 [,yaml]
@@ -91,7 +91,7 @@ spec:
         - "/run/initramfs/live/oem/custom_config.yaml"
 ----
 
-{product-name} live ISOs, when booted, have the ISO root mounted at `/run/initramfs/live`.
+{elemental-product-name} live ISOs, when booted, have the ISO root mounted at `/run/initramfs/live`.
 According to that, the ISO for the example above is expected to include the `/oem/custom_config.yaml` file.
 
 [NOTE]
@@ -102,7 +102,7 @@ According to that, the ISO for the example above is expected to include the `/oe
 
 #### Adding installation hooks or boot stages for the live system
 
-[{product-name} client](https://github.com/rancher/elemental-cli) `install`, `upgrade` and `reset` procedures include four different hooks:
+[{elemental-product-name} client](https://github.com/rancher/elemental-cli) `install`, `upgrade` and `reset` procedures include four different hooks:
 
 * `before-install`: executed after all partition mountpoints are set.
 * `after-install-chroot`: executed after deploying the OS image and before unmounting the associated loop filesystem image. Runs chrooted to the OS image.
@@ -111,12 +111,12 @@ According to that, the ISO for the example above is expected to include the `/oe
 
 Hooks are provided as `cloud-init` stages. Equivalent hooks exist for `reset` and `upgrade` procedures.
 They are loaded from the `/iso-config` folder in ISO filesystem root. In fact, hooks are regular `cloud-init` stages with the
-only difference that {product-name} client parses them during `install`, `upgrade` or `reset` actions, rather than boot time.
+only difference that {elemental-product-name} client parses them during `install`, `upgrade` or `reset` actions, rather than boot time.
 Note any boot stage included this way will be executed during the live installation media boot.
 
 Hooks are evaluated during `install`,`reset` and `upgrade` action from `/oem`, `/system/oem` and `/usr/local/cloud-config` paths,
 however for the live ISOs there is an additional the path `/run/initramfs/live/iso-config` included. Note the `/run/initramfs/live`
-prefix is the mount point of the ISO filesystem of the {product-name} Live ISO once booted.
+prefix is the mount point of the ISO filesystem of the {elemental-product-name} Live ISO once booted.
 
 ### Adding extra driver binaries into the ISO example
 
@@ -169,7 +169,7 @@ as part of an LVM setup.
 As an example, we have an host with three disks (`/dev/sda`, `/dev/sdb`
 and `/dev/sdc`).
 
-The first disk is used for a regular {product-name} installation
+The first disk is used for a regular {elemental-product-name} installation
 and the other remaining two are used as part of a LVM group where arbitrary logical volumes
 are created, formatted and mounted at boot time via an extended `fstab` file.
 
@@ -228,7 +228,7 @@ time. As an alternative, the same action could be done on first boot, however it
 require a more sophisticated logic to ensure it's only applied once at first boot.
 
 Finally, the boot time `cloud-init` files contain the mount points settings and trigger the
-action of mounting those mountpoints. The {product-name} OS `fstab` file is ephemeral and it's
+action of mounting those mountpoints. The {elemental-product-name} OS `fstab` file is ephemeral and it's
 dynamically created at boot time. That's why it doesn't exist during the installation and
 can't be used in an installation hook.
 

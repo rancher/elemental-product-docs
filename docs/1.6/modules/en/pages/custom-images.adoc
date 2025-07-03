@@ -2,7 +2,7 @@
 
 == Remastering an OS image with a custom Dockerfile
 
-Since OS images provided by {product-name} are container images, they can also be used as a base image in a Dockerfile in order to create a new container image.
+Since OS images provided by {elemental-product-name} are container images, they can also be used as a base image in a Dockerfile in order to create a new container image.
 
 The Elemental project publishes several flavors for images:
 
@@ -60,7 +60,7 @@ docker run -it myrepo/custom-build:v1.1.1 bash
 
 ## Create a custom bootable installation ISO
 
-{product-name} leverages container images to build its root filesystems; therefore, it is possible to use it in a multi-stage environment to create custom bootable media that bundles a custom container image.
+{elemental-product-name} leverages container images to build its root filesystems; therefore, it is possible to use it in a multi-stage environment to create custom bootable media that bundles a custom container image.
 
 [,docker]
 ----
@@ -113,7 +113,7 @@ The above container run is equivalent to what _elemental-operator_ does to extra
 
 == List custom images as a ManagedOSVersion resource
 
-In {product-name} listing OS container images and ISO container images as ManagedOSVersion resources is not mandatory but handy. Specially from a UI perspective this makes the custom images visible and easy to use from the {product-name} UI extension.
+In {elemental-product-name} listing OS container images and ISO container images as ManagedOSVersion resources is not mandatory but handy. Specially from a UI perspective this makes the custom images visible and easy to use from the {elemental-product-name} UI extension.
 
 Continuing the example from the previous section a custom OS container referenced as `myrepo/custom-build:v1.1.1` was built and eventually pushed to a registry. Then this image is ready to be added as a ManagedOSVersion resource with:
 
@@ -195,7 +195,7 @@ Note that by default it's `4` for the `btrfs` snapshotter type, and `2` for the 
 
 Lastly, an extra `$image_size` free space can be used as a safe margin to keep. This is especially important when using the `loopdevice` snapshotter type, in case newer images will grow in size from the originally installed one. On the contrary, the `btrfs` snapshotter can be used instead to save space on the `state` partition, or to use the same space to keep more snapshots.
 
-== Finding {product-name} base images
+== Finding {elemental-product-name} base images
 
 Using crane we can find the following SL-Micro images suitable for extending:
 

@@ -1,11 +1,11 @@
 = Upgrade
 
-All components in {product-name} are managed using Kubernetes. Below is how
+All components in {elemental-product-name} are managed using Kubernetes. Below is how
 to use Kubernetes approaches to upgrade the components.
 
-== {product-name} node upgrade
+== {elemental-product-name} node upgrade
 
-{product-name} nodes are upgraded with the {elemental_operator_name}. Refer to the
+{elemental-product-name} nodes are upgraded with the {elemental_operator_name}. Refer to the
 xref:operatorchart-reference.adoc[{elemental_operator_name}] documentation for complete information.
 
 Upgrade can be achieve either with CLI or UI:
@@ -115,11 +115,11 @@ For more details and a list of available channels, or to even make your own, ple
 
 == Upgrade via user interface
 
-To upgrade via the UI, you have to go in the {product-name} Advanced menu, then click on `Update Groups`.
+To upgrade via the UI, you have to go in the {elemental-product-name} Advanced menu, then click on `Update Groups`.
 
 Choose a name, select clusters to target and choose between the two upgrade ways:
 
-image::upgrade-ui-menu.png[{product-name} Upgrade Menu]
+image::upgrade-ui-menu.png[{elemental-product-name} Upgrade Menu]
 
 [tabs]
 ======
@@ -136,7 +136,7 @@ image:upgrade-ui-version-channel.png[Create OS Version Channel]
 
 After a short syncing time, you will see your `OS Versions` appears in the `OS Versions` menu. 
 
-image:upgrade-ui-os-version.png[{product-name} OS Version menu] 
+image:upgrade-ui-os-version.png[{elemental-product-name} OS Version menu] 
 
 Finally, you can select the `OS Versions` when you create your `Upgrade Group` according to the following screenshot: 
 

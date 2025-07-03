@@ -1,22 +1,22 @@
-= Network configuration with {product-name}
+= Network configuration with {elemental-product-name}
 
-{product-name} cloud-config support does not include declarative networking at the moment.
+{elemental-product-name} cloud-config support does not include declarative networking at the moment.
 
-The defaul OS channel shipped with {product-name} provides SLE Micro OS images with https://networkmanager.dev[NetworkManager] which enables DCHP ethernet configuration automatically.
+The defaul OS channel shipped with {elemental-product-name} provides SLE Micro OS images with https://networkmanager.dev[NetworkManager] which enables DCHP ethernet configuration automatically.
 
-xref:cloud-config-reference.adoc[{product-name} cloud-config] allows to create NetworkManager connection profile configuration files in order to customize the host network.
+xref:cloud-config-reference.adoc[{elemental-product-name} cloud-config] allows to create NetworkManager connection profile configuration files in order to customize the host network.
 
-To define custom network configuration for your {product-name} OS deployment the required steps are:
+To define custom network configuration for your {elemental-product-name} OS deployment the required steps are:
 
 * Identify the content of the desired NetworkManager connection profile configuration files
-* Include a `write_files` cloud-config snippet in the {product-name} xref:machineregistration-reference.adoc[MachineRegistration] resource to create configuration files with content identified in the previous step
+* Include a `write_files` cloud-config snippet in the {elemental-product-name} xref:machineregistration-reference.adoc[MachineRegistration] resource to create configuration files with content identified in the previous step
 
 [NOTE]
 ====
-The cloud-config configuration put in the {product-name} xref:machineregistration-reference.adoc[MachineRegistration] is applied on the installed system only, not on the generated ISO/Image.
-This means that when booting from the {product-name} ISO/Image the xref:machineregistration-reference.adoc[MachineRegistration] cloud-config is not applied on the host: it will be applied only after the OS is installed and rebooted.
+The cloud-config configuration put in the {elemental-product-name} xref:machineregistration-reference.adoc[MachineRegistration] is applied on the installed system only, not on the generated ISO/Image.
+This means that when booting from the {elemental-product-name} ISO/Image the xref:machineregistration-reference.adoc[MachineRegistration] cloud-config is not applied on the host: it will be applied only after the OS is installed and rebooted.
 
-Host configuration during {product-name} ISO/Image boot is possible adding the cloud-config customization in the xref:seedimage-reference.adoc[SeedImage] resource instead of the xref:machineregistration-reference.adoc[MachineRegistration] one.
+Host configuration during {elemental-product-name} ISO/Image boot is possible adding the cloud-config customization in the xref:seedimage-reference.adoc[SeedImage] resource instead of the xref:machineregistration-reference.adoc[MachineRegistration] one.
 ====
 
 == Identify NetworkManager connection profile configuration files content
@@ -51,7 +51,7 @@ nmcli connection add \
 After running the above command, you will find your keyfile at
 `/etc/NetworkManager/system-connections/fixed-ip.nmconnection`.
 
-== {product-name} cloud-config
+== {elemental-product-name} cloud-config
 
 The NetworkManager connection profile keyfiles can be injected in a [MachineRegistration](machineregistration-reference) using the `write_files` module.
 

@@ -1,4 +1,4 @@
-= How to use {product-name} with Rancher and VMware
+= How to use {elemental-product-name} with Rancher and VMware
 
 == Excerpt
 
@@ -19,11 +19,11 @@ image::rancher-vmware-extensions-menu.png[Enable extensions in Rancher]
 
 Once you click on enable a dialogue box will pop up asking for confirmation and it will also notify you that the rancher extensions repository will be enabled, make sure it is checked and then confirm.
 
-=== 1.2 Install {product-name} Plugin
+=== 1.2 Install {elemental-product-name} Plugin
 
 After the extensions are enabled under the available tab you should see elemental plugin available for installation.
 
-image::rancher-vmware-extension-enabled.png[{product-name} extension enabled]
+image::rancher-vmware-extension-enabled.png[{elemental-product-name} extension enabled]
 
 Click on Install, this will again ask for a confirmation. Click on Install again to continue. Once the installation is finished it will ask to reload the tab. Reload it by hitting reload, post reloading you should see the elemental plugin under the installed tab.
 
@@ -37,7 +37,7 @@ helm upgrade --create-namespace -n cattle-elemental-system --install elemental-o
 helm upgrade --create-namespace -n cattle-elemental-system --install elemental-operator oci://registry.suse.com/rancher/elemental-operator-chart
 ----
 
-image::rancher-vmware-elemental-operator-install.png[{product-name} operator install]
+image::rancher-vmware-elemental-operator-install.png[{elemental-product-name} operator install]
 
 Once the command is successful validate whether the the pod is running before continuing
 
@@ -46,7 +46,7 @@ Once the command is successful validate whether the the pod is running before co
 kubectl get pods -n cattle-elemental-system
 ----
 
-image::rancher-vmware-elemental-operator-pod.png[{product-name} operator pod]
+image::rancher-vmware-elemental-operator-pod.png[{elemental-product-name} operator pod]
 
 This will enable the "OS Management" sub menu under the "Global Apps" menu.
 
@@ -175,7 +175,7 @@ If you would like to download the vanilla ISO and reuse it later to create addit
 
 [,bash]
 ----
-wget https://download.opensuse.org/repositories/isv:/Rancher:/{product-name}:/Staging/containers/iso/sl-micro-6.0-baremetal.x86_64.iso
+wget https://download.opensuse.org/repositories/isv:/Rancher:/{elemental-product-name}:/Staging/containers/iso/sl-micro-6.0-baremetal.x86_64.iso
 
 ./elemental-iso-add-registration initial-registration.yaml /home/elemental-iso/sl-micro-6.0-baremetal.x86_64.iso
 ----
@@ -220,11 +220,11 @@ Now with the completion of this step our VM is ready.
 
 Next add the ISO that we created earlier in the VM and boot it up.
 
-It should boot up with the ISO and start installing {product-name}:
+It should boot up with the ISO and start installing {elemental-product-name}:
 
-image::rancher-vmware-elemental-install-grub.png[{product-name} OS install grub menu]
+image::rancher-vmware-elemental-install-grub.png[{elemental-product-name} OS install grub menu]
 
-image::rancher-vmware-elemental-install-logs.png[{product-name} OS install logs]
+image::rancher-vmware-elemental-install-logs.png[{elemental-product-name} OS install logs]
 
 And once it is complete it will reboot the VM and it should show up as active under the machine inventory in Rancher as follow:
 
@@ -238,9 +238,9 @@ image::rancher-vmware-machine-inventory-status-boot-complete.png[Machine invento
 
 == Part 5: Create a cluster on the machine
 
-Once the machine shows up as active, select it and hit "Create {product-name} Cluster".
+Once the machine shows up as active, select it and hit "Create {elemental-product-name} Cluster".
 
-image::rancher-vmware-elemental-cluster-create.png[Create {product-name} cluster]
+image::rancher-vmware-elemental-cluster-create.png[Create {elemental-product-name} cluster]
 
 At this stage you get a pretty familiar page of creating a cluster in Rancher.
 
@@ -248,14 +248,14 @@ Give the cluster a name select the Kubernetes version and hit "Create".
 
 For this we have selected to create a K3S cluster.
 
-image::rancher-vmware-elemental-cluster-template.png[{product-name} cluster configuration]
+image::rancher-vmware-elemental-cluster-template.png[{elemental-product-name} cluster configuration]
 
 Now under the Cluster Management page the cluster should show up as creating:
 
-image::rancher-vmware-elemental-cluster-provisioning.png[{product-name} cluster provisioning]
+image::rancher-vmware-elemental-cluster-provisioning.png[{elemental-product-name} cluster provisioning]
 
-And once the cluster is fully provisioned it should be active with provider type as "{product-name}".
+And once the cluster is fully provisioned it should be active with provider type as "{elemental-product-name}".
 
-image::rancher-vmware-elemental-cluster-created.png[{product-name} cluster created]
+image::rancher-vmware-elemental-cluster-created.png[{elemental-product-name} cluster created]
 
 Now you can start deploying application on this cluster the normal way.

@@ -4,7 +4,7 @@ metadata:
   name: my-upgrade
   namespace: fleet-default
 spec:
-  # Set to the new {product-name} version you would like to upgrade to
+  # Set to the new {elemental-product-name} version you would like to upgrade to
   osImage: "registry.suse.com/suse/sle-micro/5.5:latest"
   clusterTargets:
     - clusterName: my-cluster

@@ -3,7 +3,7 @@
 Normally, the {elemental_operator_url}[{elemental_operator_name}] manages operating systems that are installed and configured by the {elemental_toolkit_url}[{elemental_toolkit_name}]. +
 For example, in order to automate OS installation, upgrade, and reset, the `elemental-register` relies on the `elemental` CLI to execute these operations.
 
-However, it is also possible to register and provision {product-name} "Toolkitless" systems.
+However, it is also possible to register and provision {elemental-product-name} "Toolkitless" systems.
 
 In this scenario, xref:architecture-components.adoc#_elemental_register_command_line_tool[elemental-register] needs to be installed on the system. +
 Optionally, the xref:architecture-components.adoc#_elemental_system_agent_daemon[elemental-system-agent] can be installed. Note that without the `elemental-system-agent`, the {elemental_operator_name} will not be able to provision any k8s cluster on the machine. In this case the {elemental_operator_name} can only be used for OS Inventory purposes only.

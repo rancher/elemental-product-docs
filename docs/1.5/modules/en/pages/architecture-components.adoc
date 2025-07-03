@@ -1,28 +1,28 @@
 = Architecture Components
 
-The components required to provide the xref:architecture-services.adoc[{product-name} services] are:
+The components required to provide the xref:architecture-services.adoc[{elemental-product-name} services] are:
 
 * the <<_elemental_command_line_tool,`elemental`>> command line tool
 * the <<_elemental_operator_daemon,`elemental-operator`>> daemon
 * the <<_elemental_register_command_line_tool,`elemental-register`>> command line tool
 * the <<_elemental_system_agent_daemon,`elemental-system-agent`>> daemon
-* one or more <<_suse_rancher_prime_os_manager_os_container_image,{product-name} OS container images>>
+* one or more <<_suse_rancher_prime_os_manager_os_container_image,{elemental-product-name} OS container images>>
 
 == `elemental` command line tool
 
 The `elemental` tool is part of the link:{elemental_toolkit_url}[{elemental_toolkit_name}] project.
-It performs the actual OS installation and upgrade operations on the host and is used to execute the xref:cloud-config-reference.adoc[cloud-config] directives added in the xref:custom-resources.adoc[{product-name} CRDs].
+It performs the actual OS installation and upgrade operations on the host and is used to execute the xref:cloud-config-reference.adoc[cloud-config] directives added in the xref:custom-resources.adoc[{elemental-product-name} CRDs].
 
-The `elemental` binary is included in all the base OS images distributed with {product-name}.
+The `elemental` binary is included in all the base OS images distributed with {elemental-product-name}.
 
 == `elemental-operator` daemon
 
 The *elemental-operator* daemon performs two main tasks:
 
-. embeds the {product-name} Kubernetes controllers to manage all the xref:custom-resources.adoc[{product-name} CRDs]
+. embeds the {elemental-product-name} Kubernetes controllers to manage all the xref:custom-resources.adoc[{elemental-product-name} CRDs]
 . exposes the _registration endpoints_ to allow the host to register and download the OS installation configuration during the xref:architecture-machineonboarding.adoc[machine onboarding]
 
-The `elemental-operator` daemon is deployed on the Rancher cluster as a `Deployment` via the xref:operatorchart-reference.adoc[{product-name} Operator Helm Chart].
+The `elemental-operator` daemon is deployed on the Rancher cluster as a `Deployment` via the xref:operatorchart-reference.adoc[{elemental-product-name} Operator Helm Chart].
 
 == `elemental-register` command line tool
 
@@ -33,13 +33,13 @@ As the last step, the *elemental-register* client calls the <<_elemental_command
 
 == `elemental-system-agent` daemon
 
-The `elemental-system-agent` is built from the https://github.com/rancher/system-agent[Rancher System Agent project] and allows {product-name} to deploy _plans_ to assist with the host provisioning.
+The `elemental-system-agent` is built from the https://github.com/rancher/system-agent[Rancher System Agent project] and allows {elemental-product-name} to deploy _plans_ to assist with the host provisioning.
 Notably, the `rancher-system-agent` installation and configuration required for the xref:architecture-clusterdeployment.adoc[Kubernetes Cluster provisioning service] is performed through an `elemental-system-agent` _plan_.
 
-== {product-name} OS container image
+== {elemental-product-name} OS container image
 
 An link:{elemental_toolkit_url}[{elemental_toolkit_name}] OS image is an OCI container image containing all the files that will make up the OS of the target host. It contains not only all the binaries and libraries, but also the kernel and the boot files required by a linux system.
 
-The {product-name} OS image is an opinionated link:{elemental_toolkit_url}[{elemental_toolkit_name}] OS image which is based on https://www.suse.com/products/micro/[SLE Micro] and contains specific {product-name} configurations and binaries (the <<_elemental_command_line_tool,elemental>> and the <<_elemental_register_command_line_tool,elemental-register>> ones).
+The {elemental-product-name} OS image is an opinionated link:{elemental_toolkit_url}[{elemental_toolkit_name}] OS image which is based on https://www.suse.com/products/micro/[SLE Micro] and contains specific {elemental-product-name} configurations and binaries (the <<_elemental_command_line_tool,elemental>> and the <<_elemental_register_command_line_tool,elemental-register>> ones).
 
-The {product-name} OS images are tracked in the xref:managedosversion-reference.adoc[ManagedOSVersions] resources. The xref:managedosversion-reference.adoc[ManagedOSVersions] resources are dynamically created from xref:managedosversionchannel-reference.adoc[ManagedOSVersionChannel] resources. A defaultxref:managedosversionchannel-reference.adoc[ManagedOSVersionChannel] resource is deployed with each {product-name} Operator installation.
+The {elemental-product-name} OS images are tracked in the xref:managedosversion-reference.adoc[ManagedOSVersions] resources. The xref:managedosversion-reference.adoc[ManagedOSVersions] resources are dynamically created from xref:managedosversionchannel-reference.adoc[ManagedOSVersionChannel] resources. A defaultxref:managedosversionchannel-reference.adoc[ManagedOSVersionChannel] resource is deployed with each {elemental-product-name} Operator installation.
