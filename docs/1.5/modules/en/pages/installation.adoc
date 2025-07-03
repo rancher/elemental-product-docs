@@ -57,7 +57,7 @@ at xref:machineregistration-reference.adoc[MachineRegistration] reference page.
 
 In order to configure the installation beyond the common options provided within the
 xref:machineregistration-reference.adoc#_config_elemental_install[`elemental.install`] section a `config.yaml`
-configuration file can be included into the ISO (see xref:custom-install.adoc#_custom_elemental_client_configuration_file[Custom Images]).
+configuration file can be included into the ISO (see xref:custom-install.adoc#_custom_suse_rancher_prime_os_manager_client_configuration_file[Custom Images]).
 Note any configuration applied as part of `elemental.install` section of the MachineRegistration will be
 applied on top of the settings included in any custom `config.yaml` file.
 
