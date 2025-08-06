@@ -1,4 +1,6 @@
 = Troubleshooting upgrade
+:revdate: 2025-07-03
+:page-revdate: {revdate}
 
 For a high level overview of the upgrade lifecycle and components, please refer to the xref:upgrade-lifecycle.adoc[related document].
 

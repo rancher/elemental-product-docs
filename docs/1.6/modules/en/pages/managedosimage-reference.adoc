@@ -1,4 +1,6 @@
 = ManagedOSImage reference
+:revdate: 2025-07-03
+:page-revdate: {revdate}
 
 The ManagedOSImage resource is responsible of defining an OS image or image version that needs to be applied to each node in a set of targeted Clusters.
 

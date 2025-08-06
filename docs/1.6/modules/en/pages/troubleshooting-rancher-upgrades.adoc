@@ -1,4 +1,6 @@
 = Troubleshooting Rancher upgrades
+:revdate: 2025-07-03
+:page-revdate: {revdate}
 
 [WARNING]
 ====

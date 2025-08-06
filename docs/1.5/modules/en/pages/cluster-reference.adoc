@@ -1,4 +1,6 @@
 = Cluster reference
+:revdate: 2025-07-03
+:page-revdate: {revdate}
 
 A `Cluster` definition includes a `kubernetesVersion` and a list of `machinePools` to deploy the cluster to.
 

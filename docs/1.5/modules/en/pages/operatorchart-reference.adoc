@@ -1,4 +1,6 @@
 = {elemental-product-name} Operator Helm Chart
+:revdate: 2025-07-03
+:page-revdate: {revdate}
 
 The {elemental_operator_url}[{elemental_operator_name}] is responsible for managing the {elemental-product-name} versions and maintaining a machine inventory to assist with edge or bare metal installations.
 

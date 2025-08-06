@@ -1,4 +1,6 @@
 = MachineInventorySelectorTemplate reference
+:revdate: 2025-06-27
+:page-revdate: {revdate}
 
 The MachineInventorySelectorTemplate is a user defined resource that will be used as the blueprint to create the required xref:machineinventoryselector-reference.adoc[MachineInventorySelectors].
 

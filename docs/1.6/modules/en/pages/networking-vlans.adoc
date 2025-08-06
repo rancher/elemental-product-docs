@@ -1,4 +1,6 @@
 = How to configure a VLAN
+:revdate: 2025-07-03
+:page-revdate: {revdate}
 
 == Generate a VLAN connection profile on a live host
 

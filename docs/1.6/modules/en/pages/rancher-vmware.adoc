@@ -1,4 +1,6 @@
 = How to use {elemental-product-name} with Rancher and VMware
+:revdate: 2025-07-03
+:page-revdate: {revdate}
 
 == Excerpt
 

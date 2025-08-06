@@ -1,4 +1,6 @@
 = {elemental-product-name} the command line way
+:revdate: 2025-07-03
+:page-revdate: {revdate}
 
 Follow this guide to have an auto-deployed cluster via rke2/k3s and managed by Rancher
 with the only help of an {elemental-product-name} ISO.

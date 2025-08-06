@@ -1,4 +1,6 @@
 = Architecture overview
+:revdate: 2025-07-03
+:page-revdate: {revdate}
 
 {elemental-product-name} is the combination of two main projects: the link:{elemental_toolkit_url}[{elemental_toolkit_name}] and the link:{elemental_operator_url}[{elemental_operator_name}].
 

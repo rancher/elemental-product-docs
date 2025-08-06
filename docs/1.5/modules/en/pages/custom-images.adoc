@@ -1,4 +1,6 @@
 = How to build and use custom OS images
+:revdate: 2025-07-03
+:page-revdate: {revdate}
 
 == Remastering an OS image with a custom Dockerfile
 

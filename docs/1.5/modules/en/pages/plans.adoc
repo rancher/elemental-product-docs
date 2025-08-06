@@ -1,4 +1,6 @@
 == Introduction
+:revdate: 2025-07-03
+:page-revdate: {revdate}
 
 {elemental-product-name} uses the https://github.com/rancher/system-agent[Rancher System Agent], renamed to {elemental-product-name} System Agent, to initially bootstrap the node with a simple plan.
 

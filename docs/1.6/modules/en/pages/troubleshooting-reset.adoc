@@ -1,4 +1,6 @@
 = Troubleshooting reset
+:revdate: 2025-07-03
+:page-revdate: {revdate}
 
 Each `MachineInventory` with the `elemental.cattle.io/resettable: "true"` annotation will trigger the execution of a reset plan, upon deletion. +
 The `machineinventory.elemental.cattle.io` finalizer is going to be removed only after the plan has been executed successfully by the `elemental-system-agent` running on the machine.

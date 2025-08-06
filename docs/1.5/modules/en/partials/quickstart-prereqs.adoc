@@ -1,4 +1,6 @@
 == Prerequisites
+:revdate: 2025-07-03
+:page-revdate: {revdate}
 
 * A Rancher server (v2.7.0 or later) configured (server-url set)
  ** To configure the Rancher `server-url` please check the https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/authentication-permissions-and-global-configuration#first-log-in[Rancher docs]

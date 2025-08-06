@@ -1,4 +1,6 @@
 = Restore
+:revdate: 2025-07-03
+:page-revdate: {revdate}
 
 Follow this guide to restore an {elemental-product-name} configuration from a backup with Rancher.
 

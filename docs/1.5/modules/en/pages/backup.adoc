@@ -1,4 +1,6 @@
 = Backup
+:revdate: 2025-07-03
+:page-revdate: {revdate}
 
 Since {elemental-product-name} runs as part of Rancher, the {elemental-product-name} resources are bundled in the Rancher backup.
 For more details about Rancher backups, restore, and disaster recovery options, please follow the official https://ranchermanager.docs.rancher.com/pages-for-subheaders/backup-restore-configuration[Rancher documentation].

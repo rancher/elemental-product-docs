@@ -1,4 +1,6 @@
 = MachineInventory
+:revdate: 2025-07-03
+:page-revdate: {revdate}
 include::partial$global-variables.adoc[]
 
 When a new host registers successfully, the {elemental_operator_name} creates a MachineInventory resource representing that particular host.

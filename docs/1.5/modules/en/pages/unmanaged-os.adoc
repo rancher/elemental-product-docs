@@ -1,4 +1,6 @@
 = Register an Unmanaged OS
+:revdate: 2025-07-03
+:page-revdate: {revdate}
 include::partial$global-variables.adoc[]
 
 Normally, the {elemental_operator_url}[{elemental_operator_name}] manages operating systems that are installed and configured by the {elemental_toolkit_url}[{elemental_toolkit_name}]. +

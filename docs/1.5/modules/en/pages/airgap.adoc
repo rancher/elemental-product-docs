@@ -1,4 +1,6 @@
 == Install {elemental-product-name} in an Air-Gapped Environment
+:revdate: 2025-07-03
+:page-revdate: {revdate}
 
 === Assumptions
 

@@ -1,4 +1,6 @@
 == Introduction
+:revdate: 2025-07-03
+:page-revdate: {revdate}
 
 :tabs-sync-option:
 

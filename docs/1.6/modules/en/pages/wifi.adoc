@@ -1,4 +1,6 @@
 = How to configure Wi-Fi
+:revdate: 2024-09-24
+:page-revdate: {revdate}
 
 [IMPORTANT]
 ====

@@ -1,4 +1,6 @@
 = Cloud-config Reference
+:revdate: 2025-07-03
+:page-revdate: {revdate}
 
 Node OS images build using the https://github.com/elemental-toolkit[{elemental-product-name} Toolkit] are expected
 to be initialized and configured by using https://github.com/rancher/yip[yip]. Yip is a small utility to

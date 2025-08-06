@@ -1,4 +1,6 @@
 = Overview
+:revdate: 2025-07-03
+:page-revdate: {revdate}
 
 {elemental-product-name} is a software stack enabling centralized, full cloud-native OS management with Kubernetes.
 

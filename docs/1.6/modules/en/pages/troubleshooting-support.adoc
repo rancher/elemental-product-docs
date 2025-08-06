@@ -1,4 +1,6 @@
 = {elemental-product-name} Support
+:revdate: 2025-07-03
+:page-revdate: {revdate}
 
 The `elemental-support` is a utility program that collects all information about the machine where the {elemental-product-name} stack is running.
 

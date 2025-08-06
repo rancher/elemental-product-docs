@@ -1,4 +1,6 @@
 = Customize hostname
+:revdate: 2025-07-03
+:page-revdate: {revdate}
 
 == {elemental-product-name} hostname management overview
 
