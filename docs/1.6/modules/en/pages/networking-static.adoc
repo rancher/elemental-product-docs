@@ -1,4 +1,6 @@
 = Static Network with nm-configurator
+:revdate: 2025-06-27
+:page-revdate: {revdate}
 
 The `nm-configurator` https://github.com/suse-edge/nm-configurator?tab=readme-ov-file#per-node-configurations[per node configuration] can be used to statically assign IP addresses to individual machines, based on the NIC's MAC addresses.  
 

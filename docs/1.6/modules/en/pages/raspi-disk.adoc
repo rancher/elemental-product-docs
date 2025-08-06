@@ -1,4 +1,6 @@
 = How to build raw disk images for Raspberry Pi
+:revdate: 2024-09-24
+:page-revdate: {revdate}
 
 This guide will show how we can build a raw disk image that can be written to an SD-card and booted without any other installation media.
 

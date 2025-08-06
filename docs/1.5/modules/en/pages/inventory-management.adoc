@@ -1,4 +1,6 @@
 == Inventory Management
+:revdate: 2025-07-03
+:page-revdate: {revdate}
 
 The {elemental-product-name} operator can hold an inventory of machines and
 the mapping of the machine to it's configuration and assigned cluster.

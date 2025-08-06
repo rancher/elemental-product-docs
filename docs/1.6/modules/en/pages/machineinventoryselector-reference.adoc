@@ -1,4 +1,6 @@
 = MachineInventorySelector reference
+:revdate: 2024-09-24
+:page-revdate: {revdate}
 
 A MachineInventorySelector selects MachineInventories based on applied selectors (usually pattern matching on MachineInventory label values).
 

@@ -1,4 +1,6 @@
 = SeedImage reference
+:revdate: 2025-07-03
+:page-revdate: {revdate}
 
 A `SeedImage` resource allows to build an installation media that can be used to install {elemental-product-name} onto a node.
 It requires a `baseImage`, i.e., a URL to an {elemental-product-name} installation ISO or node container image, and a `registrationRef` reference to a `MachineRegistration` resource, from which the registration part of the {elemental-product-name} configuration is extracted and injected in the media to produce the final _seed image_.

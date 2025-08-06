@@ -1,4 +1,6 @@
 = Machine Reset
+:revdate: 2025-07-03
+:page-revdate: {revdate}
 
 There are two ways to reset {elemental-product-name} machines to their original state or decommission them:
 

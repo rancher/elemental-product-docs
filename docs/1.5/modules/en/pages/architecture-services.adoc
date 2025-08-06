@@ -1,4 +1,6 @@
 = Services
+:revdate: 2025-07-03
+:page-revdate: {revdate}
 
 {elemental-product-name} functionality is provided through the following list of services:
 

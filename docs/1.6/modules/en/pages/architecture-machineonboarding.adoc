@@ -1,4 +1,6 @@
 = Machine onboarding
+:revdate: 2025-07-03
+:page-revdate: {revdate}
 
 The goal of the Machine Onboarding service is to register a new machine in the {elemental-product-name} Operator catalog (xref:machineinventory-reference.adoc[MachineInventory] resources) and provision the host with the OS, applying the desired configuration.
 

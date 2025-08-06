@@ -1,4 +1,6 @@
 = Upgrade
+:revdate: 2025-07-03
+:page-revdate: {revdate}
 
 All components in {elemental-product-name} are managed using Kubernetes. Below is how
 to use Kubernetes approaches to upgrade the components.

@@ -1,4 +1,6 @@
 = ManagedOSVersion reference
+:revdate: 2025-07-03
+:page-revdate: {revdate}
 
 The `ManagedOSVersion` resource is responsible of defining an OS image version that can be used with `SeedImage` or `ManagedOSImage` resources.
 
