@@ -43,22 +43,22 @@ include::example$upgrade/managed-os-version-channel-custom.yaml[]
 | SL Micro
 | 6.0
 | Base
-| registry.opensuse.org/isv/rancher/elemental/dev/containers/rancher/elemental-channel/sl-micro:6.0-base
+| registry.suse.com/rancher/elemental-channel/sl-micro:6.0-base
 
 | SL Micro
 | 6.0
 | Bare-metal
-| registry.opensuse.org/isv/rancher/elemental/dev/containers/rancher/elemental-channel/sl-micro:6.0-baremetal
+| registry.suse.com/rancher/elemental-channel/sl-micro:6.0-baremetal
 
 | SL Micro
 | 6.0
 | KVM
-| registry.opensuse.org/isv/rancher/elemental/dev/containers/rancher/elemental-channel/sl-micro:6.0-kvm
+| registry.suse.com/rancher/elemental-channel/sl-micro:6.0-kvm
 
 | SL Micro
 | 6.0
 | RT
-| registry.opensuse.org/isv/rancher/elemental/dev/containers/rancher/elemental-channel/sl-micro:6.0-rt
+| registry.suse.com/rancher/elemental-channel/sl-micro:6.0-rt
 |===
 
 == Flavors
