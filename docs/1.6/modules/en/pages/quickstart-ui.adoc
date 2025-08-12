@@ -4,7 +4,7 @@
 
 [NOTE]
 ====
-The following instructions need Rancher 2.8.x at least.
+The following instructions need Rancher 2.9.x at least.
 ====
 
 This quickstart will show you how to deploy the {elemental-product-name} plugin and operator into an existing Rancher Manager instance.
