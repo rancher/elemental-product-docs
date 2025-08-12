@@ -188,9 +188,9 @@ Supports the following values:
 | Reboot the system after install
 
 | snapshotter
-| string
-| loopdevice
-| Type of device used to manage snapshots in OS images ('loopdevice' or 'btrfs').
+| obj
+| empty
+| Snapshotter configuration. See <<#_config_elemental_install_snapshotter,`config.elemental.install.snapshotter` reference>>.
 
 | eject-cd
 | bool
