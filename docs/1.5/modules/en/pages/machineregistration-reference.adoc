@@ -405,7 +405,7 @@ Labels that will be set to the `MachineInventory` that is created from this `Mac
 `Key: value` type. These labels will be used to establish a selection criteria in xref:machineinventoryselectortemplate-reference.adoc[MachineInventorySelectorTemplate].
 
 {elemental-product-name} nodes will run `elemental-register` every 24 hours. +
-It is possible to update the `machineInventoryLabels` so that all registered nodes will apply the new labels on the next successfull registration update.
+It is possible to update the `machineInventoryLabels` so that all registered nodes will apply the new labels on the next successful registration update.
 
 [IMPORTANT]
 ====

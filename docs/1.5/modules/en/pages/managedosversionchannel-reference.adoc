@@ -29,7 +29,7 @@ spec:
 | options
 | object
 | null
-| Defines the optional informations that can be added in an OS channel
+| Defines the optional information that can be added in an OS channel
 
 | syncInterval
 | string
@@ -59,6 +59,6 @@ spec:
 
 == `upgradeContainer`
 
-This allows to overwrite the default `upgrade` field of System Upgrade Controller plans (see xref:upgrade-lifecycle.adoc#_components[upgrade compontents]) based on this ManagedOSVersion.
+This allows to overwrite the default `upgrade` field of System Upgrade Controller plans (see xref:upgrade-lifecycle.adoc#_components[upgrade components]) based on this ManagedOSVersion.
 These keys are translated by the System Upgrade Controller to a Kubernetes https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#Container[container] specification.
 This is the container responsible of running an OS upgrade.

@@ -4,7 +4,7 @@
 
 {elemental-product-name} cloud-config support does not include declarative networking at the moment.
 
-The defaul OS channel shipped with {elemental-product-name} provides SLE Micro OS images with https://networkmanager.dev[NetworkManager] which enables DCHP ethernet configuration automatically.
+The default OS channel shipped with {elemental-product-name} provides SLE Micro OS images with https://networkmanager.dev[NetworkManager] which enables DHCP ethernet configuration automatically.
 
 xref:cloud-config-reference.adoc[{elemental-product-name} cloud-config] allows to create NetworkManager connection profile configuration files in order to customize the host network.
 
