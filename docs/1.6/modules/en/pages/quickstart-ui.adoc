@@ -13,22 +13,24 @@ Once installed, you'll be able to provision a new {elemental-product-name} clust
 
 However, if you want to install staging or dev operator, you can only do it in xref:quickstart-cli.adoc#_non_stable_installations[CLI mode].
 
-== Enable the Rancher Manager Extensions Support
+== Add the Official Rancher Extensions Repository
 
-In order to enable the Rancher Manager Extensions Support, you'll need to follow the steps below:
-
-* Open a web browser, connect and login to your Rancher Manager instance
-* Click on the top left menu and click on `Extensions`
-
-image::quickstart-ui-menu.png[Rancher Manager menu]
-
-* Click on `Enable` button to install the `Extension Operator`
-
-image::quickstart-ui-extension-enable.png[Enable Rancher Manager Extensions Operator]
-
-* A popup will appear, click on the `OK` button to continue and install the Rancher Manager Extensions repository
+If the Elemental extension is not available, you need to add the `Official Rancher Extensions Repository`:
 
 image::quickstart-ui-extension-repository.png[Add Rancher Manager Extensions repository]
+
+If this repository can not be added through the Extensions UI settings, it can be manually managed by https://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-admin/helm-charts-in-rancher/helm-charts-in-rancher.html#_manage_repositories[adding] the `https://github.com/rancher/ui-plugin-charts` `git` repository, or alternatively by applying the following resource:  
+
+[source,yaml]
+----
+apiVersion: catalog.cattle.io/v1
+kind: ClusterRepo
+metadata:
+  name: rancher-ui-charts
+spec:
+  gitBranch: main
+  gitRepo: https://github.com/rancher/ui-plugin-charts
+----
 
 == Install the elemental plugin
 
