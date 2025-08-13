@@ -2,7 +2,7 @@
 :revdate: 2025-07-03
 :page-revdate: {revdate}
 
-The ManagedOSImage resource is responsible of defining an OS image or image version that needs to be applied to each node in a set of targeted Clusters.
+The ManagedOSImage resource is responsible of defining an OS image or image version that needs to be applied to each node in a set of targeted Clusters. Once created, the ManagedOSImage resource can be updated with a new `osImage` or `managedOSVersionName` to trigger a new upgrade. Similarly, an existing ManagedOSImage can be updated to target new Clusters.
 
 There are several keys that can be configured under a `ManagedOSImage` resource spec.
 
