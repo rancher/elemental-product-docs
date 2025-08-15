@@ -1,6 +1,12 @@
 = Static Network with nm-configurator
-:revdate: 2025-06-27
+:revdate: 2025-08-15
 :page-revdate: {revdate}
+
+[CAUTION]
+.warning
+====
+Declarative Networking is in *technology preview* state with limited support. As such it is not recommended for production environments.
+====
 
 The `nm-configurator` https://github.com/suse-edge/nm-configurator?tab=readme-ov-file#per-node-configurations[per node configuration] can be used to statically assign IP addresses to individual machines, based on the NIC's MAC addresses.  
 
@@ -10,87 +16,10 @@ In this example, we are going to customize an Elemental image, and include a xre
 
 The following configuration covers 2 nodes with a very basic network setup.
 
-[,yaml]
 .99_static_network_config.yaml
+[,yaml]
 ----
-name: Static nm-configurator config
-stages:
-  initramfs:
-  - directories:
-      - path: /tmp/nmc/static/desired-states
-        permissions: 448
-        owner: 0
-        group: 0
-      - path: /tmp/nmc/static/network-config
-        permissions: 448
-        owner: 0
-        group: 0
-    files:
-      - path: /tmp/nmc/static/desired-states/node1.yaml
-        permissions: 384
-        owner: 0
-        group: 0
-        content: |
-          dns-resolver:
-            config:
-              server:
-              - 192.168.122.1
-              search: []
-          routes:
-            config:
-            - destination: 0.0.0.0/0
-              next-hop-interface: eth0
-              next-hop-address: 192.168.122.1
-              metric: 150
-              table-id: 254
-          interfaces:
-          - name: eth0
-            type: ethernet
-            state: up
-            mac-address: 52:54:00:45:14:c5
-            ipv4:
-              address:
-              - ip: 192.168.122.150
-                prefix-length: 24
-              enabled: true
-            ipv6:
-              enabled: false
-        encoding: ""
-        ownerstring: ""
-      - path: /tmp/nmc/static/desired-states/node2.yaml
-        permissions: 384
-        owner: 0
-        group: 0
-        content: |
-          dns-resolver:
-            config:
-              server:
-              - 192.168.122.1
-              search: []
-          routes:
-            config:
-            - destination: 0.0.0.0/0
-              next-hop-interface: eth0
-              next-hop-address: 192.168.122.1
-              metric: 150
-              table-id: 254
-          interfaces:
-          - name: eth0
-            type: ethernet
-            state: up
-            mac-address: 52:54:00:3a:ae:3b
-            ipv4:
-              address:
-              - ip: 192.168.122.151
-                prefix-length: 24
-              enabled: true
-            ipv6:
-              enabled: false
-        encoding: ""
-        ownerstring: ""
-    commands:
-    - nmc generate --config-dir /tmp/nmc/static/desired-states --output-dir /tmp/nmc/static/network-config
-    - nmc apply --config-dir /tmp/nmc/static/network-config
+include::example$network/yip-nmc-static-config.yaml[]
 ----
 
 == Include the static network configuration in a custom OS image
