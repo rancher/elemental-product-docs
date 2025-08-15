@@ -18,8 +18,6 @@
 *** xref:extra-rpms.adoc[Add third party RPMs]
 *** xref:lvm-drives-example.adoc[Extra LVM volume group]
 ** xref:hostname.adoc[Customize hostname]
-** xref:networking-vlans.adoc[Configure VLANs]
-** xref:wifi.adoc[Configure WiFi]
 ** xref:ntp.adoc[Configure NTP]
 ** xref:removable-device-cloudconfig.adoc[Include cloud-config from removable devices]
 ** xref:custom-certificate.adoc[Add custom certificates]
@@ -34,9 +32,8 @@
 ** xref:restore.adoc[Restore]
 ** xref:airgap.adoc[Airgap install]
 ** xref:channels.adoc[Channels]
-** xref:networking.adoc[Networking]
-*** xref:networking-vlans.adoc[Configure a VLAN]
-*** xref:wifi.adoc[Configure Wi-Fi]
+** Declarative Networking
+*** xref:networking.adoc[IPAM Driven Networking]
 *** xref:networking-static.adoc[Static Configuration]
 ** xref:custom-images.adoc[Build Custom OS Images]
 ** xref:unmanaged-os.adoc[Register an Unmanaged OS]
@@ -47,6 +44,7 @@
 ** xref:troubleshooting-upgrade.adoc[Upgrade]
 ** xref:troubleshooting-rancher-upgrades.adoc[Rancher upgrades]
 ** xref:troubleshooting-reset.adoc[Reset]
+** xref:troubleshooting-network.adoc[Declarative Networking]
 * References
 ** xref:cloud-config-reference.adoc[Cloud-config]
 ** xref:machineregistration-reference.adoc[MachineRegistration]
