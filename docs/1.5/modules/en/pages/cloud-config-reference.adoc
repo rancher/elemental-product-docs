@@ -69,7 +69,7 @@ stages:
     - /tmp/script.sh
 ----
 
-In the above exaple there are two stages: `initramfs` and `boot`. +
+In the above example there are two stages: `initramfs` and `boot`. +
 The `initramfs` stage initializes a sample user. +
 The `boot` stage includes two steps, one to create an executable script file and a second one
 that actually runs the script.
