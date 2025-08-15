@@ -91,7 +91,7 @@ Supports the following values:
 | no-smbios
 | bool
 | false
-| Whether SMBIOS data should be sent to the {elemental_operator_name} (see the xref:smbios.adoc[SMBIOS reference] for more information)
+| Whether SMBIOS data should be sent to the {elemental_operator_name}
 
 | no-toolkit
 | bool
@@ -395,7 +395,7 @@ This refers to the name that will be set to the node and the kubernetes resource
 [NOTE]
 ====
 When `elemental:registration:no-smbios` is set to `false` (default), machineName is interpolated with https://www.dmtf.org/standards/smbios[SMBIOS] data which allows you to store hardware information.
-See our xref:smbios.adoc[SMBIOS docs] for more information.
+
 If no `machineName` is specified, a default one in the form `m-$UUID` will be set.
 The UUID will be retrieved from the SMBIOS data if available, otherwise a random UUID will be generated.
 ====
@@ -426,7 +426,6 @@ It is possible to update the `machineInventoryLabels` so that all registered nod
 [IMPORTANT]
 ====
 When `elemental:registration:no-smbios` is set to `false` (default), Labels are interpolated with https://www.dmtf.org/standards/smbios[SMBIOS] data. This allows to store hardware information in custom labels.
-See our xref:smbios.adoc[SMBIOS docs] for more information.
 ====
 
 .Click here for details

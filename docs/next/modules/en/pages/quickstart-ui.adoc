@@ -151,7 +151,7 @@ Custom columns are based on `Machine Inventory Labels` which you can add when yo
 
 image::quickstart-ui-registration-endpoint-hardware-labels.png[Machine Registration Endpoint Hardware Labels]
 
-On the following screenshot, xref:hardwarelabels.adoc[`Hardware Labels`] are used as custom columns:
+On the following screenshot, `Hardware Labels` are used as custom columns:
 
 You can also add custom columns by clicking on the three dots menu.
 

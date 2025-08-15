@@ -28,7 +28,7 @@ The `elemental-operator` daemon is deployed on the Rancher cluster as a `Deploym
 
 == `elemental-register` command line tool
 
-The *elemental-register* binary is the client used to register the host against the _registration endpoints_ exposed by the <<_elemental_operator_daemon,elemental-operator>>. It collects and forwards the host data to allow the <<_elemental_operator_daemon,elemental-operator>> to fill the xref:smbios.adoc[SMBIOS] and the xref:hardwarelabels.adoc[Hardware] label templates.
+The *elemental-register* binary is the client used to register the host against the _registration endpoints_ exposed by the <<_elemental_operator_daemon,elemental-operator>>. It collects and forwards the host data to allow the <<_elemental_operator_daemon,elemental-operator>> to fill the SMBIOS and the Hardware label templates.
 
 If the registraton phase is performed successfully, the *elemental-register* gets the full configuration stored in the xref:machineregistration-reference.adoc[MachineRegistration] from the *elemental-operator*.
 As the last step, the *elemental-register* client calls the <<_elemental_command_line_tool,elemental>> binary passing the retrieved configuration to kick off the OS installation.
