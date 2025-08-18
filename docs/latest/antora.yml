@@ -1,0 +1,42 @@
+name: os-manager
+title: OS Manager
+version: latest
+display_version: 'Latest'
+start_page: en:index.adoc
+source-highlighter: highlight.js
+nav:
+- modules/en/nav.adoc
+asciidoc:
+  attributes:
+    # Product Names
+    elemental-product-name: "SUSE® Rancher Prime: OS Manager"
+    fleet-product-name: "SUSE® Rancher Prime: Continuous Delivery"
+    harvester-product-name-tm: "SUSE® Virtualization"
+    harvester-product-name: "SUSE Virtualization"
+    k3s-product-name: "SUSE® Rancher Prime: K3s"
+    kubewarden-product-name: "SUSE® Rancher Prime: Admission Policy Manager"
+    longhorn-product-name-tm: "SUSE® Storage"
+    longhorn-product-name: "SUSE Storage"
+    neuvector-product-name: "SUSE® Security"
+    rancher-product-name-tm: "SUSE® Rancher Prime"
+    rancher-product-name: "SUSE Rancher Prime"
+    rancher-short-name: "Rancher"
+    rke2-product-name: "SUSE® Rancher Prime: RKE2"
+    rke2-short-name: "RKE2"
+    turtles-product-name: "SUSE® Rancher Prime: Cluster API"
+    # Elemental Docs Attributes
+    elemental_slack_name: '#elemental channel on the Rancher-Users Slack'
+    elemental_slack_url: https://rancher-users.slack.com/channels/elemental
+    elemental_toolkit_name: '{elemental-product-name} Toolkit'
+    elemental_toolkit_url: https://rancher.github.io/elemental-toolkit
+    elemental_operator_name: '{elemental-product-name} Operator'
+    elemental_operator_url: https://github.com/rancher/elemental-operator
+    elemental_cli_name: '{elemental-product-name} CLI'
+    elemental_cli_url: https://github.com/rancher/elemental-cli
+    elemental_ui_name: '{elemental-product-name} UI plugin'
+    elemental_ui_url: https://github.com/rancher/elemental-ui
+    elemental_iso_name: '{elemental-product-name} ISO'
+    elemental_register_name: '{elemental-product-name} Register client'
+    ranchersystemagent_name: Rancher System Agent
+    ranchersystemagent_url: https://github.com/rancher/system-agent
+    
