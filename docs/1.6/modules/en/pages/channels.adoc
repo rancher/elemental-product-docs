@@ -1,5 +1,5 @@
 = Channels
-:revdate: 2025-07-03
+:revdate: 2025-08-15
 :page-revdate: {revdate}
 
 The {elemental_operator_name} allows subscription to one or more xref:managedosversionchannel-reference.adoc[ManagedOSVersionChannels], to automatically populate a list of xref:managedosversion-reference.adoc[ManagedOSVersions] ready to be consumed to build new ISOs using a xref:seedimage-reference.adoc[SeedImage], or to upgrade existing {elemental-product-name} nodes to new OS versions using the xref:managedosimage-reference.adoc[ManagedOSImage].

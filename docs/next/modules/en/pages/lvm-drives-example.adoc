@@ -1,4 +1,6 @@
 = How to add extra LVM volume group disks during the installation
+:revdate: 2025-08-15
+:page-revdate: {revdate}
 
 This example is covering the setup of a host with multiple disks and some of them used as part of a LVM setup.
 

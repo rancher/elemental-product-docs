@@ -1,4 +1,6 @@
 = How to add third party RPMs at install time
+:revdate: 2025-08-15
+:page-revdate: {revdate}
 
 This example is covering the case in which extra RPMS (e.g. specific hardware drivers) are included into the ISO and during the installation they are installed over the OS image.
 

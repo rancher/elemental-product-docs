@@ -1,6 +1,7 @@
 = Authentication
-:revdate: 2025-07-03
+:revdate: 2025-08-15
 :page-revdate: {revdate}
+
 include::partial$global-variables.adoc[]
 
 Authentication happens during Machine onboarding, when the Machine _registers_ to the {elemental_operator_name}.

@@ -1,5 +1,5 @@
 = Cloud-config Reference
-:revdate: 2025-07-03
+:revdate: 2025-08-15
 :page-revdate: {revdate}
 
 Node OS images build using the https://github.com/elemental-toolkit[{elemental-product-name} Toolkit] are expected
