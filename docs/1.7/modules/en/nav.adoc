@@ -32,6 +32,7 @@
 ** xref:restore.adoc[Restore]
 ** xref:airgap.adoc[Airgap install]
 ** xref:channels.adoc[Channels]
+** xref:certificate-authority.adoc[Certificate Authority Verification]
 ** Declarative Networking
 *** xref:networking.adoc[IPAM Driven Networking]
 *** xref:networking-static.adoc[Static Configuration]
