@@ -1,7 +1,7 @@
 name: os-manager
 title: OS Manager
 version: next
-display_version: 'next'
+display_version: 'Next'
 start_page: en:index.adoc
 source-highlighter: highlight.js
 nav:
