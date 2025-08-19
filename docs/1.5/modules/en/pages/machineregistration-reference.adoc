@@ -1,5 +1,5 @@
 = MachineRegistration reference
-:revdate: 2025-08-15
+:revdate: 2025-07-03
 :page-revdate: {revdate}
 
 The MachineRegistration resource allows:
