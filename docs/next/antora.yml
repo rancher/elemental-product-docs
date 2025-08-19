@@ -3,7 +3,6 @@ title: OS Manager
 version: next
 display_version: 'Next'
 start_page: en:index.adoc
-source-highlighter: highlight.js
 nav:
 - modules/en/nav.adoc
 asciidoc:

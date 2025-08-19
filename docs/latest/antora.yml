@@ -3,7 +3,6 @@ title: OS Manager
 version: latest
 display_version: 'Latest'
 start_page: en:index.adoc
-source-highlighter: highlight.js
 nav:
 - modules/en/nav.adoc
 asciidoc:
