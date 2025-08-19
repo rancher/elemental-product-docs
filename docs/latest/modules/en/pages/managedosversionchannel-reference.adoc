@@ -1,5 +1,5 @@
 = ManagedOSVersionChannel reference
-:revdate: 2025-08-15
+:revdate: 2025-06-27
 :page-revdate: {revdate}
 
 The `ManagedOSVersionChannel` resource is responsible of defining OS image channel.
