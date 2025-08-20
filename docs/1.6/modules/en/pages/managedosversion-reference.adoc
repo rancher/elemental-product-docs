@@ -85,7 +85,7 @@ version: v2.2.0
 
 == metadata
 
-This describes the needed informations to define an OS image in {elemental-product-name}.
+This describes the needed information to define an OS image in {elemental-product-name}.
 
 If `type` is set to `container`:
 
@@ -100,7 +100,7 @@ If `type` is set to `container`:
 | upgradeImage
 | string
 | empty
-| Fully qualified Containter image (OCI reference or HTTP URI)
+| Fully qualified Container image (OCI reference or HTTP URI)
 |===
 
 If `type` is set to `iso`:
@@ -121,6 +121,6 @@ If `type` is set to `iso`:
 
 == `upgradeContainer`
 
-This allows to overwrite the default `upgrade` field of System Upgrade Controller plans (see xref:upgrade-lifecycle.adoc#_components[upgrade compontents]) based on this ManagedOSVersion.
+This allows to overwrite the default `upgrade` field of System Upgrade Controller plans (see xref:upgrade-lifecycle.adoc#_components[upgrade components]) based on this ManagedOSVersion.
 These keys are translated by the System Upgrade Controller to a Kubernetes https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#Container[container] specification.
 This is the container responsible of running an OS upgrade.

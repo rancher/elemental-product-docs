@@ -15,6 +15,8 @@
 * Installation
 ** xref:installation.adoc[Installation]
 ** xref:custom-install.adoc[Customize installation]
+*** xref:extra-rpms.adoc[Add third party RPMs]
+*** xref:lvm-drives-example.adoc[Extra LVM volume group]
 ** xref:hostname.adoc[Customize hostname]
 ** xref:networking-vlans.adoc[Configure VLANs]
 ** xref:wifi.adoc[Configure WiFi]

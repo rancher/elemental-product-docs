@@ -1,6 +1,7 @@
 = Authentication
 :revdate: 2025-07-03
 :page-revdate: {revdate}
+
 include::partial$global-variables.adoc[]
 
 Authentication happens during Machine onboarding, when the Machine _registers_ to the {elemental_operator_name}.
@@ -29,7 +30,7 @@ xref:machineregistration-reference.adoc#_config_elemental_registration[config:el
 [CAUTION]
 ====
 The only secure and officially supported *authentication* method in {elemental-product-name} is the default one, based on TPM attestation.
-The TPM alternatives can be used for demo purposes or local deployments but are not reccomended for production use as the onboarding machines identity is not securely verified.
+The TPM alternatives can be used for demo purposes or local deployments but are not recommended for production use as the onboarding machines identity is not securely verified.
 ====
 
 === TPM emulation
@@ -63,7 +64,7 @@ include::example$authentication/registration-mac.yaml[]
 [CAUTION]
 ====
 The MAC address is considered unique by the {elemental_operator_name}.
-This is true for phisical devices, while if using VirtualMachines from different hypervisors and different network segments it is up to the administrator to ensure that the registering VMs have a unique MAC address.
+This is true for physical devices, while if using VirtualMachines from different hypervisors and different network segments it is up to the administrator to ensure that the registering VMs have a unique MAC address.
 ====
 
 
