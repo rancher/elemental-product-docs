@@ -34,12 +34,12 @@ ARM (aarch64) is functional in the development stage. ARM is currently only test
 
 Get an {elemental-product-name} Cluster up and running with your preferred method
 
-* With Rancher manager xref:quickstart-ui.adoc[{elemental-product-name} plugin]
-* With the xref:quickstart-cli.adoc[{elemental-product-name} CLI]
+* With Rancher manager xref:quickstarts/quickstart-ui.adoc[{elemental-product-name} plugin]
+* With the xref:quickstarts/quickstart-cli.adoc[{elemental-product-name} CLI]
 
 [NOTE]
 .What's next?
 ====
-Want more details? Take a look at the xref:architecture.adoc[Architecture] section or reach out to the {elemental_slack_url}[{elemental_slack_name}].
+Want more details? Take a look at the xref:rancher-os-management/architecture/architecture.adoc[Architecture] section or reach out to the {elemental_slack_url}[{elemental_slack_name}].
 ====
 
