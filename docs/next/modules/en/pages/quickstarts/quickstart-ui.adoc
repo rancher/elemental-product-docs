@@ -11,7 +11,7 @@ This quickstart will show you how to deploy the {elemental-product-name} plugin 
 
 Once installed, you'll be able to provision a new {elemental-product-name} cluster based on RKE2 or K3s.
 
-However, if you want to install staging or dev operator, you can only do it in xref:quickstart-cli.adoc#_non_stable_installations[CLI mode].
+However, if you want to install staging or dev operator, you can only do it in xref:quickstarts/quickstart-cli.adoc#_non_stable_installations[CLI mode].
 
 == Add the Official Rancher Extensions Repository
 
@@ -107,7 +107,7 @@ image::quickstart-ui-registration-endpoint-create-details.png[Create a Registrat
 ====
 `name: elemental-cluster1`: change this as per your need
 
-`device-selector`: The xref:machineregistration-reference.adoc#_config_elemental_install_device_selector[device-selector] field can be used to dynamically pick device during installation. The field contains a list of rules to select the device you want.
+`device-selector`: The xref:references/machineregistration-reference.adoc#_config_elemental_install_device_selector[device-selector] field can be used to dynamically pick device during installation. The field contains a list of rules to select the device you want.
 
 `snapshotter`: Type of device used to manage snapshots in OS images.
 ====
@@ -127,7 +127,7 @@ This seed image can then be used to provision an infinite number of machines.
 The seed image is created as a Kubernetes resource above and can be built using the `Build Media` button, but first, you have to select ISO or RAW image.
 
 In opposite to ISO where it needs two devices (device with ISO and another disk where to install {elemental-product-name}), RAW image allows to boot from a single device and directly install the operating system in the device.
-RAW image only contains a boot and a recovery partition and it boots first into recovery mode to install {elemental-product-name} (for information, the process is similar to the xref:reset.adoc#_reset_workflow[reset] one).
+RAW image only contains a boot and a recovery partition and it boots first into recovery mode to install {elemental-product-name} (for information, the process is similar to the xref:node-operational-tasks/reset.adoc#_reset_workflow[reset] one).
 
 image::quickstart-ui-registration-endpoint-build-media.png[Build Media in Registration Endpoints]
 
@@ -143,7 +143,7 @@ You can now boot your nodes with this image and they will:
 
 == Machine Inventory
 
-When nodes are booting up for the first time, they connect to Rancher Manager and a xref:machineinventory-reference.adoc[`Machine Inventory`] is created for each node.
+When nodes are booting up for the first time, they connect to Rancher Manager and a xref:references/machineinventory-reference.adoc[`Machine Inventory`] is created for each node.
 
 image::quickstart-ui-machine-inventory-menu.png[Machine Inventory menu]
 

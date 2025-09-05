@@ -2,11 +2,11 @@
 :revdate: 2025-08-15
 :page-revdate: {revdate}
 
-Elemental allows to specify _label templates_ in the `spec.machineInventoryLabels` and `spec.machineInventoryAnnotations` sections of the xref:machineregistration-reference.adoc[MachineRegistration] resources.
+Elemental allows to specify _label templates_ in the `spec.machineInventoryLabels` and `spec.machineInventoryAnnotations` sections of the xref:references/machineregistration-reference.adoc[MachineRegistration] resources.
 
 Their format is the canonical `key`:``value`` used in Kubernetes labels and annotations.
 
-These label templates are converted to actual labels and annotations attached to each xref:machineinventory-reference.adoc[MachineInventory] resource created during the xref:architecture-machineonboarding.adoc[machine onboarding] phase.
+These label templates are converted to actual labels and annotations attached to each xref:references/machineinventory-reference.adoc[MachineInventory] resource created during the xref:rancher-os-management/architecture/services/architecture-machineonboarding.adoc[machine onboarding] phase.
 
 The resulting labels and annotations have the same `key` of the label template.
 
@@ -17,7 +17,7 @@ The associated `value` is generated:
 
 [IMPORTANT]
 ====
-The Elemental templating functionality covers also the xref:machineregistration-reference.adoc[MachineRegistration] `spec.machineName` field, which defines the resulting hostname of the registering machine and the `name` of the associated xref:machineinventory-reference.adoc[MachineInventory] resource.
+The Elemental templating functionality covers also the xref:references/machineregistration-reference.adoc[MachineRegistration] `spec.machineName` field, which defines the resulting hostname of the registering machine and the `name` of the associated xref:references/machineinventory-reference.adoc[MachineInventory] resource.
 
 See the <<_custom_machine_names,Machine Name>> section for more details.
 ====
@@ -25,7 +25,7 @@ See the <<_custom_machine_names,Machine Name>> section for more details.
 
 == Label Templates' Variables
 
-Elemental Label Templating includes a set of predefined variables that could be used inside the `value` of the _label templates_ specified in the xref:machineregistration-reference.adoc[MachineRegistration].
+Elemental Label Templating includes a set of predefined variables that could be used inside the `value` of the _label templates_ specified in the xref:references/machineregistration-reference.adoc[MachineRegistration].
 
 The syntax used to specify label templates' variables is:
 
@@ -35,28 +35,28 @@ where _VARFAMILY_ defines a group (family) of supported variables and _VARPATH_ 
 
 Elemental currently supports the following _template variable families_:
 
-* xref:label-templates-bios.adoc[*BIOS*]: *${ BIOS \/* _VARPATH_ *}*
-* xref:label-templates-baseboard.adoc[*BaseBoard*]: *${ BaseBoard \/* _VARPATH_ *}*
-* xref:label-templates-cpu.adoc[*CPU*]: *${ CPU \/* _VARPATH_ *}*
-* xref:label-templates-chassis.adoc[*Chassis*]: *${ Chassis \/* _VARPATH_ *}*
-* xref:label-templates-gpu.adoc[*GPU*]: *${ GPU \/* _VARPATH_ *}*
-* xref:label-templates-memory.adoc[*Memory*]: *${ Memory \/* _VARPATH_ *}*
-* xref:label-templates-network.adoc[*Network*]: *${ Network \/* _VARPATH_ *}*
-* xref:label-templates-product.adoc[*Product*]: *${ Product \/* _VARPATH_ *}*
-* xref:label-templates-runtime.adoc[*Runtime*]: *${ Runtime \/* _VARPATH_ *}*
-* xref:label-templates-storage.adoc[*Storage*]: *${ Storage \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-bios.adoc[*BIOS*]: *${ BIOS \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-baseboard.adoc[*BaseBoard*]: *${ BaseBoard \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-cpu.adoc[*CPU*]: *${ CPU \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-chassis.adoc[*Chassis*]: *${ Chassis \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-gpu.adoc[*GPU*]: *${ GPU \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-memory.adoc[*Memory*]: *${ Memory \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-network.adoc[*Network*]: *${ Network \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-product.adoc[*Product*]: *${ Product \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-runtime.adoc[*Runtime*]: *${ Runtime \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-storage.adoc[*Storage*]: *${ Storage \/* _VARPATH_ *}*
 
 [CAUTION]
 ====
-All the _template variable families_ (but _`Random`_) are enabled only if xref:machineregistration-reference.adoc[MachineRegistration]'s `elemental.registration.no-smbios` field is set to `false` (default).
+All the _template variable families_ (but _`Random`_) are enabled only if xref:references/machineregistration-reference.adoc[MachineRegistration]'s `elemental.registration.no-smbios` field is set to `false` (default).
 
 When the `elemental.registration.no-smbios` field is set to `true`, the registering machines do not send any data required for rendering the template variables, so no variables will be available, but the *Random* variables, which are the only notable exception.
 
-*Random* variables are always available since they are built-in on the operator side. They are also special since they are computed only once: see the xref:label-templates-random.adoc[Random Template variables] section for more details.
+*Random* variables are always available since they are built-in on the operator side. They are also special since they are computed only once: see the xref:label-templates/label-templates-random.adoc[Random Template variables] section for more details.
 ====
 
 
-Template variables can be mixed with static text to form the actual labels assigned to (xref:machineinventory-reference.adoc[MachineInventories]).
+Template variables can be mixed with static text to form the actual labels assigned to (xref:references/machineinventory-reference.adoc[MachineInventories]).
 
 [NOTE]
 .Rendering Examples
@@ -95,11 +95,11 @@ Two consecutive hyphens are replaced with one.
 
 == Usage of Label Templates
 
-Label Templates allow to automatically attach and update labels and annotations to each host's xref:machineinventory-reference.adoc[MachineInventory] every time an host registers to the Elemental Operator.
+Label Templates allow to automatically attach and update labels and annotations to each host's xref:references/machineinventory-reference.adoc[MachineInventory] every time an host registers to the Elemental Operator.
 
 [IMPORTANT]
 ====
-Registration happens not only during the xref:architecture-machineonboarding.adoc[onboarding phase]: each host re-registers every 30 minutes (and every time it reboots). During the re-registration, the Label Templates in the associated xref:machineregistration-reference.adoc[MachineRegistration] are re-evaluated and added/updated in the xref:machineinventory-reference.adoc[MachineInventory].
+Registration happens not only during the xref:rancher-os-management/architecture/services/architecture-machineonboarding.adoc[onboarding phase]: each host re-registers every 30 minutes (and every time it reboots). During the re-registration, the Label Templates in the associated xref:references/machineregistration-reference.adoc[MachineRegistration] are re-evaluated and added/updated in the xref:references/machineinventory-reference.adoc[MachineInventory].
 ====
 
 
@@ -111,7 +111,7 @@ There are basically three main cases where the label templates can be of use:
 
 === Hardware data for the Elemental catalog
 
-The Label Templates' variables can be used to attach hardware data to each xref:machineinventory-reference.adoc[MachineInventory] resource (which form the Elemental Catalog).
+The Label Templates' variables can be used to attach hardware data to each xref:references/machineinventory-reference.adoc[MachineInventory] resource (which form the Elemental Catalog).
 
 In this case, annotations may be a better choice since their values are not sanitized.
 
@@ -120,21 +120,21 @@ In this case, annotations may be a better choice since their values are not sani
 The `Label Templates` can be used to generate labels used to identify and select machines
 with special hardware properties to form new Kubernetes Clusters.
 
-The labels attached to each xref:machineinventory-reference.adoc[MachineInventory] are eligible to _selector_ for the xref:machineinventoryselectortemplate-reference.adoc[MachineInventorySelectorTemplate] resource (see the xref:architecture-clusterdeployment.adoc[Kubernetes Cluster provisioning] section for more details).
+The labels attached to each xref:references/machineinventory-reference.adoc[MachineInventory] are eligible to _selector_ for the xref:references/machineinventoryselectortemplate-reference.adoc[MachineInventorySelectorTemplate] resource (see the xref:rancher-os-management/architecture/services/architecture-clusterdeployment.adoc[Kubernetes Cluster provisioning] section for more details).
 
 === Custom Machine Names
 
-The hostname of the onboarding machine can be specified using the xref:machineregistration-reference.adoc[MachineRegistration] `spec.machineName` field.
+The hostname of the onboarding machine can be specified using the xref:references/machineregistration-reference.adoc[MachineRegistration] `spec.machineName` field.
 
 `spec.machineName` value undergoes the same `Label Templates' variables` and `sanitization` processes reserved to the `spec.machineInventoryLabels` field.
 
 [CAUTION]
 ====
-There is one notable difference between the xref:machineregistration-reference.adoc[MachineRegistration] `spec.machineName` and `spec.machineInventorylabels` fields: during the <<_sanitization,sanitization>> process the underscore (`_`) is substituted as the other forbidden characters (i.e., it is substituted by a hyphen: `-`). This is required as the underscore is not allowed in linux hostnames.
+There is one notable difference between the xref:references/machineregistration-reference.adoc[MachineRegistration] `spec.machineName` and `spec.machineInventorylabels` fields: during the <<_sanitization,sanitization>> process the underscore (`_`) is substituted as the other forbidden characters (i.e., it is substituted by a hyphen: `-`). This is required as the underscore is not allowed in linux hostnames.
 ====
 
 
-For more information on how to define the hostname for Elemental hosts, see the xref:hostname.adoc[HowTo/Customize hostname] section.
+For more information on how to define the hostname for Elemental hosts, see the xref:installation/hostname.adoc[HowTo/Customize hostname] section.
 
 [NOTE]
 .Rendering Example

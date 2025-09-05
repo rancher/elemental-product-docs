@@ -4,7 +4,7 @@
 
 Random template variables are built-in in the Elemental Operator.
 
-They allow to include random `Int`, `Hex` or `UUID` values in custom xref:label-templates.adoc[label templates].
+They allow to include random `Int`, `Hex` or `UUID` values in custom xref:label-templates/label-templates.adoc[label templates].
 
 The values are computed on the fly during the `label template variables` rendering.
 
@@ -12,13 +12,13 @@ The values are computed on the fly during the `label template variables` renderi
 .Random label templates are rendered only once
 ====
 
-A label template containing a Random variable is rendered only if the xref:machineinventory-reference.adoc[MachineInventory] of the registering host doesn't have a value for that label yet (a label with the same key is missing or its value is empty).
+A label template containing a Random variable is rendered only if the xref:references/machineinventory-reference.adoc[MachineInventory] of the registering host doesn't have a value for that label yet (a label with the same key is missing or its value is empty).
 
 So, the three cases in which a label template with a Random variable is rendered are:
 
-. the host is registering for the first time and the xref:machineinventory-reference.adoc[MachineInventory] is created anew.
+. the host is registering for the first time and the xref:references/machineinventory-reference.adoc[MachineInventory] is created anew.
 . the label template has been added to the MachineRegistration after the host (re-)registered last time.
-. the xref:machineinventory-reference.adoc[MachineInventory] label matching the label template (same label key) has been manually removed or its value has been cleared out.
+. the xref:references/machineinventory-reference.adoc[MachineInventory] label matching the label template (same label key) has been manually removed or its value has been cleared out.
 ====
 
 
@@ -59,10 +59,10 @@ So, the three cases in which a label template with a Random variable is rendered
 
 The Random Template Variables can be handy for generating custom hostnames to be assigned to the registering host.
 
-Since the hostname must be unique and is assigned through the xref:machineregistration-reference.adoc[MachineRegistration] `spec.machineName` field, Random variables can be used
+Since the hostname must be unique and is assigned through the xref:references/machineregistration-reference.adoc[MachineRegistration] `spec.machineName` field, Random variables can be used
 to ensure uniqueness of a group of host sharing the same custom prefix and/or suffix.
 
-Check the xref:hostname.adoc[HowTo/Customize hostname] section for more information.
+Check the xref:installation/hostname.adoc[HowTo/Customize hostname] section for more information.
 
 .registration example Random template variables
 [,yaml]

@@ -2,7 +2,7 @@
 :revdate: 2025-08-15
 :page-revdate: {revdate}
 
-{elemental-product-name} nodes supports loading xref:cloud-config-reference.adoc[cloud-config] files from specific block devices.
+{elemental-product-name} nodes supports loading xref:references/cloud-config-reference.adoc[cloud-config] files from specific block devices.
 In particular supports loading cloud-config files from an ISO having `CIDATA` as the volume ID or any vFAT formatted
 device labeled with `CIDATA`. If a device matching this criteria is found on early boot the {elemental-product-name} client will
 read it and look for a `user-data` file in its root.

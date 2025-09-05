@@ -10,7 +10,7 @@ Declarative Networking is in *technology preview* state with limited support.
 As such it is not recommended for production environments.
 ====
 
-The xref:machineregistration-reference.adoc[MachineRegistration] supports Declarative Networking and integration with https://github.com/kubernetes-sigs/cluster-api/blob/main/docs/proposals/20220125-ipam-integration.md#ipam-provider[CAPI IPAM Providers].
+The xref:references/machineregistration-reference.adoc[MachineRegistration] supports Declarative Networking and integration with https://github.com/kubernetes-sigs/cluster-api/blob/main/docs/proposals/20220125-ipam-integration.md#ipam-provider[CAPI IPAM Providers].
 
 == Prerequisites
 
@@ -26,7 +26,7 @@ Already included in Elemental provided images.
 
 When using the `nmc` or `nmstate` configurators, the https://github.com/suse-edge/nm-configurator/releases[nmc] or https://github.com/nmstate/nmstate/releases[nmstatectl] tools need to be installed on the machine.
 
-Currently this can be achieved by xref:custom-images.adoc#_remastering_an_os_image_with_a_custom_dockerfile[customizing an Elemental OS image] with a custom command:
+Currently this can be achieved by xref:operator-operational-tasks/custom-images.adoc#_remastering_an_os_image_with_a_custom_dockerfile[customizing an Elemental OS image] with a custom command:
 
 [tabs]
 ======
@@ -198,11 +198,11 @@ status:
 
 Whenever a `MachineInventory` is deleted, the default (DHCP) network configuration will be restored, deleting any network profile on the machine and restarting the network stack. Finally the assigned IPs will be released.
 
-For more information and details on how troubleshoot issues, please consult the xref:troubleshooting-network.adoc[Troubleshooting Declarative Networking documentation].
+For more information and details on how troubleshoot issues, please consult the xref:troubleshooting/troubleshooting-network.adoc[Troubleshooting Declarative Networking documentation].
 
 === Configurators
 
-On the Elemental machine, `elemental-register` can configure the `NetworkManager` in different ways. The configurator in use is defined in the xref:machineregistration-reference.adoc#_config_network[MachineRegistration.spec.network]:
+On the Elemental machine, `elemental-register` can configure the `NetworkManager` in different ways. The configurator in use is defined in the xref:references/machineregistration-reference.adoc#_config_network[MachineRegistration.spec.network]:
 
 * https://github.com/suse-edge/nm-configurator[nmc]
 * https://nmstate.io/[nmstate]
@@ -226,7 +226,7 @@ include::example$network/machineregistration-nmc.yaml[]
 nmstate::
 +
 --
-The `nmstate` configurator uses https://nmstate.io/examples.html[nmstate syntax] to generate NetworkManager's connection files. Note that https://github.com/nmstate/nmstate/releases[nmstatectl] needs to be installed on the Elemental system to use this configurator. This is not included by default in Elemental images, but can be installed when building a xref:custom-images.adoc[custom image].
+The `nmstate` configurator uses https://nmstate.io/examples.html[nmstate syntax] to generate NetworkManager's connection files. Note that https://github.com/nmstate/nmstate/releases[nmstatectl] needs to be installed on the Elemental system to use this configurator. This is not included by default in Elemental images, but can be installed when building a xref:operator-operational-tasks/custom-images.adoc[custom image].
 
 .example MachineRegistration using nmstate configurator
 [,yaml]

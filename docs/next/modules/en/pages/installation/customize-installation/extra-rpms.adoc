@@ -11,7 +11,7 @@ For that use case the following files are required:
 
 We can handle it all into a single `SeedImage.spec.cloud-config` section assuming the additional RPM is available to download it from a remote server at installation time.
 
-Consider the following cloud-config data which could be used as the content of the `cloud-config` section in a xref:seedimage-reference.adoc#_seedimagespec_reference[SeedImage resource].
+Consider the following cloud-config data which could be used as the content of the `cloud-config` section in a xref:references/seedimage-reference.adoc#_seedimagespec_reference[SeedImage resource].
 
 [,yaml]
 ----

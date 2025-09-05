@@ -77,7 +77,7 @@ include::example$upgrade/upgrade-cluster-target.yaml[]
 
 This describes a cloud-init or yip config that will be copied to each upgraded node to the `/oem/90_operator.yaml` path. +
 This config will be applied by the system after reboot. +
-For more information and examples, see the `MachineRegistration` `spec.config.cloud-config` xref:cloud-config-reference.adoc[reference].
+For more information and examples, see the `MachineRegistration` `spec.config.cloud-config` xref:references/cloud-config-reference.adoc[reference].
 
 == `nodeSelector`
 
@@ -235,8 +235,8 @@ Note that the node filesystem is mounted at `/host` inside the container.
 
 [CAUTION]
 ====
-When using any {elemental-product-name} or xref:custom-images.adoc[{elemental-product-name} based image] you are expected to only edit the `env` key to optionally set the `FORCE`, `UPGRADE_RECOVERY`, or `UPGRADE_RECOVERY_ONLY` variables. +
-For more info you can read the xref:upgrade.adoc#_upgrade_via_command_line_interface[upgrade] documentation. +
+When using any {elemental-product-name} or xref:operator-operational-tasks/custom-images.adoc[{elemental-product-name} based image] you are expected to only edit the `env` key to optionally set the `FORCE`, `UPGRADE_RECOVERY`, or `UPGRADE_RECOVERY_ONLY` variables. +
+For more info you can read the xref:node-operational-tasks/upgrade.adoc#_upgrade_via_command_line_interface[upgrade] documentation. +
 Any other change to the `upgradeContainer` may result in issues during upgrades. +
 ====
 

@@ -8,7 +8,7 @@ to use Kubernetes approaches to upgrade the components.
 == {elemental-product-name} node upgrade
 
 {elemental-product-name} nodes are upgraded with the {elemental_operator_name}. Refer to the
-xref:operatorchart-reference.adoc[{elemental_operator_name}] documentation for complete information.
+xref:references/operatorchart-reference.adoc[{elemental_operator_name}] documentation for complete information.
 
 Upgrade can be achieve either with CLI or UI:
 
@@ -111,9 +111,9 @@ If both `osImage` and `ManagedOSVersion` are defined in the same `ManagedOSImage
 
 === Managing available versions
 
-It is possible to create xref:managedosversion-reference.adoc[ManagedOSVersions] directly, or to subscribe to xref:managedosversionchannel-reference.adoc[ManagedOSVersionChannels] to automatically sync `ManagedOSVersions` from them.
+It is possible to create xref:references/managedosversion-reference.adoc[ManagedOSVersions] directly, or to subscribe to xref:references/managedosversionchannel-reference.adoc[ManagedOSVersionChannels] to automatically sync `ManagedOSVersions` from them.
 
-For more details and a list of available channels, or to even make your own, please read the xref:channels.adoc[documentation].
+For more details and a list of available channels, or to even make your own, please read the xref:operator-operational-tasks/channels.adoc[documentation].
 
 == Upgrade via user interface
 

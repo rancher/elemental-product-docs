@@ -28,8 +28,8 @@ the corresponding host, overriding the previous assigned hostname (`rancher-{$RA
 
 == Set a custom hostname
 
-The hostname can be specified setting the xref:machineregistration-reference.adoc#_machinename[`machineName`] field in the
-xref:machineregistration-reference.adoc['MachineRegistration'] resource.
+The hostname can be specified setting the xref:references/machineregistration-reference.adoc#_machinename[`machineName`] field in the
+xref:references/machineregistration-reference.adoc['MachineRegistration'] resource.
 
 The hostname set in the `machineName` field is expected to be in a template form, in order to be uniquely generated for each registering node, using SMBIOS and Hardware Labels data.
 
@@ -51,7 +51,7 @@ import Registration from "!!raw-loader!@site/examples/quickstart/registration-ha
 == Keep the hostname assigned from DHCP
 
 In order to keep the hostname assigned from the DHCP server before the host registers to the operator,
-the `MachineRegistration` xref:machineregistration-reference.adoc#_machinename[`machineName field`] should be set to the `${System Data/Runtime/Hostname}` Hardware Label.
+the `MachineRegistration` xref:references/machineregistration-reference.adoc#_machinename[`machineName field`] should be set to the `${System Data/Runtime/Hostname}` Hardware Label.
 
 This way {elemental-product-name} will use the current hostname as the `MachineInventory` name during
 the registration phase, which will be later set as the static hostname of the host during the

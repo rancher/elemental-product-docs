@@ -2,7 +2,7 @@
 :revdate: 2025-08-15
 :page-revdate: {revdate}
 
-The {elemental_operator_name} allows subscription to one or more xref:managedosversionchannel-reference.adoc[ManagedOSVersionChannels], to automatically populate a list of xref:managedosversion-reference.adoc[ManagedOSVersions] ready to be consumed to build new ISOs using a xref:seedimage-reference.adoc[SeedImage], or to upgrade existing {elemental-product-name} nodes to new OS versions using the xref:managedosimage-reference.adoc[ManagedOSImage].
+The {elemental_operator_name} allows subscription to one or more xref:references/managedosversionchannel-reference.adoc[ManagedOSVersionChannels], to automatically populate a list of xref:references/managedosversion-reference.adoc[ManagedOSVersions] ready to be consumed to build new ISOs using a xref:references/seedimage-reference.adoc[SeedImage], or to upgrade existing {elemental-product-name} nodes to new OS versions using the xref:references/managedosimage-reference.adoc[ManagedOSImage].
 
 A channel is normally distributed as an OCI container image, but it is also possible to reference the URI of a JSON file directly containing a list of `ManagedOSVersion`. Note that the best practice is to distribute channels using images, so that distribution is consistent with all other images needed by the {elemental_operator_name}. This can be beneficial for example when deploying in an Airgapped environment.
 
@@ -114,9 +114,9 @@ image:channel-naming.png[Channel naming]
 The only requirement to make your own custom syncer is to make it output a JSON file to `/data/output` and keep the correct JSON structure.
 
 The file is a JSON array containing ISO and Container entries.
-Each entry in the array is mapped 1:1 with a xref:managedosversion-reference.adoc[ManagedOSVersion] object.
+Each entry in the array is mapped 1:1 with a xref:references/managedosversion-reference.adoc[ManagedOSVersion] object.
 
-`"type": "iso"` entries must contain a bootable {elemental-product-name} ISO and are used by xref:seedimage-reference.adoc[SeedImages], while `"type": "container"` entries are used by xref:managedosimage-reference.adoc[ManagedOSImage] for {elemental-product-name} upgrades.
+`"type": "iso"` entries must contain a bootable {elemental-product-name} ISO and are used by xref:references/seedimage-reference.adoc[SeedImages], while `"type": "container"` entries are used by xref:references/managedosimage-reference.adoc[ManagedOSImage] for {elemental-product-name} upgrades.
 
 If in doubt, the https://github.com/rancher-sandbox/elemental-channels[elemental-channels] project can be used as a reference implementation on how to build and maintain your own channels.
 

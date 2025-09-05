@@ -4,7 +4,7 @@
 
 {elemental-product-name} (Elemental) installed OS images can be customized in different ways.
 
-One option is to remaster container OS images by simply using a docker build. SL Micro images are regular container images, so it is absolutely possible to create a new image using a Dockerfile based on SLE Micro. See xref:/custom-images.adoc[Build Custom OS Images] section for further details, this is the preferred option.
+One option is to remaster container OS images by simply using a docker build. SL Micro images are regular container images, so it is absolutely possible to create a new image using a Dockerfile based on SLE Micro. See xref:operator-operational-tasks/custom-images.adoc[Build Custom OS Images] section for further details, this is the preferred option.
 
 Alternatively, it is also possible to provide additional resources and configuration within the installation media so that during installation, or eventually at boot time, additional binaries such as drivers or extra configuration files can be included.
 
@@ -14,7 +14,7 @@ This section focuses on how to customize the installation process from a given O
 
 The Elemental installation can be customized in three different non-exclusive ways. First, including additional cloud-config files into the installed system, second, by including additional cloud-config file into the installation media, and finally, by adding a custom Elemental client configuration file (`/etc/elemental/config.yaml`).
 
-. The additional cloud-config files included into the installed system are useful to run custom operations at boot time. See the xref:cloud-config-reference.adoc[Cloud Config Reference].
+. The additional cloud-config files included into the installed system are useful to run custom operations at boot time. See the xref:references/cloud-config-reference.adoc[Cloud Config Reference].
 
 . The additional cloud-config files into the installation media are useful to run custom operations at install time or to customize the installation environment to match certain specific needs.
 
@@ -24,7 +24,7 @@ A common pattern is to combine the three ways described above depending on the s
 
 === Adding additional cloud-config files within the installed OS
 
-In order to include additional cloud-config files during the installation they need to be added to the installation data into the MachineRegistration resource. The most simple way to achieve it is by adding the desired cloud-config directly as part of the MachineRegistration xref:machineregistration-reference.adoc#_config_cloud_config[devoted section]. See the example below
+In order to include additional cloud-config files during the installation they need to be added to the installation data into the MachineRegistration resource. The most simple way to achieve it is by adding the desired cloud-config directly as part of the MachineRegistration xref:references/machineregistration-reference.adoc#_config_cloud_config[devoted section]. See the example below
 
 
 [,yaml]
@@ -47,7 +47,7 @@ spec:
               passwd: mysecretpasswd
 ----
 
-Alternatively, cloud-config files path can also be referenced explicitly so the configuration is not strictly needed to live within the MachineRegistration resource itself. The `config-urls` section of the MachineRegistration is used for this exact purpose. See xref:machineregistration-reference.adoc[MachineRegistration reference] page.
+Alternatively, cloud-config files path can also be referenced explicitly so the configuration is not strictly needed to live within the MachineRegistration resource itself. The `config-urls` section of the MachineRegistration is used for this exact purpose. See xref:references/machineregistration-reference.adoc[MachineRegistration reference] page.
 
 `config-urls` is a list of string literals where each item is an HTTP URL or a local path pointing to a cloud-config file. The local path is evaluated during the installation, hence it must exists within the installation media, commonly an ISO image.
 
@@ -81,9 +81,9 @@ Elemental live ISOs, when booted, have the ISO root mounted at `/run/initramfs/l
 
 === Adding additional cloud-config files within the installation media
 
-Adding additional cloud-config files within he installation media might be required to configure the installation environment (e.g. setting the network connectivity to register) or to provide some xref:cloud-config-reference.adoc#_elemental_client_cloud_config_hooks[installation hooks] to run custom logic during the installation itself.
+Adding additional cloud-config files within he installation media might be required to configure the installation environment (e.g. setting the network connectivity to register) or to provide some xref:references/cloud-config-reference.adoc#_elemental_client_cloud_config_hooks[installation hooks] to run custom logic during the installation itself.
 
-In Elemental the xref:seedimage-reference.adoc[SeedImage] resources are the responsibles of handling the installation media. So the simplest place to include additional cloud-config data is within the installation media is by adding it to the xref:seedimage-reference.adoc#_seedimagespec_reference[`cloud-config` section]. By doing so the given cloud-config will be already evaluated form the very first boot of the installation media and also honored during the installation phase in case some install hook is provided. Consider the following example:
+In Elemental the xref:references/seedimage-reference.adoc[SeedImage] resources are the responsibles of handling the installation media. So the simplest place to include additional cloud-config data is within the installation media is by adding it to the xref:references/seedimage-reference.adoc#_seedimagespec_reference[`cloud-config` section]. By doing so the given cloud-config will be already evaluated form the very first boot of the installation media and also honored during the installation phase in case some install hook is provided. Consider the following example:
 
 [,yaml]
 ----

@@ -8,7 +8,7 @@ While these variable families are still correctly rendered in current Elemental 
 their support will be removed in future Elemental Operator releases.
 
 If you are still using these old Label Templates' variable families, please switch to
-xref:label-templates.adoc#_label_templates_variables[the newer available ones] if possible.
+xref:label-templates/label-templates.adoc#_label_templates_variables[the newer available ones] if possible.
 
 To simplify the adoption of the new variables, check the tables mapping the deprecated variables to the new supported ones:
 

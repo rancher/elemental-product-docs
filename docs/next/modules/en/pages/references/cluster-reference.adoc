@@ -4,7 +4,7 @@
 
 A `Cluster` definition includes a `kubernetesVersion` and a list of `machinePools` to deploy the cluster to.
 
-For how to select a `kubernetesVersion` please check our xref:kubernetesversions.adoc[Kubernetes Versions] page.
+For how to select a `kubernetesVersion` please check our xref:references/kubernetesversions.adoc[Kubernetes Versions] page.
 
 A `machinePool` is a bundle of configuration with a `ObjectReference` so the cluster is deployed to those `machinePools`
 with the proper roles (etcd, control-plane, worker) with a quantity (how many nodes to deploy from this pool) and some extra configurations (rolling update config, max unhealthy nodes, etc...).
@@ -159,7 +159,7 @@ spec:
 A `machineConfigRef` is a generic k8s `ObjectReference` which usually contain a
 `kind` `name` and `apiVersion` to point to a different object.
 
-In {elemental-product-name}, we set this to a xref:machineinventoryselectortemplate-reference.adoc[MachineInventorySelectorTemplate].
+In {elemental-product-name}, we set this to a xref:references/machineinventoryselectortemplate-reference.adoc[MachineInventorySelectorTemplate].
 This allows us to point to more than one object by using the selector.
 
 === Example

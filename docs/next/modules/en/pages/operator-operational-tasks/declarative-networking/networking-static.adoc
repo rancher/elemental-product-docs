@@ -12,7 +12,7 @@ The `nm-configurator` https://github.com/suse-edge/nm-configurator?tab=readme-ov
 
 This solution does not require a remote IPAM provider, but requires the user to maintain mapping between known MAC addresses and IP Addresses.  
 
-In this example, we are going to customize an Elemental image, and include a xref:cloud-config-reference.adoc#_configuration_syntax[yip config] that will apply the static network config early at boot.
+In this example, we are going to customize an Elemental image, and include a xref:references/cloud-config-reference.adoc#_configuration_syntax[yip config] that will apply the static network config early at boot.
 
 The following configuration covers 2 nodes with a very basic network setup.
 
@@ -60,7 +60,7 @@ docker build --build-arg IMAGE_REPO=myrepo/static-network-os \
 docker push myrepo/static-network-os:v1.1.1
 ----
 
-Note that since the static network config is included in the image, this requires you to build and maintain different images with different configurations, most likely one per nodepool or one per cluster for example. Custom OS images need to be maintained to create the initial ISO bootable image (via a xref:seedimage-reference.adoc[SeedImage]), but also when xref:upgrade.adoc[upgrading] the machines. The desired static network config **must** be present on the OS images used with the xref:managedosimage-reference.adoc[ManagedOSImage], otherwise the config will be missing when booting from the upgraded system.  
+Note that since the static network config is included in the image, this requires you to build and maintain different images with different configurations, most likely one per nodepool or one per cluster for example. Custom OS images need to be maintained to create the initial ISO bootable image (via a xref:references/seedimage-reference.adoc[SeedImage]), but also when xref:node-operational-tasks/upgrade.adoc[upgrading] the machines. The desired static network config **must** be present on the OS images used with the xref:references/managedosimage-reference.adoc[ManagedOSImage], otherwise the config will be missing when booting from the upgraded system.  
 
 The custom OS image can also be used as it is to build a bootable raw disk image:  
 
@@ -83,7 +83,7 @@ spec:
 
 == Create a bootable ISO
 
-You can now xref:custom-images.adoc#_create_a_custom_bootable_installation_iso[build an ISO container] from this OS container image. For more information on how to customize Elemental images, please refer to the xref:custom-images.adoc[documentation].  
+You can now xref:operator-operational-tasks/custom-images.adoc#_create_a_custom_bootable_installation_iso[build an ISO container] from this OS container image. For more information on how to customize Elemental images, please refer to the xref:operator-operational-tasks/custom-images.adoc[documentation].  
 
 [,dockerfile]
 ----
@@ -114,7 +114,7 @@ docker build -t myrepo/static-network-iso:v1.1.1 .
 docker push myrepo/static-network-iso:v1.1.1
 ----
 
-Once the ISO container is published on your registry, you can refer to it in the xref:seedimage-reference.adoc[SeedImage] like any other Elemental distributed ISO image.  
+Once the ISO container is published on your registry, you can refer to it in the xref:references/seedimage-reference.adoc[SeedImage] like any other Elemental distributed ISO image.  
 
 [,yaml]
 ----

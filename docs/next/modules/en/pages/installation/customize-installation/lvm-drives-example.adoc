@@ -8,7 +8,7 @@ As an example, we have an host with three disks (`/dev/sda`, `/dev/sdb` and `/de
 
 The first disk is used for a regular Elemental installation and the other remaining two are used as part of a LVM group where arbitrary logical volumes are created, formatted and mounted at boot time via an extended `fstab` file.
 
-For this example cloud-config steps are required in two different stages. First, some xref:cloud-config-reference.adoc#_elemental_client_cloud_config_hooks[installation hooks] are needed to prepare and handle LVM volumes during the installation. Second, a cloud-config is required at boot time to ensure the created LVM volumes are included in `/etc/fstab` and consequently mounted.
+For this example cloud-config steps are required in two different stages. First, some xref:references/cloud-config-reference.adoc#_elemental_client_cloud_config_hooks[installation hooks] are needed to prepare and handle LVM volumes during the installation. Second, a cloud-config is required at boot time to ensure the created LVM volumes are included in `/etc/fstab` and consequently mounted.
 
 Installation hooks can be included to the `SeedImage.spec.cloud-config` section with something like:
 
@@ -74,5 +74,5 @@ spec:
 
 [NOTE]
 ====
-The `initramfs` xref:cloud-config-reference.adoc[stage] is the last stage before switching to the actual root tree. At this stage, the `/etc/fstab` file already exists and can be adapted before switching root. Once running in the final root tree, SystemD will handle the rest of the initialization and apply it.
+The `initramfs` xref:references/cloud-config-reference.adoc[stage] is the last stage before switching to the actual root tree. At this stage, the `/etc/fstab` file already exists and can be adapted before switching root. Once running in the final root tree, SystemD will handle the rest of the initialization and apply it.
 ====

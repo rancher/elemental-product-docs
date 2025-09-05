@@ -8,7 +8,7 @@ Follow this guide to restore an {elemental-product-name} configuration from a ba
 
 Go to official https://docs.ranchermanager.rancher.io/how-to-guides/new-user-guides/backup-restore-and-disaster-recovery/restore-rancher[Rancher documentation] and make sure that `rancher-backup operator` is installed and has access to backup files.
 
-You first have to follow this xref:backup.adoc[documentation] to do a backup of {elemental-product-name} resources.
+You first have to follow this xref:operator-operational-tasks/backup.adoc[documentation] to do a backup of {elemental-product-name} resources.
 
 == Restore the {elemental-product-name} configuration with rancher-backup operator
 

@@ -2,7 +2,7 @@
 :revdate: 2025-06-27
 :page-revdate: {revdate}
 
-The MachineInventorySelectorTemplate is a user defined resource that will be used as the blueprint to create the required xref:machineinventoryselector-reference.adoc[MachineInventorySelectors].
+The MachineInventorySelectorTemplate is a user defined resource that will be used as the blueprint to create the required xref:references/machineinventoryselector-reference.adoc[MachineInventorySelectors].
 
 It is the resource responsible of defining the matching criteria to pair an inventoried machine with a Cluster resource.
 

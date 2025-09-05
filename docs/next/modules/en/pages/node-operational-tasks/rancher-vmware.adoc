@@ -12,7 +12,7 @@ Rancher 2.8 or higher installed and running. See the quick start guides.
 
 == Step 1: Create the registration end point
 
-We need to create an ISO image to bootstrap nodes and register against the Rancher instance. For that a registration end point (xref:machineregistration-reference.adoc[MachineRegistration] resource) is required.
+We need to create an ISO image to bootstrap nodes and register against the Rancher instance. For that a registration end point (xref:references/machineregistration-reference.adoc[MachineRegistration] resource) is required.
 
 See this example of `MachineRegistration`:
 
@@ -67,11 +67,11 @@ spec:
     ...
 ----
 
-`emulated-tpm-seed: -1` sets the client to use a random seed to compute TPM hash, this is useful to be capable to reuse the same registration end point definition for multiple machines. See further xref:tpm.adoc[TPM documentation].
+`emulated-tpm-seed: -1` sets the client to use a random seed to compute TPM hash, this is useful to be capable to reuse the same registration end point definition for multiple machines. See further xref:operator-operational-tasks/tpm.adoc[TPM documentation].
 
 == Step 2: Create the installation ISO
 
-The installation media needs to be tied to a specific registration end point. This is created and handled with the xref:seedimage-reference.adoc[SeedImage] resource.
+The installation media needs to be tied to a specific registration end point. This is created and handled with the xref:references/seedimage-reference.adoc[SeedImage] resource.
 
 Consider the following example:
 

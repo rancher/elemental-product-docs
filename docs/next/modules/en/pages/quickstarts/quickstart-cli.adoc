@@ -284,9 +284,9 @@ for example Kubernetes``v1.24.8`` for rke2 would be `v1.24.8+rke2r1` and for k3s
 
 To see all compatible versions check the https://www.suse.com/suse-rancher/support-matrix/all-supported-versions/[Rancher Support Matrix] PDF for rke/rke2/k3s versions and their components.
 
-You can also check our xref:kubernetesversions.adoc[Version doc] to know how to obtain those versions.
+You can also check our xref:references/kubernetesversions.adoc[Version doc] to know how to obtain those versions.
 
-Check our xref:cluster-reference.adoc[Cluster Spec] page for more info about the `Cluster` resource.
+Check our xref:references/cluster-reference.adoc[Cluster Spec] page for more info about the `Cluster` resource.
 
 == How can I follow what is going on behind the scenes?
 
