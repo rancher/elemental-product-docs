@@ -1,0 +1,40 @@
+= Register an Unmanaged OS
+:revdate: 2025-07-03
+:page-revdate: {revdate}
+
+Normally, the {elemental_operator_url}[{elemental_operator_name}] manages operating systems that are installed and configured by the {elemental_toolkit_url}[{elemental_toolkit_name}]. +
+For example, in order to automate OS installation, upgrade, and reset, the `elemental-register` relies on the `elemental` CLI to execute these operations.
+
+However, it is also possible to register and provision {elemental-product-name} "Toolkitless" systems.
+
+In this scenario, xref:rancher-os-management/architecture/architecture-components.adoc#_elemental_register_command_line_tool[elemental-register] needs to be installed on the system. +
+Optionally, the xref:rancher-os-management/architecture/architecture-components.adoc#_elemental_system_agent_daemon[elemental-system-agent] can be installed. Note that without the `elemental-system-agent`, the {elemental_operator_name} will not be able to provision any k8s cluster on the machine. In this case the {elemental_operator_name} can only be used for OS Inventory purposes only.
+
+Finally, on the management cluster, the `MachineRegistration` must enable the `spec.config.elemental.registration.no-toolkit` flag.
+
+Once `no-toolkit` is enabled on the `MachineRegistration`, and a new registration occurs using `elemental-register --install` on the system, a new `MachineInventory` will be created on the management cluster:
+
+[,bash]
+----
+kubectl -n fleet-default describe machineinventory my-unmanaged-os-machine
+----
+
+The `MachineInventory` will be annotated with the `elemental.cattle.io/os.unmanaged: "true"` annotation, highlighting that this machine is not managed and has limited functionality.
+
+On the system, upon successful registration, the `/etc/rancher/elemental/agent/config.yaml` and `/var/lib/elemental/agent/elemental_connection.json` files are automatically created to configure the `elemental-system-agent`.
+The `elemental-system-agent` component is needed for K8s provisioning and Reset triggers.
+
+When a xref:node-operational-tasks/reset.adoc[machine reset] is triggered, for example by deleting the `MachineInventory` directly, the `elemental-system-agent` will execute a simple reset plan that will create the `/var/lib/elemental/.unmanaged_reset` sentinel file. +
+The presence of this file indicates that the machine needs a reset. This may involve stopping services, uninstalling packages, formatting devices, and so on, depending how the machine is customly managed.
+
+== Supported Features
+
+* Registration of a `MachineInventory`
+* K8s provisioning (when the xref:rancher-os-management/architecture/architecture-components.adoc#_elemental_system_agent_daemon[elemental-system-agent] is installed and running on the machine)
+* Reset triggers (when the xref:rancher-os-management/architecture/architecture-components.adoc#_elemental_system_agent_daemon[elemental-system-agent] is installed and running on the machine)
+
+== Unsupported Features
+
+* Cloud-init driven xref:references/cloud-config-reference.adoc[configuration]
+* OS xref:node-operational-tasks/upgrade.adoc[Upgrades]
+* OS xref:node-operational-tasks/reset.adoc[Reset]
