@@ -1,0 +1,43 @@
+= Configure K3s and RKE2 internal and external IP addresses
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+K3s and RKE2 allow to specify the internal and external IP addresses of a node via the `--node-ip` and `--node-external-ip` parameters.
+
+Rancher Provisioning allows to fill those parameters collecting the IP address from each node's network interface.
+
+Anyway, the methods to collect those ip options for _Custom_ Rancher Clusters and _Elemental_ Rancher Clusters differ.
+
+== K3s and RKE2 internal and external IP addresses configuration in Rancher Cluster provisioning
+
+Rancher provisioning allows to specify in the Rancher Agent section the network interfaces that should be bound to the internal and external IP addresses of each provisioned node.
+
+This is performed by adding the network interface names from which the IP addresses should be extracted in the `CATTLE_INTERNAL_ADDRESS` and the `CATTLE_ADDRESS` Agent Environment Variables (https://ranchermanager.docs.rancher.com/reference-guides/cluster-configuration/rancher-server-configuration/use-existing-nodes/rancher-agent-options#ip-address-options[see Rancher docs]).
+
+[NOTE]
+====
+The `CATTLE_INTERNAL_ADDRESS` and the `CATTLE_ADDRESS` Agent Environment Variables can be directly filled with the desired IP addresses. Anyway, since the internal and external IP addresses are _per node_, this would not work but for single node clusters.
+====
+
+
+[CAUTION]
+====
+While during the creation of an Elemental Cluster it is possible to add Agent Environment Variables, the `CATTLE_ADDRESS` and the `CATTLE_INTERNAL_ADDRESS` ones are ignored and would not result in the configuration of the internal and external IP addresses of the provisioned nodes.
+====
+
+
+== Configure K3s and RKE2 internal and external IP addresses in Elemental Clusters
+
+Elemental allows to configure the internal and external IP addresses of the Cluster Nodes attaching the `elemental.cattle.io/InternalIP` and `elemental.cattle.io/ExternalIP` labels to the xref:references/machineinventory-reference.adoc[MachineInventory] resources tracking the target nodes.
+
+These labels when attached to a xref:references/machineinventory-reference.adoc[MachineInventory] resource are used to fill the internal and external IP addresses of the associated nodes.
+
+The labels can be added to the xref:references/machineregistration-reference.adoc[MachineRegistration] `machineInventoryLabels` fields, using the xref:label-templates/label-templates-network.adoc[Network Label Template] IP address variables as values, in order to allow to collect the IP addresses of each node.
+
+Example: xref:references/machineregistration-reference.adoc[MachineRegistration] where nodes will have the internal IP address set from interface eth0 and the external IP address from eth1.
+
+.registration.yaml
+[,yaml]
+----
+include::example$labeltemplates/registration.yaml[]
+----
