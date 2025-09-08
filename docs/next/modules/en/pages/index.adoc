@@ -4,7 +4,7 @@
 
 {elemental-product-name} is a software stack enabling centralized, full cloud-native OS management with Kubernetes.
 
-xref:release-notes.adoc[**Latest Release: v1.6.9**]
+xref:release-notes.adoc[**Latest Release: v1.7.3**]
 
 The {elemental-product-name} Stack consists of a handful of packages on top of SLE Micro:
 
