@@ -1,5 +1,5 @@
 = Troubleshooting Declarative Networking
-:revdate: 2025-08-15
+:revdate: 2025-09-08
 :page-revdate: {revdate}
 
 Given the following sample registration:

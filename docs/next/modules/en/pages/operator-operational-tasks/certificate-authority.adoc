@@ -1,5 +1,5 @@
 = Certificate Authority Verification
-:revdate: 2025-08-15
+:revdate: 2025-09-08
 :page-revdate: {revdate}
 
 The `elemental-register` and `elemental-system-agent` rely on the https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/resources/update-rancher-certificate.html[Rancher's Certificate Authority configuration] to verify the xref:references/machineregistration-reference.adoc#_config_elemental_registration[MachineRegistration] URL, and to remotely watch plans.

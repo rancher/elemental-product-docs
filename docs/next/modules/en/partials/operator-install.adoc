@@ -1,5 +1,5 @@
 == Install {elemental-product-name} Operator
-:revdate: 2025-07-03
+:revdate: 2025-09-08
 :page-revdate: {revdate}
 
 `elemental-operator` is the management endpoint, running the management cluster and taking care of creating inventories, registrations for machines and much more.

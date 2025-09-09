@@ -1,5 +1,5 @@
 = Label Templates' deprecated variables
-:revdate: 2025-08-15
+:revdate: 2025-09-08
 :page-revdate: {revdate}
 
 *SMBIOS* and *Hardware* variable families have been deprecated in the Elemental Operator v1.7.0.

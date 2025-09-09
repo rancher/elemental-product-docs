@@ -1,5 +1,5 @@
 = Customize {elemental-product-name} Installation
-:revdate: 2025-08-15
+:revdate: 2025-09-08
 :page-revdate: {revdate}
 
 {elemental-product-name} (Elemental) installed OS images can be customized in different ways.

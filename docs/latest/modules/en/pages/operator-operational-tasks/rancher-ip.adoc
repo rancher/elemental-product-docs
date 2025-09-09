@@ -1,5 +1,5 @@
 = Configure K3s and RKE2 internal and external IP addresses
-:revdate: 2025-08-15
+:revdate: 2025-09-08
 :page-revdate: {revdate}
 
 K3s and RKE2 allow to specify the internal and external IP addresses of a node via the `--node-ip` and `--node-external-ip` parameters.

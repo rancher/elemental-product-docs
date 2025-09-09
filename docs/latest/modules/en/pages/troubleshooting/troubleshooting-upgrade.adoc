@@ -1,5 +1,5 @@
 = Troubleshooting upgrade
-:revdate: 2025-08-15
+:revdate: 2025-09-08
 :page-revdate: {revdate}
 
 For a high level overview of the upgrade lifecycle and components, please refer to the xref:rancher-os-management/upgrade-lifecycle.adoc[related document].
