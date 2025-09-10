@@ -1,10 +1,10 @@
 = OS Management for Rancher
-:revdate: 2025-08-15
+:revdate: 2025-09-08
 :page-revdate: {revdate}
 
 {elemental-product-name} is a software stack enabling centralized, full cloud-native OS management with Kubernetes.
 
-xref:release-notes.adoc[**Latest Release: v1.6.9**]
+xref:release-notes.adoc[**Latest Release: v1.7.3**]
 
 The {elemental-product-name} Stack consists of a handful of packages on top of SLE Micro:
 
@@ -34,12 +34,12 @@ ARM (aarch64) is functional in the development stage. ARM is currently only test
 
 Get an {elemental-product-name} Cluster up and running with your preferred method
 
-* With Rancher manager xref:quickstart-ui.adoc[{elemental-product-name} plugin]
-* With the xref:quickstart-cli.adoc[{elemental-product-name} CLI]
+* With Rancher manager xref:quickstarts/quickstart-ui.adoc[{elemental-product-name} plugin]
+* With the xref:quickstarts/quickstart-cli.adoc[{elemental-product-name} CLI]
 
 [NOTE]
 .What's next?
 ====
-Want more details? Take a look at the xref:architecture.adoc[Architecture] section or reach out to the {elemental_slack_url}[{elemental_slack_name}].
+Want more details? Take a look at the xref:rancher-os-management/architecture/architecture.adoc[Architecture] section or reach out to the {elemental_slack_url}[{elemental_slack_name}].
 ====
 

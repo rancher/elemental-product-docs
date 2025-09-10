@@ -1,0 +1,16 @@
+= Architecture overview
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+{elemental-product-name} is the combination of two main projects: the link:{elemental_toolkit_url}[{elemental_toolkit_name}] and the link:{elemental_operator_url}[{elemental_operator_name}].
+
+The link:{elemental_toolkit_url}[{elemental_toolkit_name}] enables OS installation and updates from OCI container images, so the OS can be distributed and retrieved via container registries.
+
+The link:{elemental_operator_url}[{elemental_operator_name}] extends Rancher with OS provisioning and OS management functionalities, leveraging the {elemental-product-name} Toolkit.
+It bridges the gap between the link:{elemental_toolkit_url}[{elemental_toolkit_name}] and the
+https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/launch-kubernetes-with-rancher#launching-kubernetes-on-new-nodes-in-an-infrastructure-provider-1[Rancher RKE2/K3s Cluster provisioning],
+to provide a seamless experience going from hosts without OS to fully configured Kubernetes Clusters.
+
+This is achieved through a xref:rancher-os-management/architecture/services/architecture-services.adoc[set of services] offered by {elemental-product-name} that are made possible thanks to the xref:rancher-os-management/architecture/architecture-components.adoc[components] borrowed from the {elemental-product-name} Toolkit and the {elemental-product-name} Operator projects.
+
+image:elemental-architecture-v1.5.png[]
