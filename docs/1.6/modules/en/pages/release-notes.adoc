@@ -71,6 +71,10 @@ helm upgrade --install -n cattle-elemental-system --create-namespace \
 
 == Known issues
 
+=== Selinux in permissive mode
+
+{elemental-product-name} does not support Selinux in enforcing mode.
+
 === Install hooks not applicable in MachineRegistration resources
 
 The cloud-config defined in `MachineRegistrations` is not applying the `after-install-chroot` stage. Since SL Micro 6.1, in order to apply the `after-install-chroot` xref:cloud-config-reference.adoc#_elemental_client_cloud_config_hooks[yip stages] they should be defined as part of the `SeedImage` cloud-config. This stage is executed at install time and needs to be present in the installation media.
