@@ -1,5 +1,5 @@
 = Cloud-config Reference
-:revdate: 2025-09-08
+:revdate: 2025-09-30
 :page-revdate: {revdate}
 
 Node OS images built using the https://github.com/elemental-toolkit[{elemental-product-name} Toolkit] are expected to be initialized and configured by using https://github.com/rancher/yip[yip]. Yip is a small utility to apply a set of actions and configurations to the system described with yaml files. Yip is integrated and consumed as a library within the elemental client binary (see `elemental run-stage --help`). Yip groups the configurations and actions to apply in arbitrary _stages_, for instance the `elemental run-stage network` command call would only apply defined actions and configuration for the stage named `network`. Note from Yip perspective stages can be run at any time as they are simply grouping a set of actions under an arbitrary name.
