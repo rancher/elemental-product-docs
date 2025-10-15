@@ -1,4 +1,4 @@
-== How to include cloud-config files from removable devices
+= How to include cloud-config files from removable devices
 :revdate: 2025-07-03
 :page-revdate: {revdate}
 
@@ -44,7 +44,7 @@ Since the data is copied to `/oem` it will be persistent, hence on follow up reb
 not required to be present any more. If still present on follow up reboots, it just overwrites any
 already pre-existing data.
 
-=== Include non cloud-config data
+== Include non cloud-config data
 
 If the `user-data` is not containing cloud-config data the {elemental-product-name} client will just copy it as
 is to `/oem/user-data`. Only `*.yaml` files are parsed when executing cloud-init stages, so in that

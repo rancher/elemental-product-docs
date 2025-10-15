@@ -1,11 +1,11 @@
-== Inventory Management
+= Inventory Management
 :revdate: 2025-07-03
 :page-revdate: {revdate}
 
 The {elemental-product-name} operator can hold an inventory of machines and
 the mapping of the machine to it's configuration and assigned cluster.
 
-=== MachineInventory
+== MachineInventory
 
 The `MachineInventory` holds all the relevant information for a registered machine. +
 Upon successful registration, the `MachineInventory` will inherit all `machineInventoryLabels` defined in the related `MachineRegistration`. +
@@ -13,7 +13,7 @@ Additionally, the machine `annotations` will also be updated on each successful 
 
 By default, {elemental-product-name} machines will attempt a registration update every 24 hours to update labels and annotations.
 
-==== Reference
+=== Reference
 
 [,yaml]
 ----
@@ -54,7 +54,7 @@ spec:
   tpmHash: d68795c6192af9922692f050b...
 ----
 
-=== MachineRegistration
+== MachineRegistration
 
 `MachineRegistration` holds information on how to install, reset, and configure all connected {elemental-product-name} machines.
 
@@ -64,7 +64,7 @@ By default, {elemental-product-name} machines will attempt a registration update
 While it's possible to modify the `spec.config` definition, updates to the `spec.config` will be ignored by machines that already completed installation.
 Machines that couldn't complete the installation will try again every 30 minutes by reloading the remote `MachineRegistration` definition. This can be useful to correct `spec.config` mistakes that prevent successful installation (for ex. `spec.config.elemental.install.device`), without having to create a new `MachineRegistration` and a new ISO.
 
-==== Reference
+=== Reference
 
 [,yaml]
 ----

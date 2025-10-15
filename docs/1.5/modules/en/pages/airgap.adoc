@@ -1,13 +1,13 @@
-== Install {elemental-product-name} in an Air-Gapped Environment
+= Install {elemental-product-name} in an Air-Gapped Environment
 :revdate: 2025-07-03
 :page-revdate: {revdate}
 
-=== Assumptions
+== Assumptions
 
 A Rancher air-gapped installation should be already configured as per the https://ranchermanager.docs.rancher.com/pages-for-subheaders/air-gapped-helm-cli-install[official Rancher documentation].
 In particular, a private registry should be available in the air-gapped infrastructure.
 
-=== Overview
+== Overview
 
 In order to run {elemental-product-name} in an air-gapped environment the following artifacts are needed:
 
@@ -18,7 +18,7 @@ In order to run {elemental-product-name} in an air-gapped environment the follow
 Moreover, it could be handy to create a _channel image_ referencing the containerized OS images available.
 The official channel image (the _elemental-channel_ one) references absolute URLs of the OS images on the official suse registry, so it cannot be used as-is in an air-gapped scenario.
 
-=== {elemental-product-name} Air-Gapped installation from the command line
+== {elemental-product-name} Air-Gapped installation from the command line
 
 All the required steps can be accomplished by executing the
 https://raw.githubusercontent.com/rancher/elemental-operator/main/scripts/elemental-airgap.sh[`elemental-airgap.sh` script]
@@ -71,7 +71,7 @@ once completed (the script may take a while) both the charts and the container i
 ======
 ====
 
-==== {elemental-product-name} installation 
+=== {elemental-product-name} installation 
 
 The files and archives created by the script should be copied to a host which: 
 
@@ -175,7 +175,7 @@ helm upgrade --create-namespace -n cattle-elemental-system \
 The `elemental-airgap.sh` scripts prints out the required commands shown above but using the actual chart version and the provided registry URL to allow to easily copy and paste the exact commands.
 ====
 
-=== {elemental-product-name} Air-Gapped installation from the Rancher Marketplace 
+== {elemental-product-name} Air-Gapped installation from the Rancher Marketplace 
 
 A Rancher air-gapped installation includes also the {elemental-product-name} Operator charts and the operator and seedimage container images. 
 
@@ -215,7 +215,7 @@ once completed (the script may take a while) the container images will be packed
 ======
 ========
 
-==== {elemental-product-name} installation 
+=== {elemental-product-name} installation 
 
 The generated archive should be loaded to the air-gapped private registry. 
 
@@ -279,7 +279,7 @@ When requested, put the full path of the OS channel image just uploaded in your 
 
 image:airgap-os-channel-image.png[]
 
-=== {elemental-product-name} UI Extension 
+== {elemental-product-name} UI Extension 
 
 Rancher 2.7.x doesn't support UI extensions plugin in air-gapped environments, and so the {elemental-product-name} UI is not available in Rancher 2.7.x. 
 

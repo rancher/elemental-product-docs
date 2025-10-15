@@ -1,4 +1,4 @@
-== How to add a custom certificate
+= How to add a custom certificate
 :revdate: 2024-09-24
 :page-revdate: {revdate}
 
