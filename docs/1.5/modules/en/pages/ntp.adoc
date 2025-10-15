@@ -1,8 +1,8 @@
-== NTP configuration with {elemental-product-name}
+= NTP configuration with {elemental-product-name}
 :revdate: 2025-07-03
 :page-revdate: {revdate}
 
-=== Overview
+== Overview
 
 The default OS channel shipped with {elemental-product-name} provides NTP support via `systemd-timesyncd`.
 
@@ -13,7 +13,7 @@ The easiest way to configure a specific NTP server, is to drop a configuration f
 `/etc/systemd/timesyncd.conf.d` directory.
 The directory and the configuration file should be accessible by the `systemd-timesync` user.
 
-=== Configure a static NTP server
+== Configure a static NTP server
 
 The NTP configuration can be provided via a cloud-config snippet added to the MachineRegistration
 configuration.
@@ -50,7 +50,7 @@ machineInventoryLabels:
   element: fire
 ----
 
-### Configure NTP from DHCP
+== Configure NTP from DHCP
 
 In order to get the NTP server from the network via the NTP DHCP option, we need
 a NetworkManager dispatcher script to reconfigure dynamically the `systemd-timesync` service when

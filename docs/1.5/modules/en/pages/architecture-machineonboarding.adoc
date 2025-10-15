@@ -1,4 +1,4 @@
-== Machine onboarding
+= Machine onboarding
 :revdate: 2025-07-03
 :page-revdate: {revdate}
 

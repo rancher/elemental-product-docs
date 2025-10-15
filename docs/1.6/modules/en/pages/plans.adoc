@@ -1,4 +1,4 @@
-== {elemental-product-name} Plans
+= {elemental-product-name} Plans
 :revdate: 2025-07-03
 :page-revdate: {revdate}
 
@@ -79,7 +79,7 @@ spec:
 
 == Plan examples
 
-The following plans are provided as a quick reference and are not guaranteed to work in your environment. To learn more about plans please check [Rancher System Agent](https://github.com/rancher/system-agent).
+The following plans are provided as a quick reference and are not guaranteed to work in your environment. To learn more about plans please check https://github.com/rancher/system-agent[Rancher System Agent].
 
 [tabs]
 ======

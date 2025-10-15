@@ -1,8 +1,8 @@
-=== How to configure a VLAN
+= How to configure a VLAN
 :revdate: 2025-07-03
 :page-revdate: {revdate}
 
-==== Generate a VLAN connection profile on a live host
+== Generate a VLAN connection profile on a live host
 
 Let's configure NetworkManager to add a VLAN interface on top of the eth0 device with a VLAN ID = 1
 
@@ -38,7 +38,7 @@ method=auto
 [proxy]
 ----
 
-==== {elemental-product-name} MachineRegistration with VLAN injected cloud-config
+== {elemental-product-name} MachineRegistration with VLAN injected cloud-config
 
 .Example: MachineRegistration with injected VLAN connection profile
 [,yaml]

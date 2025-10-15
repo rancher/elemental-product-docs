@@ -1,4 +1,4 @@
-== Network configuration with {elemental-product-name}
+= Network configuration with {elemental-product-name}
 :revdate: 2025-07-03
 :page-revdate: {revdate}
 
@@ -21,7 +21,7 @@ This means that when booting from the {elemental-product-name} ISO/Image the xre
 Host configuration during {elemental-product-name} ISO/Image boot is possible adding the cloud-config customization in the xref:seedimage-reference.adoc[SeedImage] resource instead of the xref:machineregistration-reference.adoc[MachineRegistration] one.
 ====
 
-=== Identify NetworkManager connection profile configuration files content
+== Identify NetworkManager connection profile configuration files content
 
 NetworkManager supports multiple connection profile storage formats.
 While one could focus on any of the supported configuration file plugins, the https://networkmanager.dev/docs/api/latest/nm-settings-keyfile.html[keyfile plugin] is the one we recommend: it allows to store all the possible connection profile data and has a quite simple syntax.
@@ -53,7 +53,7 @@ nmcli connection add \
 After running the above command, you will find your keyfile at
 `/etc/NetworkManager/system-connections/fixed-ip.nmconnection`.
 
-### {elemental-product-name} cloud-config
+== {elemental-product-name} cloud-config
 
 The NetworkManager connection profile keyfiles can be injected in a [MachineRegistration](machineregistration-reference) using the `write_files` module.
 
