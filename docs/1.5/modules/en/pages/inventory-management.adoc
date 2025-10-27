@@ -1,5 +1,5 @@
 = Inventory Management
-:revdate: 2025-07-03
+:revdate: 2025-10-27
 :page-revdate: {revdate}
 
 The {elemental-product-name} operator can hold an inventory of machines and

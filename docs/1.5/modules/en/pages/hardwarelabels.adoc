@@ -1,5 +1,5 @@
 = Hardware Labels
-:revdate: 2024-09-24
+:revdate: 2025-10-27
 :page-revdate: {revdate}
 
 When a node is registered, hardware data is collected and made available to the MachineRegistration in the same way as xref:smbios.adoc[SMBIOS data].

@@ -1,5 +1,5 @@
 = Valid Versions
-:revdate: 2024-09-24
+:revdate: 2025-10-27
 :page-revdate: {revdate}
 
 The list of valid versions for the `kubernetesVersion` field can be determined

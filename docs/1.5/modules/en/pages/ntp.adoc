@@ -1,5 +1,5 @@
 = NTP configuration with {elemental-product-name}
-:revdate: 2025-07-03
+:revdate: 2025-10-27
 :page-revdate: {revdate}
 
 == Overview

@@ -1,5 +1,5 @@
 = Network configuration with {elemental-product-name}
-:revdate: 2025-07-03
+:revdate: 2025-10-27
 :page-revdate: {revdate}
 
 {elemental-product-name} cloud-config support does not include declarative networking at the moment.
