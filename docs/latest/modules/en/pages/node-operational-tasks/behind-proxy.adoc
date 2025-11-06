@@ -1,5 +1,5 @@
 = Behind a proxy
-:revdate: 2025-09-08
+:revdate: 2025-11-06
 :page-revdate: {revdate}
 
 :tabs-sync-option:
@@ -8,7 +8,7 @@ In a lot of enterprise environments, servers or VMs running on premises do not h
 
 [IMPORTANT]
 ====
-This guide will not cover the Rancher installation behind a proxy. It's a different use case and you can find the detailed documentation https://ranchermanager.docs.rancher.com/pages-for-subheaders/rancher-behind-an-http-proxy[here].
+This guide will not cover the Rancher installation behind a proxy. It's a different use case and you can find the detailed documentation at the https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/other-installation-methods/http-proxy/http-proxy.html[Installing SUSE Rancher Prime behind an HTTP Proxy] page.
 ====
 
 

@@ -1,5 +1,5 @@
 = Architecture overview
-:revdate: 2025-07-03
+:revdate: 2025-11-06
 :page-revdate: {revdate}
 
 {elemental-product-name} is the combination of two main projects: the link:{elemental_toolkit_url}[{elemental_toolkit_name}] and the link:{elemental_operator_url}[{elemental_operator_name}].
@@ -8,7 +8,7 @@ The link:{elemental_toolkit_url}[{elemental_toolkit_name}] enables OS installati
 
 The link:{elemental_operator_url}[{elemental_operator_name}] extends Rancher with OS provisioning and OS management functionalities, leveraging the {elemental-product-name} Toolkit.
 It bridges the gap between the link:{elemental_toolkit_url}[{elemental_toolkit_name}] and the
-https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/launch-kubernetes-with-rancher#launching-kubernetes-on-new-nodes-in-an-infrastructure-provider-1[Rancher RKE2/K3s Cluster provisioning],
+https://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-deployment/launch-kubernetes-with-rancher.html[Rancher RKE2/K3s Cluster provisioning],
 to provide a seamless experience going from hosts without OS to fully configured Kubernetes Clusters.
 
 This is achieved through a xref:architecture-services.adoc[set of services] offered by {elemental-product-name} that are made possible thanks to the xref:architecture-components.adoc[components] borrowed from the {elemental-product-name} Toolkit and the {elemental-product-name} Operator projects.

@@ -1,5 +1,5 @@
 = {elemental-product-name} the visual way
-:revdate: 2025-09-08
+:revdate: 2025-11-06
 :page-revdate: {revdate}
 
 [NOTE]
@@ -174,7 +174,7 @@ For your {elemental-product-name} cluster, you can either choose K3s or RKE2 for
 image::quickstart-ui-create-cluster-standard-screen-.png[{elemental-product-name} Cluster Creation Screen]
 
 Most of the options are coming from Rancher, that's why we will not detail all the possibilities.
-Feel free to check the https://ranchermanager.docs.rancher.com/pages-for-subheaders/rancher-server-configuration[Rancher Manager documentation] if you want to know more.
+Feel free to check the https://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-deployment/configuration/k3s.html[Rancher Manager K3s distribution configuration documentation] or the https://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-deployment/configuration/rke2.html[Rancher Manager RKE2 distribution configuration documentation] if you want to know more.
 
 However, it is important to highlight the `Inventory of Machines Selector Template` section.
 
