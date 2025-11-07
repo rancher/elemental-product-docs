@@ -1,5 +1,5 @@
 = How to configure Wi-Fi
-:revdate: 2025-10-27
+:revdate: 2025-11-06
 :page-revdate: {revdate}
 
 [IMPORTANT]
@@ -7,7 +7,7 @@
 This guide describes how to configure Wi-Fi on a freshly installed operating system.
 For some reasons, like no wired network connection available, you may want to also use Wi-Fi when you boot from the ISO.
 
-This is possible by using a cloud-config definition in the https://elemental.docs.rancher.com/seedimage-reference/[SeedImage] resource.
+This is possible by using a cloud-config definition in the https://documentation.suse.com/cloudnative/os-manager/next/en/references/seedimage-reference.html[SeedImage] resource.
 You can refer to the same instructions as below on how to create it.
 ====
 

@@ -1,16 +1,14 @@
 = Backup
-:revdate: 2025-07-03
+:revdate: 2025-11-06
 :page-revdate: {revdate}
 
 Since {elemental-product-name} runs as part of Rancher, the {elemental-product-name} resources are bundled in the Rancher backup.
-For more details about Rancher backups, restore, and disaster recovery options, please follow the official https://ranchermanager.docs.rancher.com/pages-for-subheaders/backup-restore-configuration[Rancher documentation].
+For more details about Rancher backups, restore, and disaster recovery options, please follow the official https://documentation.suse.com/cloudnative/rancher-manager/latest/en/rancher-admin/back-up-restore-and-disaster-recovery/back-up-restore-and-disaster-recovery.html[Rancher documentation].
 
 == Install rancher-backup operator for Rancher
 
-Follow the https://docs.ranchermanager.rancher.io/how-to-guides/new-user-guides/backup-restore-and-disaster-recovery/back-up-rancher[Rancher backup guide] to learn how to install and configure the Rancher backup-operator.
+Follow the https://documentation.suse.com/cloudnative/rancher-manager/latest/en/rancher-admin/back-up-restore-and-disaster-recovery/back-up.html[Rancher backup guide] to learn how to install and configure the Rancher backup-operator.
 
-Note that for single node Rancher installations the backup workflow is different. +
-You may follow the official https://ranchermanager.docs.rancher.com/v2.6/how-to-guides/new-user-guides/backup-restore-and-disaster-recovery/back-up-docker-installed-rancher[documentation] to learn more.
 
 == Backup {elemental-product-name} with rancher-backup operator
 
@@ -29,7 +27,7 @@ spec:
 ----
 
 The rancher-backup operator offers several options for schedule, encryption, and storage classes.
-You can explore all options by reading the [official documentation](https://ranchermanager.docs.rancher.com/reference-guides/backup-restore-configuration/backup-configuration).
+You can explore all options by reading the https://documentation.suse.com/cloudnative/rancher-manager/latest/en/rancher-admin/back-up-restore-and-disaster-recovery/configuration/backup.html[official documentation].
 
 Check logs from rancher-backup operator.
 

@@ -1,5 +1,5 @@
 = ManagedOSImage reference
-:revdate: 2025-07-03
+:revdate: 2025-11-06
 :page-revdate: {revdate}
 
 The ManagedOSImage resource is responsible of defining an OS image or image version that needs to be applied to each node in a set of targeted Clusters.
@@ -242,13 +242,11 @@ Any other change to the `upgradeContainer` may result in issues during upgrades.
 
 == `clusterRolloutStrategy`
 
-This controls the rollout of the bundle across clusters. +
-For more information you can read the https://fleet.rancher.io/0.9/ref-crds#rolloutstrategy[reference documentation].
+This controls the rollout of the bundle across clusters. For more information you can read the https://documentation.suse.com/cloudnative/continuous-delivery/v0.13/en/reference/ref-crds.html#_rolloutstrategy[reference documentation].
 
 == `clusterTargets`
 
-Select Clusters to be targeted for the OS image upgrade. +
-For more information you can read the https://fleet.rancher.io/0.9/ref-crds#bundletarget[reference documentation].
+Select Clusters to be targeted for the OS image upgrade. For more information you can read the https://documentation.suse.com/cloudnative/continuous-delivery/v0.13/en/reference/ref-crds.html#_bundletarget[reference documentation].
 
 .Click here for details
 [%collapsible]
