@@ -1,0 +1,47 @@
+= Backup
+:revdate: 2025-11-06
+:page-revdate: {revdate}
+
+Since {elemental-product-name} runs as part of Rancher, the {elemental-product-name} resources are bundled in the Rancher backup.
+For more details about Rancher backups, restore, and disaster recovery options, please follow the official https://documentation.suse.com/cloudnative/rancher-manager/latest/en/rancher-admin/back-up-restore-and-disaster-recovery/back-up-restore-and-disaster-recovery.html[Rancher documentation].
+
+== Install rancher-backup operator for Rancher
+
+Follow the https://documentation.suse.com/cloudnative/rancher-manager/latest/en/rancher-admin/back-up-restore-and-disaster-recovery/back-up.html[Rancher backup guide] to learn how to install and configure the Rancher backup-operator.
+
+
+== Backup {elemental-product-name} with rancher-backup operator
+
+Create a `backup object` (adapted to your needs) to backup Rancher running on a Kubernetes cluster.
+
+[,yaml]
+----
+apiVersion: resources.cattle.io/v1
+kind: Backup
+metadata:
+  name: rancher-backup
+spec:
+  resourceSetName: rancher-resource-set
+  schedule: "10 3 * * *"
+  retentionCount: 10
+----
+
+The rancher-backup operator offers several options for schedule, encryption, and storage classes.
+You can explore all options by reading the https://documentation.suse.com/cloudnative/rancher-manager/latest/en/rancher-admin/back-up-restore-and-disaster-recovery/configuration/backup.html[official documentation].
+
+Check logs from rancher-backup operator.
+
+[,shell]
+----
+kubectl logs -n cattle-resources-system -l app.kubernetes.io/name=rancher-backup -f
+----
+
+Verify if backup file was created on Persistent Volume.
+
+[,shell]
+----
+...
+INFO[2022/10/17 07:45:04] Finding files starting with /var/lib/backups/rancher-backup-430169aa-edde-4a61-85e8-858f625a755b*.tar.gz
+INFO[2022/10/17 07:45:04] File rancher-backup-430169aa-edde-4a61-85e8-858f625a755b-2022-10-17T05-15-00Z.tar.gz was created at 2022-10-17 0
+...
+----
