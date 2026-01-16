@@ -1,0 +1,14 @@
+== Prerequisites
+:revdate: 2025-11-06
+:page-revdate: {revdate}
+
+* A Rancher server (v2.7.0 or later) configured (server-url set)
+ ** To configure the Rancher `server-url` please check the https://documentation.suse.com/cloudnative/rancher-manager/latest/en/rancher-admin/rancher-admin.html#_first_log_in[Rancher docs]
+* A machine (bare metal or virtualized) with TPM 2.0
+ ** Hint 1: Libvirt allows setting virtual TPMs for virtual machines xref:operator-operational-tasks/tpm.adoc#_add_tpm_module_to_virtual_machine[example here]
+ ** Hint 2: You can enable TPM emulation on bare metal machines missing the TPM 2.0 module xref:operator-operational-tasks/tpm.adoc#_add_tpm_emulation_to_bare_metal_machine[example here]
+ ** Hint 3: Make sure you're using UEFI (not BIOS) on x86-64, or the ISO won't boot
+ ** Hint 4: A minimum volume size of 25 GB is recommended. See the xref:installation/installation.adoc#_deployed_partition_table[{elemental-product-name} partition table] for more details
+ ** Hint 5: CPU and RAM requirements depend on the Kubernetes version installed, for example https://documentation.suse.com/cloudnative/k3s/latest/en/installation/requirements.html#_hardware[K3s] or https://documentation.suse.com/cloudnative/rke2/latest/en/install/requirements.html#_hardware[RKE2]
+* Helm Package Manager (https://helm.sh/)
+* For ARM (aarch64) - One SD-card (32 GB or more, must be *fast* - 40MB/s write speed is acceptable) and a USB-stick for installation

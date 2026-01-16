@@ -1,7 +1,7 @@
 site:
   title: SUSE® Rancher Prime OS Manager documentation
   url: /
-  start_page: 1.7@os-manager:en:index.adoc
+  start_page: 1.8@os-manager:en:index.adoc
 
 content:
   sources:
