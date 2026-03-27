@@ -1,0 +1,224 @@
+= 如何构建和使用自定义操作系统镜像
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+== 使用自定义 Dockerfile 重新制作操作系统镜像
+
+由于 {elemental-product-name} 提供的操作系统镜像是容器镜像，因此它们也可以作为 Dockerfile 中的基础镜像，以创建新的容器镜像。
+
+Elemental 项目发布了几种镜像版本：
+
+* baremetal：包含适合裸机部署的固件和驱动程序的镜像。
+* rt：基于裸机镜像，但包含实时内核。
+* kvm：适合虚拟机的精简镜像。
+* base：Elemental 所需的基础系统，供其他版本使用。
+
+假设需要从额外的储存库中添加一些软件包，以下示例展示了如何添加这些软件包：
+
+[,docker]
+----
+# The version of Elemental to modify.
+FROM registry.suse.com/suse/sl-micro/6.0/baremetal-os-container:latest
+
+# Custom commands
+RUN rpm --import <repo-signing-key-url> && \
+    zypper addrepo --refresh <repo_url> extra_repo && \
+    zypper install -y <extra_package>
+
+# IMPORTANT: /etc/os-release is used for versioning/upgrade. The
+# values here should reflect the tag of the image currently being built
+ARG IMAGE_REPO=norepo
+ARG IMAGE_TAG=latest
+RUN \
+    sed -i -e "s|^IMAGE_REPO=.*|IMAGE_REPO=\"${IMAGE_REPO}\"|g" /etc/os-release && \
+    sed -i -e "s|^IMAGE_TAG=.*|IMAGE_TAG=\"${IMAGE_TAG}\"|g" /etc/os-release && \
+    sed -i -e "s|^IMAGE=.*|IMAGE=\"${IMAGE_REPO}:${IMAGE_TAG}\"|g" /etc/os-release
+
+# IMPORTANT: it is good practice to recreate the initrd and re-apply `elemental-init`
+# command that was used in the base image. This ensures that any eventual change that should
+# be synced in initrd included binaries is also applied there and consistent.
+RUN elemental init --force elemental-rootfs,grub-config,dracut-config,cloud-config-essentials,elemental-setup
+----
+
+其中 `latest` 是我们想要自定义的基础版本。
+
+然后执行以下命令
+
+[,bash]
+----
+docker build --build-arg IMAGE_REPO=myrepo/custom-build \
+             --build-arg IMAGE_TAG=v1.1.1 \
+             -t myrepo/custom-build:v1.1.1 .
+docker push myrepo/custom-build:v1.1.1
+----
+
+新的自定义操作系统作为 Docker 镜像 `myrepo/custom-build:v1.1.1` 可用，可以使用 docker 运行和验证，命令为
+
+[,bash]
+----
+docker run -it myrepo/custom-build:v1.1.1 bash
+----
+
+## 创建自定义可启动安装 ISO
+
+{elemental-product-name} 利用容器镜像构建其根文件系统；因此，可以在多阶段环境中使用它来创建捆绑自定义容器镜像的可启动介质。
+
+[,docker]
+----
+FROM registry.suse.com/suse/sl-micro/6.0/baremetal-os-container:latest AS os
+
+# Check the previous section on building custom images
+
+# The released OS already includes the toolchain for building ISOs
+FROM registry.suse.com/suse/sl-micro/6.0/baremetal-os-container:latest AS builder
+
+ARG TARGETARCH
+WORKDIR /iso
+COPY --from=os / rootfs
+
+# work around buildah issue: https://github.com/containers/buildah/issues/4242
+RUN rm -f rootfs/etc/resolv.conf
+
+RUN elemental build-iso \
+        dir:rootfs \
+        --bootloader-in-rootfs \
+        --squash-no-compression \
+        -o /output -n "elemental-${TARGETARCH}"
+
+FROM busybox
+COPY --from=builder /output /elemental-iso
+
+ENTRYPOINT ["busybox", "sh", "-c"]
+----
+
+使用常规 `docker build` 命令构建：
+
+[,bash]
+----
+docker build -t myrepo/custom-build:v1.1.1 \
+              --build-arg IMAGE_REPO=myrepo/custom-build-iso \
+              --build-arg IMAGE_TAG=v1.1.1 \
+              .
+----
+
+生成的容器镜像实际上是一个包含 ISO 的容器镜像，该容器镜像也可以推送到 OCI 注册表。可以通过执行容器将 ISO 镜像提取到当前文件夹：
+
+[,bash]
+----
+docker run --rm -v $(pwd):/host mytest-image "busybox cp /elemental-iso/*.iso /host"
+----
+
+新的自定义安装介质可以在`elemental-<arch>.iso`中找到。
+
+上述容器运行相当于_elemental-operator_从容器中提取ISO以构建一个新的，包括注册URL，因此这也是一个很好的检查点，以验证容器可以推送到注册表并被_elemental-operator_作为`baseImage`用于xref:references/seedimage-reference.adoc[SeedImage]资源。
+
+== 将自定义镜像列为 ManagedOSVersion 资源
+
+在{elemental-product-name}中，将操作系统容器镜像和 ISO 映像容器镜像列为 ManagedOSVersion 资源并不是强制性的，但很方便。特别是从用户界面的角度来看，这使得自定义映像在{elemental-product-name}用户界面扩展中可见且易于使用。
+
+继续上一节的示例，引用为`myrepo/custom-build:v1.1.1`的自定义操作系统容器被构建并最终推送到注册表。然后，这个映像准备好作为ManagedOSVersion资源添加，具体如下：
+
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: ManagedOSVersion
+metadata:
+  name: v1.1.1-custom-build
+  namespace: fleet-default
+spec:
+  metadata:
+    displayName: Custom build image
+    upgradeImage: myrepo/custom-build:v1.1.1
+  type: container
+  version: v1.1.1
+----
+
+请注意，`type: container`表示这是一个容器操作系统。这使得映像`myrepo/custom-build:v1.1.1`有资格从用户界面进行操作系统升级。
+
+最后，ISO `myrepo/custom-build-iso:v1.1.1`的自定义容器也可以作为ManagedOSVersion资源包含，具体如下：
+
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: ManagedOSVersion
+metadata:
+  name: v1.1.1-custom-build-iso
+  namespace: fleet-default
+spec:
+  metadata:
+    displayName: Custom build ISO image
+    uri: myrepo/custom-build-iso:v1.1.1
+  type: iso
+  version: v1.1.1
+----
+
+请注意，`type: iso`表示这是一个 ISO 映像。这使得映像`myrepo/custom-build-iso:v1.1.1`有资格从用户界面生成SeedImages。
+
+== 自定义分区大小
+
+在构建自定义映像时，考虑磁盘分区大小很重要，以确保映像和升级快照能够随着时间的推移正确适配。
+
+分区配置可以包含在您的自定义映像中，或者可以方便地应用于用于生成安装介质的xref:references/seedimage-reference.adoc[SeedImage]。
+
+请注意，所有`size`值以兆字节表示，`0`的值将占用剩余的磁盘空间。如果没有为`size`定义，`persistent`分区的默认行为就是这样。有关更多信息，请参见完整的https://github.com/rancher/elemental-toolkit/blob/main/config.yaml.example[配置示例]。
+
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: SeedImage
+metadata:
+  name: custom-partitions-iso
+  namespace: fleet-default
+spec:
+  cloud-config:
+    write_files:
+    - path: /etc/elemental/config.d/partitions.yaml
+      content: |
+        install:
+          partitions:
+            recovery:
+              size: 8192
+            state:
+              size: 16384
+    - path: /etc/elemental/config.d/snapshotter.yaml
+      content: |
+        snapshotter:
+          max-snaps: 2
+  baseImage: myrepo/custom-build-iso:v1.1.1
+  registrationRef:
+    name: my-machine-registration
+    namespace: fleet-default
+----
+
+`state`分区将保存所有系统快照。因此，在确定此分区的大小时，可以考虑以下公式：`$image_size * ($max_number_of_snapshots + 1 + 1)`。`$max_number_of_snapshots`可以通过自定义配置文件进行类似的配置，如上面的示例所示。
+
+请注意，默认情况下，对于`btrfs`快照类型，它是`4`，而对于`loopdevice`类型则是`2`。您可以通过编辑xref:references/machineregistration-reference.adoc#_config_elemental_install_snapshotter[MachineRegistration]来配置正在使用的快照类型。由于状态分区也用于link:{elemental_toolkit_url}[{elemental_toolkit_name}]工作目录，因此最好留出额外的`$image_size`的可用空间，以便在运行升级时能够正确解压图像。
+
+最后，额外的`$image_size`可用空间可以作为安全边际保留。这在使用`loopdevice`快照类型时尤其重要，以防较新的图像的大小会比最初安装的图像更大。相反，可以使用`btrfs`快照类型来节省`state`分区的空间，或者使用相同的空间来保留更多快照。
+
+== 查找{elemental-product-name}基础镜像
+
+使用crane，我们可以找到以下适合扩展的SL-Micro映像：
+
+[,shell]
+----
+$ crane catalog registry.suse.com | grep -i "suse/sl-micro"
+suse/sl-micro/6.0/baremetal-iso-image
+suse/sl-micro/6.0/baremetal-os-container
+suse/sl-micro/6.0/base-iso-image
+suse/sl-micro/6.0/base-os-container
+suse/sl-micro/6.0/kvm-iso-image
+suse/sl-micro/6.0/kvm-os-container
+suse/sl-micro/6.0/rt-iso-image
+suse/sl-micro/6.0/rt-os-container
+suse/sl-micro/6.1/baremetal-iso-image
+suse/sl-micro/6.1/baremetal-os-container
+suse/sl-micro/6.1/base-iso-image
+suse/sl-micro/6.1/base-os-container
+suse/sl-micro/6.1/kvm-iso-image
+suse/sl-micro/6.1/kvm-os-container
+suse/sl-micro/6.1/rt-iso-image
+suse/sl-micro/6.1/rt-os-container
+----
+
+带有`-iso-image`后缀的映像包含一个预构建的ISO 映像和一个 busybox 系统，以便能够将内容复制到卷中。带有`-os-container`后缀的映像包含一个可以用作自定义映像基础的根文件系统。

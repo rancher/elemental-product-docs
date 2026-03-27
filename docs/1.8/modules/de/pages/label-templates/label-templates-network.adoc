@@ -1,0 +1,117 @@
+= Netzwerk-Template-Variablen
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+Die in den Netzwerk-Template-Variablen gesammelten Informationen definieren die Attribute der im System verfügbaren Netzwerkschnittstellen.
+
+Die NICs werden sowohl nach Nummer (0, 1, 2, ...) als auch nach Schnittstellennamen (_eth0_, _virbr0_, ...) verfolgt.
+
+Die IPv4Addresses und IPv6Addresses werden nach Nummer (0, 1, ...) verfolgt, und die ersten Einträge der IPv4- und IPv6-Adressen (d.h. IPv4Addresses.0 und IPv6Addresses.0) werden in den Variablen IPv4Address und IPv6Address verfolgt.
+
+Wenn `${Network/NICs/2/Name}` beispielsweise gleich `eth0` ist, kann die MAC-Adresse der Netzwerkschnittstelle sowohl über die Variablen `${Network/NICs/2/MacAddress}` als auch `${Network/NICs/eth0/MacAddress}` abgerufen werden.
+
+Die `eth0` (erste) IPv4-Adresse kann sowohl mit den Variablen `${Network/NICs/eth0/IPv4Address}` als auch `${Network/NICs/eth0/IPv4Addresses/0}` abgerufen werden. Die sekundäre `eth0` IPv4-Adresse kann stattdessen mit `${Network/NICs/eth0/IPv4Addresses/1}` abgerufen werden.
+
+|===
+| Variable | Beschreibung | Von
+
+| `${Network/NICs/_<IfaceName>_/AdvertisedLinkModes}`
+| Verfügbare Ethernet-Link-Modi, die beworben werden
+| 1.7.0
+
+| `${Network/NICs/_<IfaceName>_/Duplex}`
+| Ethernet-Duplexmodus
+| 1.7.0
+
+| `${Network/NICs/_<IfaceName>_/IPv4Address}`
+| Erste IPv4-Adresse, die der Schnittstelle zugewiesen ist
+| 1.7.2
+
+| `${Network/NICs/_<IfaceName>_/IPv4Addresses/_<Number>_}`
+| <Number>te zugewiesene IPv4-Adresse
+| 1.7.2
+
+| `${Network/NICs/_<IfaceName>_/IPv6Address}`
+| Erste IPv6-Adresse, die der Schnittstelle zugewiesen ist
+| 1.7.2
+
+| `${Network/NICs/_<IfaceName>_/IPv6Addresses/_<Number>_}`
+| <Number>te zugewiesene IPv6-Adresse
+| 1.7.2
+
+| `${Network/NICs/_<IfaceName>_/IsVirtual}`
+| Ob die NIC echt ("false") oder nicht ("true") ist
+| 1.7.0
+
+| `${Network/NICs/_<IfaceName>_/MacAddress}`
+| MAC der Schnittstelle
+| 1.7.0
+
+| `${Network/NICs/_<IfaceName>_/Name}`
+| Schnittstellenname
+| 1.7.0
+
+| `${Network/NICs/_<IfaceName>_/Speed}`
+| Geschwindigkeit des Links
+| 1.7.0
+
+| `${Network/NICs/_<IfaceName>_/SupportedLinkModes}`
+| Von der NIC unterstützte Ethernet-Link-Modi
+| 1.7.0
+
+| `${Network/NICs/_<IfaceName>_/SupportedPorts}`
+| Verfügbare Anschlüsse der NIC
+| 1.7.0
+
+| `${Network/NICs/_<Number>_/AdvertisedLinkModes}`
+| Verfügbare Ethernet-Link-Modi, die beworben werden
+| 1.7.0
+
+| `${Network/NICs/_<Number>_/Duplex}`
+| Ethernet-Duplexmodus
+| 1.7.0
+
+| `${Network/NICs/_<Number>_/IPv4Address}`
+| Erste IPv4-Adresse, die der Schnittstelle zugewiesen ist
+| 1.7.2
+
+| `${Network/NICs/_<Number>_/IPv4Addresses/_<Number>_}`
+| <Number>te zugewiesene IPv4-Adresse
+| 1.7.2
+
+| `${Network/NICs/_<Number>_/IPv6Address}`
+| Erste IPv6-Adresse, die der Schnittstelle zugewiesen ist
+| 1.7.2
+
+| `${Network/NICs/_<Number>_/IPv6Addresses/_<Number>_}`
+| <Number>te zugewiesene IPv6-Adresse
+| 1.7.2
+
+| `${Network/NICs/_<Number>_/IsVirtual}`
+| Ob die NIC echt ("false") oder nicht ("true") ist
+| 1.7.0
+
+| `${Network/NICs/_<Number>_/MacAddress}`
+| MAC der Schnittstelle
+| 1.7.0
+
+| `${Network/NICs/_<Number>_/Name}`
+| Schnittstellenname
+| 1.7.0
+
+| `${Network/NICs/_<Number>_/Speed}`
+| Geschwindigkeit des Links
+| 1.7.0
+
+| `${Network/NICs/_<Number>_/SupportedLinkModes}`
+| Von der NIC unterstützte Ethernet-Link-Modi
+| 1.7.0
+
+| `${Network/NICs/_<Number>_/SupportedPorts}`
+| Verfügbare Anschlüsse der NIC
+| 1.7.0
+
+| `${Network/TotalNICs/}`
+| Anzahl der im System vorhandenen NICs
+| 1.7.0
+|===

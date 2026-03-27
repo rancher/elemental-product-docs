@@ -1,0 +1,151 @@
+= Upgrade
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+Todos os componentes em {elemental-product-name} são gerenciados usando Kubernetes. Abaixo está como usar as abordagens do Kubernetes para fazer upgrade dos componentes.
+
+== {elemental-product-name} fazer upgrade do nó
+
+{elemental-product-name}os nós fazem upgrade com o {elemental_operator_name}. Consulte a xref:references/operatorchart-reference.adoc[{elemental_operator_name}] documentação para informações completas.
+
+Fazer upgrade pode ser realizado tanto com CLI quanto com UI:
+
+* <<_upgrade_via_command_line_interface,Interface de Linha de Comando>>
+* <<_upgrade_via_user_interface,Interface do usuário>>
+
+== Fazer upgrade via Interface de Linha de Comando
+
+Existem duas maneiras de selecionar nós para fazer upgrade. Via um alvo de cluster, que corresponderá a TODOS os nós em um cluster que corresponder ao nosso seletor ou via seletor de nó, que corresponderá aos nós com base nos rótulos dos nós. O seletor de nó nos permite ser mais direcionados com o upgrade, enquanto o seletor de cluster apenas seleciona todos os nós em um cluster correspondente.
+
+Atualizar um `ManagedOSImage` existente acionará um novo ciclo de upgrade, para reconciliar a imagem configurada (ou versão da imagem) com todos os nós-alvo.
+
+[tabs]
+======
+Com 'clusterTarget'::
++
+====
+Você pode direcionar nós para fazer upgrade via um `clusterTarget`, definindo-o com o nome do cluster que deseja fazer upgrade. Todos os nós em um cluster que correspondam a esse nome serão selecionados e farão upgrade. 
+
+.upgrade-cluster-target.yaml
+[,yaml]
+----
+include::example$upgrade/upgrade-cluster-target.yaml[]
+----
+====
+
+Com nodeSelector::
++
+====
+Você pode direcionar nós para fazer upgrade via um `nodeSelector`, definindo-o com o rótulo e o valor que você deseja corresponder. Quaisquer nós contendo essa chave com o valor serão selecionados e farão upgrade. 
+
+.upgrade-node-selector.yaml
+[,yaml]
+----
+include::example$upgrade/upgrade-node-selector.yaml[]
+----
+====
+
+Com a flag FORCE::
++
+====
+Ao fazer upgrade para uma versão mais antiga ou para a mesma versão que já está em execução, o procedimento de upgrade será pulado. É possível forçar o upgrade para versões mais antigas, definindo a variável de ambiente FORCE, conforme mostrado abaixo. 
+
+.upgrade-force.yaml
+[,yaml]
+----
+include::example$upgrade/upgrade-force.yaml[]
+----
+====
+
+Com a flag UPGRADE_RECOVERY::
++
+====
+Você pode decidir fazer upgrade da partição de Recuperação ao fazer upgrade do sistema ou, alternativamente, fazer upgrade apenas da partição de Recuperação.
+
+.upgrade-recovery.yaml
+[,yaml]
+----
+include::example$upgrade/upgrade-recovery.yaml[]
+----
+====
+======
+
+=== Selecionando a fonte para fazer upgrade
+
+[tabs]
+======
+Via 'osImage'::
++
+====
+Basta especificar uma imagem OCI no campo `osImage` 
+
+.upgrade-cluster-target.yaml
+[,yaml]
+----
+include::example$upgrade/upgrade-cluster-target.yaml[]
+----
+====
+
+Aba Via 'ManagedOSVersion'::
++
+====
+Neste caso, usamos os recursos `ManagedOSVersion` preenchidos automaticamente para definir o campo `managedOSVersionName` desejado. Veja a seção [Gerenciando versões disponíveis](#managing-available-versions) para entender como os `ManagedOSVersion` são gerenciados. 
+
+.upgrade-managedos-version.yaml
+[,yaml]
+----
+include::example$upgrade/upgrade-managedos-version.yaml[]
+----
+====
+======
+
+[WARNING]
+====
+Se tanto `osImage` quanto `ManagedOSVersion` estiverem definidos no mesmo `ManagedOSImage`, esteja ciente de que `osImage` tem precedência.
+====
+
+
+=== Gerenciando versões disponíveis
+
+É possível criar xref:references/managedosversion-reference.adoc[ManagedOSVersions] diretamente ou se inscrever em xref:references/managedosversionchannel-reference.adoc[ManagedOSVersionChannels] para sincronizar automaticamente `ManagedOSVersions` a partir deles.
+
+Para mais detalhes e uma lista de canais disponíveis, ou até mesmo para criar o seu, leia a xref:operator-operational-tasks/channels.adoc[documentação].
+
+== Fazer upgrade via interface do usuário
+
+Para fazer upgrade via a UI, você deve acessar o {elemental-product-name} menu Avançado, e então clicar em `Update Groups`.
+
+Escolha um nome, selecione os clusters a serem alvo e escolha entre as duas formas de fazer upgrade:
+
+image::upgrade-ui-menu.png[{elemental-product-name} Menu de Fazer Upgrade]
+
+[tabs]
+======
+Via Versão de SO Gerenciada::
++
+====
+Neste caso, um `OS Version Channels` é usado para preencher automaticamente os recursos `OS Versions`. 
+
+O canal abaixo é fornecido por nós, mas você também pode trazer seu próprio canal. 
+
+Veja a seção <<_managing_available_versions,Gerenciando versões disponíveis>> para entender como os `ManagedOSVersion` são gerenciados. 
+
+image:upgrade-ui-version-channel.png[Criar Canal de Versão de SO] 
+
+Após um curto tempo de sincronização, você verá seu `OS Versions` aparecer no menu `OS Versions`. 
+
+image:upgrade-ui-os-version.png[{elemental-product-name} Menu de Versão de SO] 
+
+Finalmente, você pode selecionar o `OS Versions` ao criar seu `Upgrade Group` de acordo com a seguinte captura de tela: 
+
+image:upgrade-ui-upgrade-group-channel.png[Selecionar Versão de SO no Grupo de Fazer Upgrade]
+====
+
+Aba Via Imagem do registro::
++
+====
+Basta especificar uma imagem OCI no campo `Image path` para fazer upgrade para: image:upgrade-ui-image-registry.png[Fazer upgrade via Registro de Imagem]
+====
+======
+
+Clique no botão `Create` para iniciar o processo de fazer upgrade; se você tiver vários nós, o upgrade será feito sequencialmente, nó por nó.

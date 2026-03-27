@@ -1,0 +1,11 @@
+= MachineInventory
+:revdate: 2025-07-03
+:page-revdate: {revdate}
+
+新しいホストが正常に登録されると、{elemental_operator_name} はその特定のホストを表す MachineInventory リソースを作成します。
+MachineInventory は、登録処理中に取得された追跡ホストの TPM ハッシュを保存し、マシン上で任意のコマンド（プラン）を実行できるようにします。
+
+MachineInventory には二つの条件があります：
+
+* `AdoptionReady` は、マシンがクラスタの一部としてセレクタによって採用されたことを示します。
+* `Ready` は、マシンが登録され、{elemental-product-name} OS でプロビジョニングされたことを示します。

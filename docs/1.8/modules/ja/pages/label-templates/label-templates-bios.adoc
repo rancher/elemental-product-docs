@@ -1,0 +1,25 @@
+= BIOSテンプレート変数
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+BIOS情報。
+
+SMBIOS BIOS情報データのサブセット（タイプ0）。
+
+SMBIOSに関する詳細は、https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.7.1.pdf[SMBIOS仕様]を参照してください。
+
+|===
+| [可変] | 説明 | from
+
+| `${BIOS/Date}`
+| BIOSリリース日
+| 1.7.0
+
+| `${BIOS/Vendor}`
+| BIOSベンダー
+| 1.7.0
+
+| `${BIOS/Version}`
+| BIOSバージョン番号
+| 1.7.0
+|===

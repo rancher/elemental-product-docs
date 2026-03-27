@@ -1,0 +1,103 @@
+= {elemental-product-name} Gráfico de Helm del operador
+:revdate: 2025-07-03
+:page-revdate: {revdate}
+
+El {elemental_operator_url}[{elemental_operator_name}] es responsable de gestionar las versiones de {elemental-product-name} y mantener un inventario de máquinas para ayudar con las instalaciones en el edge o en equipo sin sistema operativo.
+
+El gráfico asociado inicia una ampliación de elemental-operator en el clúster https://rancher.com/docs/rancher/v2.6/[Rancher Manager v2.6] utilizando el gestor de paquetes https://helm.sh[Helm].
+
+== Requisitos previos
+
+* Versión de Rancher Manager v2.6
+* Versión del cliente Helm v3.8.0+
+
+== Obtener información del gráfico de Helm
+
+[,console]
+----
+helm pull oci://registry.suse.com/rancher/elemental-operator-chart
+helm show all oci://registry.suse.com/rancher/elemental-operator-chart
+----
+
+== Instalar gráfico de Helm
+
+[,console]
+----
+helm install --create-namespace -n cattle-elemental-system elemental-operator-crds \
+             oci://registry.suse.com/rancher/elemental-operator-crds-chart
+helm install --create-namespace -n cattle-elemental-system elemental-operator \
+             oci://registry.suse.com/rancher/elemental-operator-chart
+----
+
+El comando despliega elemental-operator en el clúster de Kubernetes con la configuración predeterminada.
+
+_Ver <<_configuration,configuración>> a continuación._
+
+_Ver https://helm.sh/docs/helm/helm_install/[helm install] para la documentación del comando._
+
+== Desinstalar gráfico de Helm
+
+[,console]
+----
+helm uninstall -n cattle-elemental-system elemental-operator
+----
+
+Esto elimina todos los componentes de Kubernetes asociados con el gráfico y elimina la release.
+
+_Ver https://helm.sh/docs/helm/helm_uninstall/[helm uninstall] para la documentación del comando._
+
+== Actualizando gráfico de Helm
+
+[,console]
+----
+helm upgrade -n cattle-elemental-system \
+             --install elemental-operator \
+             oci://registry.suse.com/rancher/elemental-operator-chart
+----
+
+_Ver https://helm.sh/docs/helm/helm_upgrade/[helm upgrade] para la documentación del comando._
+
+== Configuración
+
+Ver https://helm.sh/docs/intro/using_helm/#customizing-the-chart-before-installing[Personalizando el gráfico de Helm antes de instalar]. Para ver todas las opciones configurables con comentarios detallados, visita los <<_values,valores>> del gráfico de Helm, o ejecuta estos comandos de configuración:
+
+`console showLineNumbers
+helm show values oci://registry.suse.com/rancher/elemental-operator-chart
+`
+
+== Valores
+
+[cols="2,1,2,2"]
+|===
+| Key | Tipo | Default | Descripción
+
+| imagen.vacía | cadena | `rancher/pause:3.1` |
+
+| image.repository | cadena | `registry.suse.com/rancher/elemental-operator-chart` | Imagen de origen para el operador elemental con el nombre del repositorio
+
+| image.tag | tag | `""` |
+
+| image.imagePullPolicy | cadena | `IfNotPresent` |
+
+| noProxy | cadena | `127.0.0.0/8,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,.svc,.cluster.local` | Lista de dominios o direcciones IP separados por comas que no utilizarán el proxy 
+
+| global.cattle.systemDefaultRegistry | cadena | `""` | Nombre del registro de contenedores por defecto
+
+| sync_interval | cadena | `"60m"` | Intervalo de sincronización por defecto para el canal de actualización 
+
+| sync_namespaces | lista | `[]` | Espacio de nombres que el operador vigilará, dejar vacío para todos 
+
+| debug | bool | `false` | Habilitar salida de depuración para el operador 
+
+| nodeSelector.kubernetes.io/os | cadena | `linux` |
+
+| tolerancias | object | `{}` |
+
+| tolerations.key | cadena | `cattle.io/os` |
+
+| tolerations.operator | cadena | `"Equal"` |
+
+| tolerations.value | cadena | `"linux"` |
+
+| tolerancias.efecto | cadena | `NoSchedule` |
+|===

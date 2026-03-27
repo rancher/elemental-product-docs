@@ -1,0 +1,55 @@
+= Comment créer des images disque brutes pour Raspberry Pi
+:revdate: 2024-09-24
+:page-revdate: {revdate}
+
+Ce guide montrera comment nous pouvons créer une image disque brute qui peut être écrite sur une carte SD et démarrée sans aucun autre support d'installation.
+
+[CAUTION]
+====
+Toutes les données sur la carte SD seront effacées, veuillez n'utiliser qu'une carte SD sans rien d'important dessus.
+
+La carte SD doit être raisonnablement grande (32 Go ou plus) et *rapide* (!!).
+====
+
+.Ressource SeedImage
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: SeedImage
+metadata:
+  name: fire-img
+  namespace: fleet-default
+spec:
+  type: raw
+  baseImage: registry.opensuse.org/isv/rancher/elemental/staging/containers/suse/sl-micro/6.0/baremetal-os-container:latest
+  targetPlatform: linux/arm64
+  registrationRef:
+    apiVersion: elemental.cattle.io/v1beta1
+    kind: MachineRegistration
+    name: fire-nodes
+    namespace: fleet-default
+----
+
+Vérifiez les journaux pour le pod de construction en utilisant :
+
+[,shell]
+----
+kubectl logs -n fleet-default fire-img -f -c build
+----
+
+Lorsque la construction est terminée, nous pouvons télécharger le fichier image en utilisant wget :
+
+[,shell]
+----
+wget --no-check-certificate $(kubectl get seedimage -n fleet-default fire-img -o jsonpath="{.status.downloadURL}") -O sle-micro.arm64.raw
+----
+
+Nous pouvons maintenant écrire `.raw` l'image sur la carte SD. Cela peut être fait avec `dd` dans la ligne de commande Linux si vous êtes à l'aise avec cette commande.
+https://www.opensuse.org[openSUSE] a de bonnes instructions sur la façon d'écrire une image sur un support de stockage pour https://en.opensuse.org/SDB:Live_USB_stick[Linux],
+https://en.opensuse.org/SDB:Create_a_Live_USB_stick_using_Windows[Windows], et https://en.opensuse.org/SDB:Create_a_Live_USB_stick_using_macOS[OS X].
+
+== Démarrage de la machine
+
+L'image disque brute n'inclura que la partition EFI, la partition OEM et la partition de récupération. Au premier démarrage, le système démarrera dans le système de récupération pour agrandir et ajouter les partitions manquantes. Après l'expansion, il s'enregistrera auprès de rancher et redémarrera.
+
+Si une erreur se produit pendant la phase d'enregistrement, le journal peut être trouvé en utilisant `journalctl -u elemental-register-reset`.

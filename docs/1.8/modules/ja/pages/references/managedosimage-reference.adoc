@@ -1,0 +1,259 @@
+= ManagedOSImage リファレンス
+:revdate: 2025-11-06
+:page-revdate: {revdate}
+
+ManagedOSImage リソースは、ターゲットとなるクラスターのセット内の各ノードに適用する必要がある OS イメージまたはイメージ バージョンを定義する責任があります。作成後、ManagedOSImage リソースは、新しい `osImage` または `managedOSVersionName` で更新して新しいアップグレードをトリガーできます。同様に、既存の ManagedOSImage を更新して新しいクラスターをターゲットにすることができます。
+
+`ManagedOSImage` リソース仕様の下に構成できるいくつかのキーがあります。
+
+.upgrade-cluster-target.yaml
+[,yaml]
+----
+include::example$upgrade/upgrade-cluster-target.yaml[]
+----
+
+== `ManagedOSImageSpec` リファレンス
+
+|===
+| キー | タイプ | ［デフォルト値］ | 説明
+
+| osImage
+| 文字列
+| empty
+| ノードをアップグレードするための完全修飾イメージ。両方が構成されている場合、この値は `managedOSVersionName` よりも優先されます。
+
+| managedOSVersionName
+| 文字列
+| empty
+| ノードをアップグレードするための `ManagedOSVersion` の名前。
+
+| cloudConfig
+| object
+| null
+| アップグレード中にノードに適用する cloud-init または yip 設定。<<_cloudconfig,リファレンス>> を参照してください。
+
+| nodeSelector
+| object
+| null
+| このセレクターは、`clusterTargets` 内の特定のノードをターゲットにするために使用できます。<<_nodeselector,リファレンス>> を参照してください。
+
+| 同時実行性
+| int
+| 1
+| 同じクラスター内で同時にアップグレードされるべきノードの数。
+
+| cordon → コードン
+| bool
+| true
+| アップグレードを適用する前にノードをコードンする必要がある場合は、これを true に設定します。`drain` も構成されている場合は無効です。
+
+| ドレイン
+| object
+| 参照してください
+| ノードをアップグレードを適用する前に、どのように排出するかを設定します。<<_drain,リファレンス>> を参照してください。
+
+| 準備
+| object
+| null
+| 指定されている場合、準備用 init コンテナは、アップグレードコンテナの前に実行されるコードン/ドレインよりも前に実行されます。<<_prepare,リファレンス>> を参照してください。
+
+| upgradeContainer
+| object
+| null
+| ノード上でアップグレードを実行するアップグレードコンテナ。<<_upgradecontainer,リファレンス>> を参照してください。
+
+| clusterRolloutStrategy
+| object
+| null
+| RolloverStrategy は、クラスター全体でのアップグレードバンドルの展開を制御します。<<_clusterrolloutstrategy,リファレンス>> を参照してください。
+
+| clusterTargets
+| リスト
+| null
+| アップグレードプランを展開するクラスターを宣言します。<<_clustertargets,リファレンス>> を参照してください。
+|===
+
+== `cloudConfig`
+
+これは、アップグレードされた各ノードに `/oem/90_operator.yaml` パスにコピーされる cloud-init または yip 構成を説明します。 +
+この構成は、再起動後にシステムによって適用されます。 +
+詳細と使用例については、`MachineRegistration` `spec.config.cloud-config` xref:references/cloud-config-reference.adoc[リファレンス]を参照してください。
+
+== `nodeSelector`
+
+このhttps://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors[ラベルセレクタ]は、ターゲットクラスター内の特定のノードセットにのみアップグレードを制限するために使用できます。
+
+.詳しくは、ここをクリックしてください。
+[%collapsible]
+====
+[,yaml]
+----
+nodeSelector:
+  matchExpressions:
+  - {key: my-node/label, operator: Exists}
+----
+====
+
+== `drain`
+
+ノードをどのようにドレインするか、またドレインを実施するかどうかを設定します。 +
+アップグレード中にドレインを無効にするには、このフィールドを`null`に設定できます。 +
+デフォルトでは、ドレインは有効になっています。
+
+ドレイン設定は、アップグレード前にノードで実行されるhttps://kubernetes.io/docs/reference/kubectl/generated/kubectl_drain/[kubectl drain]コマンドに直接対応しています。
+
+|===
+| キー | タイプ | ［デフォルト値］ | 説明
+
+| タイムアウト
+| time.Duration
+| null
+| ノードのドレインをあきらめるまでの待機時間、ゼロは無限を意味します。
+
+| gracePeriod
+| int
+| null
+| 各ポッドが優雅に終了するために与えられる秒数の期間。負の値の場合、ポッドで指定されたデフォルト値が使用されます。
+
+| deleteEmptydirData
+| bool
+| true
+| emptyDir（ノードがドレインされると削除されるローカルデータ）を使用しているポッドがあっても続行します。
+
+| ignoreDaemonSets
+| bool
+| true
+| DaemonSet管理のポッドを無視します。
+
+| 強制
+| bool
+| true
+| コントローラーを宣言していないポッドがあっても続行します。
+
+| disableEviction
+| bool
+| false
+| ドレイン時に、eviction がサポートされている場合でも強制的に削除を使用するようにします。これにより、PodDisruptionBudgetsのチェックをバイパスしますので、注意して使用してください。
+
+| skipWaitForDeleteTimeout
+| int
+| 60
+| ポッドのDeletionTimestampがN秒以上古い場合、ポッドの待機をスキップします。スキップするには、秒数は0より大きくなければなりません。
+
+| podSelector
+| ラベルセレクタ
+| null
+| ノード上のポッドをフィルタリングするためのラベルセレクタ。選択されたポッドのみが追い出されます。
+|===
+
+== `prepare`
+
+ノード上でアップグレードジョブを実行する`upgrade`コンテナの前に実行される`prepare` Initコンテナを定義します。 +
+キーは直接https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#Container[container]仕様に対応しています。 +
+ノードのファイルシステムは、コンテナ内の`/host`にマウントされていることに注意してください。
+
+|===
+| キー | タイプ | ［デフォルト値］ | 説明
+
+| image
+| 文字列
+| empty
+| コンテナイメージ名。
+
+| コマンド
+| リスト
+| empty
+| エントリポイント配列。
+
+| args
+| リスト
+| empty
+| エントリポイントへの引数。
+
+| env
+| リスト
+| empty
+| コンテナ内に設定する環境変数のリスト。
+
+| envFrom
+| リスト
+| empty
+| コンテナ内の環境変数を設定するためのソースのリスト。
+
+| volumes
+| リスト
+| empty
+| `hostPath`ボリュームのリスト。<<_prepare_volumes,リファレンス>> を参照してください。
+
+| securityContext
+| object
+| null
+| エフェメラルコンテナが実行されるセキュリティオプション。
+|===
+
+=== `prepare.volumes`
+
+各ボリューム定義は、コンテナ内にマウントされるhttps://kubernetes.io/docs/concepts/storage/volumes/#hostpath-volume-types[hostPath]ボリューム（`source`）に対応しています。 +
+デフォルトでは、ホストのルートファイルシステム`/`は常に`/host`にマウントされることに注意してください。
+
+|===
+| キー | タイプ | ［デフォルト値］ | 説明
+
+| name
+| 文字列
+| empty
+| ボリューム名。
+
+| ソース
+| 文字列
+| empty
+| HostPathボリュームパス。
+
+| 宛先
+| 文字列
+| empty
+| HostPathボリュームマウントパス。
+|===
+
+.詳しくは、ここをクリックしてください。
+[%collapsible]
+====
+[,yaml]
+----
+volumes:
+  - name: my-custom-volume
+    source: /foo
+    destination: /foo
+----
+====
+
+== `upgradeContainer`
+
+ノード上でアップグレードジョブを実行する`upgrade`コンテナを定義します。 +
+キーは直接https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#Container[container]仕様に対応しています。 +
+ノードファイルシステムはコンテナ内の`/host`にマウントされることに注意してください。
+
+[CAUTION]
+====
+{elemental-product-name}またはxref:operator-operational-tasks/custom-images.adoc[{elemental-product-name}ベースのイメージ]を使用する場合、`env`キーのみを編集して`FORCE`、`UPGRADE_RECOVERY`、または`UPGRADE_RECOVERY_ONLY`変数をオプションで設定することが期待されます。 +
+詳細については、xref:node-operational-tasks/upgrade.adoc#_upgrade_via_command_line_interface[アップグレード]のドキュメントを参照してください。 +
+`upgradeContainer`への他の変更は、アップグレード中に問題を引き起こす可能性があります。 +
+====
+
+== `clusterRolloutStrategy`
+
+これは、クラスター全体でバンドルの展開を制御します。詳細については、https://documentation.suse.com/cloudnative/continuous-delivery/v0.13/en/reference/ref-crds.html#_rolloutstrategy[リファレンスドキュメント]を参照してください。
+
+== `clusterTargets`
+
+OSイメージのアップグレードの対象となるクラスターを選択してください。詳細については、https://documentation.suse.com/cloudnative/continuous-delivery/v0.13/en/reference/ref-crds.html#_bundletarget[リファレンスドキュメント]を参照してください。
+
+.詳しくは、ここをクリックしてください。
+[%collapsible]
+====
+[,yaml]
+----
+clusterTargets:
+  - clusterName: volcano
+----
+====

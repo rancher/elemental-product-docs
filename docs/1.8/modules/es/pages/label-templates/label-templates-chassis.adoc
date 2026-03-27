@@ -1,0 +1,37 @@
+= Variables de plantilla del chasis
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+La información en las variables del chasis define atributos de la(s) carcasa(s) mecánica(s) del sistema.
+
+Subconjunto de la carcasa del sistema SMBIOS o del chasis (tipo 3).
+
+Para más información sobre SMBIOS, consulta la https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.7.1.pdf[especificación de SMSBIOS].
+
+|===
+| Variable | Descripción | desde
+
+| `${Chassis/AssetTag}`
+| Etiqueta de activo del chasis
+| 1.7.0
+
+| `${Chassis/SerialNumber}`
+| Número de serie del chasis
+| 1.7.0
+
+| `${Chassis/TypeDescription}`
+| Tipo de chasis (descripción)
+| 1.7.0
+
+| `${Chassis/Type}`
+| Tipo de chasis (número/código)
+| 1.7.0
+
+| `${Chassis/Vendor}`
+| Proveedor del chasis
+| 1.7.0
+
+| `${Chassis/Version}`
+| Versión del chasis
+| 1.7.0
+|===

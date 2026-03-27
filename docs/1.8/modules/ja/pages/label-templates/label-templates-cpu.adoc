@@ -1,0 +1,73 @@
+= CPUテンプレート変数
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+CPUテンプレート変数に収集された情報は、システムにインストールされているCPUの属性を定義します。
+
+データはプロセッサ番号（0、1、2、...）によって公開されます。
+
+最初のプロセッサを参照するためにプロセッサ番号（_`<Number>`_）を省略することができます（例：変数`${CPU/Processor/Model}`は`${CPU/Processor/0/Model}`と同じです）。
+
+|===
+| [可変] | 説明 | from
+
+| `${CPU/Processor/Capabilities}`
+| プロセッサ機能のカンマ区切りリスト
+| 1.7.0
+
+| `${CPU/Processor/ID}`
+| プロセッサID
+| 1.7.0
+
+| `${CPU/Processor/Model}`
+| プロセッサモデル
+| 1.7.0
+
+| `${CPU/Processor/NumCores}`
+| コア数
+| 1.7.0
+
+| `${CPU/Processor/NumThreads}`
+| スレッドの数
+| 1.7.0
+
+| `${CPU/Processor/Vendor}`
+| プロセッサベンダー
+| 1.7.0
+
+| `${CPU/Processor/_<Number>_/Capabilities}`
+| プロセッサ_number_のカンマ区切りリスト
+| 1.7.0
+
+| `${CPU/Processor/_<Number>_/ID}`
+| プロセッサ_number_ ID
+| 1.7.0
+
+| `${CPU/Processor/_<Number>_/Model}`
+| プロセッサ_number_モデル
+| 1.7.0
+
+| `${CPU/Processor/_<Number>_/NumCores}`
+| プロセッサ_number_のコアの数
+| 1.7.0
+
+| `${CPU/Processor/_<Number>_/NumThreads}`
+| プロセッサ_number_のスレッドの数
+| 1.7.0
+
+| `${CPU/Processor/_<Number>_/Vendor}`
+| プロセッサ_number_ベンダー
+| 1.7.0
+
+| `${CPU/TotalCores}`
+| システム内のコアの総数
+| 1.7.0
+
+| `${CPU/TotalProcessors}`
+| システム内のプロセッサの数
+| 1.7.0
+
+| `${CPU/TotalThreads}`
+| システム内のスレッドの総数
+| 1.7.0
+|===

@@ -1,0 +1,117 @@
+= 网络模板变量
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+在网络模板变量中收集的信息定义了系统中可用网络接口的属性。
+
+网络接口卡（NIC）通过编号（0, 1, 2, ...）和接口名称（_eth0_, _virbr0_, ...）进行跟踪。
+
+IPv4地址和IPv6地址通过编号（0, 1, ...）进行跟踪，首个IPv4和IPv6地址条目（即IPv4Addresses.0和IPv6Addresses.0）在IPv4Address和IPv6Address变量中进行跟踪。
+
+例如，如果`${Network/NICs/2/Name}`等于`eth0`，则网络接口的MAC 地址可以通过`${Network/NICs/2/MacAddress}`和`${Network/NICs/eth0/MacAddress}`变量同时检索。
+
+`eth0`（第一个）IPv4地址可以通过`${Network/NICs/eth0/IPv4Address}`和`${Network/NICs/eth0/IPv4Addresses/0}`变量同时检索。次要的`eth0` IPv4地址可以通过`${Network/NICs/eth0/IPv4Addresses/1}`进行检索。
+
+|===
+| 变量 | 说明 | from
+
+| `${Network/NICs/_<IfaceName>_/AdvertisedLinkModes}`
+| 以被标识为可用的以太网链路模式
+| 1.7.0
+
+| `${Network/NICs/_<IfaceName>_/Duplex}`
+| 以太网双工模式
+| 1.7.0
+
+| `${Network/NICs/_<IfaceName>_/IPv4Address}`
+| 分配给接口的第一个IPv4地址
+| 1.7.2
+
+| `${Network/NICs/_<IfaceName>_/IPv4Addresses/_<Number>_}`
+| 第<Number>个分配的IPv4地址
+| 1.7.2
+
+| `${Network/NICs/_<IfaceName>_/IPv6Address}`
+| 分配给接口的第一个IPv6地址
+| 1.7.2
+
+| `${Network/NICs/_<IfaceName>_/IPv6Addresses/_<Number>_}`
+| 第<Number>个分配的IPv6地址
+| 1.7.2
+
+| `${Network/NICs/_<IfaceName>_/IsVirtual}`
+| NIC是否真实（"false"）或不真实（"true"）
+| 1.7.0
+
+| `${Network/NICs/_<IfaceName>_/MacAddress}`
+| 接口的MAC 地址
+| 1.7.0
+
+| `${Network/NICs/_<IfaceName>_/Name}`
+| 接口名称
+| 1.7.0
+
+| `${Network/NICs/_<IfaceName>_/Speed}`
+| 链路的速度
+| 1.7.0
+
+| `${Network/NICs/_<IfaceName>_/SupportedLinkModes}`
+| NIC支持的以太网链路模式
+| 1.7.0
+
+| `${Network/NICs/_<IfaceName>_/SupportedPorts}`
+| NIC的可用端口
+| 1.7.0
+
+| `${Network/NICs/_<Number>_/AdvertisedLinkModes}`
+| 以被标识为可用的以太网链路模式
+| 1.7.0
+
+| `${Network/NICs/_<Number>_/Duplex}`
+| 以太网双工模式
+| 1.7.0
+
+| `${Network/NICs/_<Number>_/IPv4Address}`
+| 分配给接口的第一个IPv4地址
+| 1.7.2
+
+| `${Network/NICs/_<Number>_/IPv4Addresses/_<Number>_}`
+| 第<Number>个分配的IPv4地址
+| 1.7.2
+
+| `${Network/NICs/_<Number>_/IPv6Address}`
+| 分配给接口的第一个IPv6地址
+| 1.7.2
+
+| `${Network/NICs/_<Number>_/IPv6Addresses/_<Number>_}`
+| 第<Number>个分配的IPv6地址
+| 1.7.2
+
+| `${Network/NICs/_<Number>_/IsVirtual}`
+| NIC是否真实（"false"）或不真实（"true"）
+| 1.7.0
+
+| `${Network/NICs/_<Number>_/MacAddress}`
+| 接口的MAC 地址
+| 1.7.0
+
+| `${Network/NICs/_<Number>_/Name}`
+| 接口名称
+| 1.7.0
+
+| `${Network/NICs/_<Number>_/Speed}`
+| 链路的速度
+| 1.7.0
+
+| `${Network/NICs/_<Number>_/SupportedLinkModes}`
+| NIC支持的以太网链路模式
+| 1.7.0
+
+| `${Network/NICs/_<Number>_/SupportedPorts}`
+| NIC的可用端口
+| 1.7.0
+
+| `${Network/TotalNICs/}`
+| 系统中存在的NIC数量
+| 1.7.0
+|===

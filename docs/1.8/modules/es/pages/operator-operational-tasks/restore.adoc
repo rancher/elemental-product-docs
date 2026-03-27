@@ -1,0 +1,51 @@
+= Restaurar
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+Sigue esta guía para restaurar una configuración desde una copia de seguridad de {elemental-product-name} con Rancher.
+
+== Prepara el operador rancher-backup y los archivos de copia de seguridad para la restauración.
+
+Ve a la https://docs.ranchermanager.rancher.io/how-to-guides/new-user-guides/backup-restore-and-disaster-recovery/restore-rancher[documentación oficial de Rancher] y asegúrate de que `rancher-backup operator` esté instalado y tenga acceso a los archivos de copia de seguridad.
+
+Primero tienes que seguir esta xref:operator-operational-tasks/backup.adoc[documentación] para hacer una copia de seguridad de los recursos de {elemental-product-name}.
+
+== Restaura la configuración de {elemental-product-name} con el operador rancher-backup.
+
+Crea un `restore object` (adaptado a tus necesidades) para restaurar el archivo tar de la copia de seguridad.
+
+[,yaml]
+----
+apiVersion: resources.cattle.io/v1
+kind: Restore
+metadata:
+  name: elemental-restore
+spec:
+  backupFilename: rancher-backup-430169aa-edde-4a61-85e8-858f625a755b-2022-10-17T05-15-00Z.tar.gz
+----
+
+Aplica el manifiesto en Kubernetes.
+
+[,shell]
+----
+kubectl apply -f elemental-restore.yaml
+----
+
+Revisa los registros del operador rancher-backup.
+
+[,shell]
+----
+kubectl logs -n cattle-resources-system -l app.kubernetes.io/name=rancher-backup -f
+----
+
+Verifica si el archivo de copia de seguridad se restauró correctamente.
+
+[,shell]
+----
+...
+INFO[2022/10/31 06:34:50] Processing controllerRef apps/v1/deployments/rancher
+INFO[2022/10/31 06:34:50] Done restoring
+...
+----
+
+Continúa con el procedimiento de https://docs.ranchermanager.rancher.io/how-to-guides/new-user-guides/backup-restore-and-disaster-recovery/migrate-rancher-to-new-cluster[documentación de Rancher]

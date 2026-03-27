@@ -1,0 +1,35 @@
+= So fügen Sie ein benutzerdefiniertes Zertifikat hinzu
+:revdate: 2024-09-24
+:page-revdate: {revdate}
+
+Voraussetzung: Ein Zertifikat im `.pem`-Format
+
+Ziel: Ein benutzerdefiniertes Zertifikat systemweit verfügbar machen
+
+[NOTE]
+.Dies gilt für Zertifikate, die von systemweiten Diensten verwendet werden.
+====
+Kubernetes-Workloads sollten ihre Zertifikate stattdessen im Container-Image mitbringen.
+====
+
+Um ein benutzerdefiniertes Zertifikat zu installieren, müssen wir
+
+* die Datei `.pem` nach `/etc/pki/trust/anchors/` kopieren
+* run `update-ca-certificates`
+
+Der entsprechende `cloud-config` Ausschnitt sieht folgendermaßen aus:
+
+[,yaml]
+----
+write_files:
+  - path: /etc/pki/trust/anchors/my-custom-certificate.pem
+    permission: 0444
+    content: |-
+      -----BEGIN CERTIFICATE-----
+      ...
+      -----END CERTIFICATE-----
+runcmd:
+  - update-ca-certificates
+----
+
+(tatsächlicher Zertifikatsinhalt aus Gründen der Kürze weggelassen)

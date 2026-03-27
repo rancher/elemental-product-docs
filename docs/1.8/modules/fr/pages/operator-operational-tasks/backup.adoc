@@ -1,0 +1,47 @@
+= Sauvegarde
+:revdate: 2025-11-06
+:page-revdate: {revdate}
+
+Puisque {elemental-product-name} fonctionne dans Rancher, les ressources {elemental-product-name} sont regroupées dans la sauvegarde de Rancher.
+Pour plus de détails sur les sauvegardes Rancher, la restauration et les options de récupération après sinistre, veuillez consulter la https://documentation.suse.com/cloudnative/rancher-manager/latest/en/rancher-admin/back-up-restore-and-disaster-recovery/back-up-restore-and-disaster-recovery.html[documentation officielle de Rancher].
+
+== Installez l'opérateur rancher-backup pour Rancher.
+
+Suivez le https://documentation.suse.com/cloudnative/rancher-manager/latest/en/rancher-admin/back-up-restore-and-disaster-recovery/back-up.html[guide de sauvegarde Rancher] pour apprendre à installer et configurer l'opérateur rancher-backup.
+
+
+== Sauvegardez {elemental-product-name} avec l'opérateur rancher-backup.
+
+Créez un `backup object` (adapté à vos besoins) pour sauvegarder Rancher fonctionnant sur un cluster Kubernetes.
+
+[,yaml]
+----
+apiVersion: resources.cattle.io/v1
+kind: Backup
+metadata:
+  name: rancher-backup
+spec:
+  resourceSetName: rancher-resource-set
+  schedule: "10 3 * * *"
+  retentionCount: 10
+----
+
+L'opérateur rancher-backup offre plusieurs options pour la planification, le chiffrement et les classes de stockage.
+Vous pouvez explorer toutes les options en lisant la https://documentation.suse.com/cloudnative/rancher-manager/latest/en/rancher-admin/back-up-restore-and-disaster-recovery/configuration/backup.html[documentation officielle].
+
+Vérifiez les journaux de l'opérateur rancher-backup.
+
+[,shell]
+----
+kubectl logs -n cattle-resources-system -l app.kubernetes.io/name=rancher-backup -f
+----
+
+Vérifiez si le fichier de sauvegarde a été créé sur le volume persistant.
+
+[,shell]
+----
+...
+INFO[2022/10/17 07:45:04] Finding files starting with /var/lib/backups/rancher-backup-430169aa-edde-4a61-85e8-858f625a755b*.tar.gz
+INFO[2022/10/17 07:45:04] File rancher-backup-430169aa-edde-4a61-85e8-858f625a755b-2022-10-17T05-15-00Z.tar.gz was created at 2022-10-17 0
+...
+----

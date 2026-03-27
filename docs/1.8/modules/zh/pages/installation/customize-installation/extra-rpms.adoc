@@ -1,0 +1,82 @@
+= 如何在安装时添加第三方 RPM 软件包
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+本示例涵盖了在 ISO 映像中包含额外 RPM（例如特定硬件驱动程序）的情况，并在安装过程中将其安装到操作系统映像中。
+
+对于该用例，需要以下文件：
+
+* 要安装的额外 RPM
+* 额外的 cloud-config 文件，定义了在安装过程中用于复制和安装二进制文件的钩子
+
+假设在安装时能够从远程服务器下载额外的 RPM，我们可以将所有内容整合到一个 `SeedImage.spec.cloud-config` 部分中。
+
+考虑以下 cloud-config 数据，它可以用作 xref:references/seedimage-reference.adoc#_seedimagespec_reference[SeedImage 资源] 中 `cloud-config` 部分的内容。
+
+[,yaml]
+----
+name: "Install extra drivers"
+stages:
+  before-install:
+  # Preload data to the persistent storage
+  # During installation persistent partition is mounted at /run/elemental/persistent
+  - downloads:
+    - path: /tmp/some_package.rpm
+      url: "<REMOTE_PACKAGE_URL>"
+      permissions: 0777
+  - commands:
+    - mkdir -o /run/elemental/persistent/extra-pkgs
+    - cp -p /tmp/some_package.rpm /run/elemental/persistent/extra-pkgs
+
+  after-install-chroot:
+  # Install the package at install time
+  - commands:
+    - rpm -iv /run/elemental/extra-pkgs/some_package.rpm
+
+  # Include to the install system analog upgrade and reset hooks
+  - files:
+    - path: /oem/extra-pkg.yaml
+      permissions: 0664
+      content: |
+        name: "Install extra drivers"
+        stages:
+          after-upgrade-chroot:
+          # Install the package after upgrading to a new image
+          - commands:
+            - rpm -iv /run/elemental/extra-pkgs/some_package.rpm
+          after-reset-chroot:
+          # Install the package on reset
+          - commands:
+            - rpm -iv /run/elemental/extra-pkgs/some_package.rpm
+----
+
+请注意，安装钩子仅涵盖安装程序，因此额外的 cloud-config 数据也应成为已安装系统的一部分，以便在升级或重置过程中继续安装该软件包。
+
+== 将生成的 ISO 映像与额外文件重新打包
+
+或者，如果在安装时动态下载内容不是期望的行为，而是希望 ISO 已经包含所有额外的二进制文件，这也是可能的，但需要手动重新打包 ISO。使用 `xorriso`，这款 Linux 工具用于创建 ISO，该过程相对简单。
+
+让我们创建一个 `overlay` 目录，用以构建需要添加到 ISO root 中的目录树。在这种情况下，`overlay` 目录可以包含：
+
+[,yaml]
+----
+overlay/
+  data/
+    extra-pkgs/
+      some_package.rpm
+  iso-config/
+    install_hooks.yaml
+----
+
+我们假设 `install_hooks.yaml` 是前一部分中实际暴露的 cloud-config 内容，该内容手动包含在映像中，而不是嵌入在 SeedImage 资源中。`data` 文件夹最终包含了我们希望附加到 ISO 中的二进制文件。
+
+假设我们已经下载了与特定 MachineRegistration 相关的 Elemental ISO，使用以下 `xorriso` 调用，所有 `overlay` 文件夹内容将包含在新的 ISO 中：
+
+[,bash]
+----
+xorriso -indev elemental.x86_64.iso -outdev elemental.custom.x86_64.iso -map overlay / -boot_image any replay
+----
+
+需要 `xorriso` 版本等于或高于 1.5。
+
+`install_hooks.yaml` 的内容最终可能与前一部分相同，但省略 RPM 软件包下载，并将 RPM 路径调整为 `/run/initramfs/live/data/extra-pkgs/some_package.rpm`，因为 ISO 根文件夹挂载在 `/run/initramfs/live`。

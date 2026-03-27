@@ -1,0 +1,13 @@
+= Kubernetesクラスターのプロビジョニング
+:revdate: 2025-11-06
+:page-revdate: {revdate}
+
+Kubernetesクラスターのデプロイメントフェーズの目標は、利用可能なxref:references/machineinventory-reference.adoc[MachineInventories]、すなわちxref:rancher-os-management/architecture/services/architecture-machineonboarding.adoc[Machine onboarding]フェーズを正常に完了したホストを使用して、新しいRKE2またはK3sクラスターを作成することです。
+
+{elemental-product-name} Kubernetesクラスターのデプロイメントには、以下のステップが含まれます：
+
+* ユーザーはxref:references/machineinventoryselectortemplate-reference.adoc[MachineInventorySelectorTemplate]リソースを作成します：これは、ラベルの値に基づいて利用可能なxref:references/machineinventory-reference.adoc[MachineInventories]のサブセットを特定するための_selector_を定義することを可能にします。
+* ユーザーはxref:references/cluster-reference.adoc[Rancher cluster]を定義し、前のステップで作成したxref:references/machineinventoryselectortemplate-reference.adoc[MachineInventorySelectorTemplate]への参照を`machinePools`定義に追加します。
+* https://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-deployment/launch-kubernetes-with-rancher.html[Rancher RKE2/K3s Cluster provisioning]は、Rancherクラスターリソースの作成に反応して、_machinePools_で指定された_quantity_に等しい数のxref:references/machineinventoryselector-reference.adoc[MachineInventorySelectors]リソースを生成します。
+* {elemental-product-name}オペレーターは、生成された各xref:references/machineinventoryselector-reference.adoc[MachineInventorySelector]リソースを利用可能なxref:references/machineinventory-reference.adoc[MachineInventory]とペアにし、xref:references/machineinventory-reference.adoc[MachineInventory]によって追跡されるホストにhttps://github.com/rancher/system-agent[rancher-system-agent]デーモンをインストールします。
+https://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-deployment/launch-kubernetes-with-rancher.html[Rancher RKE2/K3s Cluster provisioning]は、https://github.com/rancher/system-agent[rancher-system-agent] _plans_を使用してK3s/RKE2のプロビジョニングを引き継ぎます：必要なコンポーネント（例：containerd、K3s、...）をインストールし、新しいKubernetesクラスターが正常にデプロイされるまで設定ファイルを作成します。

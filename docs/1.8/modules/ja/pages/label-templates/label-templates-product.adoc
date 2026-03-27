@@ -1,0 +1,41 @@
+= 製品テンプレート変数
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+これらの変数に含まれる情報は、システム全体の属性を指します。
+
+SMBIOSシステム情報データのサブセット（タイプ1）。
+
+SMBIOSに関する詳細は、https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.7.1.pdf[SMBIOS仕様]を参照してください。
+
+|===
+| [可変] | 説明 | from
+
+| `${Product/Family}`
+| システムファミリー
+| 1.7.0
+
+| `${Product/Name}`
+| 製品名
+| 1.7.0
+
+| `${Product/SKU}`
+| システムSKU番号
+| 1.7.0
+
+| `${Product/SerialNumber}`
+| システムシリアル番号
+| 1.7.0
+
+| `${Product/UUID}`
+| システムUUID
+| 1.7.0
+
+| `${Product/Vendor}`
+| システムベンダー
+| 1.7.0
+
+| `${Product/Version}`
+| システムバージョン
+| 1.7.0
+|===

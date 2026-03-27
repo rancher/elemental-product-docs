@@ -1,0 +1,26 @@
+= BIOS-Vorlagenvariablen
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+BIOS-Informationen.
+
+Teilmenge der SMBIOS-BIOS-Informationsdaten (Typ 0).
+
+Für weitere Informationen zu SMBIOS siehe die
+https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.7.1.pdf[SMSBIOS-Spezifikation].
+
+|===
+| Variable | Beschreibung | Von
+
+| `${BIOS/Date}`
+| BIOS-Freigabedatum
+| 1.7.0
+
+| `${BIOS/Vendor}`
+| BIOS-Anbieter
+| 1.7.0
+
+| `${BIOS/Version}`
+| BIOS-Versionsnummer
+| 1.7.0
+|===

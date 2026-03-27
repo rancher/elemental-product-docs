@@ -1,0 +1,33 @@
+= Variáveis de modelo de placa-mãe
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+As informações coletadas nas variáveis da placa-mãe definem atributos de uma placa-mãe de sistema (por exemplo, uma placa-mãe, placa planar, lâmina de servidor ou outro módulo de sistema padrão).
+
+Subconjunto de dados de informações da placa-mãe SMBIOS (ou módulo) (tipo 2).
+
+Para mais informações sobre SMBIOS, consulte a https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.7.1.pdf[especificação SMBIOS].
+
+|===
+| Variável | Descrição | from
+
+| `${BaseBoard/AssetTag}`
+| Etiqueta de ativo da placa-mãe
+| 1.7.0
+
+| `${BaseBoard/Product}`
+| Nome do produto da placa-mãe
+| 1.7.0
+
+| `${BaseBoard/SerialNumber}`
+| Número de série da placa-mãe
+| 1.7.0
+
+| `${BaseBoard/Vendor}`
+| Fornecedor da placa-mãe
+| 1.7.0
+
+| `${BaseBoard/Version}`
+| Revisão da placa-mãe
+| 1.7.0
+|===

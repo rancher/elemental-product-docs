@@ -1,0 +1,47 @@
+= 架构组件
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+提供 xref:rancher-os-management/architecture/services/architecture-services.adoc[{elemental-product-name} 服务] 所需的组件有：
+
+* <<_elemental_command_line_tool,`elemental`>> 命令行工具
+* <<_elemental_operator_daemon,`elemental-operator`>> 守护程序
+* <<_elemental_register_command_line_tool,`elemental-register`>> 命令行工具
+* <<_elemental_system_agent_daemon,`elemental-system-agent`>> 守护程序
+* 一个或多个 <<_suse_rancher_prime_os_manager_os_container_image,{elemental-product-name} 操作系统容器镜像>>
+
+== `elemental` 命令行工具
+
+`elemental` 工具是 link:{elemental_toolkit_url}[{elemental_toolkit_name}] 项目的一部分。
+它在主机上执行实际的操作系统安装和升级操作，并用于执行在 xref:rancher-os-management/architecture/custom-resources.adoc[{elemental-product-name} CRDs] 中添加的 xref:references/cloud-config-reference.adoc[cloud-config] 指令。
+
+`elemental` 二进制文件包含在与 {elemental-product-name} 一起分发的所有基础操作系统镜像中。
+
+== `elemental-operator` 守护程序
+
+*elemental-operator* 守护程序执行两个主要任务：
+
+. 嵌入 {elemental-product-name} Kubernetes 控制器以管理所有 xref:rancher-os-management/architecture/custom-resources.adoc[{elemental-product-name} CRDs]
+. 暴露 _registration endpoints_ 以允许主机在 xref:rancher-os-management/architecture/services/architecture-machineonboarding.adoc[机器入驻] 期间注册和下载操作系统安装配置。
+
+`elemental-operator` 守护程序在 Rancher 集群上以 `Deployment` 的形式部署，并通过 xref:references/operatorchart-reference.adoc[{elemental-product-name} Operator Helm Chart] 安装。
+
+== `elemental-register` 命令行工具
+
+*elemental-register* 二进制文件是用于将主机注册到 _registration endpoints_ 的客户端，这些端点由 <<_elemental_operator_daemon,elemental-operator>> 暴露。它收集并转发主机数据，以便 <<_elemental_operator_daemon,elemental-operator>> 填充 SMBIOS 和硬件标签模板。
+
+如果注册阶段成功完成，*elemental-register* 将从 *elemental-operator* 获取存储在 xref:references/machineregistration-reference.adoc[MachineRegistration] 中的完整配置。
+作为最后一步，*elemental-register* 客户端调用 <<_elemental_command_line_tool,elemental>> 二进制文件，传递检索到的配置以启动操作系统安装。
+
+== `elemental-system-agent` 守护程序
+
+`elemental-system-agent` 是从 https://github.com/rancher/system-agent[Rancher System Agent project] 构建的，允许 {elemental-product-name} 部署 _plans_ 以协助主机配置。
+值得注意的是，`rancher-system-agent` 安装和配置所需的 xref:rancher-os-management/architecture/services/architecture-clusterdeployment.adoc[Kubernetes 集群配置服务] 是通过一个 `elemental-system-agent` _plan_ 执行的。
+
+== {elemental-product-name} 操作系统容器镜像
+
+一个 link:{elemental_toolkit_url}[{elemental_toolkit_name}] 操作系统映像是一个 OCI 容器映像，包含构成目标主机操作系统的所有文件。它不仅包含所有的二进制文件和库，还包含 Linux 系统所需的内核和启动文件。
+
+{elemental-product-name} 操作系统映像是一个具有明确设计理念的 link:{elemental_toolkit_url}[{elemental_toolkit_name}] 操作系统映像，基于 https://www.suse.com/products/micro/[SLE Micro]，并包含特定的 {elemental-product-name} 配置和二进制文件（<<_elemental_command_line_tool,elemental>> 和 <<_elemental_register_command_line_tool,elemental-register>>）。
+
+{elemental-product-name} 操作系统映像在 xref:references/managedosversion-reference.adoc[ManagedOSVersions] 资源中被跟踪。xref:references/managedosversion-reference.adoc[ManagedOSVersions] 资源是从 xref:references/managedosversionchannel-reference.adoc[ManagedOSVersionChannel] 资源动态创建的。每次安装 {elemental-product-name} Operator 时，都会部署一个默认的 `ManagedOSVersionChannel` 资源。

@@ -1,0 +1,37 @@
+= 机箱模板变量
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+机箱变量中的信息定义了系统机械外壳的属性。
+
+SMBIOS系统外壳或机箱的子集（类型3）。
+
+有关SMBIOS的更多信息，请参见https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.7.1.pdf[SMSBIOS规范]。
+
+|===
+| 变量 | 说明 | from
+
+| `${Chassis/AssetTag}`
+| 机箱资产标签
+| 1.7.0
+
+| `${Chassis/SerialNumber}`
+| 机箱序列号
+| 1.7.0
+
+| `${Chassis/TypeDescription}`
+| 机箱类型（描述）
+| 1.7.0
+
+| `${Chassis/Type}`
+| 机箱类型（编号/代码）
+| 1.7.0
+
+| `${Chassis/Vendor}`
+| 机箱供应商
+| 1.7.0
+
+| `${Chassis/Version}`
+| 机箱版本
+| 1.7.0
+|===

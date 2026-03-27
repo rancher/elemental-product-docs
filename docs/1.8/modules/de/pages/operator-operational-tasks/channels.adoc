@@ -1,0 +1,150 @@
+= Kanäle
+:revdate: 2025-09-30
+:page-revdate: {revdate}
+
+Das {elemental_operator_name} ermöglicht das Abonnieren von einem oder mehreren xref:references/managedosversionchannel-reference.adoc[ManagedOSVersionChannels], um automatisch eine Liste von xref:references/managedosversion-reference.adoc[ManagedOSVersions] zu erstellen, die bereit sind, neue ISOs mit einem xref:references/seedimage-reference.adoc[SeedImage] zu erstellen, oder um bestehende {elemental-product-name} Knoten auf neue OS-Versionen mithilfe des xref:references/managedosimage-reference.adoc[ManagedOSImage] zu upgraden.
+
+Ein Kanal wird normalerweise als OCI-Containerbild verteilt, es ist jedoch auch möglich, die URI einer JSON-Datei direkt zu referenzieren, die eine Liste von `ManagedOSVersion` enthält. Beachten Sie, dass es eine bewährte Praxis ist, Kanäle mit Bildern zu verteilen, damit die Verteilung mit allen anderen Bildern übereinstimmt, die vom {elemental_operator_name} benötigt werden. Dies kann beispielsweise vorteilhaft sein, wenn in einer luftdicht abgeschotteten Umgebung bereitgestellt wird.
+
+[tabs]
+======
+Json-Synchronisierer::
++
+====
+Dieser Synchronisierer ruft einen JSON von der URL ab und parst ihn in gültige `ManagedOSVersion` Ressourcen. 
+
+.managed-os-version-channel-json.yaml
+[,yaml]
+----
+include::example$upgrade/managed-os-version-channel-json.yaml[]
+----
+====
+
+Benutzerdefinierter Synchronisierer::
++
+====
+Ein benutzerdefinierter Synchronisierer ermöglicht mehr Flexibilität, wie `ManagedOSVersion` gesammelt werden können, indem er benutzerdefinierte Befehle mit benutzerdefinierten Images zulässt. Dieser Typ von Synchronisierer ermöglicht es, einen bestimmten Befehl mit Argumenten und Umgebungsvariablen in einem benutzerdefinierten Image auszuführen und eine JSON-Datei an `/data/output` auszugeben. Die generierten Daten werden dann vom Synchronisierer automatisch eingehängt und geparst, damit daraus die richtigen Versionen erstellt werden können. Das {elemental-product-name} Projekt bietet Kanäle, um alle `ManagedOSVersions` aufzulisten, die als benutzerdefinierter Synchronisierer veröffentlicht wurden. Siehe die Definition der Kanalressource unten: 
+
+.managed-os-version-channel-custom.yaml
+[,yaml]
+----
+include::example$upgrade/managed-os-version-channel-custom.yaml[]
+----
+====
+======
+
+== Verfügbare Kanäle
+
+{elemental-product-name} führt eine Liste von Kanälen, die sofort einsatzbereit sind.
+
+|===
+| Basis-OS | BaseOS Version | Flavor | Kanal-URI
+
+| SL Micro
+| 6.1
+| Base
+| registry.suse.com/rancher/elemental-channel/sl-micro:6.0-base
+
+| SL Micro
+| 6.1
+| Bare-metal
+| registry.suse.com/rancher/elemental-channel/sl-micro:6.0-baremetal
+
+| SL Micro
+| 6.1
+| KVM
+| registry.suse.com/rancher/elemental-channel/sl-micro:6.0-kvm
+
+| SL Micro
+| 6.1
+| RT
+| registry.suse.com/rancher/elemental-channel/sl-micro:6.0-rt
+|===
+
+== Suche nach {elemental-product-name} Kanälen
+
+Crane kann verwendet werden, um die gepflegten Kanäle zu finden. Beispiel:
+
+[,shell]
+----
+$ crane ls -O registry.suse.com/rancher/elemental-channel/sl-micro
+6.0-baremetal
+6.0-base
+6.0-kvm
+6.0-rt
+6.1-baremetal
+6.1-base
+6.1-kvm
+6.1-rt
+<snip>
+----
+
+== Varianten
+
+{elemental-product-name} verteilt verschiedene Betriebssystemvarianten, die besser zu spezifischen Anwendungsfällen passen können.
+
+|===
+| Flavor | Beschreibung | Kurz nachgeschlagen
+
+| Base
+| Ein minimales Image, das als Basis zum Erstellen benutzerdefinierter Images verwendet werden kann.
+| https://github.com/rancher/elemental/blob/v2.1.x/.obs/dockerfile/micro-base-os/Dockerfile[Ursprung]
+
+| Bare-metal
+| Enthält Bare-Metal- und Usability-Pakete. Kann für jede generische Arbeitslast verwendet werden.
+| https://github.com/rancher/elemental/blob/v2.1.x/.obs/dockerfile/micro-baremetal-os/Dockerfile[Ursprung]
+
+| KVM
+| Bereit zur Verwendung mit KVM. Enthält standardmäßig den QEMU-Gastagenten.
+| https://github.com/rancher/elemental/blob/v2.1.x/.obs/dockerfile/micro-kvm-os/Dockerfile[Ursprung]
+
+| RT
+| Wie Bare-Metal-Images, aber mit einem Echtzeit-Kernel.
+| https://github.com/rancher/elemental/blob/v2.1.x/.obs/dockerfile/micro-rt-os/Dockerfile[Ursprung]
+|===
+
+== Lebenszyklus von Kanälen und bewährte Methoden
+
+Sobald ein neues `ManagedOSVersionChannel` erstellt wird, synchronisiert der {elemental_operator_name} regelmäßig die bereitgestellte JSON-Liste des Kanals und wandelt sie in neue `ManagedOSVersions` um. +
+Alle synchronisierten `ManagedOSVersions` gehören dem `ManagedOSVersionChannel`. Das Löschen des `ManagedOSVersionChannel` führt zur kaskadenartigen Löschung aller `ManagedOSVersions`.
+
+Beachten Sie, dass die `ManagedOSVersionChannel` die automatische Bereinigung von nicht mehr synchronisierten `ManagedOSVersions` unterstützt, wenn die Option `ManagedOSVersionChannel.spec.deleteNoLongerInSyncVersions` aktiviert ist.
+
+Wenn ein `ManagedOSVersion` zur Löschung vorgesehen ist, stellt ein Finalizer sicher, dass keine aktive Referenz für ein `ManagedOSImage` besteht.
+
+Wenn eine `ManagedOSVersion` nicht gelöscht werden kann, können Sie herausfinden, durch welche Ressourcen sie referenziert wird:
+
+[,shell]
+----
+kubectl -n fleet-default get managedosimages -l elemental.cattle.io/managed-os-version-name=my-deleted-os-version
+----
+
+Bei der Verwendung mehrerer Kanäle ist es wichtig, eine geeignete Namensstrategie zu verfolgen, um immer eine schnelle, menschenlesbare Referenz auf die eigenen `ManagedOSVersions` zu haben. +
+Es wird empfohlen, jeden Kanal wie folgt zu benennen: `{BaseOS}-{BaseOSVersion}-{Flavor}`.
+
+Dies sollte es dem Benutzer ermöglichen, den Namen des `ManagedOSVersion` als spezifische {elemental-product-name}-Build-Version des Images zu verwenden, während er eine Referenz auf das Basis-OS und die Basis-OS-Version aus dem übergeordneten Kanal behält. +
+In der Rancher-Benutzeroberfläche wird dies etwa wie das folgende Bild aussehen:
+
+image:channel-naming.png[Kanalbenennung]
+
+== Eigene Kanäle erstellen
+
+Die einzige Voraussetzung, um einen eigenen benutzerdefinierten Synchronisierer zu erstellen, besteht darin, dass er eine JSON-Datei an `/data/output` ausgibt und die korrekte JSON-Struktur beibehält.
+
+Die Datei ist ein JSON-Array, das ISO- und Container-Einträge enthält.
+Jeder Eintrag im Array ist 1:1 mit einem xref:references/managedosversion-reference.adoc[ManagedOSVersion] Objekt verknüpft.
+
+`"type": "iso"` Einträge müssen ein bootfähiges {elemental-product-name} ISO enthalten und werden von xref:references/seedimage-reference.adoc[SeedImages] verwendet, während `"type": "container"` Einträge von xref:references/managedosimage-reference.adoc[ManagedOSImage] für {elemental-product-name} Upgrades verwendet werden.
+
+Im Zweifelsfall kann das https://github.com/rancher-sandbox/elemental-channels[elemental-channels] Projekt als Referenzimplementierung verwendet werden, um zu zeigen, wie eigene Kanäle erstellt und gepflegt werden.
+
+Bei der Erstellung neuer Einträge sollten Sie auf die gewählte Namensstrategie achten, um Kollisionen mit anderen Kanälen zu vermeiden, da diese möglicherweise unterschiedliche `ManagedOSVersion` mit demselben Namen synchronisieren.
+Eine bewährte Methode ist die Verwendung der Konvention: `\{Flavor}-\{Version}-\{Type}`
+
+Ein Beispiel für das JSON-Format ist wie folgt:
+
+.versions.json
+[,json]
+----
+include::example$upgrade/versions.json[]
+----

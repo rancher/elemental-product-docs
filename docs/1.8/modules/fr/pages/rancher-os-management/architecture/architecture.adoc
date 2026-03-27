@@ -1,0 +1,14 @@
+= Présentation de l'architecture
+:revdate: 2025-11-06
+:page-revdate: {revdate}
+
+{elemental-product-name} est la combinaison de deux projets principaux : le link:{elemental_toolkit_url}[{elemental_toolkit_name}] et le link:{elemental_operator_url}[{elemental_operator_name}].
+
+Le link:{elemental_toolkit_url}[{elemental_toolkit_name}] permet l'installation et les mises à jour du système d'exploitation à partir d'images de conteneurs OCI, de sorte que le système d'exploitation puisse être distribué et récupéré via des registres de conteneurs.
+
+Le link:{elemental_operator_url}[{elemental_operator_name}] étend Rancher avec des fonctionnalités de provisionnement et de gestion du système d'exploitation, en s'appuyant sur le {elemental-product-name} Toolkit.
+Il comble le fossé entre le link:{elemental_toolkit_url}[{elemental_toolkit_name}] et le https://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-deployment/launch-kubernetes-with-rancher.html[provisionnement de clusters Rancher RKE2/K3s], pour offrir une expérience fluide allant d'hôtes sans système d'exploitation à des clusters Kubernetes entièrement configurés.
+
+Cela est réalisé grâce à un xref:rancher-os-management/architecture/services/architecture-services.adoc[ensemble de services] offerts par {elemental-product-name} qui sont rendus possibles grâce aux xref:rancher-os-management/architecture/architecture-components.adoc[composants] empruntés au {elemental-product-name} Toolkit et aux projets {elemental-product-name} Operator.
+
+image:elemental-architecture-v1.5.png[]

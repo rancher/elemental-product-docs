@@ -1,0 +1,13 @@
+= Despliegue del clúster de Kubernetes
+:revdate: 6/11/2025
+:page-revdate: {revdate}
+
+El objetivo de la fase de despliegue del clúster de Kubernetes es crear un nuevo clúster RKE2 o K3s utilizando los xref:references/machineinventory-reference.adoc[Inventarios de Máquinas] disponibles, es decir, los hosts que han completado con éxito la fase de xref:rancher-os-management/architecture/services/architecture-machineonboarding.adoc[incorporación de Máquinas].
+
+El despliegue del clúster de Kubernetes {elemental-product-name} implica los siguientes pasos:
+
+* El usuario crea un recurso xref:references/machineinventoryselectortemplate-reference.adoc[PlantillaSelectorInventarioMáquinas]: permite definir un _selector_ para identificar un subconjunto de los xref:references/machineinventory-reference.adoc[Inventarios de Máquinas] disponibles en función del valor de sus etiquetas.
+* El usuario define un xref:references/cluster-reference.adoc[clúster de Rancher] y añade a la definición `machinePools` una referencia a la xref:references/machineinventoryselectortemplate-reference.adoc[PlantillaSelectorInventarioMáquinas] creada en el paso anterior.
+* El https://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-deployment/launch-kubernetes-with-rancher.html[despliegue del clúster RKE2/K3s de Rancher] reacciona a la creación del recurso del clúster de Rancher generando un número de recursos xref:references/machineinventoryselector-reference.adoc[SelectoresInventarioMáquinas] igual a la _cantidad_ especificada en los _grupos de máquinas_.
+* El {elemental-product-name} Operador empareja cada recurso xref:references/machineinventoryselector-reference.adoc[SelectorInventarioMáquinas] generado con un xref:references/machineinventory-reference.adoc[Inventario de Máquinas] disponible e instala el https://github.com/rancher/system-agent[daemon rancher-system-agent] en el host rastreado por el xref:references/machineinventory-reference.adoc[Inventario de Máquinas].
+El https://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-deployment/launch-kubernetes-with-rancher.html[despliegue del clúster RKE2/K3s de Rancher] se encarga del despliegue de K3s/RKE2 utilizando https://github.com/rancher/system-agent[daemon rancher-system-agent] _planes_: instala los componentes requeridos (por ejemplo, containerd, K3s, ...) y crea los archivos de configuración hasta el despliegue exitoso del nuevo clúster de Kubernetes.

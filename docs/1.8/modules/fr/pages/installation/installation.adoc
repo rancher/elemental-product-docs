@@ -1,0 +1,188 @@
+= Installation
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+== Présentation
+
+La pile {elemental-product-name} fournit la gestion du système d'exploitation à l'aide de conteneurs OCI et de Kubernetes. L'installation de la pile {elemental-product-name} englobe l'installation de {elemental_operator_name} dans le cluster de gestion et la création et l'utilisation de supports d'installation pour fournir le système d'exploitation aux nœuds du cluster. Voir la section xref:rancher-os-management/architecture/architecture.adoc[Architecture] pour lire sur l'interaction des composants.
+
+La configuration d'installation est principalement appliquée et définie dans le cadre du processus d'enregistrement.
+Le processus d'enregistrement est effectué par `elemental-register` (la partie client de {elemental_operator_name}) qui est responsable de l'enregistrement des nœuds dans un cluster de gestion Rancher et de la récupération de la configuration d'installation.
+
+Veuillez vous référer au guide xref:quickstarts/quickstart-cli.adoc[Démarrage rapide] pour des instructions de déploiement simples étape par étape.
+
+== {elemental-product-name} Installation de l'Opérateur
+
+Le {elemental_operator_name} est responsable de la gestion des versions de {elemental-product-name} et de la maintenance d'un inventaire de machines pour aider aux installations en périphérie ou sur matériel sans système d'exploitation. {elemental_operator_name} nécessite un cluster incluant le Rancher Manager et peut être installé avec un helm chart.
+
+Voir {elemental_operator_name} xref:references/operatorchart-reference.adoc[référence helm chart] pour les détails d'installation, de désinstallation, de mise à niveau et de configuration.
+
+== Préparez les ressources Kubernetes
+
+Une fois que le {elemental_operator_name} est opérationnel dans le cluster de gestion, quelques ressources Kubernetes sont nécessaires pour préparer un déploiement de cluster basé sur {elemental-product-name}.
+
+* xref:references/machineinventoryselectortemplate-reference.adoc[MachineInventorySelectorTemplate] :
+Cette ressource identifie les critères pour faire correspondre les boîtes enregistrées (énumérées dans l'inventaire des machines) avec les clusters Rancher 2.6 disponibles. Dès qu'il y a une correspondance, le cluster Kubernetes sélectionné prend possession de la boîte enregistrée.
+* xref:references/machineregistration-reference.adoc[MachineRegistration] :
+Cette ressource définit les détails de déploiement du système d'exploitation pour toute machine tentant de s'enregistrer. L'enregistrement de la machine est l'entrée pour les nœuds {elemental-product-name} car il gère l'authentification (basée sur TPM), le déploiement du système d'exploitation et l'inclusion du nœud dans l'inventaire des machines afin qu'il puisse être ajouté à un cluster lorsqu'il y a une correspondance basée sur un modèle de sélection d'inventaire de machines. L'objet MachineRegistration inclut l'URL d'enregistrement de la machine que les nœuds utilisent pour s'enregistrer.
+
+Une ressource de cluster Rancher est également requise pour déployer {elemental-product-name}, elle peut être créée manuellement comme exemplifié dans le guide xref:quickstarts/quickstart-cli.adoc[Démarrage rapide] ou créée à partir de l'interface utilisateur Rancher 2.6.
+
+== Préparez le support d'installation.
+
+Le support d'installation est le support qui sera utilisé pour démarrer le déploiement d'un système d'exploitation. Actuellement, le support pris en charge est un ISO live. L'ISO live doit inclure le fichier de configuration d'enregistrement yaml, il doit donc être créé une fois que la MachineRegistration est créée. Le support d'installation est généré en créant des ressources xref:references/seedimage-reference.adoc[Seed Image] (voir xref:quickstarts/quickstart-cli.adoc#_preparing_the_installation_seed_image[démarrage rapide] et xref:operator-operational-tasks/custom-images.adoc#_create_a_custom_bootable_installation_iso[custom images]).
+
+L'ISO live prend en charge le démarrage PXE pour une intégration directe avec https://documentation.suse.com/suma/4.3/en/suse-manager/client-configuration/autoinst-distributions.html#based-on-iso-image[SUSE Manager].
+
+Dans MachineRegistration, seul un sous-ensemble des paramètres d'installation du système d'exploitation peut être configuré, tous les paramètres disponibles sont listés sur la page de référence xref:references/machineregistration-reference.adoc[MachineRegistration].
+
+Pour configurer l'installation au-delà des options communes fournies dans la section xref:references/machineregistration-reference.adoc#_config_elemental_install[`elemental.install`], un fichier de configuration `config.yaml` peut être inclus dans l'ISO (voir xref:installation/customize-installation/custom-install.adoc#_custom_suse_rancher_prime_os_manager_client_configuration_file[Custom Images]).
+Notez que toute configuration appliquée dans le cadre de la section `elemental.install` de la MachineRegistration sera appliquée en plus des paramètres inclus dans tout fichier `config.yaml` personnalisé.
+
+Il est probable que la configuration cloud-init soit suffisante pour configurer et définir le nœud déployé au démarrage, cependant, si pour une raison quelconque des actions ou des scripts de premier démarrage sont nécessaires, il est également possible d'inclure des plans Rancher System Agent dans le support d'installation. Référez-vous à la section xref:rancher-os-management/plans.adoc[Plans] pour des détails et quelques exemples de plans. Les plans pourraient être inclus dans le rootfs compressé au dossier `/var/lib/elemental/agent/plans` et seraient visibles par l'agent système au premier démarrage.
+
+== Démarrer le processus d'installation
+
+L'installation commence par le démarrage du support d'installation sur un nœud. Une fois que le support d'installation a démarré, il tentera de contacter le cluster de gestion et de s'y enregistrer en appelant la commande `elemental-register`.
+Comme la configuration yaml d'enregistrement est déjà incluse dans l'ISO, `elemental-register` connaît l'URL d'enregistrement et toutes les autres données requises pour l'enregistrement.
+
+Une fois l'enregistrement réussi, le support d'installation commencera l'installation sur l'hôte en fonction de la configuration déjà incluse dans le support et des paramètres de MachineRegistration. Dès que l'installation est terminée, le nœud est prêt à redémarrer. Le système d'exploitation déployé inclut un plan d'agent système pour démarrer un processus de provisionnement Rancher régulier afin d'installer la version de Kubernetes sélectionnée, une fois démarré, après quelques minutes, l'installation du nœud est finalisée et le nœud est inclus dans le cluster et visible via l'interface utilisateur Rancher.
+
+== Table de partition déployée
+
+Une fois le système d'exploitation installé, la table de partition du système d'exploitation, selon les valeurs par défaut, ressemblera à
+
+|===
+| Label | Taille par défaut | Contient
+
+| COS_GRUB
+| 64 MiB
+| Partition de démarrage UEFI
+
+| COS_STATE
+| 8 Gio
+| Images de systèmes de fichiers amorçables A/B construites à partir d'images OCI
+
+| COS_OEM
+| 64 MiB
+| Fichiers de configuration cloud OEM et autres données
+
+| RÉCUPÉRATION_COS
+| 4 Gio
+| Image du système de fichiers de récupération si l'ÉTAT_COS est détruit
+
+| COS_PERSISTENT
+| Espace restant
+| Tous les contenus des dossiers persistants
+|===
+
+Notez que c'est la structure de base de tout système d'exploitation construit par le {elemental_toolkit_url}[{elemental_toolkit_name}].
+
+== {elemental-product-name} Racine immuable
+
+L'une des caractéristiques des systèmes d'exploitation {elemental-product-name} est la configuration d'un système de fichiers racine immuable où certains emplacements éphémères ou persistants sont appliqués par-dessus. La structure des dossiers par défaut est listée dans le tableau ci-dessous.
+
+[cols=",^,^,^"]
+|===
+| Chemin | Lecture seule | Éphémère | Permanent
+
+| /
+| x
+|
+|
+
+| /etc
+|
+| x
+|
+
+| /etc/cni
+|
+|
+| x
+
+| /etc/iscsi
+|
+|
+| x
+
+| /etc/rancher
+|
+|
+| x
+
+| /etc/ssh
+|
+|
+| x
+
+| /etc/systemd
+|
+|
+| x
+
+| /srv
+|
+| x
+|
+
+| /home
+|
+|
+| x
+
+| /opt
+|
+|
+| x
+
+| /root
+|
+|
+| x
+
+| /var
+|
+| x
+|
+
+| /usr/libexec
+|
+|
+| x
+
+| /var/lib/cni
+|
+|
+| x
+
+| /var/lib/kubelet
+|
+|
+| x
+
+| /var/lib/rancher
+|
+|
+| x
+
+| /var/lib/elemental
+|
+|
+| x
+
+| /var/lib/NetworkManager
+|
+|
+| x
+
+| /var/lib/calico
+|
+|
+| x
+
+| /var/log
+|
+|
+| x
+|===

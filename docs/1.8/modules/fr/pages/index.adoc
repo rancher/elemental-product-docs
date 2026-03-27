@@ -1,0 +1,45 @@
+= Gestion des systèmes d'exploitation pour Rancher
+:revdate: 2026-01-16
+:page-revdate: {revdate}
+
+{elemental-product-name} est une pile logicielle permettant une gestion centralisée et entièrement natif Cloud des systèmes d'exploitation (OS) avec Kubernetes.
+
+xref:release-notes.adoc[**Dernière version : v1.8.0**]
+
+La pile {elemental-product-name} se compose d'un certain nombre de paquets sur SLE Micro :
+
+* *elemental-toolkit* - Inclut un ensemble d'utilitaires OS pour permettre la gestion des systèmes d'exploitation via des conteneurs. Inclut des modules dracut, la configuration du chargeur de démarrage, des services de configuration de style cloud-init, etc.
+* *elemental-operator* - Se connecte à Rancher Manager et gère les CRD MachineRegistration et MachineInventory.
+* *elemental-register* - Enregistre les machines via machineRegistrations et les installe via elemental-cli.
+* *elemental-cli* - Installe toute dérivée basée sur elemental-toolkit. Essentiellement un installateur basé sur notre système d'installation et de mise à niveau A/B.
+* *rancher-system-agent* - S'exécute sur le système installé et reçoit des instructions ("Plans") de Rancher Manager sur ce qu'il faut installer et exécuter sur le système.
+
+Les systèmes d'exploitation des nœuds de cluster sont construits et maintenus via des images de conteneurs à travers le {elemental_cli_name} et peuvent être installés sur de nouveaux hôtes en utilisant le {elemental_ui_url}[{elemental_ui_name}] pour https://www.rancher.com/products/rancher[Rancher Manager] ou le {elemental_cli_url}[{elemental_cli_name}].
+
+Le {elemental_operator_url}[{elemental_operator_name}] et le {ranchersystemagent_url}[{ranchersystemagent_name}] permettent à Rancher Manager de contrôler entièrement les clusters {elemental-product-name}, depuis l'installation et la gestion de l'OS sur les nœuds jusqu'à la fourniture de nouveaux clusters K3s ou RKE2 de manière centralisée.
+
+== {elemental-product-name} sur matériel x86-64
+
+{elemental-product-name} est prêt pour la production et entièrement supporté sur x86-64 à partir de Rancher v2.7.0.
+
+== {elemental-product-name} sur matériel ARM
+
+ARM (aarch64) est fonctionnel en phase de développement. ARM est actuellement testé uniquement sur Raspberry Pi 4 Model B avec k3s 1.24.8 (ou version ultérieure). Les retours sont les bienvenus.
+
+== {elemental-product-name} sur d'autres matériels
+
+{elemental-product-name} cible actuellement des scénarios 'edge' et ne prend donc pas en charge d'autres matériels. Nous réévaluerons cela à mesure que le marché évolue.
+
+== Prêt à essayer ?
+
+Mettez en place un Cluster {elemental-product-name} avec votre méthode préférée
+
+* Avec le gestionnaire Rancher xref:quickstarts/quickstart-ui.adoc[{elemental-product-name} plugin]
+* Avec le xref:quickstarts/quickstart-cli.adoc[{elemental-product-name} CLI]
+
+[NOTE]
+.Opérations suivantes
+====
+Vous voulez plus de détails ? Jetez un œil à la section xref:rancher-os-management/architecture/architecture.adoc[Architecture] ou contactez le {elemental_slack_url}[{elemental_slack_name}].
+====
+

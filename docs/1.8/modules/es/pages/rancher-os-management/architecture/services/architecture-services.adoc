@@ -1,0 +1,8 @@
+= Servicios
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+{elemental-product-name} La funcionalidad se proporciona a través de la siguiente lista de servicios:
+
+* xref:rancher-os-management/architecture/services/architecture-machineonboarding.adoc[Incorporación de máquinas]: permite que los hosts sean aprovisionados y registrados en el catálogo del operador {elemental-product-name}.
+* xref:rancher-os-management/architecture/services/architecture-clusterdeployment.adoc[Despliegue de clúster de Kubernetes]: activa la creación de un clúster de Kubernetes en el host disponible registrado en el catálogo del operador {elemental-product-name}.

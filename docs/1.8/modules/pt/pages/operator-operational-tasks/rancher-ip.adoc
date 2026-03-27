@@ -1,0 +1,43 @@
+= Configure os endereços IP internos e externos do K3s e RKE2
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+K3s e RKE2 permitem especificar os endereços IP internos e externos de um nó através dos parâmetros `--node-ip` e `--node-external-ip`.
+
+O Provisionamento do Rancher permite preencher esses parâmetros coletando o endereço IP de cada interface de rede do nó.
+
+De qualquer forma, os métodos para coletar essas opções de IP para Clusters Rancher _Custom_ e _Elemental_ diferem.
+
+== Configuração dos endereços IP internos e externos do K3s e RKE2 no provisionamento de Clusters Rancher
+
+O provisionamento do Rancher permite especificar na seção do Agente Rancher as interfaces de rede que devem ser vinculadas aos endereços IP internos e externos de cada nó provisionado.
+
+Isso é realizado adicionando os nomes das interfaces de rede das quais os endereços IP devem ser extraídos nas Variáveis de Ambiente do Agente `CATTLE_INTERNAL_ADDRESS` e `CATTLE_ADDRESS` (https://ranchermanager.docs.rancher.com/reference-guides/cluster-configuration/rancher-server-configuration/use-existing-nodes/rancher-agent-options#ip-address-options[veja a documentação do Rancher]).
+
+[NOTE]
+====
+As Variáveis de Ambiente do Agente `CATTLE_INTERNAL_ADDRESS` e `CATTLE_ADDRESS` podem ser preenchidas diretamente com os endereços IP desejados. De qualquer forma, uma vez que os endereços IP internos e externos são _por nó_, isso não funcionaria exceto para clusters de nó único.
+====
+
+
+[CAUTION]
+====
+Enquanto durante a criação de um Cluster Elemental é possível adicionar Variáveis de Ambiente do Agente, as `CATTLE_ADDRESS` e `CATTLE_INTERNAL_ADDRESS` são ignoradas e não resultariam na configuração dos endereços IP internos e externos dos nós provisionados.
+====
+
+
+== Configure os endereços IP internos e externos do K3s e RKE2 em Clusters Elementais
+
+Elemental permite configurar os endereços IP internos e externos dos Nós do Cluster anexando os rótulos `elemental.cattle.io/InternalIP` e `elemental.cattle.io/ExternalIP` aos recursos xref:references/machineinventory-reference.adoc[MachineInventory] que rastreiam os nós-alvo.
+
+Esses rótulos, quando anexados a um recurso xref:references/machineinventory-reference.adoc[MachineInventory], são usados para preencher os endereços IP internos e externos dos nós associados.
+
+Os rótulos podem ser adicionados aos campos xref:references/machineregistration-reference.adoc[MachineRegistration] `machineInventoryLabels`, usando as variáveis de endereço IP do xref:label-templates/label-templates-network.adoc[Network Label Template] como valores, a fim de permitir a coleta dos endereços IP de cada nó.
+
+Exemplo: xref:references/machineregistration-reference.adoc[MachineRegistration] onde os nós terão o endereço IP interno definido a partir da interface eth0 e o endereço IP externo a partir da eth1.
+
+.registration.yaml
+[,yaml]
+----
+include::example$labeltemplates/registration.yaml[]
+----

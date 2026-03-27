@@ -1,0 +1,47 @@
+= バックアップ
+:revdate: 2025-11-06
+:page-revdate: {revdate}
+
+Rancherの一部として{elemental-product-name}が実行されるため、{elemental-product-name}リソースはRancherバックアップにバンドルされます。
+Rancherバックアップ、復元、および災害復旧オプションの詳細については、公式のhttps://documentation.suse.com/cloudnative/rancher-manager/latest/en/rancher-admin/back-up-restore-and-disaster-recovery/back-up-restore-and-disaster-recovery.html[Rancherドキュメント]を参照してください。
+
+== Rancher用のrancher-backupオペレーターをインストールします。
+
+Rancherバックアップオペレーターのインストールと構成方法を学ぶには、https://documentation.suse.com/cloudnative/rancher-manager/latest/en/rancher-admin/back-up-restore-and-disaster-recovery/back-up.html[Rancherバックアップガイド]に従ってください。
+
+
+== rancher-backupオペレーターを使用して{elemental-product-name}をバックアップします。
+
+Kubernetesクラスター上で実行されているRancherをバックアップするために、ニーズに合わせた`backup object`を作成します。
+
+[,yaml]
+----
+apiVersion: resources.cattle.io/v1
+kind: Backup
+metadata:
+  name: rancher-backup
+spec:
+  resourceSetName: rancher-resource-set
+  schedule: "10 3 * * *"
+  retentionCount: 10
+----
+
+rancher-backupオペレーターは、スケジュール、暗号化、およびストレージクラスのためのいくつかのオプションを提供します。
+すべてのオプションを確認するには、https://documentation.suse.com/cloudnative/rancher-manager/latest/en/rancher-admin/back-up-restore-and-disaster-recovery/configuration/backup.html[公式ドキュメント]をお読みください。
+
+rancher-backupオペレーターのログを確認します。
+
+[,shell]
+----
+kubectl logs -n cattle-resources-system -l app.kubernetes.io/name=rancher-backup -f
+----
+
+Persistent Volumeにバックアップファイルが作成されたかどうかを確認します。
+
+[,shell]
+----
+...
+INFO[2022/10/17 07:45:04] Finding files starting with /var/lib/backups/rancher-backup-430169aa-edde-4a61-85e8-858f625a755b*.tar.gz
+INFO[2022/10/17 07:45:04] File rancher-backup-430169aa-edde-4a61-85e8-858f625a755b-2022-10-17T05-15-00Z.tar.gz was created at 2022-10-17 0
+...
+----

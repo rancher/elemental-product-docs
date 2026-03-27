@@ -1,0 +1,10 @@
+= Referência do Seletor de Inventário de Máquinas
+:revdate: 2024-09-24
+:page-revdate: {revdate}
+
+Um Seletor de Inventário de Máquinas seleciona Inventários de Máquinas com base em seletores aplicados (geralmente correspondência de padrão nos valores de rótulo do Inventário de Máquinas).
+
+Os Seletores de Inventário de Máquinas têm duas condições:
+
+* `InventoryReady`, torna-se verdadeiro se o Seletor de Inventário de Máquinas encontrou um Inventário de Máquinas correspondente e se estabeleceu com sucesso como o proprietário do Inventário de Máquinas.
+* `Ready`, rastreia se o seletor já adotou uma máquina e iniciou o processo de provisionamento do Kubernetes (inicialização do nó).

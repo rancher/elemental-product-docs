@@ -1,0 +1,228 @@
+= cloud-config参考
+:revdate: 2025-10-21
+:page-revdate: {revdate}
+
+使用https://github.com/elemental-toolkit[{elemental-product-name}工具包]构建的节点操作系统映像预计将通过使用https://github.com/rancher/yip[yip]进行初始化和配置。Yip是一个小工具，用于将一组操作和配置应用于用yaml文件描述的系统。Yip作为库集成并在元素客户端二进制文件中使用（见`elemental run-stage --help`）。Yip将要应用的配置和操作分组到任意_阶段_中，例如`elemental run-stage network`命令调用仅会为名为`network`的阶段应用定义的操作和配置。请注意，从Yip的角度来看，阶段可以在任何时间运行，因为它们只是将一组操作按任意名称分组。
+
+{elemental-product-name}工具包将五个预定义阶段集成到操作系统启动过程中。
+
+. *`pre-rootfs`*：此阶段在早期启动时运行于初始化RAM磁盘中，正好在挂载根设备之前（通常在`/sysroot`）。此阶段可用于定义在挂载根设备之前所需的首次启动步骤。一个好的例子是扩展根设备分区。作为`initrd-root-device.target`的一部分执行。
+. *`rootfs`*：此阶段在早期启动时运行于初始化RAM磁盘中，正好在挂载根设备之后（通常在`/sysroot`）。此阶段可用于定义首次启动步骤，例如创建新分区。短暂和持久路径通常在此阶段定义。作为`initrd-root-fs.target`的一部分执行。
+. *`initramfs`*：此阶段也在初始化RAM磁盘中运行，但在稍后的阶段，正好在切换根之前。此阶段在一个chroot环境中运行，指向实际的根设备。此阶段方便设置一些在切换根后可能与systemd相关的系统参数。例如，可以在这里添加额外的systemd单元文件，然后再执行来自实际根的systemd。作为`initrd.target`的一部分执行。
+. *`fs`*：此阶段是在切换根目录后执行的第一个阶段，它作为`sysinit.target`的一部分执行，该阶段在所有本地文件系统和在fstab中定义的挂载点都已挂载并准备就绪后运行。
+. *`network`*：此阶段作为`multi-user.target`的一部分执行，并在达到`network-online.target`后执行。此阶段可用于运行需要网络连接的操作和配置。例如，此阶段用于进行来自 live .iso 映像的首次节点注册和安装。
+. *`boot`*：此阶段作为multi-user.target的一部分执行，并在getty.target之前执行。这是运行使用支持的cloud-config语法提供的cloud-config数据的默认阶段。请参见xref:references/cloud-config-reference.adoc#_compatibility_with_cloud_init_format[cloud-init兼容性]部分。
+
+默认情况下，`elemental`按顺序从以下路径读取yaml配置文件：`/system/oem`、`/oem`和`/usr/local/cloud-config`。
+
+在 {elemental-product-name} Operator 中，所有 Kubernetes 资源，包括 `cloud-config` 字段，可以使用 <<_configuration_syntax,yip>> 或 <<_compatibility_with_cloud_init_format,cloud-init 兼容>> 语法来表示。这包括`MachineRegistration`、`SeedImage`和`ManagedOSImage`等资源。
+
+[NOTE]
+====
+与类似项目（如_Cloud Init_）相比，Yip不保留已执行阶段和步骤的记录或缓存，所有阶段及其相关配置在每次启动时执行。
+====
+
+== Elemental客户端cloud-config钩子
+
+除了前一部分中描述的启动时定义的cloud-config阶段外，Elemental客户端还尊重一些特定阶段，称为钩子，以自定义这些子命令的行为：`install`、`upgrade`、`reset`和`build-disk`。每个子命令都有自己的一组四个不同的cloud-config阶段，在特定子命令执行的相应阶段执行。
+
+钩子本质上是一种提供对系统进行永久性更改的方法，这些更改无法轻易作为OCI容器的一部分表达，或者无法通过`elemental`客户端配置选项轻易实现。一个好的例子是处理Raspberry Pi设备的EFI分区中的固件。
+
+[WARNING]
+====
+请注意，大多数钩子在主机环境中以特权身份执行，因此它们可能是破坏性操作。在大多数情况下，启动时常规的cloud-config操作足以设置系统。此外，要在映像中包含额外的软件，首选选项是构建xref:operator-operational-tasks/custom-images.adoc[衍生映像]，而不是滥用钩子来安装额外的软件。
+====
+
+=== 钩子阶段
+
+在阶段之前：before-install、before-upgrade、before-reset、before-disk 这些阶段在准备好工作目录和环境后执行，但在开始实际操作之前。在安装、升级和重置步骤中，这发生在所有相关分区创建并挂载后，但在开始部署任何映像之前。
+
+在 chroot 阶段之后：after-install-chroot、after-upgrade-chroot、after-reset-chroot、after-disk-chroot 这些阶段在将目标系统部署到工作区并进入以实际部署的映像为根的 chroot 环境后执行。由于这发生在 chroot 环境中，Elemental 客户端分析部署映像中存在的钩子，而不是在主机中。/oem 仅在可用时与主机共享。
+
+在阶段之后：after-install、after-upgrade、after-reset、after-disk 这些阶段在从主机环境将目标系统部署到工作区后执行。在此阶段，所有分区仍然挂载并以 RW 模式可用。这一特定阶段集分析主机中存在的钩子以及与部署映像相对应的路径集合中的钩子。然而，钩子并未在 chroot 环境中执行。这有助于在部署的映像中提供 `after-*` 钩子。
+
+后阶段：post-install、post-upgrade、post-reset、post-disk 这些阶段在退出命令并运行清理过程之前执行。在此阶段，映像已经部署并锁定在只读子卷或文件系统中。在此阶段，分区仍然挂载。
+
+[NOTE]
+====
+注意，安装钩子未作为 xref:references/machineregistration-reference.adoc#_config_cloud_config[`MachineRegistration.config.cloud-config`] 的一部分应用。为了提供安装钩子，它们可以作为 xref:[`SeedImage.cloud-config`] 的一部分包含，因为它们需要存在于安装介质中。
+====
+
+== 配置语法
+
+Yip 有其自己的语法，基本上需要定义 _stages_ 和每个阶段的步骤列表。步骤按顺序执行，每个步骤可以是不同操作类型的组合（例如运行命令、创建文件、设置主机名等）。
+
+参见以下示例：
+
+[,yaml]
+----
+stages:
+  initramfs:
+  - name: "Setup users"
+    ensure_entities:
+    - path: /etc/shadow
+      entity: |
+          kind: "shadow"
+          username: "root"
+          password: "root"
+  boot:
+  - files:
+    - path: /tmp/script.sh
+      content: |
+        #!/bin/sh
+        echo "test"
+      permissions: 0777
+      owner: 1000
+      group: 100
+  - commands:
+    - /tmp/script.sh
+----
+
+在上述示例中，有两个阶段：`initramfs` 和 `boot`。`initramfs` 阶段初始化一个示例用户。`boot` 阶段包括两个步骤，一个是创建可执行脚本文件，另一个是实际运行脚本。
+
+Yip 还支持对任何给定阶段的 `*.before` 和 `*.after` 后缀修饰符。例如，运行 `network` 阶段会首先运行配置文件中找到的 `network.before` 阶段，然后是 `network`，最后是 `network.after`。
+
+请参阅 https://github.com/rancher/yip?tab=readme-ov-file#configuration-reference[yip 项目] 中记录的适用键的完整参考。
+
+以下是嵌入在 MachineRegistration 资源中的上述配置示例。
+
+.点击这里查看详细信息
+[%collapsible]
+====
+.MachineRegistration 示例
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: MachineRegistration
+metadata:
+  name: my-nodes
+  namespace: fleet-default
+spec:
+  config:
+    cloud-config:
+      name: "A registration driven config"
+      stages:
+        after-install-chroot:
+        - name: "Set serial console"
+          commands:
+          - grub2-editenv /oem/grubenv set extra_cmdline="console=ttyS0"
+        initramfs:
+        - name: "Setup users"
+          ensure_entities:
+          - path: /etc/shadow
+            entity: |
+                kind: "shadow"
+                username: "root"
+                password: "root"
+        boot:
+        - files:
+          - path: /tmp/script.sh
+            content: |
+              #!/bin/sh
+              echo "test"
+            permissions: 0777
+            owner: 1000
+            group: 100
+        - commands:
+          - /tmp/script.sh
+    elemental:
+      install:
+        reboot: true
+        device: /dev/sda
+        debug: true
+  machineName: my-machine
+  machineInventoryLabels:
+    element: fire
+----
+====
+
+== 同步
+
+在执行阶段期间，所有文件都会被加载，并计算出一个图，然后执行。这意味着同一阶段中的步骤可以按任何顺序执行，而不考虑文件名。
+
+为了同步执行，用户可以使用后置/前置阶段或在 https://github.com/rancher/yip/blob/ee4051d9ec2782989344f813bc6a0975bbd8f3fe/pkg/executor/default_test.go#L222[yip 语法] 中引用 `after` 关键字。
+
+== 与 Cloud Init 格式的兼容性
+
+yip 实现了官方 http://cloudinit.readthedocs.org/en/latest/topics/format.html#cloud-config-data[cloud-config 规范] 的一个子集。更具体地说，支持的 cloud-init 键包括：`users`、`ssh_authorized_keys`、`runcmd`、`hostname` 和 `write_files`。
+
+如果 yaml 文件以 `#cloud-config` 开头，则将其解析为标准 cloud-init，并将其关联到 yip `boot` 阶段。
+
+例如：
+
+[,yaml]
+----
+#cloud-config
+# Note groups are delivered as list, not as comma separated values
+users:
+- name: "bar"
+  passwd: "foo"
+  groups:
+  - "users"
+  homedir: "/home/foo"
+  shell: "/bin/bash"
+  ssh_authorized_keys:
+  - faaapploo
+# Assigns these keys to the first user in users or root if there
+# is none
+ssh_authorized_keys:
+- asddadfafefa
+# Run these commands once the system has fully booted
+# Each command is expressed as a sinlge string, no nested lists
+runcmd:
+- echo hello world
+# Hostname
+hostname: myserver
+# Write arbitrary files
+write_files:
+- encoding: b64
+  content: CiMgVGhpcyBmaWxlIGNvbnRyb2xzIHRoZSBzdGF0ZSBvZiBTRUxpbnV4
+  path: /foo/bar
+  permissions: "0644"
+  owner: "bar"
+----
+
+以下是嵌入在 MachineRegistration 资源中的上述配置示例。
+
+.点击这里查看详细信息
+[%collapsible]
+====
+.MachineRegistration 示例
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: MachineRegistration
+metadata:
+  name: my-nodes
+  namespace: fleet-default
+spec:
+  config:
+    cloud-config:
+      users:
+      - name: "bar"
+        passwd: "foo"
+        groups: "users"
+        homedir: "/home/foo"
+        shell: "/bin/bash"
+        ssh_authorized_keys:
+        - faaapploo
+      ssh_authorized_keys:
+      - asdd
+      runcmd:
+      - foo
+      write_files:
+      - encoding: b64
+        content: CiMgVGhpcyBmaWxlIGNvbnRyb2xzIHRoZSBzdGF0ZSBvZiBTRUxpbnV4
+        path: /foo/bar
+        permissions: "0644"
+        owner: "bar"
+    elemental:
+      install:
+        reboot: true
+        device: /dev/sda
+        debug: true
+  machineName: my-machine
+  machineInventoryLabels:
+    element: fire
+----
+====

@@ -1,0 +1,41 @@
+= GPU-Vorlagenvariablen
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+Die in den GPU-Vorlagenvariablen gesammelten Informationen definieren die Attribute der im System installierten Grafikkarten.
+
+Die Daten werden nach Grafikkartennummer (0, 1, 2, ...) bereitgestellt.
+
+Um auf die erste Grafikkarte zuzugreifen, kann die Grafikkartennummer (_`<Number>`_) weggelassen werden (z. B. ist die Variable `${GPU/GraphicsCards/Driver}` die gleiche wie `${GPU/GraphicsCards/0/Driver}`).
+
+|===
+| Variable | Beschreibung | Von
+
+| `${GPU/GraphicsCards/Driver}`
+| GPU-Kartentreiber
+| 1.7.0
+
+| `${GPU/GraphicsCards/ProductName}`
+| GPU-Kartenmodell
+| 1.7.0
+
+| `${GPU/GraphicsCards/VendorName}`
+| GPU-Kartenanbieter
+| 1.7.0
+
+| `${GPU/GraphicsCards/_<Number>_/Driver}`
+| GPU-Karten _Nummer_ Treiber
+| 1.7.0
+
+| `${GPU/GraphicsCards/_<Number>_/ProductName}`
+| GPU-Karten _Nummer_ Modell
+| 1.7.0
+
+| `${GPU/GraphicsCards/_<Number>_/VendorName}`
+| GPU-Karten _Nummer_ Anbieter
+| 1.7.0
+
+| `${GPU/TotalCards}`
+| Anzahl der GPU-Karten im System
+| 1.7.0
+|===

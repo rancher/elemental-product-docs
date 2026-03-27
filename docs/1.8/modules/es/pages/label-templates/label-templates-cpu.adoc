@@ -1,0 +1,73 @@
+= Variables de plantilla de CPU
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+La información recopilada en las variables de plantilla de CPU define los atributos de los procesadores instalados en el sistema.
+
+Los datos se exponen por número de procesador (0, 1, 2, ...).
+
+Para hacer referencia al primer procesador, se puede omitir el número de procesador (_`<Number>`_) (por ejemplo, la variable `${CPU/Processor/Model}` es la misma que `${CPU/Processor/0/Model}`).
+
+|===
+| Variable | Descripción | desde
+
+| `${CPU/Processor/Capabilities}`
+| Lista de capacidades de procesador separadas por comas
+| 1.7.0
+
+| `${CPU/Processor/ID}`
+| ID del procesador
+| 1.7.0
+
+| `${CPU/Processor/Model}`
+| Modelo del procesador
+| 1.7.0
+
+| `${CPU/Processor/NumCores}`
+| Número de núcleos
+| 1.7.0
+
+| `${CPU/Processor/NumThreads}`
+| Número de hilos
+| 1.7.0
+
+| `${CPU/Processor/Vendor}`
+| Vendedor del procesador
+| 1.7.0
+
+| `${CPU/Processor/_<Number>_/Capabilities}`
+| Lista de _número_ de procesador separada por comas
+| 1.7.0
+
+| `${CPU/Processor/_<Number>_/ID}`
+| ID del procesador _número_
+| 1.7.0
+
+| `${CPU/Processor/_<Number>_/Model}`
+| Modelo del procesador _número_
+| 1.7.0
+
+| `${CPU/Processor/_<Number>_/NumCores}`
+| Número de núcleos del procesador _número_
+| 1.7.0
+
+| `${CPU/Processor/_<Number>_/NumThreads}`
+| Número de hilos del procesador _número_
+| 1.7.0
+
+| `${CPU/Processor/_<Number>_/Vendor}`
+| Vendedor del procesador _número_
+| 1.7.0
+
+| `${CPU/TotalCores}`
+| Número total de núcleos en el sistema
+| 1.7.0
+
+| `${CPU/TotalProcessors}`
+| Número de procesadores en el sistema
+| 1.7.0
+
+| `${CPU/TotalThreads}`
+| Número total de hilos en el sistema
+| 1.7.0
+|===

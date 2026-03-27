@@ -1,0 +1,70 @@
+= 随机模板变量
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+随机模板变量是元素操作器中的内置。
+
+它们允许在自定义xref:label-templates/label-templates.adoc[标签模板]中包含随机`Int`、`Hex`或`UUID`值。
+
+这些值在`label template variables`渲染过程中动态计算。
+
+[IMPORTANT]
+.随机标签模板仅渲染一次。
+====
+
+包含随机变量的标签模板仅在注册主机的xref:references/machineinventory-reference.adoc[机器库存]尚未为该标签提供值时渲染（具有相同键的标签缺失或其值为空）。
+
+因此，渲染包含随机变量的标签模板的三种情况是：
+
+. 主机首次注册，且xref:references/machineinventory-reference.adoc[机器库存]被重新创建。
+. 标签模板在主机（重新）上次注册后被添加到机器注册中。
+. 与标签模板匹配的xref:references/machineinventory-reference.adoc[机器库存]标签（相同标签键）已被手动去除或其值已被清空。
+====
+
+
+|===
+| 变量 | 说明 | from
+
+| `${Random/UUID}`
+| 随机UUID（例如，fd95324a-c26b-4e28-8727-1dcec293a0ec）
+| 1.7.0
+
+| `${Random/Hex/[1-32]}`
+| 指定长度的随机十六进制字符串（最小1，最大32）
+| 1.7.0
+
+| `${Random/Int/[MAXINT]`
+| 随机整数（最小0，最大MAXINT-1）
+| 1.7.0
+|===
+
+[NOTE]
+.渲染示例
+====
+|===
+| 模板值 | 渲染值示例
+
+| `${Random/UUID}`
+| fd95324a-c26b-4e28-8727-1dcec293a0ec
+
+| `${Random/Hex/12}`
+| acd231f222b8
+
+| `${Random/Int/10000}` 
+| 9432
+
+|===
+====
+
+
+随机模板变量对于生成分配给注册主机的自定义主机名非常有用。
+
+由于主机名必须是唯一的，并通过xref:references/machineregistration-reference.adoc[机器注册] `spec.machineName`字段分配，因此可以使用随机变量确保共享相同自定义前缀和/或后缀的一组主机的唯一性。
+
+有关更多信息，请查看xref:installation/hostname.adoc[如何/自定义主机名]部分。
+
+.注册示例随机模板变量
+[,yaml]
+----
+include::example$quickstart/registration-random-hostname.yaml[]
+----

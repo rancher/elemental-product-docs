@@ -1,0 +1,33 @@
+= Vorlagenvariablen für Systembasisplatinen
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+Die in den Systembasisplatinen-Variablen gesammelten Informationen definieren Attribute einer Systembasisplatine (zum Beispiel ein Motherboard, eine Platine, ein Serverblade oder ein anderes Standard-Systemmodul).
+
+Teilmenge der SMBIOS-Basisplatinen- oder Modul-Informationsdaten (Typ 2).
+
+Für weitere Informationen zu SMBIOS siehe die https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.7.1.pdf[SMBIOS-Spezifikation].
+
+|===
+| Variable | Beschreibung | Von
+
+| `${BaseBoard/AssetTag}`
+| Asset-Tag des Motherboards
+| 1.7.0
+
+| `${BaseBoard/Product}`
+| Produktname des Motherboards
+| 1.7.0
+
+| `${BaseBoard/SerialNumber}`
+| Seriennummer des Motherboards
+| 1.7.0
+
+| `${BaseBoard/Vendor}`
+| Anbieter des Motherboards
+| 1.7.0
+
+| `${BaseBoard/Version}`
+| Revision des Motherboards
+| 1.7.0
+|===

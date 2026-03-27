@@ -1,0 +1,160 @@
+= {elemental-product-name} プラン
+:revdate: 2025-10-27
+:page-revdate: {revdate}
+
+{elemental-product-name} は https://github.com/rancher/system-agent[Rancher System Agent] を使用し、{elemental-product-name} System Agent に改名して、ノードをシンプルなプランで起動します。
+
+プランは以下の設定を適用します：
+
+* ノードにいくつかのラベルを設定します。
+* `MachineInventory` の値に従って適切なホスト名を設定します。
+* Rancher Server からデフォルトの Rancher System Agent をインストールし、適切な Kubernetes コンポーネントをインストールします。
+
+起動サービスは、`/var/lib/elemental/agent/plans` に保存されたローカルプランも受け入れます。そこに書かれたプランは、インストールが完了した後のノード起動時にも適用されます。
+
+[TIP]
+====
+ローカルプランは、ノードに Kubernetes がインストールされる前の初期 {elemental-product-name} 起動中のみ実行されます。
+====
+
+== プランの種類
+
+{elemental-product-name} が使用できるプランの種類は：
+
+* 一度きりの指示：一度だけ実行します。
+* 定期的な指示：定期的に実行されます。
+* ファイル:ファイルを作成します。
+* プローブ：HTTP プローブ
+
+[TIP]
+====
+一度きりの指示と定期的な指示の両方が、直接コマンドまたは Docker イメージを実行できます。
+====
+
+== {elemental-product-name} にローカルプランを追加する
+
+{elemental-product-name} にローカルプランを `MachineRegistration` CRD の一部として、`cloud-config` セクションに次のように追加できます：
+
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: MachineRegistration
+metadata:
+  name: my-nodes
+  namespace: fleet-default
+spec:
+  config:
+    cloud-config:
+      users:
+        - name: root
+          passwd: root
+      write_files:
+        - path: /var/lib/elemental/agent/plans/mycustomplan.plan
+          permissions: "0600"
+          content: |
+            {"instructions":
+                [
+                  {
+                    "name":"set hostname",
+                    "command":"hostnamectl",
+                    "args": ["set-hostname", "myHostname"]
+                  },
+                  {
+                    "name":"stop sshd service",
+                    "command":"systemctl",
+                    "args": ["stop", "sshd"]
+                  }
+                ]
+            }
+    elemental:
+      install:
+        reboot: true
+        device: /dev/sda
+        debug: true
+  machineName: my-machine
+  machineInventoryLabels:
+    element: fire
+----
+
+== プランの例
+
+以下のプランは、迅速な参照用に提供されており、あなたの環境での動作を保証するものではありません。プランについて詳しく学ぶには、https://github.com/rancher/system-agent[Rancher System Agent]をご確認ください。
+
+[tabs]
+======
+例1：一度きりの指示::
++
+====
+[,json]
+----
+{"instructions":
+    [
+        {
+            "name":"set hostname",
+            "command":"hostnamectl",
+            "args": ["set-hostname", "myHostname"]
+        },
+        {
+            "name":"stop sshd service",
+            "command":"systemctl",
+            "args": ["stop", "sshd"]
+        }
+    ]
+}
+----
+====
+
+例2：定期的な指示::
++
+====
+[,json]
+----
+{"periodicInstructions":
+    [
+        {
+            "name":"set hostname",
+            "image":"ghcr.io/rancher-sandbox/elemental-example-plan:main"
+            "command": "run.sh"
+        }
+    ]
+}
+----
+====
+
+例3：ファイル::
++
+====
+[,json]
+----
+{"files":
+    [
+        {
+            "content":"Welcome to the system",
+            "path":"/etc/motd",
+            "permissions": "0644"
+        }
+    ]
+}
+----
+====
+
+例4：プローブ::
++
+====
+[,json]
+----
+{"probes":
+    "probe1": {
+        "name": "Service Up",
+        "httpGet": {
+            "url": "http://10.0.0.1/healthz",
+            "insecure": "false",
+            "clientCert": "....",
+            "clientKey": "....",
+            "caCert": "....."
+        }
+    }
+}
+----
+====
+======

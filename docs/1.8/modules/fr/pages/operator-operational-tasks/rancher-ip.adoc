@@ -1,0 +1,43 @@
+= Configurer les adresses IP internes et externes de K3s et RKE2
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+K3s et RKE2 permettent de spécifier les adresses IP internes et externes d'un nœud via les paramètres `--node-ip` et `--node-external-ip`.
+
+Le provisionnement Rancher permet de remplir ces paramètres en collectant l'adresse IP de l'interface réseau de chaque nœud.
+
+Quoi qu'il en soit, les méthodes pour collecter ces options IP pour les clusters Rancher _Custom_ et _Elemental_ diffèrent.
+
+== Configuration des adresses IP internes et externes de K3s et RKE2 dans le provisionnement de Clusters Rancher
+
+Le provisionnement Rancher permet de spécifier dans la section de l'Agent Rancher les interfaces réseau qui doivent être liées aux adresses IP internes et externes de chaque nœud provisionné.
+
+Cela se fait en ajoutant les noms des interfaces réseau à partir desquelles les adresses IP doivent être extraites dans les variables d'environnement de l'Agent `CATTLE_INTERNAL_ADDRESS` et `CATTLE_ADDRESS` (https://ranchermanager.docs.rancher.com/reference-guides/cluster-configuration/rancher-server-configuration/use-existing-nodes/rancher-agent-options#ip-address-options[voir la documentation de Rancher]).
+
+[NOTE]
+====
+Les variables d'environnement de l'Agent `CATTLE_INTERNAL_ADDRESS` et `CATTLE_ADDRESS` peuvent être directement remplies avec les adresses IP souhaitées. Quoi qu'il en soit, puisque les adresses IP internes et externes sont _par nœud_, cela ne fonctionnerait que pour des clusters à nœud unique.
+====
+
+
+[CAUTION]
+====
+Bien que lors de la création d'un Cluster Élémentaire, il soit possible d'ajouter des variables d'environnement d'Agent, celles de `CATTLE_ADDRESS` et `CATTLE_INTERNAL_ADDRESS` sont ignorées et ne donneraient pas lieu à la configuration des adresses IP internes et externes des nœuds provisionnés.
+====
+
+
+== Configurer les adresses IP internes et externes de K3s et RKE2 dans les Clusters Élémentaires
+
+Élémentaire permet de configurer les adresses IP internes et externes des Nœuds de Cluster en attachant les étiquettes `elemental.cattle.io/InternalIP` et `elemental.cattle.io/ExternalIP` aux ressources xref:references/machineinventory-reference.adoc[MachineInventory] qui suivent les nœuds cibles.
+
+Ces étiquettes, lorsqu'elles sont attachées à une ressource xref:references/machineinventory-reference.adoc[MachineInventory], sont utilisées pour remplir les adresses IP internes et externes des nœuds associés.
+
+Les étiquettes peuvent être ajoutées aux champs xref:references/machineregistration-reference.adoc[MachineRegistration] `machineInventoryLabels`, en utilisant les variables d'adresse IP xref:label-templates/label-templates-network.adoc[Modèle d'Étiquette Réseau] comme valeurs, afin de permettre la collecte des adresses IP de chaque nœud.
+
+Exemple : xref:references/machineregistration-reference.adoc[MachineRegistration] où les nœuds auront l'adresse IP interne définie à partir de l'interface eth0 et l'adresse IP externe à partir de l'interface eth1.
+
+.registration.yaml
+[,yaml]
+----
+include::example$labeltemplates/registration.yaml[]
+----

@@ -1,0 +1,41 @@
+= GPU模板变量
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+在GPU模板变量中收集的信息定义了系统中安装的GPU卡的属性。
+
+数据通过GPU卡编号（0, 1, 2, ...）进行显示。
+
+要引用第一张GPU卡，可以省略GPU卡编号（_`<Number>`_）（例如，变量`${GPU/GraphicsCards/Driver}`与`${GPU/GraphicsCards/0/Driver}`相同）。
+
+|===
+| 变量 | 说明 | from
+
+| `${GPU/GraphicsCards/Driver}`
+| GPU卡驱动程序
+| 1.7.0
+
+| `${GPU/GraphicsCards/ProductName}`
+| GPU卡型号
+| 1.7.0
+
+| `${GPU/GraphicsCards/VendorName}`
+| GPU卡供应商
+| 1.7.0
+
+| `${GPU/GraphicsCards/_<Number>_/Driver}`
+| GPU卡_number_驱动程序
+| 1.7.0
+
+| `${GPU/GraphicsCards/_<Number>_/ProductName}`
+| GPU卡_number_型号
+| 1.7.0
+
+| `${GPU/GraphicsCards/_<Number>_/VendorName}`
+| GPU卡_number_供应商
+| 1.7.0
+
+| `${GPU/TotalCards}`
+| 系统中的GPU卡数量
+| 1.7.0
+|===

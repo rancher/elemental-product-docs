@@ -1,0 +1,48 @@
+= Module de plateforme de confiance 2.0 (TPM)
+:revdate: 2024-09-24
+:page-revdate: {revdate}
+
+Le module de plateforme de confiance (TPM, également connu sous le nom d'ISO/IEC 11889) est une norme internationale pour un cryptoprocesseur sécurisé, un microcontrôleur dédié conçu pour sécuriser le matériel grâce à des clés cryptographiques intégrées. Le terme peut également désigner une puce conforme à la norme.
+
+== Ajouter un module TPM à la machine virtuelle
+
+La manière la plus simple d'ajouter un TPM à la machine virtuelle est d'utiliser Libvirt avec Virt-manager
+
+=== Créer une machine virtuelle
+
+Après avoir démarré Virt-manager, créez une nouvelle machine virtuelle
+
+image::tpm1.png[Créer une nouvelle VM]
+
+=== Vérifier et modifier la liste des modules matériels
+
+Sur l'écran de configuration du matériel, vérifiez la liste des modules et cliquez sur le bouton *_Ajouter du matériel_*
+
+image::tpm2.png[Liste des périphériques]
+
+=== Ajouter un module TPM à la VM
+
+Dans la liste des périphériques émulés, choisissez le module TPM et ajoutez-le à la VM
+
+image::tpm3.png[Ajouter un module TPM]
+
+=== Terminer la configuration de la VM
+
+Sur le dernier écran, vérifiez une fois de plus si le module TPM a été ajouté correctement
+
+image::tpm4.png[Vérifier le TPM]
+
+== Ajouter une émulation TPM au matériel sans système d'exploitation
+
+Lors de l'application de `#!yaml MachineRegistration`, ajoutez la clé suivante au yaml `config:elemental:registration:emulate-tpm: true`
+
+[IMPORTANT]
+====
+Si vous prévoyez de déployer plus d'une machine avec une émulation TPM, assurez-vous de définir `config:elemental:registration:emulated-tpm-seed: -1` afin que la graine utilisée pour l'émulation TPM soit randomisée pour chaque machine. Sinon, vous obtiendrez le même hachage TPM pour toutes les machines déployées et seule la dernière enregistrée sera valide.
+====
+
+.registration-tpm.yaml
+[,yaml]
+----
+include::example$quickstart/registration-tpm.yaml[]
+----

@@ -1,0 +1,41 @@
+= GPUテンプレート変数
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+GPUテンプレート変数に収集された情報は、システムにインストールされているGPUカードの属性を定義します。
+
+データはGPUカード番号（0、1、2、...）によって公開されます。
+
+最初のGPUカードを参照するには、GPUカード番号（_`<Number>`_）を省略できます（例：変数`${GPU/GraphicsCards/Driver}`は`${GPU/GraphicsCards/0/Driver}`と同じです）。
+
+|===
+| [可変] | 説明 | from
+
+| `${GPU/GraphicsCards/Driver}`
+| GPUカードドライバー
+| 1.7.0
+
+| `${GPU/GraphicsCards/ProductName}`
+| GPUカードモデル
+| 1.7.0
+
+| `${GPU/GraphicsCards/VendorName}`
+| GPUカードベンダー
+| 1.7.0
+
+| `${GPU/GraphicsCards/_<Number>_/Driver}`
+| GPUカード_number_ドライバー
+| 1.7.0
+
+| `${GPU/GraphicsCards/_<Number>_/ProductName}`
+| GPUカード_number_モデル
+| 1.7.0
+
+| `${GPU/GraphicsCards/_<Number>_/VendorName}`
+| GPUカード_number_ベンダー
+| 1.7.0
+
+| `${GPU/TotalCards}`
+| システム内のGPUカードの数
+| 1.7.0
+|===

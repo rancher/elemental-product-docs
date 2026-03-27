@@ -1,0 +1,153 @@
+= Übersicht der Etikettenvorlagen
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+Elemental ermöglicht es, _Etikettenvorlagen_ in den `spec.machineInventoryLabels` und `spec.machineInventoryAnnotations` Abschnitten der xref:references/machineregistration-reference.adoc[Maschinenregistrierung] Ressourcen anzugeben.
+
+Ihr Format ist das kanonische `key`:``value`, das in Kubernetes-Etiketten und -Annotationen verwendet wird.
+
+Diese Etikettenvorlagen werden in tatsächliche Etiketten und Annotationen umgewandelt, die an jede xref:references/machineinventory-reference.adoc[MachineInventory]-Ressource angehängt werden, die während der xref:rancher-os-management/architecture/services/architecture-machineonboarding.adoc[Maschinenintegration]-Phase erstellt wird.
+
+Die resultierenden Etiketten und Annotationen haben dasselbe `key` wie die Etikettenvorlage.
+
+Das zugehörige `value` wird generiert:
+
+* *Rendering der <<_label_templates_variables,`label template variables`>>* (falls vorhanden)
+* *`sanitizing`* den resultierenden Wert (im Falle der Etiketten nur)
+
+[IMPORTANT]
+====
+Die Templating-Funktionalität von Elemental umfasst auch das xref:references/machineregistration-reference.adoc[MachineRegistration]-`spec.machineName`-Feld, das den resultierenden Hostnamen der registrierenden Maschine und das `name` der zugehörigen xref:references/machineinventory-reference.adoc[MachineInventory]-Ressource definiert.
+
+Siehe den Abschnitt <<_custom_machine_names,Maschinenname>> für weitere Details.
+====
+
+
+== Variablen der Etikettenvorlagen
+
+Das Elemental-Label-Templating umfasst eine Reihe vordefinierter Variablen, die im `value` der _Etikettenvorlagen_ in der xref:references/machineregistration-reference.adoc[Maschinenregistrierung] verwendet werden können.
+
+Die verwendete Syntax zur Angabe der Variablen der Etikettenvorlagen ist:
+
+`${ _VARFAMILY_ \/ _VARPATH_ }`
+
+wobei _VARFAMILY_ eine Gruppe (Familie) unterstützter Variablen definiert und _VARPATH_ den tatsächlichen Variablennamen innerhalb der zugehörigen Familiengruppe definiert.
+
+Elemental unterstützt derzeit die folgenden _Vorlagenvariablenfamilien_:
+
+* xref:label-templates/label-templates-bios.adoc[*BIOS*]: *${ BIOS \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-baseboard.adoc[*BaseBoard*]: *${ BaseBoard \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-cpu.adoc[*CPU*]: *${ CPU \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-chassis.adoc[*Gehäuse*]: *${ Chassis \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-gpu.adoc[*GPU*]: *${ GPU \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-memory.adoc[*Speicher*]: *${ Speicher \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-network.adoc[*Netzwerk*]: *${ Netzwerk \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-product.adoc[*Produkt*]: *${ Produkt \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-runtime.adoc[*Laufzeit*]: *${ Laufzeit \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-storage.adoc[*Storage*]: *${ Storage \/* _VARPATH_ *}*
+
+[CAUTION]
+====
+Alle _Template-Variablenfamilien_ (außer _`Random`_) sind nur aktiviert, wenn das xref:references/machineregistration-reference.adoc[MachineRegistration]`elemental.registration.no-smbios`-Feld auf `false` (Standard) gesetzt ist.
+
+Wenn das `elemental.registration.no-smbios` Feld auf `true` gesetzt ist, senden die registrierenden Maschinen keine Daten, die für das Rendern der Template-Variablen erforderlich sind, sodass keine Variablen verfügbar sind, außer den *Zufalls* Variablen, die die einzige bemerkenswerte Ausnahme darstellen.
+
+*Zufalls* Variablen sind immer verfügbar, da sie auf der Betreiberseite integriert sind. Sie sind auch besonders, da sie nur einmal berechnet werden: siehe den Abschnitt xref:label-templates/label-templates-random.adoc[Zufalls-Template-Variablen] für weitere Details.
+====
+
+
+Template-Variablen können mit statischem Text gemischt werden, um die tatsächlichen Bezeichnungen zu bilden, die (xref:references/machineinventory-reference.adoc[MachineInventories]) zugewiesen sind.
+
+[NOTE]
+.Rendering-Beispiele
+====
+
+* Bezeichnungsvorlage zur Verfolgung der Anzahl der CPU-Kernel des registrierenden Hosts (angenommen, der Host hat 4 Kernel):
+ ** Ursprüngliche Bezeichnung: *cpu: ${CPU\/TotalCores}-kernel*
+ ** Gerenderte Bezeichnung: *cpu: 4-kernel*
+* Bezeichnungsvorlage zur Verfolgung der SMBIOS-UUID des registrierenden Hosts:
+ ** Ursprüngliche Bezeichnung: *sbios-UUID: ${Product\/UUID}*
+ ** rendered label: *sbios-UUID: fd95324a-c26b-4e28-8727-1dcec293a0ec*
+====
+
+
+== Bereinigung
+
+Sobald der Wert der Etikettenvorlage entsprechend den enthaltenen <<_label_templates_variables,Variablen der Etikettenvorlage>> gerendert wurde, ist der resultierende Wert `sanitized`, bevor er dem resultierenden Etikett zugewiesen wird.
+
+*Das `sanitization` erzwingt, dass der Etikettenwert nur Buchstaben (groß oder klein), Zahlen sowie die Zeichen Bindestrich (`-`), Punkt (`.`) und Unterstrich (`_`) enthält*:
+
+Alle nicht enthaltenen Zeichen werden durch einen Bindestrich ersetzt.
+
+Jedes Zeichen am Anfang und am Ende des Etikettenwerts muss ein Buchstabe oder eine Zahl sein. Wenn nicht, wird es verworfen.
+
+Zwei aufeinanderfolgende Bindestriche werden durch einen ersetzt.
+
+[NOTE]
+.Beispiel für die Darstellung
+====
+
+* Etikettenvorlage mit Bereinigung verbotener Zeichen:
+ ** Ursprüngliches Etikett: *bereinigt: dies:muss--bereinigt werden!*
+ ** Gerendertes Etikett: *bereinigt: dies-muss-bereinigt werden*
+====
+
+
+== Verwendung von Etikettenvorlagen
+
+Etikettenvorlagen ermöglichen es, automatisch Etiketten und Annotationen an jedes xref:references/machineinventory-reference.adoc[MachineInventory] des Hosts anzuhängen und zu aktualisieren, jedes Mal, wenn sich ein Host beim Elemental Operator registriert.
+
+[IMPORTANT]
+====
+Die Registrierung erfolgt nicht nur während der xref:rancher-os-management/architecture/services/architecture-machineonboarding.adoc[Onboarding-Phase]: jeder Host registriert sich alle 30 Minuten neu (und jedes Mal, wenn er neu gestartet wird). Während der Neuregistrierung werden die Etikettenvorlagen im zugehörigen xref:references/machineregistration-reference.adoc[MachineRegistration] neu bewertet und im xref:references/machineinventory-reference.adoc[MachineInventory] hinzugefügt/aktualisiert.
+====
+
+
+Es gibt im Wesentlichen drei Hauptfälle, in denen die Etikettenvorlagen nützlich sein können :
+
+* um Hardware-Daten an den Elemental-Katalog anzuhängen.
+* um Selektoren hinzuzufügen, um Hosts für die Clusterbereitstellung auszuwählen.
+* um eine benutzerdefinierte Vorlage für die Maschinenamen zu definieren.
+
+=== Hardware-Daten für den Elemental-Katalog
+
+Die Variablen der Etikettenvorlagen können verwendet werden, um Hardware-Daten an jede xref:references/machineinventory-reference.adoc[MachineInventory]-Ressource (die den Elemental-Katalog bilden) anzuhängen.
+
+In diesem Fall können Annotationen eine bessere Wahl sein, da ihre Werte nicht bereinigt werden.
+
+=== Selektoren für die Clusterbereitstellung
+
+Das `Label Templates` kann verwendet werden, um Labels zu generieren, die zur Identifizierung und Auswahl von Maschinen mit speziellen Hardwareeigenschaften dienen, um neue Kubernetes-Cluster zu bilden.
+
+Die an jede xref:references/machineinventory-reference.adoc[MachineInventory] angehängten Labels können als _selector_ für die xref:references/machineinventoryselectortemplate-reference.adoc[MachineInventorySelectorTemplate]-Ressource verwendet werden (siehe den Abschnitt xref:rancher-os-management/architecture/services/architecture-clusterdeployment.adoc[Kubernetes Clusterbereitstellung] für weitere Details).
+
+=== Benutzerdefinierte Maschinenamen
+
+Der Hostname der Onboarding-Maschine kann mit dem xref:references/machineregistration-reference.adoc[MachineRegistration] `spec.machineName` Feld angegeben werden.
+
+Der `spec.machineName` Wert durchläuft die gleichen `Label Templates' variables` und `sanitization` Prozesse, die für das `spec.machineInventoryLabels` Feld reserviert sind.
+
+[CAUTION]
+====
+Es gibt einen bemerkenswerten Unterschied zwischen den xref:references/machineregistration-reference.adoc[MachineRegistration] `spec.machineName` und `spec.machineInventorylabels` Feldern: Während des <<_sanitization,Sanitierungs>> Prozesses wird der Unterstrich (`_`) durch die anderen verbotenen Zeichen ersetzt (d.h. er wird durch einen Bindestrich ersetzt: `-`). Dies ist erforderlich, da der Unterstrich in Linux-Hostnamen nicht erlaubt ist.
+====
+
+
+Für weitere Informationen zur Definition des Hostnamens für Elemental-Hosts, siehe den Abschnitt xref:installation/hostname.adoc[Anleitung/Hostname anpassen].
+
+[NOTE]
+.Beispiel für die Darstellung
+====
+* Definieren Sie eine Hostnamen-Vorlage wie `SLE-Micro-[random string of 6 hexadecimal values]` :
+ ** MachineRegistration-Spezifikation: *machineName: SLE-Micro-${Random\/Hex\/6}*
+ ** MachineInventory-Name: *SLE-Micro-32ad41*
+====
+
+
+== Beispiel für Etikettenvorlagen
+
+.Registrierungsbeispiel mit Variablen der Etikettenvorlagen
+[,yaml]
+----
+include::example$quickstart/registration-hardware-dhcphostname.yaml[]
+----

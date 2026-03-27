@@ -1,0 +1,25 @@
+= Dépannage des mises à niveau de Rancher
+:revdate: 2025-07-03
+:page-revdate: {revdate}
+
+[WARNING]
+====
+La mise à niveau vers Rancher v2.7.2 échouera si des clusters {elemental-product-name} sont définis. Le pod Rancher reste bloqué dans une boucle de plantage (voir https://github.com/rancher/rancher/issues/41145).)
+====
+
+Notez que le problème est présent uniquement si au moins un cluster {elemental-product-name} est défini.
+
+Pour contourner le problème, créez une ressource `dynamicschemas.management.cattle.io` vide nommée `machineinventoryselectortemplate` :
+
+[,shell]
+----
+kubectl apply -f - <<EOF
+kind: DynamicSchema
+apiVersion: management.cattle.io/v3
+metadata:
+  name: machineinventoryselectortemplate
+EOF
+
+----
+
+La boucle de plantage va s'interrompre et la mise à niveau de Rancher se terminera avec succès.

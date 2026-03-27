@@ -1,0 +1,48 @@
+= 可信平台模块 2.0 (TPM)
+:revdate: 2024-09-24
+:page-revdate: {revdate}
+
+可信平台模块 (TPM，也称为 ISO/IEC 11889) 是一项国际标准，适用于安全加密处理器，即专为通过集成加密密钥来保护硬件而设计的专用微控制器。该术语也可以指符合该标准的芯片。
+
+== 将 TPM 模块添加到虚拟机
+
+将 TPM 添加到虚拟机的简单方法是使用 Libvirt 和 Virt-manager
+
+=== 创建虚拟机
+
+启动 virt-manager 后，创建新的虚拟机
+
+image::tpm1.png[新建虚拟机]
+
+=== 验证并编辑硬件模块列表
+
+在硬件配置屏幕上，验证模块列表并点击 *_添加硬件_* 按钮
+
+image::tpm2.png[设备列表]
+
+=== 将 TPM 模块添加到虚拟机
+
+从模拟设备列表中选择 TPM 模块并将其添加到虚拟机
+
+image::tpm3.png[添加 TPM 模块]
+
+=== 完成虚拟机配置
+
+在最后一屏上再次验证 TPM 模块是否正确添加
+
+image::tpm4.png[Verify TPM]
+
+== 将 TPM 模拟添加到裸机
+
+在应用 `#!yaml MachineRegistration` 时，将以下密钥添加到 yaml `config:elemental:registration:emulate-tpm: true`
+
+[IMPORTANT]
+====
+如果您计划部署超过 1 台带有 TPM 模拟的机器，请确保设置 `config:elemental:registration:emulated-tpm-seed: -1`，以便每台机器使用的 TPM 模拟种子是随机的。否则，您将获得所有部署机器相同的 TPM 哈希，只有最后注册的机器将是有效的。
+====
+
+.registration-tpm.yaml
+[,yaml]
+----
+include::example$quickstart/registration-tpm.yaml[]
+----

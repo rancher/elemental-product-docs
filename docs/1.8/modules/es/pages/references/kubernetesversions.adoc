@@ -1,0 +1,19 @@
+= Versiones Válidas
+:revdate: 2024-09-24
+:page-revdate: {revdate}
+
+La lista de versiones válidas para el campo `kubernetesVersion` se puede determinar a partir de los metadatos de Rancher utilizando los siguientes comandos.
+
+*K3s:*
+
+[,bash]
+----
+curl -sL https://raw.githubusercontent.com/rancher/kontainer-driver-metadata/release-v2.6/data/data.json | jq -r '.k3s.releases[].version'
+----
+
+*RKE2:*
+
+[,bash]
+----
+curl -sL https://raw.githubusercontent.com/rancher/kontainer-driver-metadata/release-v2.6/data/data.json | jq -r '.rke2.releases[].version'
+----

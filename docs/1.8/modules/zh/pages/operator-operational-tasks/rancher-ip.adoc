@@ -1,0 +1,43 @@
+= 配置 K3s 和 RKE2 的内部和外部 IP 地址
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+K3s 和 RKE2 允许通过 `--node-ip` 和 `--node-external-ip` 参数指定节点的内部和外部 IP 地址。
+
+Rancher Provisioning 允许通过收集每个节点的网络接口的 IP 地址来填充这些参数。
+
+无论如何，收集 _自定义_ Rancher 集群和 _元素_ Rancher 集群的 IP 选项的方法是不同的。
+
+== 在 Rancher 集群配置中配置 K3s 和 RKE2 的内部和外部 IP 地址
+
+Rancher Provisioning 允许在 Rancher Agent 部分指定应绑定到每个已配置节点的内部和外部 IP 地址的网络接口。
+
+通过在 `CATTLE_INTERNAL_ADDRESS` 和 `CATTLE_ADDRESS` Agent 环境变量中添加应提取 IP 地址的网络接口名称来执行此操作（https://ranchermanager.docs.rancher.com/reference-guides/cluster-configuration/rancher-server-configuration/use-existing-nodes/rancher-agent-options#ip-address-options[参见 Rancher 文档]）。
+
+[NOTE]
+====
+`CATTLE_INTERNAL_ADDRESS` 和 `CATTLE_ADDRESS` Agent 环境变量可以直接填充所需的 IP 地址。无论如何，由于内部和外部 IP 地址是 _每个节点_，这只适用于单节点集群。
+====
+
+
+[CAUTION]
+====
+在创建元素集群时，可以添加 Agent 环境变量，但 `CATTLE_ADDRESS` 和 `CATTLE_INTERNAL_ADDRESS` 的变量会被忽略，不会导致已配置节点的内部和外部 IP 地址的配置。
+====
+
+
+== 在元素集群中配置 K3s 和 RKE2 的内部和外部 IP 地址
+
+元素允许通过将 `elemental.cattle.io/InternalIP` 和 `elemental.cattle.io/ExternalIP` 标签附加到跟踪目标节点的 xref:references/machineinventory-reference.adoc[MachineInventory] 资源来配置集群节点的内部和外部 IP 地址。
+
+这些标签在附加到 xref:references/machineinventory-reference.adoc[MachineInventory] 资源时用于填充相关节点的内部和外部 IP 地址。
+
+可以将标签添加到 xref:references/machineregistration-reference.adoc[MachineRegistration] `machineInventoryLabels` 字段中，使用 xref:label-templates/label-templates-network.adoc[Network Label Template] IP 地址变量作为值，以便收集每个节点的 IP 地址。
+
+示例：xref:references/machineregistration-reference.adoc[MachineRegistration]，其中节点将从接口 eth0 设置内部 IP 地址，从 eth1 设置外部 IP 地址。
+
+.registration.yaml
+[,yaml]
+----
+include::example$labeltemplates/registration.yaml[]
+----

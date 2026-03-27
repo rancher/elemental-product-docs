@@ -1,0 +1,104 @@
+= Gestión de inventario
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+El operador {elemental-product-name} puede mantener un inventario de máquinas y el mapeo de la máquina a su configuración y clúster asignado.
+
+== Inventario maquinas
+
+El `MachineInventory` contiene toda la información relevante para una máquina registrada. +
+Tras un registro exitoso, el `MachineInventory` heredará todos los `machineInventoryLabels` definidos en el `MachineRegistration` relacionado. +
+Además, la máquina `annotations` también se actualizará en cada registro exitoso.
+
+Por defecto, las máquinas {elemental-product-name} intentarán una actualización del registro cada 24 horas para actualizar etiquetas y anotaciones.
+
+=== Referencia
+
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: MachineInventory
+metadata:
+  # Machine annotations can be useful to identify hosts
+  annotations:
+    elemental.cattle.io/auth: tpm
+    elemental.cattle.io/registration-ip: 192.168.122.152
+  labels:
+    # A label inherited from the MachineRegistration definition
+    element: fire
+    # Generic SMBIOS labels that are typically populated with
+    # the MachineRegister approach
+    machineUUID: f266c64b-3972-40e7-9937-3dc4a311436c
+    manufacturer: QEMU
+    productName: Standard-PC-Q35-ICH9-2009
+    serialNumber: Not-Specified
+    # Custom labels can be applied to each MachineInventory
+    myCustomLabel: foo
+  name: m-479ab68e-00ff-4081-a731-5b1a76610289
+  # The namespace must match the namespace of the cluster
+  # assigned to the clusters.provisioning.cattle.io resource
+  namespace: fleet-default
+  # A reference to the MachineInventorySelector that links the
+  # machine to a Cluster definition
+  ownerReferences:
+  - apiVersion: elemental.cattle.io/v1beta1
+    controller: true
+    kind: MachineInventorySelector
+    name: fire-machine-selector-qcn7d
+    uid: 0a1f751e-4ca9-4a0d-919a-97ba1f434d12
+spec:
+  # The hash of the TPM EK public key. This is used if you are
+  # using TPM2 to identify nodes. Nodes can report their TPM
+  # hash by using the MachineRegistration.
+  tpmHash: d68795c6192af9922692f050b...
+----
+
+== Registro máquina
+
+`MachineRegistration` contiene información sobre cómo instalar, reiniciar y configurar todas las máquinas {elemental-product-name} conectadas.
+
+Es posible actualizar el `spec.machineInventoryLabels` y el `spec.machineInventoryAnnotations` y esto se aplicará a todas las máquinas registradas.
+Por defecto, las máquinas {elemental-product-name} intentarán una actualización del registro cada 24 horas para actualizar etiquetas y anotaciones.
+
+Si bien es posible modificar la definición del `spec.config`, las actualizaciones al `spec.config` serán ignoradas por las máquinas que ya completaron la instalación.
+Las máquinas que no pudieron completar la instalación intentarán nuevamente cada 30 minutos recargando la definición remota del `MachineRegistration`. Esto puede ser útil para corregir errores en `spec.config` que impiden una instalación exitosa (por ej. `spec.config.elemental.install.device`), sin tener que crear un nuevo `MachineRegistration` y una nueva ISO.
+
+=== Referencia
+
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: MachineRegistration
+metadata:
+  name: fire-nodes
+  # The namespace must match the namespace of the cluster
+  # assigned to the clusters.provisioning.cattle.io resource
+  namespace: fleet-default
+spec:
+  # The cloud config that will be used to provision the node
+  config:
+    cloud-config:
+      users:
+        - name: root
+          passwd: root
+    elemental:
+      install:
+        reboot: true
+        device: /dev/sda
+        debug: true
+      reset:
+        enabled: true
+        debug: true
+        reset-persistent: true
+        reset-oem: true
+        reboot: true
+  # Labels to be added to the created MachineInventory object
+  machineInventoryLabels:
+    element: fire
+    manufacturer: "${System Information/Manufacturer}"
+    productName: "${System Information/Product Name}"
+    serialNumber: "${System Information/Serial Number}"
+    machineUUID: "${System Information/UUID}"
+  # Annotations to be added to the created MachineInventory object
+  machineInventoryAnnotations: {}
+----

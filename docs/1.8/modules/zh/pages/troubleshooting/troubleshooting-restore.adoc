@@ -1,0 +1,36 @@
+= 恢复故障排除
+:revdate: 2025-07-03
+:page-revdate: {revdate}
+
+[WARNING]
+====
+在执行恢复时，请勿在元素节点上重启`rancher-system-agent`，否则可能会导致其失效并出现以下错误：
+
+`panic: error while connecting to Kubernetes cluster: the server has asked for the client to provide credentials`
+
+如果您遇到此问题，请按照以下程序操作。
+====
+
+
+在您启动恢复之前，您需要将`/var/lib/rancher/agent/rancher2_connection_info.json`从元素节点复制到您可以通过Rancher UI访问的地方。
+
+文件复制完成后，从https://github.com/rancher/elemental[{elemental-product-name}储存库]下载`rancher-agent-token-update.sh`脚本：
+
+[,shell]
+----
+wget -q https://raw.githubusercontent.com/rancher/elemental/main/scripts/rancher-agent-token-update && chmod +x rancher-agent-token-update
+----
+
+执行脚本时无需任何额外选项：
+
+[,shell]
+----
+./rancher-agent-token-update
+----
+
+恢复成功完成后，将`rancher2_connection_info.json`复制回元素节点的路径`/var/lib/rancher/agent/rancher2_connection_info.json`。最后，重启`rancher-system-agent`服务：
+
+[,shell]
+----
+systemctl restart rancher-system-agent
+----

@@ -1,0 +1,13 @@
+= Laufzeit-Template-Variablen
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+Laufzeit-Template-Variablen sammeln Informationen über die Systemkonfiguration.
+
+|===
+| Variable | Beschreibung | Von
+
+| `${Runtime/Hostname}`
+| System-Hostname
+| 1.7.0
+|===

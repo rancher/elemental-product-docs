@@ -1,0 +1,89 @@
+= Referencia de MachineInventorySelectorTemplate
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+El MachineInventorySelectorTemplate es un recurso definido por el usuario que se utilizará como el plano para crear los xref:references/machineinventoryselector-reference.adoc[MachineInventorySelectors] requeridos.
+
+Es el recurso responsable de definir los criterios de coincidencia para emparejar una máquina inventariada con un recurso de Cluster.
+
+La clave relevante es el `selector` que incluye expresiones de selección de etiquetas.
+
+.MachineInventorySelectorTemplate
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: MachineInventorySelectorTemplate
+metadata:
+  name: my-machine-selector
+  namespace: fleet-default
+spec:
+  template:
+    spec:
+      selector:
+        ...
+----
+
+El `template.spec.selector` puede incluir claves `matchLabels` y/o `matchExpressions`.
+
+== `template.spec.selector.matchLabels`
+
+Es un mapa de `{key,value}` pares `(map[string]string)`. Cuando se proporcionan múltiples etiquetas, todas las etiquetas deben coincidir.
+
+.Haga clic aquí para obtener más información
+[%collapsible]
+====
+[yaml]
+----
+...
+spec:
+  template:
+    spec:
+      selector:
+        matchLabels:
+          element: fire
+          manufacturer: somevalue
+----
+====
+
+Un Cluster definido con el selector anterior solo intentará aprovisionar nodos inventariados que incluyan estas dos etiquetas.
+
+== `template.spec.selector.matchExpressions`
+
+Es una lista de selectores de etiquetas, cada selector de etiquetas puede definirse como:
+
+|===
+| Key | Tipo | Descripción
+
+| clave
+| cadena
+| Esta es la clave de etiqueta sobre la que se aplica el selector
+
+| operator
+| cadena
+| Representa la relación de la clave con un conjunto de valores. Los operadores válidos son 'In', 'NotIn', 'Exists' y 'DoesNotExist'
+
+| valores
+| []cadena
+| Valores es un array de valores de cadena. Si el operador es 'In' o 'NotIn', el array de valores debe ser no vacío. Si el operador es 'Exists' o 'DoesNotExist', el array de valores debe estar vacío.
+|===
+
+.Haga clic aquí para obtener más información
+[%collapsible]
+====
+[,yaml]
+----
+...
+spec:
+  template:
+    spec:
+      selector:
+        matchExpressions:
+        - key: element
+          operator: In
+          values: [ 'fire' ]
+        - key: manufacturer
+          operator: Exists
+----
+====
+
+Un Cluster definido con el selector anterior solo intentará aprovisionar nodos inventariados con la etiqueta `element=fire` e incluyendo una etiqueta `manufacturer` definida con cualquier valor.

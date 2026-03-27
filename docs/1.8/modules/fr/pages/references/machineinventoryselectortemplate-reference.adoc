@@ -1,0 +1,89 @@
+= Référence du modèle MachineInventorySelectorTemplate
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+Le modèle MachineInventorySelectorTemplate est une ressource définie par l'utilisateur qui sera utilisée comme plan pour créer les xref:references/machineinventoryselector-reference.adoc[MachineInventorySelectors] requis.
+
+C'est la ressource responsable de la définition des critères de correspondance pour associer une machine inventoriée à une ressource Cluster.
+
+La clé pertinente est le `selector` qui inclut des expressions de sélection d'étiquettes.
+
+.MachineInventorySelectorTemplate
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: MachineInventorySelectorTemplate
+metadata:
+  name: my-machine-selector
+  namespace: fleet-default
+spec:
+  template:
+    spec:
+      selector:
+        ...
+----
+
+Le `template.spec.selector` peut inclure les clés `matchLabels` et/ou `matchExpressions`.
+
+== `template.spec.selector.matchLabels`
+
+C'est un dictionnaire contenant des paires `{key,value}` et `(map[string]string)`. Lorsque plusieurs étiquettes sont fournies, toutes les étiquettes doivent correspondre.
+
+.Cliquez ici pour plus de détails
+[%collapsible]
+====
+[yaml]
+----
+...
+spec:
+  template:
+    spec:
+      selector:
+        matchLabels:
+          element: fire
+          manufacturer: somevalue
+----
+====
+
+Un Cluster défini avec le sélecteur ci-dessus tentera uniquement de provisionner des nœuds inventoriés incluant ces deux étiquettes.
+
+== `template.spec.selector.matchExpressions`
+
+C'est une liste de sélecteurs d'étiquettes, chaque sélecteur d'étiquettes peut être défini comme :
+
+|===
+| Clé | Type | Description
+
+| key
+| chaîne
+| Ceci est la clé d'étiquette sur laquelle le sélecteur s'applique
+
+| operator
+| chaîne
+| Représente la relation de la clé à un ensemble de valeurs. Les opérateurs valides sont 'In', 'NotIn', 'Exists' et 'DoesNotExist'
+
+| values
+| []string
+| Les valeurs sont un tableau de chaînes. Si l'opérateur est 'In' ou 'NotIn', le tableau de valeurs doit être non vide. Si l'opérateur est 'Exists' ou 'DoesNotExist', le tableau de valeurs doit être vide.
+|===
+
+.Cliquez ici pour plus de détails
+[%collapsible]
+====
+[,yaml]
+----
+...
+spec:
+  template:
+    spec:
+      selector:
+        matchExpressions:
+        - key: element
+          operator: In
+          values: [ 'fire' ]
+        - key: manufacturer
+          operator: Exists
+----
+====
+
+Un Cluster défini avec le sélecteur ci-dessus tentera uniquement de provisionner des nœuds inventoriés avec l'étiquette `element=fire` et incluant une étiquette `manufacturer` définie avec n'importe quelle valeur.

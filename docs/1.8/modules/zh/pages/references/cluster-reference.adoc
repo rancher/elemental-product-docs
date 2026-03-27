@@ -1,0 +1,177 @@
+= 集群参考
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+一个 `Cluster` 定义包括一个 `kubernetesVersion` 和一个 `machinePools` 列表，用于部署集群。
+
+有关如何选择 `kubernetesVersion` 的信息，请查看我们的 xref:references/kubernetesversions.adoc[Kubernetes 版本] 页面。
+
+一个 `machinePool` 是一个配置包，包含一个 `ObjectReference`，因此集群被部署到那些 `machinePools`，并具有适当的角色（etcd、控制平面、工作器），以及数量（从此池中部署多少节点）和一些额外的配置（滚动更新配置、最大不健康节点等...）。
+
+.点击这里获取详细信息
+[%collapsible]
+====
+.示例
+[,yaml]
+----
+kind: Cluster
+apiVersion: provisioning.cattle.io/v1
+metadata:
+  name: ...
+  namespace: ...
+spec:
+  rkeConfig:
+    machinePools:
+      - name: ...
+        controlPlaneRole: ...
+        etcdRole: ...
+        workerRole: ...
+        quantity: ...
+        machineConfigRef:
+          apiVersion: elemental.cattle.io/v1beta1
+          kind: MachineInventorySelectorTemplate
+          name: ...
+      - name: ...
+        controlPlaneRole: ...
+        etcdRole: ...
+        workerRole: ...
+        quantity: ...
+        machineConfigRef:
+          apiVersion: elemental.cattle.io/v1beta1
+          kind: MachineInventorySelectorTemplate
+          name: ...
+----
+====
+
+
+还可以通过 `Cluster` 对象在 `spec.rkeConfig.machineGlobalConfig` 中禁用集群组件，例如：
+
+.点击这里获取详细信息
+[%collapsible]
+====
+.服务禁用示例
+[,yaml]
+----
+kind: Cluster
+apiVersion: provisioning.cattle.io/v1
+metadata:
+  name: ...
+  namespace: ...
+spec:
+  rkeConfig:
+    machinePools:
+      - name: ...
+        controlPlaneRole: ...
+        etcdRole: ...
+        workerRole: ...
+        quantity: ...
+        machineConfigRef:
+          apiVersion: elemental.cattle.io/v1beta1
+          kind: MachineInventorySelectorTemplate
+          name: ...
+    machineGlobalConfig:
+      disable:
+        - servicelb
+        - ...
+----
+====
+
+
+== rkeConfig.machinePools
+
+一个 `machinePools` 列表。集群部署所需的最少 1 个 `machinePools`。
+
+== 机器池规格参考
+
+|===
+| 键 | 类型 | 默认值 | 说明
+
+| controlPlaneRole
+| 布尔
+| false
+| 将此池中的机器设置为控制平面
+
+| etcdRole
+| 布尔
+| false
+| 将此池中的机器设置为 etcd
+
+| workerRole
+| 布尔
+| false
+| 将此池中的机器设置为工作器
+
+| name
+| 字符串
+| 无
+| 此池的名称
+
+| 数量
+| 整数
+| 无
+| 从此池中部署的机器数量
+
+| unhealthyNodeTimeout
+| 整数
+| 无
+| 不健康节点健康检查的超时
+
+| machineConfigRef
+| 整数
+| ObjectReference
+| 用于了解哪些节点属于此池的对象引用
+|===
+
+要使用此池，`quantity` 的最小值必须设置为1。
+基本上意思是将为此集群设置多少个节点来自此池。
+
+.点击这里获取详细信息
+[%collapsible]
+====
+.示例
+[,yaml]
+----
+kind: Cluster
+apiVersion: provisioning.cattle.io/v1
+metadata:
+  name: cluster-example
+  namespace: example-default
+spec:
+  rkeConfig:
+    machinePools:
+      - name: examplePool 
+        controlPlaneRole: true
+        etcdRole: true
+        workerRole: false
+        quantity: 3
+        unhealthyNodeTimeout: 0s
+        machineConfigRef:
+          apiVersion: elemental.cattle.io/v1beta1
+          kind: MachineInventorySelectorTemplate
+          name: exampleSelector
+----
+====
+
+
+== machineConfigRef 规格参考
+
+`machineConfigRef`是一个通用的k8s `ObjectReference`，通常包含一个`kind` `name`和`apiVersion`，指向不同的对象。
+
+在{elemental-product-name}中，我们将其设置为xref:references/machineinventoryselectortemplate-reference.adoc[MachineInventorySelectorTemplate]。
+这使我们能够通过使用选择器指向多个对象。
+
+=== 示例
+
+下面的示例创建一个集群，使用2个不同的``machinePool``来将不同的节点分别设置为控制平面和工作器节点，基于2个不同的`MachineInventorySelectorTemplate`，根据`MachineInventory`标签（位置）选择它们的节点：
+
+[CAUTION]
+.warning
+====
+示例的标签是手动设置的标签，它们不是由{elemental-product-name}自动设置的。
+====
+
+.具有多个机器池的集群示例
+[,yaml]
+----
+include::example$clusters/clusters-several-machinepools.yml[]
+----

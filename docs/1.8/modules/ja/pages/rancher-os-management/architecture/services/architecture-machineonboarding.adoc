@@ -1,0 +1,14 @@
+= マシンオンボーディング
+:revdate: 2025-11-06
+:page-revdate: {revdate}
+
+マシンオンボーディングサービスの目的は、新しいマシンを{elemental-product-name}オペレーターカタログ（xref:references/machineinventory-reference.adoc[MachineInventory]リソース）に登録し、ホストにOSをプロビジョニングし、所望の設定を適用することです。
+
+マシンオンボーディングには以下のステップが含まれます：
+
+* ユーザーはxref:references/machineregistration-reference.adoc[MachineRegistration]リソースを作成します：MachineRegistrationにはOSインストールに必要な設定が含まれています。
+MachineRegistrationが作成されるとすぐに、{elemental-product-name}オペレーターはHTTP_registration endpoint_を公開します：これは、オンボーディングホストがオペレーターに登録するために必要なエントリポイントです。
+* ユーザーはxref:references/seedimage-reference.adoc[SeedImage]リソースを介して自己インストールイメージを要求します：これは、MachineRegistrationリソースと{elemental-product-name}ツールキットに互換性のあるOSコンテナイメージへの参照のみを必要とします。
+SeedImageが作成されるとすぐに、{elemental-product-name}オペレーターは自己インストールimage: once completed, the URL is exposed in the `status.downloadURL` field of the xref:references/seedimage-reference.adoc[SeedImage]リソースのビルド処理をトリガーします。
+* ユーザーは自己インストールイメージをダウンロードし、それを使用してプロビジョニングされていないホストを起動します：ホストはhttps://documentation.suse.com/cloudnative/os-manager/latest/en/rancher-os-management/authentication.html[認証を行い]、_registration endpoint_に対して{elemental-product-name}オペレーターに登録し、MachineRegistrationに保存された完全な設定を取得し、ローカルストレージデバイスにOSをインストールします。ホストが登録プロセスを完了するとすぐに、{elemental-product-name}オペレーターはホストを追跡するユニークなxref:references/machineinventory-reference.adoc[MachineInventory]リソースを作成します。
+自己インストールイメージは、任意の数のホストをオンボーディングするために使用できます。

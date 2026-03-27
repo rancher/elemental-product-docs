@@ -1,0 +1,57 @@
+= リムーバブルデバイスからcloud-configファイルを取り込む方法
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+{elemental-product-name}ノードは特定のブロックデバイスからxref:references/cloud-config-reference.adoc[cloud-config]ファイルを読み込むことをサポートしています。
+特に、ボリュームIDが`CIDATA`のISOや、`CIDATA`というラベルが付けられたvFAT形式のデバイスからcloud-configファイルを読み込むことをサポートしています。この条件に一致するデバイスが早期ブート時に見つかった場合、{elemental-product-name}クライアントはそれを読み取り、ルートに`user-data`ファイルを探します。
+
+例として、以下の手順でLinuxホスト上にcloud-configファイルを含むISOイメージを作成できます。
+
+cloud-configデータを含む`user-data`ファイルを作成します。以下の例では、プロキシを設定します：
+
+.user-data
+[,yaml]
+----
+#cloud-config
+write_files:
+
+* path: /etc/sysconfig/proxy
+append: true
+content: |
+  PROXY_ENABLED="yes"
+  HTTP_PROXY=http://some.domain.org:8080
+  HTTPS_PROXY=https://some.domain.org:8080
+  NO_PROXY="localhost, 127.0.0.1"
+----
+
+`user-data`ファイルが存在する場合、`mkisofs` Linuxユーティリティを使用してこのファイルのみを含むISOを作成します：
+
+[,bash]
+----
+mkisof -o cidata.iso -V CIDATA -J -r user-data
+----
+
+結果は、`CIDATA`というラベルが付けられた`user-data`ファイルを含むISOです。
+
+ブート時に、`user-data`ファイルはそのまま`/oem/user-data`にコピーされ、cloud-configデータが含まれている場合は、`/oem/user-data.yaml`として追加のコピーが作成されます。ファイル`/oem/user-data.yaml`は、後のcloud-initステージで解析されます。
+
+データが`/oem`にコピーされるため、永続的になります。したがって、次回の再起動時にはリムーバブルデバイスが存在する必要はありません。次回の再起動時にまだ存在する場合、既存のデータを上書きします。
+
+== cloud-config以外のデータを含める
+
+`user-data`がcloud-configデータを含まない場合、{elemental-product-name}クライアントはそれをそのまま`/oem/user-data`にコピーします。cloud-initステージを実行する際には、`*.yaml`ファイルのみが解析されるため、その場合、ファイルはcloud-initサービスによって無視されます。
+
+`user-data`にスクリプトが含まれている場合、{elemental-product-name}クライアントはそれを実行しようとします。{elemental-product-name}クライアントが`user-data`がスクリプトかどうかを判断する方法は、最初の行に_Shebang（シバン）_が存在するかどうかです。例えば、前の`user-data`ファイルは次のように書き換えることができます：
+
+.user-data
+[,bash]
+----
+#!/bin/bash
+
+cat <<EOF >> /etc/sysconfig/proxy
+PROXY_ENABLED="yes"
+HTTP_PROXY=http://some.domain.org:8080
+HTTPS_PROXY=https://some.domain.org:8080
+NO_PROXY="localhost, 127.0.0.1"
+EOF
+----

@@ -1,0 +1,64 @@
+= Referenz für ManagedOSVersionChannel
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+Die `ManagedOSVersionChannel`-Ressource ist dafür verantwortlich, den OS-Image-Kanal zu definieren.
+
+Es gibt mehrere Schlüssel, die unter einer `ManagedOSVersionChannel`-Ressourcenspezifikation konfiguriert werden können.
+
+.managedosversionchannel-example.yaml
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: ManagedOSVersionChannel
+metadata:
+  name: elemental-channel
+  namespace: fleet-default
+spec:
+  options:
+    image: registry.suse.com/rancher/elemental-channel:1.4.2
+  syncInterval: 1h
+  type: custom
+----
+
+== `ManagedOSVersionChannelSpec` Referenz
+
+|===
+| Tasten | Typ | Standardwert | Beschreibung
+
+| Optionen
+| object
+| null
+| Definiert die optionalen Informationen, die in einem OS-Kanal hinzugefügt werden können.
+
+| syncInterval
+| Zeichenfolge
+| 1h
+| Definiert, wann der OS-Kanal synchronisiert werden soll.
+
+| type
+| Zeichenfolge
+| Leeren
+| Definiert den Kanaltyp, derzeit wird nur `custom` unterstützt.
+
+| upgradeContainer
+| object
+| null
+| Ein Upgrade-Container, der definiert werden kann. Siehe <<_upgradecontainer,Referenz>>
+
+| deleteNoLongerInSyncVersions
+| bool
+| false
+| Automatisches Löschen auslaufender OS-Versionen, die nicht mehr im Kanal enthalten sind.
+
+| Aktiviert
+| bool
+| true
+| Aktiviert diesen Kanal. Ermöglicht die Synchronisierung von OS-Versionen.
+|===
+
+== `upgradeContainer`
+
+Dies ermöglicht das Überschreiben des Standardfelds `upgrade` der System Upgrade Controller-Pläne (siehe xref:rancher-os-management/upgrade-lifecycle.adoc#_components[Upgrade-Komponenten]) basierend auf dieser ManagedOSVersion.
+Diese Schlüssel werden vom System Upgrade Controller in eine Kubernetes https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#Container[Container]-Spezifikation übersetzt.
+Dies ist der Container, der für die Durchführung eines OS-Upgrades verantwortlich ist.

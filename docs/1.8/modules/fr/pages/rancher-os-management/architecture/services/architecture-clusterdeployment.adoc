@@ -1,0 +1,13 @@
+= Provisionnement du cluster Kubernetes
+:revdate: 2025-11-06
+:page-revdate: {revdate}
+
+L'objectif de la phase de déploiement du cluster Kubernetes est de créer un nouveau cluster RKE2 ou K3s en utilisant les xref:references/machineinventory-reference.adoc[MachineInventories] disponibles, c'est-à-dire les hôtes qui ont réussi à compléter la phase de xref:rancher-os-management/architecture/services/architecture-machineonboarding.adoc[Machine onboarding].
+
+Le déploiement du cluster Kubernetes {elemental-product-name} implique les étapes suivantes :
+
+* L'utilisateur crée une ressource xref:references/machineinventoryselectortemplate-reference.adoc[MachineInventorySelectorTemplate] : elle permet de définir un _selector_ pour identifier un sous-ensemble des xref:references/machineinventory-reference.adoc[MachineInventories] disponibles en fonction de la valeur de leurs étiquettes.
+* L'utilisateur définit un xref:references/cluster-reference.adoc[Rancher cluster] et ajoute à la définition `machinePools` une référence au xref:references/machineinventoryselectortemplate-reference.adoc[MachineInventorySelectorTemplate] créé à l'étape précédente.
+* Le https://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-deployment/launch-kubernetes-with-rancher.html[Provisionnement du cluster Rancher RKE2/K3s] réagit à la création de la ressource de cluster Rancher en générant un certain nombre de ressources xref:references/machineinventoryselector-reference.adoc[MachineInventorySelectors] égal à la _quantité_ spécifiée dans les _machinePools_.
+* L'opérateur {elemental-product-name} associe chaque ressource xref:references/machineinventoryselector-reference.adoc[MachineInventorySelector] générée à un xref:references/machineinventory-reference.adoc[MachineInventory] disponible et installe le démon https://github.com/rancher/system-agent[rancher-system-agent] sur l'hôte suivi par le xref:references/machineinventory-reference.adoc[MachineInventory].
+Le https://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-deployment/launch-kubernetes-with-rancher.html[Provisionnement du cluster Rancher RKE2/K3s] prend en charge le provisionnement K3s/RKE2 en utilisant les https://github.com/rancher/system-agent[plans rancher-system-agent] _plans_ : il installe les composants requis (par exemple, containerd, K3s, ...) et crée les fichiers de configuration jusqu’au déploiement réussi du nouveau cluster Kubernetes.

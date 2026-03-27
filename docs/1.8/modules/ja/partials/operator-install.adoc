@@ -1,0 +1,78 @@
+== {elemental-product-name}オペレーターをインストールします。
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+`elemental-operator`は管理エンドポイントで、管理クラスターを実行し、インベントリやマシンの登録などを行います。
+
+Helmパッケージマネージャーを使用して、elemental-operatorチャートをクラスターにインストールします。
+
+[,console]
+----
+helm upgrade --create-namespace -n cattle-elemental-system --install elemental-operator-crds oci://registry.suse.com/rancher/elemental-operator-crds-chart
+
+helm upgrade --create-namespace -n cattle-elemental-system --install elemental-operator oci://registry.suse.com/rancher/elemental-operator-chart
+----
+
+数秒後、`cattle-elemental-system`ネームスペースにオペレーターポッドが表示されるはずです。
+
+[,console]
+----
+kubectl get pods -n cattle-elemental-system
+
+NAME                                  READY   STATUS    RESTARTS   AGE
+elemental-operator-64f88fc695-b8qhn   1/1     Running   0          16s
+----
+
+[IMPORTANT]
+.Helm v3.8.0以上が必要です。
+----
+{elemental-product-name}オペレーターのチャートはOCIレジストリを介して配布されます。Helmはv3.8.0リリースからOCIベースのレジストリを正しくサポートしています。
+----
+
+
+[CAUTION]
+.elemental-operatorリリース<1.2.4からアップグレードする際は、チャートのインストール順序を入れ替えてください。
+----
+{elemental-product-name} CRDが埋め込まれているelemental-operatorリリースからアップグレードする場合、elemental-operator-crdsチャートのインストールは失敗します。
+まずelemental-operatorチャートをアップグレードし、その後にelemental-operator-crdsチャートをインストールする必要があります。
+----
+
+=== 非安定なインストール
+
+上記のHelmチャートに加えて、他に2つの`non-stable`バージョンが利用可能です。
+
+* *ステージング:*はGithubからの最新のタグ付きリリースを指します。これはxref:quickstarts/quickstart-ui.adoc[次]のページに文書化されています。
+* *開発:*は、GithubのHEAD（最新のコミット）を指します。これは進行中の開発バージョンで、常に変更されています。
+
+[tabs]
+=====
+ステージングバージョン（x86-64、ARM64（Raspberry Pi 4））::
++
+--
+[,console]
+----
+helm upgrade --create-namespace -n cattle-elemental-system --install elemental-operator-crds oci://registry.opensuse.org/isv/rancher/elemental/staging/charts/rancher/elemental-operator-crds-chart 
+helm upgrade --create-namespace -n cattle-elemental-system --install elemental-operator oci://registry.opensuse.org/isv/rancher/elemental/staging/charts/rancher/elemental-operator-chart
+----
+--
+
+開発バージョン（x86-64、ARM64（Raspberry Pi 4））::
++
+--
+[WARNING]
+.メモ
+====
+開発バージョンは本番環境には推奨されません。SlackまたはGithub Issuesを通じてフィードバックを歓迎しますが、これは不安定であり、通知なしに削除される可能性のある実験的な機能を含むことがあります。
+====
+
+[,console]
+----
+helm upgrade --create-namespace -n cattle-elemental-system --install elemental-operator-crds oci://registry.opensuse.org/isv/rancher/elemental/dev/charts/rancher/elemental-operator-crds-chart
+helm upgrade --create-namespace -n cattle-elemental-system --install --set image.imagePullPolicy=Always elemental-operator oci://registry.opensuse.org/isv/rancher/elemental/dev/charts/rancher/elemental-operator-chart
+----
+--
+=====
+
+=== インストールオプション
+
+チャートのインストールで設定できるオプションはいくつかありますが、それはこの文書の範囲外です。チャートのすべての値は、https://github.com/rancher/elemental-operator/blob/main/.obs/chartfile/elemental-operator-helm/values.yaml[values.yaml]で確認できます。

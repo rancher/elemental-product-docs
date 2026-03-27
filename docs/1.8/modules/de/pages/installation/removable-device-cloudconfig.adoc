@@ -1,0 +1,57 @@
+= So binden Sie cloud-config-Dateien von wechselbaren Geräten ein
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+{elemental-product-name} Knoten unterstützen das Laden von xref:references/cloud-config-reference.adoc[cloud-config]-Dateien von bestimmten Blockgeräten.
+Insbesondere wird das Laden von cloud-config-Dateien von einer ISO mit der Volume-ID `CIDATA` oder von einem vFAT-formatierten Gerät, das mit `CIDATA` beschriftet ist, unterstützt. Wenn ein Gerät, das diesem Kriterium entspricht, beim frühen Booten gefunden wird, wird der {elemental-product-name} Client es lesen und nach einer `user-data` Datei im Root-Verzeichnis suchen.
+
+Als Beispiel kann eine ISO, die eine cloud-config-Datei enthält, auf einem Linux-Host mit dem folgenden Verfahren erstellt werden.
+
+Erstellen Sie eine `user-data` Datei mit den cloud-config-Daten darin. Im folgenden Beispiel setzen wir einfach einen Proxy:
+
+.Benutzerdaten
+[,yaml]
+----
+#cloud-config
+write_files:
+
+* path: /etc/sysconfig/proxy
+append: true
+content: |
+  PROXY_ENABLED="yes"
+  HTTP_PROXY=http://some.domain.org:8080
+  HTTPS_PROXY=https://some.domain.org:8080
+  NO_PROXY="localhost, 127.0.0.1"
+----
+
+Sobald die `user-data` Datei existiert, erstellen Sie eine ISO, die nur diese Datei mit dem `mkisofs` Linux-Dienstprogramm enthält:
+
+[,bash]
+----
+mkisof -o cidata.iso -V CIDATA -J -r user-data
+----
+
+Das Ergebnis ist eine ISO, die mit `CIDATA` beschriftet ist und die `user-data` Datei enthält.
+
+Beim Booten wird die `user-data` Datei unverändert nach `/oem/user-data` kopiert, und falls sie cloud-config-Daten enthält, wird eine zusätzliche Kopie als `/oem/user-data.yaml` hinzugefügt. Die Datei `/oem/user-data.yaml` wird in einer späteren cloud-init-Phase analysiert.
+
+Da die Daten in `/oem` kopiert werden, sind sie persistent, daher muss das wechselbare Gerät bei nachfolgenden Neustarts nicht mehr vorhanden sein. Wenn es bei nachfolgenden Neustarts noch vorhanden ist, überschreibt es einfach alle bereits vorhandenen Daten.
+
+== Nicht-cloud-config-Daten einbeziehen
+
+Wenn die `user-data` keine cloud-config-Daten enthält, wird der {elemental-product-name} Client sie einfach unverändert nach `/oem/user-data` kopieren. Nur `*.yaml` Dateien werden beim Ausführen von cloud-init-Phasen analysiert, sodass in diesem Fall die Datei von den cloud-init-Diensten ignoriert wird.
+
+Wenn die `user-data` ein Skript enthält, wird der {elemental-product-name} Client zusätzlich versuchen, es auszuführen. Die Art und Weise, wie der {elemental-product-name} Client bestimmt, ob `user-data` ein Skript ist oder nicht, erfolgt durch das Vorhandensein eines _Shebang_ in der ersten Zeile. Zum Beispiel könnte die vorherige `user-data` Datei wie folgt umgeschrieben werden:
+
+.Benutzerdaten
+[,bash]
+----
+#!/bin/bash
+
+cat <<EOF >> /etc/sysconfig/proxy
+PROXY_ENABLED="yes"
+HTTP_PROXY=http://some.domain.org:8080
+HTTPS_PROXY=https://some.domain.org:8080
+NO_PROXY="localhost, 127.0.0.1"
+EOF
+----

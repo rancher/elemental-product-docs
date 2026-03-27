@@ -1,0 +1,51 @@
+= Wiederherstellung
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+Befolgen Sie diese Anleitung, um eine {elemental-product-name} Konfiguration aus einer Sicherung mit Rancher wiederherzustellen.
+
+== Bereiten Sie den rancher-backup Operator und die Sicherungsdateien für die Wiederherstellung vor.
+
+Gehen Sie zur offiziellen https://docs.ranchermanager.rancher.io/how-to-guides/new-user-guides/backup-restore-and-disaster-recovery/restore-rancher[Rancher-Dokumentation] und stellen Sie sicher, dass `rancher-backup operator` installiert ist und Zugriff auf die Sicherungsdateien hat.
+
+Sie müssen zuerst dieser xref:operator-operational-tasks/backup.adoc[Dokumentation] folgen, um eine Sicherung der {elemental-product-name} Ressourcen zu erstellen.
+
+== Stellen Sie die {elemental-product-name} Konfiguration mit dem rancher-backup Operator wieder her.
+
+Erstellen Sie ein `restore object` (angepasst an Ihre Bedürfnisse), um den Sicherungs-Tarball wiederherzustellen.
+
+[,yaml]
+----
+apiVersion: resources.cattle.io/v1
+kind: Restore
+metadata:
+  name: elemental-restore
+spec:
+  backupFilename: rancher-backup-430169aa-edde-4a61-85e8-858f625a755b-2022-10-17T05-15-00Z.tar.gz
+----
+
+Wenden Sie das Manifest auf Kubernetes an.
+
+[,shell]
+----
+kubectl apply -f elemental-restore.yaml
+----
+
+Überprüfen Sie die Protokolle des rancher-backup Operators.
+
+[,shell]
+----
+kubectl logs -n cattle-resources-system -l app.kubernetes.io/name=rancher-backup -f
+----
+
+Überprüfen Sie, ob die Sicherungsdatei erfolgreich wiederhergestellt wurde.
+
+[,shell]
+----
+...
+INFO[2022/10/31 06:34:50] Processing controllerRef apps/v1/deployments/rancher
+INFO[2022/10/31 06:34:50] Done restoring
+...
+----
+
+Fahren Sie mit dem Verfahren aus der https://docs.ranchermanager.rancher.io/how-to-guides/new-user-guides/backup-restore-and-disaster-recovery/migrate-rancher-to-new-cluster[Rancher-Dokumentation] fort.

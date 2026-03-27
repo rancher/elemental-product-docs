@@ -1,0 +1,70 @@
+= Variáveis de Modelo Aleatórias
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+As variáveis de modelo aleatórias estão incorporadas no Operador Elemental.
+
+Elas permitem incluir valores aleatórios `Int`, `Hex` ou `UUID` em modelos de rótulo personalizados xref:label-templates/label-templates.adoc[label templates].
+
+Os valores são calculados em tempo real durante a renderização do `label template variables`.
+
+[IMPORTANT]
+.Modelos de rótulo aleatórios são renderizados apenas uma vez
+====
+
+Um modelo de rótulo contendo uma variável aleatória é renderizado apenas se o xref:references/machineinventory-reference.adoc[MachineInventory] do host registrador não tiver um valor para esse rótulo ainda (um rótulo com a mesma chave está ausente ou seu valor está vazio).
+
+Portanto, os três casos em que um modelo de rótulo com uma variável aleatória é renderizado são:
+
+. o host está se registrando pela primeira vez e o xref:references/machineinventory-reference.adoc[MachineInventory] é criado novamente.
+. O modelo de rótulo foi adicionado ao MachineRegistration após o host ter se (re)registrado pela última vez.
+. o rótulo xref:references/machineinventory-reference.adoc[MachineInventory] correspondente ao modelo de rótulo (mesma chave de rótulo) foi removido manualmente ou seu valor foi limpo.
+====
+
+
+|===
+| Variável | Descrição | from
+
+| `${Random/UUID}`
+| UUID aleatório (por exemplo, fd95324a-c26b-4e28-8727-1dcec293a0ec)
+| 1.7.0
+
+| `${Random/Hex/[1-32]}`
+| string hexadecimal aleatória do comprimento especificado (mínimo 1, máximo 32)
+| 1.7.0
+
+| `${Random/Int/[MAXINT]`
+| número inteiro aleatório (mínimo 0, máximo MAXINT-1)
+| 1.7.0
+|===
+
+[NOTE]
+.Exemplos de Renderização
+====
+|===
+| valor do modelo | exemplo de valor renderizado
+
+| `${Random/UUID}`
+| fd95324a-c26b-4e28-8727-1dcec293a0ec
+
+| `${Random/Hex/12}`
+| acd231f222b8
+
+| `${Random/Int/10000}` 
+| 9432
+
+|===
+====
+
+
+As Variáveis de Modelo Aleatórias podem ser úteis para gerar nomes de host personalizados a serem atribuídos ao host registrador.
+
+Como o nome do host deve ser único e é atribuído através do campo xref:references/machineregistration-reference.adoc[MachineRegistration] `spec.machineName`, variáveis aleatórias podem ser usadas para garantir a unicidade de um grupo de hosts compartilhando o mesmo prefixo e/ou sufixo personalizados.
+
+Verifique a seção xref:installation/hostname.adoc[HowTo/Customize hostname] para mais informações.
+
+.exemplo de registro de variáveis de modelo aleatórias
+[,yaml]
+----
+include::example$quickstart/registration-random-hostname.yaml[]
+----

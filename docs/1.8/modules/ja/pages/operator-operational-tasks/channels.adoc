@@ -1,0 +1,150 @@
+= Channels
+:revdate: 2025-09-30
+:page-revdate: {revdate}
+
+{elemental_operator_name}は、1つ以上のxref:references/managedosversionchannel-reference.adoc[ManagedOSVersionChannels]にサブスクリプションでき、新しいxref:references/managedosversion-reference.adoc[ManagedOSVersions]のリストを自動的に生成して、xref:references/seedimage-reference.adoc[SeedImage]を使って新しい.isoを構築したり、xref:references/managedosimage-reference.adoc[ManagedOSImage]を使って既存の{elemental-product-name}ノードを新しいOSバージョンにアップグレードすることができます。
+
+チャネルは通常、OCIコンテナイメージとして配布されますが、`ManagedOSVersion`のリストを含むJSONファイルのURIを直接参照することも可能です。最良の実践は、チャネルをイメージを使用して配布することです。そうすることで、{elemental_operator_name}が必要とする他のすべてのイメージとの配布が一貫性を持つようになります。これは、エアギャップ環境での展開時に有益です。
+
+[tabs]
+======
+JSON syncer::
++
+====
+このsyncerは、URLからJSONを取得し、有効な`ManagedOSVersion`リソースに解析します。
+
+.managed-os-version-channel-json.yaml
+[,yaml]
+----
+include::example$upgrade/managed-os-version-channel-json.yaml[]
+----
+====
+
+カスタムsyncer::
++
+====
+カスタムsyncerは、カスタムイメージを使用してカスタムコマンドを実行することで、`ManagedOSVersion`の収集方法に柔軟性をもたらします。このタイプのsyncerは、カスタムイメージ内で引数と環境変数を指定されたコマンドで実行し、`/data/output`にJSONファイルを出力することを許可します。生成されたデータは、その後、syncerによって自動マウントされ、適切なバージョンを作成するために解析されます。{elemental-product-name}プロジェクトは、カスタムsyncerとしてリリースされたすべての`ManagedOSVersions`をリストするためのチャネルを提供します。以下のチャネルリソース定義を参照してください：
+
+.managed-os-version-channel-custom.yaml
+[,yaml]
+----
+include::example$upgrade/managed-os-version-channel-custom.yaml[]
+----
+====
+======
+
+== 利用可能なチャネル
+
+{elemental-product-name}は、すぐに使用できるチャネルのリストを維持しています。
+
+|===
+| ベースOS | ベースOSバージョン | フレーバー | チャネルURI
+
+| SL Micro
+| 6.1
+| ベース
+| registry.suse.com/rancher/elemental-channel/sl-micro:6.0-base
+
+| SL Micro
+| 6.1
+| ベアメタル
+| registry.suse.com/rancher/elemental-channel/sl-micro:6.0-baremetal
+
+| SL Micro
+| 6.1
+| KVM
+| registry.suse.com/rancher/elemental-channel/sl-micro:6.0-kvm
+
+| SL Micro
+| 6.1
+| RT
+| registry.suse.com/rancher/elemental-channel/sl-micro:6.0-rt
+|===
+
+== {elemental-product-name}チャネルを見つける
+
+クレーンは維持されたチャネルを見つけるために使用できます。次に例を示します。
+
+[,shell]
+----
+$ crane ls -O registry.suse.com/rancher/elemental-channel/sl-micro
+6.0-baremetal
+6.0-base
+6.0-kvm
+6.0-rt
+6.1-baremetal
+6.1-base
+6.1-kvm
+6.1-rt
+<snip>
+----
+
+== フレーバー
+
+{elemental-product-name}は特定の使用ケースにより適した異なるOSフレーバーを配布します。
+
+|===
+| フレーバー | 説明 | リファレンス
+
+| ベース
+| カスタムイメージを構築するためのベースとして使用できる最小限のイメージ。
+| https://github.com/rancher/elemental/blob/v2.1.x/.obs/dockerfile/micro-base-os/Dockerfile[ソース]
+
+| ベアメタル
+| ベアメタルおよび使いやすさパッケージを含みます。任意の一般的なワークロードに使用できます。
+| https://github.com/rancher/elemental/blob/v2.1.x/.obs/dockerfile/micro-baremetal-os/Dockerfile[ソース]
+
+| KVM
+| KVMと一緒に使用する準備が整っています。デフォルトでQEMUゲストエージェントを含みます。
+| https://github.com/rancher/elemental/blob/v2.1.x/.obs/dockerfile/micro-kvm-os/Dockerfile[ソース]
+
+| RT
+| ベアメタルイメージのようですが、リアルタイム・カーネルを含みます。
+| https://github.com/rancher/elemental/blob/v2.1.x/.obs/dockerfile/micro-rt-os/Dockerfile[ソース]
+|===
+
+== チャネルのライフサイクルとベストプラクティス
+
+新しい`ManagedOSVersionChannel`が作成されると、{elemental_operator_name}は定期的にチャネルが提供するJSONリストと同期し、それを新しい`ManagedOSVersions`に変換します。 +
+すべての同期された`ManagedOSVersions`は`ManagedOSVersionChannel`によって所有されます。`ManagedOSVersionChannel`を削除すると、すべての`ManagedOSVersions`がカスケードで削除されます。
+
+`ManagedOSVersionChannel`は、`ManagedOSVersionChannel.spec.deleteNoLongerInSyncVersions`オプションが有効な場合、もはや同期されていない`ManagedOSVersions`の自動クリーンアップをサポートしています。
+
+`ManagedOSVersion`が削除のためにスケジュールされると、ファイナライザーは任意の`ManagedOSImage`にアクティブな参照がないことを確認します。
+
+`ManagedOSVersion`が削除できない場合、それが参照されているリソースを見つけることができます：
+
+[,shell]
+----
+kubectl -n fleet-default get managedosimages -l elemental.cattle.io/managed-os-version-name=my-deleted-os-version
+----
+
+複数のチャネルを使用する場合、所有されている`ManagedOSVersions`に対して常に迅速で人間が読みやすい参照を持つために、適切な命名戦略を維持することが重要です。 +
+任意のチャネルに次のように名前を付けることをお勧めします：`{BaseOS}-{BaseOSVersion}-{Flavor}`。
+
+これにより、ユーザーは`ManagedOSVersion`名をイメージの特定の{elemental-product-name}ビルドバージョンとして使用できるようになり、親チャネルからのベースOSおよびベースOSバージョンの参照を保持できます。 +
+Rancher UIでは、次の画像のように表示されます:
+
+image:channel-naming.png[チャネル名]
+
+== 自分のチャネルを作成する
+
+カスタムsyncerを作成するための唯一の要件は、`/data/output`にJSONファイルを出力し、正しいJSON構造を維持することです。
+
+ファイルは、ISOおよびコンテナエントリを含むJSON配列です。
+配列内の各エントリは、xref:references/managedosversion-reference.adoc[ManagedOSVersion]オブジェクトと1:1でマッピングされています。
+
+`"type": "iso"`エントリは、ブート可能な{elemental-product-name} ISOを含む必要があり、xref:references/seedimage-reference.adoc[SeedImages]によって使用されます。一方、`"type": "container"`エントリは、xref:references/managedosimage-reference.adoc[ManagedOSImage]によって{elemental-product-name}アップグレードに使用されます。
+
+疑問がある場合は、https://github.com/rancher-sandbox/elemental-channels[elemental-channels]プロジェクトを参照実装として使用して、自分のチャネルを構築および維持する方法を確認できます。
+
+新しいエントリを作成する際は、他のチャネルとの衝突を避けるために選択した命名戦略に注意してください。異なる`ManagedOSVersion`が同じ名前で同期される可能性があります。
+ベストプラクティスは、次の規則を使用することです：`\{Flavor}-\{Version}-\{Type}`
+
+JSON形式のサンプルは次のとおりです：
+
+.versions.json
+[,json]
+----
+include::example$upgrade/versions.json[]
+----

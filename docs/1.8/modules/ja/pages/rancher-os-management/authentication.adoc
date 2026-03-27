@@ -1,0 +1,83 @@
+= 認証
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+認証は、マシンが_登録_する際のオンボーディング時に行われます。 {elemental_operator_name}
+
+{elemental-product-name}はデフォルトで、_信頼できるプラットフォームモジュール_（TPM）を通じてホストを認証します：マシンは_証明_を通じて認証され、つまり、マシンはそのTPMデバイスを通じて自らのアイデンティティを証明します。
+
+_証明_が機能するためには、各オンボーディングマシンは*TPM 2.0デバイスを持っている必要があります*。そうでなければ、安全なTPM認証を使用して登録することはできません。
+
+== TPMの代替手段
+
+*唯一公式にサポートされている登録方法は、TPM証明に基づいており、TPM 2.0が有効なデバイスを必要とします。*
+
+TPM 2.0チップなしで安全な認証をバイパスしてデバイスを登録したい場合、これらのマシンを一意に_識別_するための複数の方法があります：
+
+* シンプルなソフトウェア実装を介してTPMデバイスをエミュレートする
+* ネットワークMACアドレスを通じて自らを識別する
+* SMBIOS UUIDを使用して自らを識別する
+
+認証/識別方法は、マシン登録リソースのxref:references/machineregistration-reference.adoc#_config_elemental_registration[config:elemental:registration:authフィールド]で指定できます。
+
+[CAUTION]
+====
+{elemental-product-name}における唯一の安全で公式にサポートされている*認証*方法は、TPM証明に基づくデフォルトのものです。
+TPMの代替手段はデモ目的やローカル展開に使用できますが、オンボーディングマシンのアイデンティティが安全に確認されないため、本番環境での使用は推奨されません。
+====
+
+=== TPMエミュレーション
+
+TPMエミュレーションは、TPMの動作を模倣するソフトウェアを使用して認証を行い、これは{elemental_register_name}に組み込まれています。
+エミュレートされたTPMデバイスの鍵はすべて、決定論的な方法で単一のシードによって生成されます：同じシードは同じTPM鍵を生成し、したがって、各登録ホストでは異なるシードを選択する必要があります。
+
+TPMエミュレーションは、`emulate-tpm`および`emulated-tpm-seed`フィールドを`MachineRegistration`設定で設定することによって有効になります（詳細については、マシン登録リファレンスのxref:references/machineregistration-reference.adoc#_config_elemental_registration[config:elemental:registrationセクション]を参照してください）。
+
+.TPMエミュレーションを使用した例のマシン登録
+[,yaml]
+----
+include::example$authentication/registration-emulate-tpm.yaml[]
+----
+
+TPMエミュレーションの設定は、xref:operator-operational-tasks/tpm.adoc#_add_tpm_emulation_to_bare_metal_machine[TPMエミュレーション設定セクション]に詳述されています。
+
+=== MACアドレス識別
+
+MACアドレス識別を使用する場合、ホストはそのネットワークインターフェースカード（NIC）からのMACアドレスを識別子として使用して{elemental_operator_name}に登録します。
+マシンに複数のネットワークインタフェースがある場合、MACアドレスは辞書順にソートされ、最初のものが選択されます。
+
+TPM認証をMACアドレス識別に置き換えるには、xref:references/machineregistration-reference.adoc#_config_elemental_registration[MachineRegistrationリファレンスのconfig:elemental:registrationセクション]で`auth`フィールドに`mac`の値を設定するだけで十分です。
+
+.MACアドレスをマシン識別子として使用する例のMachineRegistration
+[,yaml]
+----
+include::example$authentication/registration-mac.yaml[]
+----
+
+[CAUTION]
+====
+MACアドレスは{elemental_operator_name}によってユニークであると見なされます。
+これは物理デバイスに当てはまりますが、異なるハイパーバイザーと異なるネットワークセグメントからの仮想マシンを使用する場合、登録するVMがユニークなMACアドレスを持つことを確認するのは管理者の責任です。
+====
+
+
+=== SMBIOS UUID識別
+
+システム管理BIOS（SMBIOS）仕様は、ホストのBIOSによって生成された管理情報を読み取るために使用できるデータ構造を定義しています。
+
+`sys-uuid`の値を`auth`フィールドとしてxref:references/machineregistration-reference.adoc#_config_elemental_registration[config:elemental:registrationセクションのMachineRegistration]に使用する場合、ホストはホストのSMBIOSデータの`System Information`テーブルからの`UUID`の値を使用して{elemental_operator_name}に登録します。
+
+.SMBIOSシステム情報テーブルからUUIDをマシン識別子として使用する例のMachineRegistration
+[,yaml]
+----
+include::example$authentication/registration-sys-uuid.yaml[]
+----
+
+[CAUTION]
+====
+SMBIOS `System information/UUID`の値は、ハードウェアベンダーによってホストのユニークなUUIDとして記入されるべきです。
+
+SMBIOSデータは常に信頼できるわけではありません。これは製造業者によります。UUIDが欠落している、または同じバッチ内の複数のデバイスに同じUUIDが適用されることがあるかもしれません。
+
+マシンがユニークな`System information/UUID` SMBIOS値を持つことを確認するのは管理者の責任です（`dmidecode`ツールが役立つかもしれません）。そうでなければ、マシンは同じ`MachineInventory`リソースを上書きし続け、{elemental-product-name}プロビジョニングは失敗します。
+====

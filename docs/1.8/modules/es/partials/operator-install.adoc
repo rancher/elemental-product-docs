@@ -1,0 +1,78 @@
+== Instalar {elemental-product-name} Operador
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+`elemental-operator` es el punto de gestión, que ejecuta el clúster de gestión y se encarga de crear inventarios, registros para máquinas y mucho más.
+
+Usaremos el gestor de paquetes Helm para instalar el chart elemental-operator en nuestro clúster.
+
+[,console]
+----
+helm upgrade --create-namespace -n cattle-elemental-system --install elemental-operator-crds oci://registry.suse.com/rancher/elemental-operator-crds-chart
+
+helm upgrade --create-namespace -n cattle-elemental-system --install elemental-operator oci://registry.suse.com/rancher/elemental-operator-chart
+----
+
+Ahora, después de unos segundos, deberías ver aparecer el pod del operador en el espacio de nombres `cattle-elemental-system`:
+
+[,console]
+----
+kubectl get pods -n cattle-elemental-system
+
+NAME                                  READY   STATUS    RESTARTS   AGE
+elemental-operator-64f88fc695-b8qhn   1/1     Running   0          16s
+----
+
+[IMPORTANT]
+.Se requiere Helm v3.8.0+
+----
+El {elemental-product-name} chart del Operador se distribuye a través de un registro OCI: Helm admite correctamente los registros basados en OCI a partir de la versión v3.8.0.
+----
+
+
+[CAUTION]
+.Cambia el orden de instalación de los charts al actualizar la versión de elemental-operator (< 1.2.4).
+----
+Al actualizar desde una versión de elemental-operator que incorpora la incrustación de los {elemental-product-name} CRDs (versión < 1.2.4), la instalación del chart elemental-operator-crds fallará.
+Necesitarás actualizar el chart elemental-operator primero, y solo entonces instalar el chart elemental-operator-crds.
+----
+
+=== Instalaciones no estables
+
+Además de los charts de Helm listados arriba, hay otras dos versiones de `non-stable` disponibles.
+
+* *Staging:* se refiere a la última versión etiquetada de Github. Esto está documentado en las páginas xref:quickstarts/quickstart-ui.adoc[Next].
+* *Development:* se refiere al último commit en HEAD de Github. Esta es la versión de desarrollo en curso y cambia constantemente.
+
+[tabs]
+=====
+Versión de staging (x86-64, ARM64 (Raspberry Pi 4))::
++
+--
+[,console]
+----
+helm upgrade --create-namespace -n cattle-elemental-system --install elemental-operator-crds oci://registry.opensuse.org/isv/rancher/elemental/staging/charts/rancher/elemental-operator-crds-chart 
+helm upgrade --create-namespace -n cattle-elemental-system --install elemental-operator oci://registry.opensuse.org/isv/rancher/elemental/staging/charts/rancher/elemental-operator-chart
+----
+--
+
+Versión de desarrollo (x86-64, ARM64 (Raspberry Pi 4))::
++
+--
+[WARNING]
+.Recordatorio
+====
+La versión de desarrollo no se recomienda para entornos de producción. Agradecemos los comentarios a través de Slack o incidencias en Github, pero podría ser inestable y contener características experimentales que pueden ser eliminadas sin previo aviso.
+====
+
+[,console]
+----
+helm upgrade --create-namespace -n cattle-elemental-system --install elemental-operator-crds oci://registry.opensuse.org/isv/rancher/elemental/dev/charts/rancher/elemental-operator-crds-chart
+helm upgrade --create-namespace -n cattle-elemental-system --install --set image.imagePullPolicy=Always elemental-operator oci://registry.opensuse.org/isv/rancher/elemental/dev/charts/rancher/elemental-operator-chart
+----
+--
+=====
+
+=== Opciones de instalación
+
+Hay algunas opciones que se pueden configurar en la instalación del chart, pero eso está fuera del alcance de este documento. Puedes ver todos los valores en el chart https://github.com/rancher/elemental-operator/blob/main/.obs/chartfile/elemental-operator-helm/values.yaml[values.yaml].

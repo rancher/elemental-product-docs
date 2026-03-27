@@ -1,0 +1,229 @@
+= Referencia de Cloud-config
+:revdate: 2025-10-21
+:page-revdate: {revdate}
+
+Se espera que las imágenes del sistema operativo de Node construidas utilizando el https://github.com/elemental-toolkit[{elemental-product-name} Toolkit] sean inicializadas y configuradas mediante https://github.com/rancher/yip[yip]. Yip es una pequeña utilidad para aplicar un conjunto de acciones y configuraciones al sistema descrito con archivos yaml. Yip está integrado y se consume como una biblioteca dentro del binario del cliente elemental (ver `elemental run-stage --help`). Yip agrupa las configuraciones y acciones a aplicar en _etapas_ arbitrarias; por ejemplo, la llamada al comando `elemental run-stage network` solo aplicaría acciones y configuraciones definidas para la etapa llamada `network`. Nota desde la perspectiva de Yip: las etapas pueden ejecutarse en cualquier momento, ya que simplemente agrupan un conjunto de acciones bajo un nombre arbitrario.
+
+El {elemental-product-name} Toolkit integra cinco etapas predefinidas en el proceso de arranque del sistema operativo.
+
+. *`pre-rootfs`*: Esta etapa se ejecuta en el arranque temprano dentro del disco RAM de inicio, justo antes de montar el dispositivo raíz (típicamente en `/sysroot`). Esta etapa puede utilizarse para definir los pasos de primer arranque que son necesarios antes de montar el dispositivo raíz. Un buen ejemplo es expandir la partición del dispositivo raíz. Ejecutado como parte del `initrd-root-device.target`.
+. *`rootfs`*: Esta etapa se ejecuta en el arranque temprano dentro del disco RAM de inicio, justo después de montar el dispositivo raíz (típicamente en `/sysroot`). Esta etapa puede utilizarse para definir pasos de primer arranque como crear nuevas particiones. Las rutas efímeras y persistentes se definen típicamente en esta etapa. Ejecutado como parte del `initrd-root-fs.target`.
+. *`initramfs`*: Esta etapa también se ejecuta dentro del disco RAM de inicio, pero en una etapa posterior justo antes de cambiar la raíz. Esta etapa se ejecuta en un entorno chroot al dispositivo raíz real. Esta etapa es útil para establecer algunos parámetros del sistema que pueden ser relevantes para systemd después de cambiar la raíz. Por ejemplo, se podrían añadir archivos de unidad adicionales de systemd aquí antes de que se ejecute el systemd del raíz real. Ejecutado como parte del `initrd.target`.
+. *`fs`*: Esta etapa es la primera que se ejecuta después de cambiar la raíz y se ejecuta como parte del `sysinit.target`, que se ejecuta una vez que todos los sistemas de archivos locales y puntos de montaje definidos en fstab están montados y listos.
+. *`network`*: Esta etapa se ejecuta como parte del `multi-user.target` y después de que se alcanza el `network-online.target`. Esta etapa se puede utilizar para ejecutar acciones y configuraciones que requieren conectividad de red. Por ejemplo, esta etapa se utiliza para realizar el registro del primer nodo y la instalación desde una ISO en vivo.
+. *`boot`*: Esta etapa se ejecuta como parte del multi-user.target y antes del getty.target. Esta es la etapa predeterminada para ejecutar los datos de cloud-config proporcionados utilizando la sintaxis soportada de cloud-init. Consulta la sección xref:references/cloud-config-reference.adoc#_compatibility_with_cloud_init_format[compatibilidad con cloud-init].
+
+Por defecto, `elemental` lee los archivos de configuración yaml desde las siguientes rutas en orden: `/system/oem`, `/oem` y `/usr/local/cloud-config`.
+
+En {elemental-product-name} Operator, todos los recursos de kubernetes, incluyendo un campo `cloud-config`, pueden expresarse en sintaxis <<_configuration_syntax,yip>> o <<_compatibility_with_cloud_init_format,compatible con cloud-init>>. Esto incluye recursos como `MachineRegistration`, `SeedImage` y `ManagedOSImage`.
+
+[NOTE]
+====
+A diferencia de proyectos similares como _Cloud Init_, Yip no mantiene registros ni cachés de etapas y pasos ejecutados; todas las etapas y su configuración asociada se ejecutan en cada arranque.
+====
+
+== Ganchos de cloud-config del cliente Elemental.
+
+Además de las etapas de cloud-config definidas en el arranque descritas en la sección anterior, el cliente Elemental también respeta algunas etapas específicas, referidas como ganchos, para personalizar el comportamiento de estos subcomandos: `install`, `upgrade`, `reset` y `build-disk`. Cada uno de estos subcomandos tiene su propio conjunto de cuatro etapas de cloud-config diferentes que se ejecutan en fases análogas de la ejecución específica del subcomando.
+
+Los ganchos son esencialmente una forma de proporcionar cambios permanentes al sistema que no se pueden expresar fácilmente como parte de una configuración de contenedor OCI o que no se pueden lograr fácilmente con las opciones de configuración del cliente `elemental`. Un buen ejemplo podría ser manejar el firmware en la partición EFI, para dispositivos Raspberry Pi.
+
+[WARNING]
+====
+Ten en cuenta que la mayoría de los ganchos se ejecutan en el entorno del host con privilegios, por lo que son operaciones potencialmente destructivas. En la mayoría de los casos, las operaciones regulares de cloud-config en el tiempo de arranque son suficientes para configurar el sistema. Además, para incluir software adicional en una imagen, la opción preferida es construir una xref:operator-operational-tasks/custom-images.adoc[imagen derivada] y no abusar de los ganchos para instalar software adicional.
+====
+
+=== Etapas de ganchos
+
+Antes de las etapas: antes-instalar, antes-actualizar, antes-restablecer, antes-disco Estas etapas se ejecutan una vez que se han preparado los directorios de trabajo y el entorno, pero antes de iniciar la acción real. En los pasos de instalación, actualización y restablecimiento, esto ocurre una vez que se han creado y montado todas las particiones asociadas, pero antes de iniciar el despliegue de cualquier imagen.
+
+Después de las etapas chrooted: después-instalar-chroot, después-actualizar-chroot, después-restablecer-chroot, después-disco-chroot Estas etapas se ejecutan después de desplegar el sistema objetivo en el área de trabajo en un entorno chroot enraizado en la imagen desplegada real. Dado que esto ocurre en un entorno chroot, el cliente Elemental analiza los ganchos presentes en la imagen desplegada, no en el host. Solo /oem se comparte con el host si está disponible.
+
+Después de las etapas: después-instalar, después-actualizar, después-restablecer, después-disco Estas etapas se ejecutan después de desplegar el sistema objetivo en el área de trabajo desde el entorno del host. En estas etapas, todas las particiones aún están montadas y disponibles en modo RW. Este conjunto particular de etapas analiza los ganchos presentes en el host y en el conjunto equivalente de rutas chrooted a la imagen desplegada. Sin embargo, el gancho no se ejecuta en un entorno chroot. Esto es útil para proporcionar `after-*` hooks dentro de la imagen desplegada.
+
+Etapas posteriores: post-instalar, post-actualizar versión, post-restablecer, post-disco. Estas etapas se ejecutan al final antes de salir del comando y ejecutar un proceso de limpieza. En esta etapa, la imagen ya está desplegada y bloqueada en un subvolumen o sistema de archivos de solo lectura. Las particiones aún están montadas en esta etapa.
+
+[NOTE]
+====
+Nota: los hooks de instalación no se aplican como parte del xref:references/machineregistration-reference.adoc#_config_cloud_config[`MachineRegistration.config.cloud-config`]. Para proporcionar hooks de instalación, pueden incluirse como parte del xref:[`SeedImage.cloud-config`], ya que deben estar presentes en el medio de instalación.
+====
+
+== Sintaxis de configuración
+
+Yip tiene su propia sintaxis, que esencialmente requiere definir _etapas_ y una lista de pasos para cada etapa. Los pasos se ejecutan en orden y cada paso puede ser una combinación de diferentes tipos de acciones (por ejemplo, ejecutar comandos, crear archivos, establecer nombre de host, etc.).
+
+Considere el ejemplo siguiente:
+
+[,yaml]
+----
+stages:
+  initramfs:
+  - name: "Setup users"
+    ensure_entities:
+    - path: /etc/shadow
+      entity: |
+          kind: "shadow"
+          username: "root"
+          password: "root"
+  boot:
+  - files:
+    - path: /tmp/script.sh
+      content: |
+        #!/bin/sh
+        echo "test"
+      permissions: 0777
+      owner: 1000
+      group: 100
+  - commands:
+    - /tmp/script.sh
+----
+
+En el ejemplo anterior hay dos etapas: `initramfs` y `boot`. La etapa `initramfs` inicializa un usuario de muestra. La etapa `boot` incluye dos pasos, uno para crear un archivo de guion ejecutable y un segundo que realmente ejecuta el guion.
+
+Yip también admite modificadores de sufijo `*.before` y `*.after` para cualquier etapa dada. Por ejemplo, ejecutar la etapa `network` resulta en ejecutar primero las etapas `network.before` encontradas en los archivos de configuración y luego `network` y finalmente `network.after`.
+
+Vea la referencia completa de las claves aplicables en los pasos documentados en
+https://github.com/rancher/yip?tab=readme-ov-file#configuration-reference[el proyecto yip] mismo.
+
+A continuación se muestra un ejemplo de la configuración anterior incrustada en un recurso de Registro de máquina.
+
+.Haga clic aquí para obtener más información
+[%collapsible]
+====
+.Ejemplo de Registro de máquina
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: MachineRegistration
+metadata:
+  name: my-nodes
+  namespace: fleet-default
+spec:
+  config:
+    cloud-config:
+      name: "A registration driven config"
+      stages:
+        after-install-chroot:
+        - name: "Set serial console"
+          commands:
+          - grub2-editenv /oem/grubenv set extra_cmdline="console=ttyS0"
+        initramfs:
+        - name: "Setup users"
+          ensure_entities:
+          - path: /etc/shadow
+            entity: |
+                kind: "shadow"
+                username: "root"
+                password: "root"
+        boot:
+        - files:
+          - path: /tmp/script.sh
+            content: |
+              #!/bin/sh
+              echo "test"
+            permissions: 0777
+            owner: 1000
+            group: 100
+        - commands:
+          - /tmp/script.sh
+    elemental:
+      install:
+        reboot: true
+        device: /dev/sda
+        debug: true
+  machineName: my-machine
+  machineInventoryLabels:
+    element: fire
+----
+====
+
+== Sincronización
+
+Durante la ejecución de una etapa, se cargan todos los archivos y se calcula un gráfico que luego se ejecuta. Esto significa que se puede esperar que los pasos en la misma etapa se ejecuten en cualquier orden y sin importar el nombre del archivo.
+
+Para sincronizar la ejecución, el usuario puede utilizar las etapas post/pre o referirse a la palabra clave `after` en la https://github.com/rancher/yip/blob/ee4051d9ec2782989344f813bc6a0975bbd8f3fe/pkg/executor/default_test.go#L222[sintaxis yip].
+
+== Compatibilidad con el formato Cloud Init
+
+Un subconjunto de la http://cloudinit.readthedocs.org/en/latest/topics/format.html#cloud-config-data[especificación cloud-config oficial] es implementada por yip. Más específicamente, las claves de cloud-init admitidas son: `users`, `ssh_authorized_keys`, `runcmd`, `hostname` y `write_files` están implementadas.
+
+Si un archivo yaml comienza con `#cloud-config`, se analiza como un cloud-init estándar, asociándolo a la etapa `boot` de yip.
+
+Por ejemplo:
+
+[,yaml]
+----
+#cloud-config
+# Note groups are delivered as list, not as comma separated values
+users:
+- name: "bar"
+  passwd: "foo"
+  groups:
+  - "users"
+  homedir: "/home/foo"
+  shell: "/bin/bash"
+  ssh_authorized_keys:
+  - faaapploo
+# Assigns these keys to the first user in users or root if there
+# is none
+ssh_authorized_keys:
+- asddadfafefa
+# Run these commands once the system has fully booted
+# Each command is expressed as a sinlge string, no nested lists
+runcmd:
+- echo hello world
+# Hostname
+hostname: myserver
+# Write arbitrary files
+write_files:
+- encoding: b64
+  content: CiMgVGhpcyBmaWxlIGNvbnRyb2xzIHRoZSBzdGF0ZSBvZiBTRUxpbnV4
+  path: /foo/bar
+  permissions: "0644"
+  owner: "bar"
+----
+
+A continuación se muestra un ejemplo de la configuración anterior incrustada en un recurso de Registro de máquina.
+
+.Haga clic aquí para obtener más información
+[%collapsible]
+====
+.Ejemplo de Registro de máquina
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: MachineRegistration
+metadata:
+  name: my-nodes
+  namespace: fleet-default
+spec:
+  config:
+    cloud-config:
+      users:
+      - name: "bar"
+        passwd: "foo"
+        groups: "users"
+        homedir: "/home/foo"
+        shell: "/bin/bash"
+        ssh_authorized_keys:
+        - faaapploo
+      ssh_authorized_keys:
+      - asdd
+      runcmd:
+      - foo
+      write_files:
+      - encoding: b64
+        content: CiMgVGhpcyBmaWxlIGNvbnRyb2xzIHRoZSBzdGF0ZSBvZiBTRUxpbnV4
+        path: /foo/bar
+        permissions: "0644"
+        owner: "bar"
+    elemental:
+      install:
+        reboot: true
+        device: /dev/sda
+        debug: true
+  machineName: my-machine
+  machineInventoryLabels:
+    element: fire
+----
+====

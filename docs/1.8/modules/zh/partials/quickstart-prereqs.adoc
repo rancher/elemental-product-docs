@@ -1,0 +1,14 @@
+== 先决条件
+:revdate: 2025-11-06
+:page-revdate: {revdate}
+
+* 配置好的 Rancher 服务器（v2.7.0 或更高版本）（已设置 server-url）
+ ** 要配置 Rancher `server-url`，请查看 https://documentation.suse.com/cloudnative/rancher-manager/latest/en/rancher-admin/rancher-admin.html#_first_log_in[Rancher 文档]
+* 一台具有 TPM 2.0 的机器（裸机或虚拟机）
+ ** 提示 1：Libvirt 允许为虚拟机设置虚拟 TPM xref:operator-operational-tasks/tpm.adoc#_add_tpm_module_to_virtual_machine[示例在这里]
+ ** 提示 2：您可以在缺少 TPM 2.0 模块的裸机上启用 TPM 模拟 xref:operator-operational-tasks/tpm.adoc#_add_tpm_emulation_to_bare_metal_machine[示例在这里]
+ ** 提示 3：确保在 x86-64 上使用 UEFI（而不是 BIOS），否则 .iso 映像将无法启动
+ ** 提示 4：建议的最小卷大小为 25 GB。有关更多详细信息，请参见 xref:installation/installation.adoc#_deployed_partition_table[{elemental-product-name} 分区表]
+ ** 提示 5：CPU 和 RAM 的要求取决于安装的 Kubernetes 版本，例如 https://documentation.suse.com/cloudnative/k3s/latest/en/installation/requirements.html#_hardware[K3s] 或 https://documentation.suse.com/cloudnative/rke2/latest/en/install/requirements.html#_hardware[RKE2]
+* Helm 包管理器 (https://helm.sh/)
+* 对于 Arm（aarch64） - 一张 SD 卡（32 GB 或更大，必须是 *快速* - 40MB/s 的写入速度是可以接受的）和一个 USB 闪存驱动器用于安装

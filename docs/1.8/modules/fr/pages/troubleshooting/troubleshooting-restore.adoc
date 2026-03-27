@@ -1,0 +1,36 @@
+= Dépannage de la restauration
+:revdate: 2025-07-03
+:page-revdate: {revdate}
+
+[WARNING]
+====
+Lorsqu'une restauration est effectuée, ne redémarrez pas le `rancher-system-agent` sur les nœuds élémentaires, car cela peut devenir périmé et se terminer par l'erreur suivante :
+
+`panic: error while connecting to Kubernetes cluster: the server has asked for the client to provide credentials`
+
+Si vous rencontrez ce problème, veuillez suivre la procédure ci-dessous.
+====
+
+
+Avant d'initier une restauration, vous devez copier `/var/lib/rancher/agent/rancher2_connection_info.json` depuis le nœud élémentaire vers un endroit où vous avez accès avec l'interface Rancher.
+
+Une fois le fichier copié, téléchargez le `rancher-agent-token-update.sh` script depuis le dépôt https://github.com/rancher/elemental[{elemental-product-name} :]
+
+[,shell]
+----
+wget -q https://raw.githubusercontent.com/rancher/elemental/main/scripts/rancher-agent-token-update && chmod +x rancher-agent-token-update
+----
+
+Exécutez le script sans options supplémentaires :
+
+[,shell]
+----
+./rancher-agent-token-update
+----
+
+Après la restauration réussie, copiez `rancher2_connection_info.json` de nouveau vers le nœud élémentaire au chemin `/var/lib/rancher/agent/rancher2_connection_info.json`. Enfin, redémarrez le `rancher-system-agent` service:
+
+[,shell]
+----
+systemctl restart rancher-system-agent
+----

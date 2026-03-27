@@ -1,0 +1,74 @@
+= 机器重置
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+有两种方法可以将{elemental-product-name}台机器重置为其原始状态或退役它们：
+
+. 删除集群时，所有相关机器将被重置
++
+image::reset-cluster-deletion.png[删除集群以重置所有机器]
+
+. 在管理集群时，只需删除需要重置的节点
++
+image::reset-single-node-deletion.png[删除单个节点以重置它]
+
+== 重置工作流
+
+一旦相关的`MachineInventory`被标记为删除，将由在机器上运行的`elemental-system-agent`执行重置计划。
+
+如果机器仍在运行，此计划将：
+
+. 以恢复模式重启机器。
+. 执行`systemctl start elemental-register-reset`。 +
+这将获取远程`MachineRegistration`并应用`spec.config.elemental.reset`选项以重置机器。 +
+将创建一个新的`MachineInventory`，并将`spec.config.cloud-config`中定义的`MachineRegistration`再次应用。
+
+请注意，`MachineRegistration`引用将*不会*更改，机器将*不会*被重新安装，`COS_PERSISTENT`和`COS_OEM`分区在重置时默认将被清除`enabled`。有关更多信息，您可以查阅xref:installation/installation.adoc#_deployed_partition_table[分区表]。
+
+由于在重置工作流中重新应用了`cloud-config`，您可以重置机器以应用来自`MachineRegistration`定义的更新，例如旋转`users`凭据和授权密钥。强烈建议启用`reset-oem`选项，以避免与先前配置的云配置发生冲突。
+
+如果您需要将机器绑定到不同的`MachineRegistration`并触发新的完整安装，则需要使用新映像重新配置它。
+
+== 启用机器重置
+
+为了允许机器自动重置，应切换`spec.config.elemental.reset.enabled`的`MachineRegistration`标志。 +
+默认情况下这是关闭的，但一旦激活，所有新创建的`MachineInventory`将自动继承此设置。 +
+例如：
+
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: MachineRegistration
+metadata:
+  name: fire-nodes
+  namespace: fleet-default
+spec:
+  config:
+    elemental:
+      reset:
+        enabled: true
+        reset-persistent: true
+        reset-oem: true
+        # These cloud-init configs will be created during reset and will persist on the system after
+        config-urls:
+          - "https://my.cloud.init/reset-plan-1.yaml"
+          - "https://my.cloud.init/reset-plan-2.yaml"
+        # You can select a different image to run the reset.
+        # Note that this image will not be installed on the system.
+        system-uri: "my.oci.registry/reset-image:latest"
+        power-off: false
+        reboot: true
+----
+
+在`MachineInventory`级别上启用重置也是可能的，例如在某些机器是物理的并且将受益于自动重置，而其他机器是虚拟的，可以根据需要简单地销毁和重新配置。 +
+为了标记单个`MachineInventory`以允许重置，您可以使用`elemental.cattle.io/resettable: true`注释。 +
+例如：
+
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: MachineInventory
+metadata:
+  annotations:
+    elemental.cattle.io/resettable: "true"
+----

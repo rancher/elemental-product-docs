@@ -1,0 +1,160 @@
+= {elemental-product-name} Planos
+:revdate: 2025-10-27
+:page-revdate: {revdate}
+
+{elemental-product-name} usa o https://github.com/rancher/system-agent[Agente do Sistema Rancher], renomeado para {elemental-product-name} Agente do Sistema, para inicializar o nó com um plano simples.
+
+O plano aplicará as seguintes configurações:
+
+* Defina alguns rótulos para o nó
+* Defina o nome do host apropriado de acordo com o valor de `MachineInventory`
+* Instale o Agente do Sistema Rancher padrão do Servidor Rancher e instale os componentes Kubernetes apropriados
+
+O serviço de inicialização também aceita planos locais armazenados sob `/var/lib/elemental/agent/plans`. Qualquer plano escrito neste local também será aplicado durante a inicialização do nó após a conclusão da instalação.
+
+[TIP]
+====
+Os planos locais são executados apenas durante a inicialização de {elemental-product-name}, *antes que* o Kubernetes seja instalado no nó.
+====
+
+== Tipos de Planos
+
+Os tipos de planos que {elemental-product-name} pode usar são:
+
+* Instruções únicas: Executar apenas uma vez
+* Instruções periódicas: Elas são executadas periodicamente
+* Arquivos: Cria arquivos
+* Sondas: sondas http
+
+[TIP]
+====
+Tanto as instruções únicas quanto as instruções periódicas podem executar um comando direto ou uma imagem docker.
+====
+
+== Adicionando planos locais em {elemental-product-name}
+
+Você pode adicionar planos locais a {elemental-product-name} como parte do CRD `MachineRegistration`, na seção `cloud-config` da seguinte forma:
+
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: MachineRegistration
+metadata:
+  name: my-nodes
+  namespace: fleet-default
+spec:
+  config:
+    cloud-config:
+      users:
+        - name: root
+          passwd: root
+      write_files:
+        - path: /var/lib/elemental/agent/plans/mycustomplan.plan
+          permissions: "0600"
+          content: |
+            {"instructions":
+                [
+                  {
+                    "name":"set hostname",
+                    "command":"hostnamectl",
+                    "args": ["set-hostname", "myHostname"]
+                  },
+                  {
+                    "name":"stop sshd service",
+                    "command":"systemctl",
+                    "args": ["stop", "sshd"]
+                  }
+                ]
+            }
+    elemental:
+      install:
+        reboot: true
+        device: /dev/sda
+        debug: true
+  machineName: my-machine
+  machineInventoryLabels:
+    element: fire
+----
+
+== Exemplos de planos
+
+Os seguintes planos são fornecidos como uma referência rápida e não são garantidos para funcionar em seu ambiente. Para saber mais sobre planos, por favor, verifique https://github.com/rancher/system-agent[Agente do Sistema Rancher].
+
+[tabs]
+======
+Exemplo 1: instruções únicas::
++
+====
+[,json]
+----
+{"instructions":
+    [
+        {
+            "name":"set hostname",
+            "command":"hostnamectl",
+            "args": ["set-hostname", "myHostname"]
+        },
+        {
+            "name":"stop sshd service",
+            "command":"systemctl",
+            "args": ["stop", "sshd"]
+        }
+    ]
+}
+----
+====
+
+Exemplo 2: instruções periódicas::
++
+====
+[,json]
+----
+{"periodicInstructions":
+    [
+        {
+            "name":"set hostname",
+            "image":"ghcr.io/rancher-sandbox/elemental-example-plan:main"
+            "command": "run.sh"
+        }
+    ]
+}
+----
+====
+
+Exemplo 3: arquivos::
++
+====
+[,json]
+----
+{"files":
+    [
+        {
+            "content":"Welcome to the system",
+            "path":"/etc/motd",
+            "permissions": "0644"
+        }
+    ]
+}
+----
+====
+
+Exemplo 4: sondas::
++
+====
+[,json]
+----
+{"probes":
+    "probe1": {
+        "name": "Service Up",
+        "httpGet": {
+            "url": "http://10.0.0.1/healthz",
+            "insecure": "false",
+            "clientCert": "....",
+            "clientKey": "....",
+            "caCert": "....."
+        }
+    }
+}
+----
+====
+======

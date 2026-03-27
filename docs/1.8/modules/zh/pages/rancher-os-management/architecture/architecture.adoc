@@ -1,0 +1,14 @@
+= 体系结构概述
+:revdate: 2025-11-06
+:page-revdate: {revdate}
+
+{elemental-product-name} 是两个主要项目的结合：link:{elemental_toolkit_url}[{elemental_toolkit_name}] 和 link:{elemental_operator_url}[{elemental_operator_name}]。
+
+link:{elemental_toolkit_url}[{elemental_toolkit_name}] 使得可以从 OCI 容器镜像安装和更新操作系统，因此操作系统可以通过容器注册表进行分发和检索。
+
+link:{elemental_operator_url}[{elemental_operator_name}] 扩展了 Rancher 的操作系统配置和管理功能，利用了 {elemental-product-name} 工具包。
+它弥合了 link:{elemental_toolkit_url}[{elemental_toolkit_name}] 和 https://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-deployment/launch-kubernetes-with-rancher.html[Rancher RKE2/K3s 集群配置] 之间的差距，提供了从没有操作系统的主机到完全配置的 Kubernetes 集群的无缝体验。
+
+这通过 xref:rancher-os-management/architecture/services/architecture-services.adoc[一组服务] 实现，这些服务由 {elemental-product-name} 提供，得益于从 {elemental-product-name} 工具包和 {elemental-product-name} Operator 项目借用的 xref:rancher-os-management/architecture/architecture-components.adoc[组件]。
+
+image:elemental-architecture-v1.5.png[]

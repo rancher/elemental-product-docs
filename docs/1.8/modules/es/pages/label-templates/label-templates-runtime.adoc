@@ -1,0 +1,13 @@
+= Variables de plantilla en tiempo de ejecución
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+Las variables de plantilla de tiempo de ejecución recogen información sobre la configuración del sistema.
+
+|===
+| Variable | Descripción | desde
+
+| `${Runtime/Hostname}`
+| Nombre de host del sistema
+| 1.7.0
+|===

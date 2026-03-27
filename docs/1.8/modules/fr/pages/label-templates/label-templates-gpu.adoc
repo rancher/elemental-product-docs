@@ -1,0 +1,41 @@
+= Variables de modèle GPU
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+Les informations collectées dans les variables de modèle GPU définissent les attributs des cartes graphiques installées dans le système.
+
+Les données sont exposées par numéro de carte graphique (0, 1, 2, ...)
+
+Pour référencer la première carte graphique, le numéro de carte graphique (_`<Number>`_) peut être omis (par exemple, la variable `${GPU/GraphicsCards/Driver}` est la même que `${GPU/GraphicsCards/0/Driver}`).
+
+|===
+| Variable | Description | from
+
+| `${GPU/GraphicsCards/Driver}`
+| Pilote de carte GPU
+| 1.7.0
+
+| `${GPU/GraphicsCards/ProductName}`
+| Modèle de carte GPU
+| 1.7.0
+
+| `${GPU/GraphicsCards/VendorName}`
+| Fournisseur de carte GPU
+| 1.7.0
+
+| `${GPU/GraphicsCards/_<Number>_/Driver}`
+| Pilote de carte GPU _numéro_
+| 1.7.0
+
+| `${GPU/GraphicsCards/_<Number>_/ProductName}`
+| Modèle de carte GPU _numéro_
+| 1.7.0
+
+| `${GPU/GraphicsCards/_<Number>_/VendorName}`
+| Fournisseur de carte GPU _numéro_
+| 1.7.0
+
+| `${GPU/TotalCards}`
+| Nombre de cartes GPU dans le système
+| 1.7.0
+|===

@@ -1,0 +1,78 @@
+= Wie fügt man während der Installation zusätzliche LVM-Volume-Gruppendatenträger hinzu?
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+Dieses Beispiel behandelt das setup eines Hosts mit mehreren Datenträgern, von denen einige als Teil eines LVM-Setup verwendet werden.
+
+Als Beispiel haben wir einen Host mit drei Datenträgern (`/dev/sda`, `/dev/sdb` und `/dev/sdc`). 
+
+Der erste Datenträger wird für eine reguläre Elemental-Installation verwendet, während die beiden anderen als Teil einer LVM-Gruppe genutzt werden, in der beliebige logische Volumes erstellt, formatiert und beim Booten über eine erweiterte `fstab`-Datei eingebunden werden.
+
+Für dieses Beispiel sind cloud-config-Schritte in zwei verschiedenen Phasen erforderlich. Zuerst sind einige xref:references/cloud-config-reference.adoc#_elemental_client_cloud_config_hooks[Installations-Hooks] erforderlich, um LVM-Volumes während der Installation vorzubereiten und zu verwalten. Zweitens ist eine cloud-config beim Booten erforderlich, um sicherzustellen, dass die erstellten LVM-Volumes in `/etc/fstab` enthalten sind und folglich eingebunden werden.
+
+Installations-Hooks können in den `SeedImage.spec.cloud-config`-Abschnitt mit etwas wie folgt aufgenommen werden:
+
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: SeedImage
+metadata:
+  name: custom-seed
+  namespace: fleet-default
+spec:
+  ...
+  cloud-config:
+    name: "Create LVM logic volumes over some physical disks"
+    stages:
+      post-install:
+      - name: "Create physical volume, volume group and logical volumes"
+        if: '[ -e "/dev/sdb" ] && [ -e "/dev/sdc" ]'
+        commands:
+        - | 
+          # Create the physical volume, volume group and logical volumes
+          pvcreate /dev/sdb /dev/sdc
+          vgcreate elementalLVM /dev/sdb /dev/sdc
+          lvcreate -L 8G -n elementalVol1 elementalLVM
+          lvcreate -l 100%FREE -n elementalVol2 elementalLVM
+          # Trigger udev detection
+          if [ ! -e "/dev/elementalLVM/elementalVol1" ] || [ ! -e "/dev/elementalLVM/elementalVol2" ]; then
+            sleep 10
+            udevadm settle
+          fi
+          # Ensure devices are already available
+          [ -e "/dev/elementalLVM/elementalVol1" ] || exit 1
+          [ -e "/dev/elementalLVM/elementalVol2" ] || exit 1
+          # Format logical volumes with a known label for later use in fstab
+          mkfs.xfs -L eVol1 /dev/elementalLVM/elementalVol1
+          mkfs.xfs -L eVol2 /dev/elementalLVM/elementalVol2
+----
+
+Die LVM-Geräte werden erstellt und nach Wunsch formatiert. Dies ist ein gutes Beispiel für einen Installations-Hook, da dieses Setup nur einmal, zur Installationszeit, benötigt wird. Alternativ könnte die gleiche Aktion beim ersten Boot durchgeführt werden, jedoch würde dies eine ausgeklügeltere Logik erfordern, um sicherzustellen, dass sie nur einmal beim ersten Boot angewendet wird. Schließlich enthält die cloud-config beim Booten die Einstellungen für die Einhängepunkte, um die Einbindungen auszulösen. Die Elemental OS `fstab`-Datei ist flüchtig und wird beim Booten dynamisch erstellt. Deshalb existiert sie während der Installation nicht und kann nicht in einem Installations-Hook verwendet werden.
+
+Betrachten Sie das folgende Beispiel, um die `/etc/fstab`-Datei mithilfe des `cloud-config`-Abschnitts einer MachineRegistration-Ressource anzupassen:
+
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: MachineRegistration
+metadata:
+  name: my-nodes
+  namespace: fleet-default
+spec:
+  ...
+  config:
+    ...
+    cloud-config:
+      stages:
+        initramfs:
+        - name: "Extend fstab to mount LVM logical volumes at boot"
+          commands:
+          - |
+            echo "LABEL=eVol1 /run/elemental/eVol1  xfs defaults  0 0" >> /etc/fstab
+            echo "LABEL=eVol2 /run/elemental/eVol2  xfs defaults  0 0" >> /etc/fstab
+----
+
+[NOTE]
+====
+Die `initramfs` xref:references/cloud-config-reference.adoc[Phase] ist die letzte Phase, bevor zum tatsächlichen Root-Baum gewechselt wird. In dieser Phase existiert die `/etc/fstab`-Datei bereits und kann angepasst werden, bevor zum [Root] gewechselt wird. Sobald im endgültigen Root-Baum ausgeführt, wird SystemD den Rest der Initialisierung übernehmen und anwenden.
+====

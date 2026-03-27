@@ -1,0 +1,51 @@
+= 恢复
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+按照本指南，使用 Rancher 从备份中恢复{elemental-product-name}配置。
+
+== 准备 rancher-backup Operator 和备份文件以进行恢复。
+
+访问官方https://docs.ranchermanager.rancher.io/how-to-guides/new-user-guides/backup-restore-and-disaster-recovery/restore-rancher[Rancher 文档]，确保`rancher-backup operator`已安装并可以访问备份文件。
+
+您首先需要按照此xref:operator-operational-tasks/backup.adoc[文档]以备份{elemental-product-name}资源。
+
+== 使用 rancher-backup Operator 恢复{elemental-product-name}配置。
+
+创建一个`restore object`（根据您的需求调整）以恢复备份 tarball 文件。
+
+[,yaml]
+----
+apiVersion: resources.cattle.io/v1
+kind: Restore
+metadata:
+  name: elemental-restore
+spec:
+  backupFilename: rancher-backup-430169aa-edde-4a61-85e8-858f625a755b-2022-10-17T05-15-00Z.tar.gz
+----
+
+在 Kubernetes 上应用清单。
+
+[,shell]
+----
+kubectl apply -f elemental-restore.yaml
+----
+
+检查 rancher-backup Operator 的日志。
+
+[,shell]
+----
+kubectl logs -n cattle-resources-system -l app.kubernetes.io/name=rancher-backup -f
+----
+
+验证备份文件是否已成功恢复。
+
+[,shell]
+----
+...
+INFO[2022/10/31 06:34:50] Processing controllerRef apps/v1/deployments/rancher
+INFO[2022/10/31 06:34:50] Done restoring
+...
+----
+
+继续按照https://docs.ranchermanager.rancher.io/how-to-guides/new-user-guides/backup-restore-and-disaster-recovery/migrate-rancher-to-new-cluster[Rancher 文档]中的步骤进行操作。

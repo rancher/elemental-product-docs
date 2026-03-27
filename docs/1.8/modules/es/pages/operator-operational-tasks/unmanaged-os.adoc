@@ -1,0 +1,40 @@
+= Registrar un sistema operativo no gestionado
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+Normalmente, el {elemental_operator_url}[{elemental_operator_name}] gestiona los sistemas operativos que están instalados y configurados por el {elemental_toolkit_url}[{elemental_toolkit_name}]. +
+Por ejemplo, para automatizar la instalación, actualización y reinicio del sistema operativo, el `elemental-register` se basa en la CLI del `elemental` para ejecutar estas operaciones.
+
+Sin embargo, también es posible registrar y aprovisionar {elemental-product-name} sistemas "sin toolkit".
+
+En este escenario, es necesario instalar xref:rancher-os-management/architecture/architecture-components.adoc#_elemental_register_command_line_tool[elemental-register] en el sistema. +
+Opcionalmente, se puede instalar el xref:rancher-os-management/architecture/architecture-components.adoc#_elemental_system_agent_daemon[elemental-system-agent]. Ten en cuenta que sin el `elemental-system-agent`, el {elemental_operator_name} no podrá aprovisionar ningún clúster k8s en la máquina. En este caso, el {elemental_operator_name} solo se puede utilizar con fines de inventario de sistemas operativos.
+
+Finalmente, en el clúster de gestión, el `MachineRegistration` debe habilitar la bandera `spec.config.elemental.registration.no-toolkit`.
+
+Una vez que `no-toolkit` está habilitado en el `MachineRegistration`, y se produce un nuevo registro utilizando `elemental-register --install` en el sistema, se creará un nuevo `MachineInventory` en el clúster de gestión:
+
+[,bash]
+----
+kubectl -n fleet-default describe machineinventory my-unmanaged-os-machine
+----
+
+El `MachineInventory` será anotado con la anotación `elemental.cattle.io/os.unmanaged: "true"`, destacando que esta máquina no está gestionada y tiene funcionalidad limitada.
+
+En el sistema, tras un registro exitoso, los archivos `/etc/rancher/elemental/agent/config.yaml` y `/var/lib/elemental/agent/elemental_connection.json` se crean automáticamente para configurar el `elemental-system-agent`.
+El componente `elemental-system-agent` es necesario para el aprovisionamiento de K8s y los disparadores de reinicio.
+
+Cuando se activa un xref:node-operational-tasks/reset.adoc[reinicio de máquina], por ejemplo, al eliminar el `MachineInventory` directamente, el `elemental-system-agent` ejecutará un plan de reinicio simple que creará el archivo centinela `/var/lib/elemental/.unmanaged_reset`. +
+La presencia de este archivo indica que la máquina necesita un reinicio. Esto puede implicar detener servicios, desinstalar paquetes, formatear dispositivos, etc., dependiendo de cómo se gestione la máquina de forma personalizada.
+
+== Características compatibles
+
+* Registro de un `MachineInventory`
+* Aprovisionamiento de K8s (cuando el xref:rancher-os-management/architecture/architecture-components.adoc#_elemental_system_agent_daemon[elemental-system-agent] está instalado y en funcionamiento en la máquina)
+* Disparadores de reinicio (cuando el xref:rancher-os-management/architecture/architecture-components.adoc#_elemental_system_agent_daemon[elemental-system-agent] está instalado y en funcionamiento en la máquina)
+
+== Funciones incompatibles
+
+* Configuración impulsada por xref:references/cloud-config-reference.adoc[cloud-init]
+* SO xref:node-operational-tasks/upgrade.adoc[actualizaciones de versión]
+* Reinicio del SO xref:node-operational-tasks/reset.adoc[reinicio]

@@ -1,0 +1,117 @@
+= ネットワークテンプレート変数
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+ネットワークテンプレート変数に収集された情報は、システム内で利用可能なネットワークインタフェースの属性を定義します。
+
+NICは、番号（0、1、2、...）およびインターフェース名（_eth0_、_virbr0_、...）の両方で追跡されます。
+
+IPv4アドレスとIPv6アドレスは、番号（0、1、...）で追跡され、最初のIPv4およびIPv6アドレスエントリ（すなわち、IPv4Addresses.0およびIPv6Addresses.0）は、IPv4AddressおよびIPv6Address変数で追跡されます。
+
+例えば、`${Network/NICs/2/Name}`が`eth0`に等しい場合、ネットワークインタフェースのMACアドレスは、`${Network/NICs/2/MacAddress}`および`${Network/NICs/eth0/MacAddress}`の両方の変数を介して取得できます。
+
+`eth0`（最初の）IPv4アドレスは、`${Network/NICs/eth0/IPv4Address}`および`${Network/NICs/eth0/IPv4Addresses/0}`の両方の変数で取得できます。二次の`eth0` IPv4アドレスは、代わりに`${Network/NICs/eth0/IPv4Addresses/1}`で取得できます。
+
+|===
+| [可変] | 説明 | from
+
+| `${Network/NICs/_<IfaceName>_/AdvertisedLinkModes}`
+| 利用可能として広告されたイーサネットリンクモード
+| 1.7.0
+
+| `${Network/NICs/_<IfaceName>_/Duplex}`
+| イーサネットデュプレックスモード
+| 1.7.0
+
+| `${Network/NICs/_<IfaceName>_/IPv4Address}`
+| インターフェースに割り当てられた最初のIPv4アドレス
+| 1.7.2
+
+| `${Network/NICs/_<IfaceName>_/IPv4Addresses/_<Number>_}`
+| <Number>番目に割り当てられたIPv4アドレス
+| 1.7.2
+
+| `${Network/NICs/_<IfaceName>_/IPv6Address}`
+| インターフェースに割り当てられた最初のIPv6アドレス
+| 1.7.2
+
+| `${Network/NICs/_<IfaceName>_/IPv6Addresses/_<Number>_}`
+| <Number>番目に割り当てられたIPv6アドレス
+| 1.7.2
+
+| `${Network/NICs/_<IfaceName>_/IsVirtual}`
+| NICが実際であるか（"false"）、そうでないか（"true"）
+| 1.7.0
+
+| `${Network/NICs/_<IfaceName>_/MacAddress}`
+| インターフェースのMACアドレス
+| 1.7.0
+
+| `${Network/NICs/_<IfaceName>_/Name}`
+| インターフェース名
+| 1.7.0
+
+| `${Network/NICs/_<IfaceName>_/Speed}`
+| リンクの速度
+| 1.7.0
+
+| `${Network/NICs/_<IfaceName>_/SupportedLinkModes}`
+| NICがサポートするイーサネットリンクモード
+| 1.7.0
+
+| `${Network/NICs/_<IfaceName>_/SupportedPorts}`
+| NICの利用可能なポート
+| 1.7.0
+
+| `${Network/NICs/_<Number>_/AdvertisedLinkModes}`
+| 利用可能として広告されたイーサネットリンクモード
+| 1.7.0
+
+| `${Network/NICs/_<Number>_/Duplex}`
+| イーサネットデュプレックスモード
+| 1.7.0
+
+| `${Network/NICs/_<Number>_/IPv4Address}`
+| インターフェースに割り当てられた最初のIPv4アドレス
+| 1.7.2
+
+| `${Network/NICs/_<Number>_/IPv4Addresses/_<Number>_}`
+| <Number>番目に割り当てられたIPv4アドレス
+| 1.7.2
+
+| `${Network/NICs/_<Number>_/IPv6Address}`
+| インターフェースに割り当てられた最初のIPv6アドレス
+| 1.7.2
+
+| `${Network/NICs/_<Number>_/IPv6Addresses/_<Number>_}`
+| <Number>番目に割り当てられたIPv6アドレス
+| 1.7.2
+
+| `${Network/NICs/_<Number>_/IsVirtual}`
+| NICが実際であるか（"false"）、そうでないか（"true"）
+| 1.7.0
+
+| `${Network/NICs/_<Number>_/MacAddress}`
+| インターフェースのMACアドレス
+| 1.7.0
+
+| `${Network/NICs/_<Number>_/Name}`
+| インターフェース名
+| 1.7.0
+
+| `${Network/NICs/_<Number>_/Speed}`
+| リンクの速度
+| 1.7.0
+
+| `${Network/NICs/_<Number>_/SupportedLinkModes}`
+| NICがサポートするイーサネットリンクモード
+| 1.7.0
+
+| `${Network/NICs/_<Number>_/SupportedPorts}`
+| NICの利用可能なポート
+| 1.7.0
+
+| `${Network/TotalNICs/}`
+| システム内に存在するNICの数
+| 1.7.0
+|===

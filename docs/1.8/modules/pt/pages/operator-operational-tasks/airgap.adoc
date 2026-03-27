@@ -1,0 +1,285 @@
+= Instale {elemental-product-name} em um ambiente air-gapped.
+:revdate: 06-11-2025
+:page-revdate: {revdate}
+
+== Suposições
+
+Uma instalação do Rancher em um ambiente air-gapped deve estar configurada de acordo com a https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/other-installation-methods/air-gapped/air-gapped.html[documentação oficial do Rancher].
+Em particular, um registro privado deve estar disponível na infraestrutura air-gapped.
+
+== Visão Geral
+
+Para executar {elemental-product-name} em um ambiente air-gapped, os seguintes artefatos são necessários:
+
+* os {elemental-product-name} charts do Operador
+* as imagens de contêiner referenciadas nos charts (as imagens _elemental-operator_ e _seedimage-builder_)
+* as imagens do SO contêinerizadas
+
+Além disso, pode ser útil criar uma _imagem de canal_ referenciando as imagens do SO contêinerizadas disponíveis.
+A imagem de canal oficial (a _elemental-channel_) referencia URLs absolutas das imagens do SO no registro oficial da SUSE, portanto, não pode ser usada como está em um cenário air-gapped.
+
+== {elemental-product-name} Instalação do em um ambiente air-gapped a partir da linha de comando
+
+Todos os passos necessários podem ser realizados executando o
+https://raw.githubusercontent.com/rancher/elemental-operator/main/scripts/elemental-airgap.sh[`elemental-airgap.sh` script]
+a partir de um host com acesso à Internet.
+
+Os charts do {elemental-product-name} são um parâmetro necessário para o script e podem ser fornecidos como arquivos baixados, URLs ou como uma das palavras-chave `stable`, `staging` e `dev`, para permitir que o script recupere a versão correta do chart para você.
+
+`elemental-airgap.sh` inspeciona o chart do Operador {elemental-product-name}, identifica todas as imagens de contêiner necessárias, baixa e as salva em um único arquivo docker.
+Ele também cria uma nova imagem de canal do SO com as URLs das imagens do SO apontando para o registro privado passado como argumento
+(o que também é um argumento obrigatório).
+
+A versão mais recente do script elemental pode ser facilmente baixada do repositório oficial do GitHub:
+
+[,shell]
+----
+wget https://raw.githubusercontent.com/rancher/elemental-operator/main/scripts/elemental-airgap.sh
+chmod 755 elemental-airgap.sh
+----
+
+Vamos agora baixar todos os artefatos e construir um canal personalizado a partir da versão estável mais recente do {elemental-product-name}:
+
+[tabs]
+====
+Crie um arquivo Docker::
++
+======
+[,shell]
+----
+./elemental-airgap.sh stable -r <REGISTRY.YOURDOMAIN.COM:PORT>
+----
+
+Uma vez concluído (o script pode levar um tempo), os seguintes arquivos estarão disponíveis no diretório atual:
+
+* `elemental-operator-crds-chart-<*VERSION*>.tgz`
+* `elemental-operator-chart-<*VERSION*>.tgz`
+* `elemental-images.txt`
+* `elemental-images.tar.gz`
+======
+
+Crie um arquivo Hauler::
++
+======
+[,shell]
+----
+./elemental-airgap.sh -ha stable -r <REGISTRY.YOURDOMAIN.COM:PORT>
+----
+
+uma vez concluído (o script pode demorar um pouco) tanto os charts quanto as imagens de contêiner serão empacotados no arquivo do hauler chamado `elemental-haul.tar.zst`.
+======
+====
+
+=== {elemental-product-name} instalação 
+
+Os arquivos e os pacotes gerados pelo script devem ser copiados para um host que: 
+
+* Tenha acesso ao registro privado. 
+* Tenha o binário kubectl instalado e configurado para acessar o cluster Rancher air-gapped. 
+* Tenha o binário helm instalado. 
+
+[tabs]
+========
+Instalar a partir de um arquivo Docker::
++
+======
+Se o registro privado exigir autenticação, você precisa fazer login com o docker nele: 
+
+[,shell]
+----
+docker login <REGISTRY.YOURDOMAIN.COM:PORT>
+----
+
+São necessários dois passos para realizar a {elemental-product-name} instalação: 
+
+* carregar o arquivo com todas as imagens de contêiner necessárias no registro privado: isso pode ser feito usando o `rancher-load-images.sh` script distribuído com o lançamento do Rancher e já utilizado para a implantação do Rancher air-gapped: 
+
+[,shell]
+----
+rancher-load-images.sh \ 
+    --image-list elemental-images.txt \ 
+    --images elemental-images.tar.gz \ 
+    --registry <REGISTRY.YOURDOMAIN.COM:PORT>
+----
+
+* instalar os charts elementares baixados configurando o registro local e o novo canal criado: 
+
+[,shell]
+----
+helm upgrade --create-namespace -n cattle-elemental-system \ 
+    --install elemental-operator-crds elemental-operator-crds-chart-<VERSION>.tgz 
+
+helm upgrade --create-namespace -n cattle-elemental-system \ 
+    --install elemental-operator elemental-operator-chart-<VERSION>.tgz \ 
+    --set registryUrl=<REGISTRY.YOURDOMAIN.COM:PORT>\ 
+    --set channel.repository=rancher/elemental-channel-<REGISTRY.YOURDOMAIN.COM>
+----
+======
+
+Instalar a partir de um arquivo Hauler::
++
+======
+Para instalar a partir de um arquivo https://rancherfederal.github.io/hauler-docs/[Hauler] (`-ha` opção em `elemental-airgap.sh`) a instalação do Hauler também é um requisito no host de onde a instalação é realizada. 
+
+Se o registro privado exigir autenticação, você precisa fazer login com o Hauler nele: 
+
+[,shell]
+----
+hauler login <REGISTRY.YOURDOMAIN.COM:PORT>-u $USERNAME -p $PASSWORD
+----
+
+São necessários três passos para realizar a {elemental-product-name} instalação: 
+
+
+* Carregar o arquivo 'elemental-haul.tar.zst' no Hauler na infraestrutura air-gapped: 
+
+[,shell]
+----
+hauler store load 'elemental-haul.tar.zst' 
+----
+
+* Se o registro local no ambiente air-gapped não for servido pelo Hauler, carregue o arquivo Haul no registro local: 
+
+[,shell]
+----
+hauler store copy registry://<REGISTRY.YOURDOMAIN.COM:PORT>
+----
+
+[NOTE]
+.O Hauler também pode servir como um registro
+====
+Caso o registro local air-gapped seja servido por uma instância do Hauler, basta carregar o arquivo Haul diretamente lá (como mostrado no passo (1)) e pular o passo (2).
+====
+
+* Extraia os charts elementares da loja do Hauler e instale-os: 
+
+[,shell]
+----
+hauler store extract elemental-operator-crds-chart-<ELEMENTAL-VERSION>.tgz 
+hauler store extract elemental-operator-chart-<ELEMENTAL-VERSION>.tgz 
+
+helm upgrade --create-namespace -n cattle-elemental-system \ 
+    --install elemental-operator-crds elemental-operator-crds-chart-<ELEMENTAL-VERSION>.tgz 
+helm upgrade --create-namespace -n cattle-elemental-system \ 
+    --install elemental-operator elemental-operator-chart-<ELEMENTAL-VERSION>.tgz \ 
+    --set registryUrl=<REGISTRY.YOURDOMAIN.COM:PORT>\ -
+    --set channel.repository=rancher/elemental-channel-<REGISTRY.YOURDOMAIN.COM:PORT>
+----
+======
+========
+
+[NOTE]
+.O script de air-gapped elemental gera os comandos necessários 
+====
+Os `elemental-airgap.sh` scripts imprimem os comandos necessários mostrados acima, mas usando a versão real do chart e a URL do registro fornecida para permitir copiar e colar facilmente os comandos exatos.
+====
+
+== {elemental-product-name} Instalação air-gapped do Marketplace Rancher 
+
+Uma instalação air-gapped do Rancher inclui também os {elemental-product-name} charts do Operador e as imagens de contêiner do operador e do seedimage. 
+
+Para coletar as imagens de SO ausentes e construir uma imagem de canal de SO para seu registro privado, execute o https://raw.githubusercontent.com/rancher/elemental-operator/main/scripts/elemental-airgap.sh[`elemental-airgap.sh` script] de um host com acesso à Internet, usando a opção `-co`. 
+
+Como exemplo, vamos utilizar a `elemental-channel` imagem da versão estável mais recente do {elemental-product-name}. O script cuidará de baixar o {elemental-product-name} chart do operador (se necessário), extrair a URL da imagem do canal de SO, baixá-la, inspecionar todas as imagens de SO referenciadas, baixar todas elas e criar um novo canal de SO com links para o registro privado do cenário air-gapped. 
+
+[tabs]
+========
+Crie um arquivo Docker::
++
+======
+[,shell]
+----
+wget https://raw.githubusercontent.com/rancher/elemental-operator/main/scripts/elemental-airgap.sh 
+chmod 755 elemental-airgap.sh 
+./elemental-airgap.sh stable -co -r <REGISTRY.YOURDOMAIN.COM:PORT>
+----
+
+Uma vez concluído (o script pode levar um tempo), os seguintes arquivos estarão disponíveis no diretório atual: 
+
+- `elemental-operator-crds-chart-<*VERSION*>.tgz` 
+- `elemental-operator-chart-<*VERSION*>.tgz` 
+- `elemental-images.txt` 
+- `elemental-images.tar.gz`
+======
+
+Crie um arquivo Hauler::
++
+======
+[,shell]
+----
+./elemental-airgap.sh -ha -co stable -r <REGISTRY.YOURDOMAIN.COM:PORT>
+----
+
+Uma vez concluído (o script pode demorar um pouco), as imagens de contêiner serão empacotadas no arquivo Hauler chamado `elemental-haul.tar.zst`.
+======
+========
+
+=== {elemental-product-name} Instalação 
+
+O arquivo gerado deve ser carregado no registro privado air-gapped. 
+
+[tabs]
+========
+Instalar a partir de um arquivo Docker::
++
+======
+Se o registro privado exigir autenticação, você precisa fazer login com o docker nele: 
+[,shell]
+----
+docker login <REGISTRY.YOURDOMAIN.COM:PORT>
+----
+
+O script imprimirá os comandos necessários para carregar as imagens via ferramenta Rancher `rancher-load-images.sh`, usada para as instalações air-gapped do Rancher. Deve ser algo como: 
+
+[,shell]
+----
+NEXT STEPS: 
+
+1) Load the 'elemental-images.tar.gz' to the local registry (<REGISTRY.YOURDOMAIN.COM:PORT>) available in the airgapped infrastructure: 
+
+./rancher-load-images.sh \ 
+    --image-list elemental-images.txt \ 
+    --images elemental-images.tar.gz \ 
+    --registry <REGISTRY.YOURDOMAIN.COM:PORT>
+----
+
+Uma vez que as imagens de SO e de canal estejam carregadas, você deve pular o ponto (2) da saída do script (que instalará os {elemental-product-name} charts dos arquivos baixados) e, em vez disso, realizar a instalação do Operador {elemental-product-name} pela interface do Rancher.
+======
+
+Instalar a partir de um arquivo Hauler::
++
+======
+Se o registro privado exigir autenticação, você precisa fazer login nele com o Hauler: 
+[,shell]
+----
+hauler login <REGISTRY.YOURDOMAIN.COM:PORT>-u $USERNAME -p $PASSWORD 
+----
+
+O script imprimirá os comandos necessários para carregar as imagens. Deve ser algo como: 
+
+[,shell]
+----
+NEXT STEPS: 
+
+* Load the 'elemental-haul.tar.zst' Haul archive in the Hauler instance in the airgapped infrastructure: 
+
+hauler store load 'elemental-haul.tar.zst' 
+
+* If the local registry in the air-gapped environment is not server by Hauler, load the Haul archive in the local registry: 
+
+hauler store copy registry://<REGISTRY.YOURDOMAIN.COM:PORT>
+----
+
+Uma vez que as imagens de SO e de canal estejam carregadas, você deve pular o ponto (3) da saída do script (que instalará os {elemental-product-name} charts dos arquivos baixados) e, em vez disso, realizar a instalação do Operador {elemental-product-name} pela interface do Rancher.
+======
+========
+
+Quando solicitado, coloque o caminho completo da imagem do canal de SO que acabou de ser carregada em seu registro privado: 
+
+image:airgap-os-channel-image.png[]
+
+== {elemental-product-name} Extensão de UI 
+
+O Rancher 2.7.x não suporta plug-in de extensão de UI em ambientes air-gapped, e assim a UI {elemental-product-name} não está disponível no Rancher 2.7.x. 
+
+O {elemental-product-name} plug-in de UI estará presente nas extensões de UI disponíveis no Rancher 2.8.0.

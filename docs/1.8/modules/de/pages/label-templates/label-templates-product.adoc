@@ -1,0 +1,42 @@
+= Produktvorlagenvariablen
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+Die Informationen in diesen Variablen beziehen sich auf Attribute des Gesamtsystems.
+
+Teilmenge der SMBIOS-Systeminformationsdaten (Typ 1).
+
+Für weitere Informationen zu SMBIOS siehe die
+https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.7.1.pdf[SMBIOS-Spezifikation].
+
+|===
+| Variable | Beschreibung | Von
+
+| `${Product/Family}`
+| Systemfamilie
+| 1.7.0
+
+| `${Product/Name}`
+| Produktname
+| 1.7.0
+
+| `${Product/SKU}`
+| System-SKU-Nummer
+| 1.7.0
+
+| `${Product/SerialNumber}`
+| Seriennummer des Systems
+| 1.7.0
+
+| `${Product/UUID}`
+| System-UUID
+| 1.7.0
+
+| `${Product/Vendor}`
+| Systemanbieter
+| 1.7.0
+
+| `${Product/Version}`
+| Systemversion
+| 1.7.0
+|===

@@ -1,0 +1,259 @@
+= ManagedOSImage 参考
+:revdate: 2025-11-06
+:page-revdate: {revdate}
+
+ManagedOSImage 资源负责定义需要应用于一组目标集群中每个节点的操作系统镜像或镜像版本。一旦创建，ManagedOSImage 资源可以通过新的 `osImage` 或 `managedOSVersionName` 更新以触发新的升级。同样，现有的 ManagedOSImage 可以更新以针对新的集群。
+
+在 `ManagedOSImage` 资源规范下可以配置多个键。
+
+.upgrade-cluster-target.yaml
+[,yaml]
+----
+include::example$upgrade/upgrade-cluster-target.yaml[]
+----
+
+== `ManagedOSImageSpec` 参考
+
+|===
+| 键 | 类型 | 默认值 | 说明
+
+| osImage
+| 字符串
+| 空
+| 要升级节点的完全限定镜像。如果同时配置了 `managedOSVersionName`，则此值优先。
+
+| managedOSVersionName
+| 字符串
+| 空
+| 要升级节点的 `ManagedOSVersion` 名称。
+
+| cloudConfig
+| 对象
+| null
+| 在升级期间应用于节点的 cloud-init 或 yip 配置。请参见 <<_cloudconfig,reference>>。
+
+| nodeSelector
+| 对象
+| null
+| 此选择器可用于在 `clusterTargets` 中定位特定节点。请参见 <<_nodeselector,reference>>。
+
+| 并发
+| 整数
+| 1 
+| 同一集群内应同时升级多少个节点。
+
+| 隔离
+| 布尔
+| true
+| 如果在应用升级之前应对节点进行隔离，请将其设置为 true。当 `drain` 也被配置时无效。
+
+| 排水
+| 对象
+| 参见参考
+| 配置在应用升级之前节点是否以及如何进行排水。请参见 <<_drain,reference>>。
+
+| 准备
+| 对象
+| null
+| 如果指定，prepare 初始化容器将在隔离/排水操作之前运行，而隔离/排水操作又在升级容器之前运行。请参见 <<_prepare,reference>>。
+
+| upgradeContainer
+| 对象
+| null
+| 将在节点上运行升级的升级容器。请参见 <<_upgradecontainer,reference>>。
+
+| clusterRolloutStrategy
+| 对象
+| null
+| RolloverStrategy 控制升级包在集群之间的发布。请参见 <<_clusterrolloutstrategy,reference>>。
+
+| clusterTargets
+| list
+| null
+| 声明要部署升级计划的集群。请参见 <<_clustertargets,reference>>。
+|===
+
+== `cloudConfig`
+
+这描述了一个 cloud-init 或 yip 配置，将被复制到每个升级节点的 `/oem/90_operator.yaml` 路径。 +
+此配置将在系统重启后应用。 +
+有关详细信息和示例，请参见 `MachineRegistration` `spec.config.cloud-config` xref:references/cloud-config-reference.adoc[参考]。
+
+== `nodeSelector`
+
+此 https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors[标签选择器] 可用于将升级限制为仅在目标集群内的某一特定节点集。
+
+.点击此处获取详细信息
+[%collapsible]
+====
+[,yaml]
+----
+nodeSelector:
+  matchExpressions:
+  - {key: my-node/label, operator: Exists}
+----
+====
+
+== `drain`
+
+配置节点是否以及如何进行排水。 +
+要在升级期间禁用排水，您可以将此字段配置为 `null`。 +
+默认情况下启用排水。
+
+排水设置直接转换为在升级之前在节点上执行的 https://kubernetes.io/docs/reference/kubectl/generated/kubectl_drain/[kubectl drain] 命令。
+
+|===
+| 键 | 类型 | 默认值 | 说明
+
+| timeout
+| time.Duration
+| null
+| 在放弃排水节点之前等待的时间长度，零表示无限。
+
+| gracePeriod
+| 整数
+| null
+| 每个 pod 优雅终止的时间段（以秒为单位）。如果为负数，将使用 pod 中指定的默认值。
+
+| deleteEmptydirData
+| 布尔
+| true
+| 即使有使用 emptyDir（本地数据将在节点被排水时删除）的 pods 也继续。
+
+| ignoreDaemonSets
+| 布尔
+| true
+| 忽略由 DaemonSet 管理的 pods。
+
+| force
+| 布尔
+| true
+| 即使有不声明控制器的 pods 也继续。
+
+| disableEviction
+| 布尔
+| false
+| 强制排水使用删除，即使支持驱逐。这将绕过 PodDisruptionBudgets 的检查，请谨慎使用。
+
+| skipWaitForDeleteTimeout
+| 整数
+| 60
+| 如果 pod 的 DeletionTimestamp 超过 N 秒，则跳过等待该 pod。秒数必须大于 0 才能跳过。
+
+| podSelector
+| label selector
+| null
+| 用于过滤节点上 pods 的标签选择器。只有选定的 pods 将被驱逐。
+|===
+
+== `prepare`
+
+定义一个 `prepare` Init 容器，在 `upgrade` 容器执行节点上的升级作业之前运行。 +
+键直接转换为 https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#Container[container] 规范。 +
+请注意，节点文件系统在容器内挂载于 `/host`。
+
+|===
+| 键 | 类型 | 默认值 | 说明
+
+| image
+| 字符串
+| 空
+| 容器镜像名称。
+
+| 命令。
+| list
+| 空
+| 入口点数组。
+
+| args
+| list
+| 空
+| 入口点的参数。
+
+| 环境变量
+| list
+| 空
+| 要在容器中设置的环境变量列表。
+
+| envFrom
+| list
+| 空
+| 用于填充容器中环境变量的源列表。
+
+| 卷
+| list
+| 空
+| `hostPath` 卷的列表。请参见 <<_prepare_volumes,reference>>。
+
+| securityContext
+| 对象
+| null
+| 临时容器应以何种安全选项运行。
+|===
+
+=== `prepare.volumes`
+
+每个卷定义将转换为一个 https://kubernetes.io/docs/concepts/storage/volumes/#hostpath-volume-types[hostPath] 卷 (`source`)，该卷将挂载在容器中 (`destination`)。 +
+请注意，默认情况下，主机根文件系统 `/` 将始终挂载在 `/host`。
+
+|===
+| 键 | 类型 | 默认值 | 说明
+
+| name
+| 字符串
+| 空
+| 卷名。
+
+| 源
+| 字符串
+| 空
+| HostPath 卷路径。
+
+| destination
+| 字符串
+| 空
+| HostPath 卷挂载路径。
+|===
+
+.点击此处获取详细信息
+[%collapsible]
+====
+[,yaml]
+----
+volumes:
+  - name: my-custom-volume
+    source: /foo
+    destination: /foo
+----
+====
+
+== `upgradeContainer`
+
+定义在节点上执行升级作业的 `upgrade` 容器。 +
+这些键直接转换为 https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#Container[container] 规范。 +
+请注意，节点文件系统在容器内挂载于 `/host`。
+
+[CAUTION]
+====
+使用任何 {elemental-product-name} 或 xref:operator-operational-tasks/custom-images.adoc[{elemental-product-name} 基于镜像] 时，您只需编辑 `env` 键以可选地设置 `FORCE`、`UPGRADE_RECOVERY` 或 `UPGRADE_RECOVERY_ONLY` 变量。 +
+有关更多信息，您可以阅读 xref:node-operational-tasks/upgrade.adoc#_upgrade_via_command_line_interface[升级] 文档。 +
+对 `upgradeContainer` 的任何其他更改可能会导致升级期间出现问题。 +
+====
+
+== `clusterRolloutStrategy`
+
+这控制着捆绑包在各个集群中的发布。有关更多信息，您可以阅读 https://documentation.suse.com/cloudnative/continuous-delivery/v0.13/en/reference/ref-crds.html#_rolloutstrategy[参考文档]。
+
+== `clusterTargets`
+
+选择要针对操作系统镜像升级的集群。有关更多信息，您可以阅读 https://documentation.suse.com/cloudnative/continuous-delivery/v0.13/en/reference/ref-crds.html#_bundletarget[参考文档]。
+
+.点击此处获取详细信息
+[%collapsible]
+====
+[,yaml]
+----
+clusterTargets:
+  - clusterName: volcano
+----
+====

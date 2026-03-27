@@ -1,0 +1,50 @@
+= ホスト名のカスタマイズ
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+== {elemental-product-name} ホスト名管理の概要
+
+ホストが {elemental-product-name} ISO からブートすると、ホスト名は DHCP サーバーから提供されたものに一時的に設定されます（_一時的なホスト名_）。
+DHCP サーバーがホスト名を提供しない場合、{elemental-product-name} ISO は次の形式で一時的なホスト名を提供します: `rancher-$\{RANDOM}`。
+
+ブートプロセスが完了すると、登録フェーズが開始されます: ホストは {elemental-product-name} オペレーターに接続し、ホストのために `MachineInventory` を作成します。
+{elemental-product-name} オペレーターに登録された各ホストは `MachineInventory` リソースによって追跡されます。
+
+*ノードに関連付けられた `name` リソースの `MachineInventory` は、永続的（静的）ホスト名です* *最終的にホストに設定されます*。
+この永続的なホスト名は *K8s クラスターのプロビジョニングフェーズ中にのみノードに設定されます*。
+K8s プロビジョニングフェーズの前に、ノードのホスト名は DHCP によって割り当てられたものか `rancher-$\{RANDOM}` です。
+
+このセクションの残りの部分では、`hostname` を指し、これは _永続的_ ホスト名、すなわちホストが K8s クラスターの一部としてプロビジョニングされた後に設定されるホスト名を意味します。
+
+== デフォルトのホスト名
+
+新しく作成された MachineInventory に割り当てられるデフォルト名は `m-{$UUID}` の形式です。
+ホストがクラスターの一部としてプロビジョニングされると、その `m-\{UUID}` 名が対応するホストのホスト名として設定され、以前に割り当てられたホスト名（`rancher-{$RANDOM}` または DHCP によって割り当てられたもの）を上書きします。
+
+== カスタムホスト名の設定
+
+ホスト名は、xref:references/machineregistration-reference.adoc['MachineRegistration'] リソースの xref:references/machineregistration-reference.adoc#_machinename[`machineName`] フィールドを設定することで指定できます。
+
+`machineName` フィールドに設定されたホスト名は、SMBIOS およびハードウェアラベルデータを使用して、各登録ノードのために一意に生成されるようにテンプレート形式であることが期待されます。
+
+[IMPORTANT]
+====
+`machineName` リソースの `MachineRegistration` フィールドは、登録ホストのホスト名だけでなく、ホストを追跡するために作成された `MachineInventory` リソースの名前の設計図としても使用されます。
+
+これは、同じ `MachineRegistration` データ（すなわち、同じ ISO）を使用してブートする各ホストのために一意の名前を生成するためにテンプレート化された `machineName` を使用しない場合、最初に登録されたホストのみが成功し、他のホストは失敗することを意味します: `MachineInventory` 名は一意でなければなりません。
+====
+
+
+import Registration from "!!raw-loader!@site/examples/quickstart/registration-hardware-dhcphostname.yaml"
+
+== DHCP から割り当てられたホスト名を保持する
+
+ホストがオペレーターに登録する前に、DHCP サーバーから割り当てられたホスト名を保持するために、`MachineRegistration` xref:references/machineregistration-reference.adoc#_machinename[`machineName field`] を `${System Data/Runtime/Hostname}` ハードウェアラベルに設定する必要があります。
+
+この方法で、{elemental-product-name} は登録フェーズ中に現在のホスト名を `MachineInventory` 名として使用し、その後、プロビジョニングフェーズ中にホストの静的ホスト名として設定されます。
+
+.DHCP サーバーから取得したホスト名と MachineInventory 名が設定された登録の例
+[,yaml]
+----
+include::example$quickstart/registration-hardware-dhcphostname.yaml[]
+----

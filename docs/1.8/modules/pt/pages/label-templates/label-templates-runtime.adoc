@@ -1,0 +1,13 @@
+= Variáveis de template de runtime
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+Variáveis de template de runtime coletam informações sobre a configuração do sistema.
+
+|===
+| Variável | Descrição | from
+
+| `${Runtime/Hostname}`
+| Nome do host do sistema
+| 1.7.0
+|===

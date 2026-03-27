@@ -1,0 +1,38 @@
+= Chassis-Vorlagenvariablen
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+Die Informationen in den Chassis-Variablen definieren Attribute des mechanischen Gehäuses des Systems.
+
+Teilmenge des SMBIOS-Systemgehäuses oder Chassis (Typ 3).
+
+Für weitere Informationen zu SMBIOS siehe die
+https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.7.1.pdf[SMSBIOS-Spezifikation].
+
+|===
+| Variable | Beschreibung | Von
+
+| `${Chassis/AssetTag}`
+| Chassis-Asset-Tag
+| 1.7.0
+
+| `${Chassis/SerialNumber}`
+| Chassis-Seriennummer
+| 1.7.0
+
+| `${Chassis/TypeDescription}`
+| Chassis-Typ (Beschreibung)
+| 1.7.0
+
+| `${Chassis/Type}`
+| Chassis-Typ (Nummer/Code)
+| 1.7.0
+
+| `${Chassis/Vendor}`
+| Chassis-Anbieter
+| 1.7.0
+
+| `${Chassis/Version}`
+| Chassis-Version
+| 1.7.0
+|===

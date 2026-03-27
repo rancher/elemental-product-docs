@@ -1,0 +1,103 @@
+= {elemental-product-name} 操作员 Helm 图表
+:revdate: 2025-07-03
+:page-revdate: {revdate}
+
+{elemental_operator_url}[{elemental_operator_name}] 负责管理 {elemental-product-name} 版本并维护机器清单，以协助边缘或裸机安装。
+
+相关图表在 https://rancher.com/docs/rancher/v2.6/[Rancher Manager v2.6] 集群上引导 elemental-operator 部署，使用 https://helm.sh[Helm] 包管理器。
+
+== 先决条件
+
+* Rancher Manager 版本 v2.6
+* Helm 客户端版本 v3.8.0+
+
+== 获取 Helm 图表信息
+
+[,console]
+----
+helm pull oci://registry.suse.com/rancher/elemental-operator-chart
+helm show all oci://registry.suse.com/rancher/elemental-operator-chart
+----
+
+== 安装图表
+
+[,console]
+----
+helm install --create-namespace -n cattle-elemental-system elemental-operator-crds \
+             oci://registry.suse.com/rancher/elemental-operator-crds-chart
+helm install --create-namespace -n cattle-elemental-system elemental-operator \
+             oci://registry.suse.com/rancher/elemental-operator-chart
+----
+
+该命令在默认配置下将 elemental-operator 部署到 Kubernetes 集群。
+
+_请参见下面的 <<_configuration,配置>>。_
+
+_请参见 https://helm.sh/docs/helm/helm_install/[helm install] 以获取命令文档。_
+
+== 卸载图表
+
+[,console]
+----
+helm uninstall -n cattle-elemental-system elemental-operator
+----
+
+这将删除与图表相关的所有 Kubernetes 组件并删除发布。
+
+_请参见 https://helm.sh/docs/helm/helm_uninstall/[helm uninstall] 以获取命令文档。_
+
+== 升级图表
+
+[,console]
+----
+helm upgrade -n cattle-elemental-system \
+             --install elemental-operator \
+             oci://registry.suse.com/rancher/elemental-operator-chart
+----
+
+_请参见 https://helm.sh/docs/helm/helm_upgrade/[helm upgrade] 以获取命令文档。_
+
+== 配置
+
+请参见 https://helm.sh/docs/intro/using_helm/#customizing-the-chart-before-installing[安装前自定义图表]。要查看所有可配置选项及详细注释，请访问图表的 <<_values,值>>，或运行以下配置命令：
+
+`console showLineNumbers +
+helm show values oci://registry.suse.com/rancher/elemental-operator-chart +
+`
+
+== 值
+
+[cols="2,1,2,2"]
+|===
+| 键 | 类型 | 默认值 | 说明
+
+| image.empty | 字符串 | `rancher/pause:3.1` |
+
+| image.repository | 字符串 | `registry.suse.com/rancher/elemental-operator-chart` | elemental-operator 的源镜像及其储存库名称
+
+| image.tag | 标签 | `""` |
+
+| image.imagePullPolicy | 字符串 | `IfNotPresent` |
+
+| noProxy | 字符串 | `127.0.0.0/8,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,.svc,.cluster.local` | 不使用代理的域名或 IP 地址的逗号分隔列表 
+
+| global.cattle.systemDefaultRegistry | 字符串 | `""` | 默认容器注册表名称
+
+| sync_interval | 字符串 | `"60m"` | 升级通道的默认同步间隔 
+
+| sync_namespaces | list | `[]` | 操作员将监视的名称空间，留空表示所有 
+
+| debug | 布尔 | `false` | 为操作员启用调试输出 
+
+| nodeSelector.kubernetes.io/os | 字符串 | `linux` |
+
+| 容忍 | 对象 | `{}` |
+
+| tolerations.key | 字符串 | `cattle.io/os` |
+
+| tolerations.operator | 字符串 | `"Equal"` |
+
+| tolerations.value | 字符串 | `"linux"` |
+
+| tolerations.effect | 字符串 | `NoSchedule` |
+|===

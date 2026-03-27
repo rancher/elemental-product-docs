@@ -1,0 +1,25 @@
+= Resolución de problemas al actualizar la versión de Rancher
+:revdate: 2025-07-03
+:page-revdate: {revdate}
+
+[WARNING]
+====
+La actualización de la versión de Rancher v2.7.2 fallará si se definen {elemental-product-name} clústeres. El pod de Rancher se queda atascado en un bucle de fallos (ver https://github.com/rancher/rancher/issues/41145).)
+====
+
+Ten en cuenta que el problema solo está presente si se define al menos un {elemental-product-name} clúster.
+
+Para solucionar el problema, crea un recurso `dynamicschemas.management.cattle.io` vacío llamado `machineinventoryselectortemplate`:
+
+[,shell]
+----
+kubectl apply -f - <<EOF
+kind: DynamicSchema
+apiVersion: management.cattle.io/v3
+metadata:
+  name: machineinventoryselectortemplate
+EOF
+
+----
+
+El bucle de fallos se detendrá y la actualización de la versión de Rancher se completará con éxito.

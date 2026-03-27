@@ -1,0 +1,33 @@
+= 基板模板变量
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+在基板变量中收集的信息定义了系统基板的属性（例如，主板、平面板、服务器刀片或其他标准系统模块）。
+
+SMBIOS基板（或模块）信息数据的子集（类型2）。
+
+有关SMBIOS的更多信息，请参见https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.7.1.pdf[SMSBIOS规范]。
+
+|===
+| 变量 | 说明 | from
+
+| `${BaseBoard/AssetTag}`
+| 主板资产标签
+| 1.7.0
+
+| `${BaseBoard/Product}`
+| 主板产品名称
+| 1.7.0
+
+| `${BaseBoard/SerialNumber}`
+| 主板序列号
+| 1.7.0
+
+| `${BaseBoard/Vendor}`
+| 主板供应商
+| 1.7.0
+
+| `${BaseBoard/Version}`
+| 主板版本
+| 1.7.0
+|===

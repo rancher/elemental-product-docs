@@ -1,0 +1,153 @@
+= Visión general de plantillas de etiquetas
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+Elemental permite especificar _plantillas de etiquetas_ en las secciones `spec.machineInventoryLabels` y `spec.machineInventoryAnnotations` de los recursos xref:references/machineregistration-reference.adoc[RegistroDeMáquina].
+
+Su formato es el canónico `key`:``value`` utilizado en las etiquetas y anotaciones de Kubernetes.
+
+Estas plantillas de etiquetas se convierten en etiquetas y anotaciones reales adjuntas a cada recurso xref:references/machineinventory-reference.adoc[InventarioDeMáquina] creado durante la fase de xref:rancher-os-management/architecture/services/architecture-machineonboarding.adoc[incorporación de máquinas].
+
+Las etiquetas y anotaciones resultantes tienen el mismo `key` que la plantilla de etiquetas.
+
+El `value` asociado se genera:
+
+* *renderizando el <<_label_templates_variables,`label template variables`>>* (si está presente)
+* *`sanitizing`* el valor resultante (en el caso de las etiquetas solamente)
+
+[IMPORTANT]
+====
+La funcionalidad de plantillas de Elemental también cubre el campo xref:references/machineregistration-reference.adoc[Registro de Máquina] `spec.machineName`, que define el nombre de host resultante de la máquina que se registra y el `name` del recurso xref:references/machineinventory-reference.adoc[Inventario de Máquina] asociado.
+
+Consulta la sección <<_custom_machine_names,Nombre de la Máquina>> para más detalles.
+====
+
+
+== Variables de plantillas de etiquetas
+
+La funcionalidad de plantillas de etiquetas de Elemental incluye un conjunto de variables predefinidas que se pueden utilizar dentro del `value` de las _plantillas de etiquetas_ especificadas en el xref:references/machineregistration-reference.adoc[Registro de Máquina].
+
+La sintaxis utilizada para especificar las variables de las plantillas de etiquetas es:
+
+`${ _VARFAMILY_ \/ _VARPATH_ }`
+
+donde _VARFAMILY_ define un grupo (familia) de variables soportadas y _VARPATH_ define el nombre de la variable real dentro del grupo familiar correspondiente.
+
+Elemental actualmente soporta las siguientes _familias de variables de plantilla_:
+
+* xref:label-templates/label-templates-bios.adoc[*BIOS*]: *${ BIOS \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-baseboard.adoc[*BaseBoard*]: *${ BaseBoard \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-cpu.adoc[*CPU*]: *${ CPU \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-chassis.adoc[*Chasis*]: *${ Chasis \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-gpu.adoc[*GPU*]: *${ GPU \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-memory.adoc[*Memoria*]: *${ Memoria \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-network.adoc[*Red*]: *${ Red \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-product.adoc[*Producto*]: *${ Producto \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-runtime.adoc[*Tiempo de ejecución*]: *${ Tiempo de ejecución \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-storage.adoc[*Almacenamiento*]: *${ Almacenamiento \/* _VARPATH_ *}*
+
+[CAUTION]
+====
+Todas las _familias de variables de plantilla_ (pero _`Random`_) están habilitadas solo si el campo xref:references/machineregistration-reference.adoc[Registro de Máquina]`elemental.registration.no-smbios` está configurado en `false` (por defecto).
+
+Cuando el campo `elemental.registration.no-smbios` está configurado en `true`, las máquinas que se registran no envían ningún dato necesario para renderizar las variables de plantilla, por lo que no habrá variables disponibles, excepto las *aleatorias*, que son la única excepción notable.
+
+Las variables *aleatorias* están siempre disponibles ya que están integradas en el lado del operador. También son especiales ya que se calculan solo una vez: consulta la sección xref:label-templates/label-templates-random.adoc[Variables de plantilla aleatorias] para más detalles.
+====
+
+
+Las variables de plantilla se pueden mezclar con texto estático para formar las etiquetas reales asignadas a (xref:references/machineinventory-reference.adoc[Inventarios de Máquina]).
+
+[NOTE]
+.Ejemplos de renderizado
+====
+
+* Etiqueta de plantilla que rastrea el número de kernels de CPU del host que se registra (supongamos que el host tiene 4 kernels):
+ ** etiqueta original: *cpu: ${CPU\/TotalCores}-kernels*
+ ** etiqueta renderizada: *cpu: 4-kernels*
+* Etiqueta de plantilla que rastrea el UUID SMBIOS del host que se registra:
+ ** etiqueta original: *sbios-UUID: ${Product\/UUID}*
+ ** rendered label: *sbios-UUID: fd95324a-c26b-4e28-8727-1dcec293a0ec*
+====
+
+
+== Sanitización
+
+Una vez que el valor de la plantilla de etiqueta ha sido renderizado de acuerdo con las variables de plantilla de etiqueta incluidas <<_label_templates_variables,variables de plantilla de etiqueta>>, el valor resultante es `sanitized` antes de ser asignado a la etiqueta resultante.
+
+*El `sanitization` obliga a que el valor de la etiqueta solo contenga letras (mayúsculas o no), números y los caracteres guion (`-`), punto (`.`) y guion bajo (`_`)*:
+
+Todos los caracteres no incluidos son sustituidos por un guion.
+
+Cualquier carácter al principio y al final del valor de la etiqueta debe ser una letra o un número. Si no lo es, se elimina.
+
+Dos guiones consecutivos son reemplazados por uno.
+
+[NOTE]
+.Ejemplo de Renderizado
+====
+
+* Plantilla de Etiqueta con sanitización de caracteres prohibidos:
+ ** etiqueta original: *sanitizado: esto:necesita--sanitización!*
+ ** etiqueta renderizada: *sanitizado: esto-necesita-sanitización*
+====
+
+
+== Uso de Plantillas de Etiquetas
+
+Las Plantillas de Etiquetas permiten adjuntar y actualizar automáticamente etiquetas y anotaciones a cada xref:references/machineinventory-reference.adoc[Inventario de Máquinas] de los hosts cada vez que un host se registra en el Operador Elemental.
+
+[IMPORTANT]
+====
+El registro ocurre no solo durante la xref:rancher-os-management/architecture/services/architecture-machineonboarding.adoc[fase de incorporación]: cada host se vuelve a registrar cada 30 minutos (y cada vez que se reinicia). Durante la re-registración, las Plantillas de Etiquetas en el xref:references/machineregistration-reference.adoc[Registro de Máquina] asociado son re-evaluadas y añadidas/actualizadas en el xref:references/machineinventory-reference.adoc[Inventario de Máquinas].
+====
+
+
+Básicamente hay tres casos principales en los que las plantillas de etiquetas pueden ser útiles:
+
+* para adjuntar datos de hardware al Catálogo Elemental.
+* para añadir selectores para seleccionar hosts para el aprovisionamiento de clústeres.
+* para definir una plantilla personalizada para los nombres de máquinas.
+
+=== Datos de hardware para el catálogo Elemental
+
+Las variables de las Plantillas de Etiquetas pueden ser utilizadas para adjuntar datos de hardware a cada recurso de xref:references/machineinventory-reference.adoc[Inventario de Máquinas] (que forman el Catálogo Elemental).
+
+En este caso, las anotaciones pueden ser una mejor opción ya que sus valores no están sanitizados.
+
+=== Selectores para la provisión de clústeres
+
+El `Label Templates` se puede utilizar para generar etiquetas que se utilizan para identificar y seleccionar máquinas con propiedades de hardware especiales para formar nuevos clústeres de Kubernetes.
+
+Las etiquetas adjuntas a cada xref:references/machineinventory-reference.adoc[Inventario de Máquinas] son elegibles para _selector_ para el recurso xref:references/machineinventoryselectortemplate-reference.adoc[Plantilla de Selector de Inventario de Máquinas] (ver la sección xref:rancher-os-management/architecture/services/architecture-clusterdeployment.adoc[provisión de clústeres de Kubernetes] para más detalles).
+
+=== Nombres de máquinas personalizados
+
+El nombre de host de la máquina de incorporación se puede especificar utilizando el campo xref:references/machineregistration-reference.adoc[Registro de Máquina] `spec.machineName`.
+
+El valor `spec.machineName` pasa por los mismos procesos de `Label Templates' variables` y `sanitization` reservados para el campo `spec.machineInventoryLabels`.
+
+[CAUTION]
+====
+Hay una diferencia notable entre los campos xref:references/machineregistration-reference.adoc[Registro de Máquina] `spec.machineName` y `spec.machineInventorylabels`: durante el proceso de <<_sanitization,sanitización>> el guion bajo (`_`) se sustituye como los otros caracteres prohibidos (es decir, se sustituye por un guion: `-`). Esto es necesario ya que el guion bajo no está permitido en los nombres de host de Linux.
+====
+
+
+Para más información sobre cómo definir el nombre de host para los hosts Elemental, consulta la sección xref:installation/hostname.adoc[Instrucciones/Personalizar nombre de host].
+
+[NOTE]
+.Ejemplo de renderizado
+====
+* Define una plantilla de nombre de host como `SLE-Micro-[random string of 6 hexadecimal values]`:
+ ** Especificación de Registro de Máquina: *nombre de máquina: SLE-Micro-${Random\/Hex\/6}*
+ ** Nombre de inventario de máquinas: *SLE-Micro-32ad41*
+====
+
+
+== Ejemplo de plantillas de etiquetas
+
+.ejemplo de registro con variables de plantillas de etiquetas
+[,yaml]
+----
+include::example$quickstart/registration-hardware-dhcphostname.yaml[]
+----

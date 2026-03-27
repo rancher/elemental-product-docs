@@ -1,0 +1,41 @@
+= Variables de plantilla de GPU
+:revdate: 15/08/2025
+:page-revdate: {revdate}
+
+La información recopilada en las variables de plantilla de GPU define los atributos de las tarjetas gráficas instaladas en el sistema.
+
+Los datos se exponen por número de tarjeta gráfica (0, 1, 2, ...)
+
+Para hacer referencia a la primera tarjeta gráfica, se puede omitir el número de tarjeta gráfica (_`<Number>`_) (por ejemplo, la variable `${GPU/GraphicsCards/Driver}` es la misma que `${GPU/GraphicsCards/0/Driver}`).
+
+|===
+| Variable | Descripción | desde
+
+| `${GPU/GraphicsCards/Driver}`
+| Controlador de tarjeta GPU
+| 1.7.0
+
+| `${GPU/GraphicsCards/ProductName}`
+| Modelo de tarjeta GPU
+| 1.7.0
+
+| `${GPU/GraphicsCards/VendorName}`
+| Vendedor de tarjeta GPU
+| 1.7.0
+
+| `${GPU/GraphicsCards/_<Number>_/Driver}`
+| Controlador de tarjeta GPU _number_
+| 1.7.0
+
+| `${GPU/GraphicsCards/_<Number>_/ProductName}`
+| Modelo de tarjeta GPU _number_
+| 1.7.0
+
+| `${GPU/GraphicsCards/_<Number>_/VendorName}`
+| Vendedor de tarjeta GPU _number_
+| 1.7.0
+
+| `${GPU/TotalCards}`
+| Número de tarjetas GPU en el sistema
+| 1.7.0
+|===

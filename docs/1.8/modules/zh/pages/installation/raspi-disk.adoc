@@ -1,0 +1,53 @@
+= 如何为树莓派构建原始磁盘映像
+:revdate: 2024-09-24
+:page-revdate: {revdate}
+
+本指南将展示如何构建可以写入SD卡并在没有其他安装介质的情况下启动的原始磁盘映像。
+
+[CAUTION]
+====
+SD卡上的任何数据将被擦除，请仅使用没有重要数据的SD卡。
+
+SD卡必须足够大（32 GB 或更多）并且*快速*（！！）。
+====
+
+.SeedImage资源
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: SeedImage
+metadata:
+  name: fire-img
+  namespace: fleet-default
+spec:
+  type: raw
+  baseImage: registry.opensuse.org/isv/rancher/elemental/staging/containers/suse/sl-micro/6.0/baremetal-os-container:latest
+  targetPlatform: linux/arm64
+  registrationRef:
+    apiVersion: elemental.cattle.io/v1beta1
+    kind: MachineRegistration
+    name: fire-nodes
+    namespace: fleet-default
+----
+
+使用以下命令检查构建 pod 的日志：
+
+[,shell]
+----
+kubectl logs -n fleet-default fire-img -f -c build
+----
+
+构建完成后，我们可以使用wget下载映像文件：
+
+[,shell]
+----
+wget --no-check-certificate $(kubectl get seedimage -n fleet-default fire-img -o jsonpath="{.status.downloadURL}") -O sle-micro.arm64.raw
+----
+
+现在我们可以将`.raw`映像写入SD卡。如果您对该命令感到熟悉，可以在Linux命令行中使用`dd`来完成此操作。https://www.opensuse.org[openSUSE]提供了关于如何将映像写入https://en.opensuse.org/SDB:Live_USB_stick[Linux]、https://en.opensuse.org/SDB:Create_a_Live_USB_stick_using_Windows[Windows]和https://en.opensuse.org/SDB:Create_a_Live_USB_stick_using_macOS[OS X]存储介质的详细说明。
+
+== 启动机器
+
+原始磁盘映像将仅包括EFI分区、OEM分区和恢复分区。首次启动时，系统将启动到恢复系统以扩展并添加缺失的分区。扩展后，它将与rancher注册并重新启动。
+
+如果在注册阶段发生错误，可以使用`journalctl -u elemental-register-reset`找到日志。

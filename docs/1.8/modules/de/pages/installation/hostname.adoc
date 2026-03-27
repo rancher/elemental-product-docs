@@ -1,0 +1,50 @@
+= Hostname anpassen
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+== {elemental-product-name} Übersicht über die Hostnamenverwaltung
+
+Wenn ein Host vom {elemental-product-name} ISO bootet, wird der Hostname vorübergehend (_vorübergehender Hostname_) auf den vom DHCP-Server bereitgestellten gesetzt.
+Wenn der DHCP-Server keinen Hostnamen bereitstellt, bietet das {elemental-product-name} ISO einen vorübergehenden Hostnamen in der Form: `rancher-$\{RANDOM}`.
+
+Sobald der Bootvorgang abgeschlossen ist, beginnt die Registrierungsphase: Der Host verbindet sich mit dem {elemental-product-name} Betreiber, der ein `MachineInventory` für den Host erstellt.
+Jeder Host, der beim {elemental-product-name} Betreiber registriert ist, wird von einer `MachineInventory` Ressource verfolgt.
+
+*Der `name` der `MachineInventory` Ressource, die mit dem Knoten verbunden ist, ist der permanente (statische) Hostname* *der schließlich dem Host zugewiesen wird*.
+Dieser permanente Hostname *wird nur während der Bereitstellungsphase des K8s-Clusters auf dem Knoten gesetzt*.
+Vor der Bereitstellungsphase des K8s ist der Hostname des Knotens entweder der vom DHCP zugewiesene oder `rancher-$\{RANDOM}`.
+
+Für den Rest dieses Abschnitts werden wir uns auf den `hostname` beziehen, was den _permanenten_ Hostnamen bedeutet, d.h. den Hostnamen, der gesetzt wird, nachdem der Host als Teil eines K8s-Clusters bereitgestellt wurde.
+
+== Standard-Hostname
+
+Der Standardname, der jedem neu erstellten MachineInventory zugewiesen wird, hat die Form `m-{$UUID}`.
+Wenn der Host als Teil eines Clusters bereitgestellt wird, wird dieser `m-\{UUID}` Name als Hostname des entsprechenden Hosts gesetzt, wodurch der zuvor zugewiesene Hostname (`rancher-{$RANDOM}` oder der vom DHCP zugewiesene) überschrieben wird.
+
+== Einen benutzerdefinierten Hostnamen festlegen
+
+Der Hostname kann festgelegt werden, indem das xref:references/machineregistration-reference.adoc#_machinename[`machineName`] Feld in der xref:references/machineregistration-reference.adoc['MachineRegistration'] Ressource gesetzt wird.
+
+Der im `machineName` Feld festgelegte Hostname sollte in Form einer Vorlage vorliegen, um für jeden registrierenden Knoten eindeutig generiert zu werden, unter Verwendung von SMBIOS- und Hardware-Label-Daten.
+
+[IMPORTANT]
+====
+Das `machineName` Feld in der `MachineRegistration` Ressource wird als Vorlage verwendet, nicht nur für den Hostnamen des registrierenden Hosts, sondern auch für den Namen der `MachineInventory` Ressource, die erstellt wird, um den Host zu verfolgen.
+
+Das bedeutet, dass, wenn Sie kein Vorlagen-`machineName` verwenden, um einen eindeutigen Namen für jeden Host zu generieren, der mit denselben `MachineRegistration` Daten (d.h. demselben ISO) bootet, nur der erste registrierende Host erfolgreich sein wird, während die anderen fehlschlagen: der `MachineInventory` Name muss eindeutig sein.
+====
+
+
+import Registration from "!!raw-loader!@site/examples/quickstart/registration-hardware-dhcphostname.yaml"
+
+== Den vom DHCP zugewiesenen Hostnamen beibehalten
+
+Um den vom DHCP-Server zugewiesenen Hostnamen zu behalten, bevor sich der Host beim Betreiber registriert, sollte das `MachineRegistration` xref:references/machineregistration-reference.adoc#_machinename[`machineName field`] auf das `${System Data/Runtime/Hostname}` Hardware-Label gesetzt werden.
+
+Auf diese Weise wird {elemental-product-name} den aktuellen Hostnamen als `MachineInventory` Namen während der Registrierungsphase verwenden, der später als der statische Hostname des Hosts während der Bereitstellungsphase festgelegt wird.
+
+.Registrierungsbeispiel, bei dem sowohl der Hostname als auch der Maschineninventar-Name auf den vom DHCP-Server zugewiesenen Hostnamen gesetzt werden.
+[,yaml]
+----
+include::example$quickstart/registration-hardware-dhcphostname.yaml[]
+----

@@ -1,0 +1,225 @@
+= 种子映像参考
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+
+一个 `SeedImage` 资源允许构建一个安装介质，可以用来将 {elemental-product-name} 安装到节点上。
+
+它需要一个 `baseImage`，即一个指向 {elemental-product-name} 安装 .iso 映像或节点容器映像的 URL，以及一个 `registrationRef` 引用，指向一个 `MachineRegistration` 资源，从中提取注册部分的 {elemental-product-name} 配置并注入到介质中，以生成最终的 _种子映像_。
+
+也可以在 `cloud-config` 字段中注入自定义内容。支持 yip 和 cloud-init 语法。有关完整信息，请参见 xref:references/cloud-config-reference.adoc[Cloud Config Reference]。
+
+一旦种子映像准备就绪，下载 URL 将在 `.status.downloadURL` 字段中共享。
+它将在 `cleanupAfterMinutes` 分钟内可供下载（默认是 `60`，1 小时），之后将被删除。
+
+将 `retriggerBuild` 设置为 `true` 会重新触发种子映像构建过程，而将 `cleanupAfterMinutes` 设置为 `0` 会使种子映像保留，直到 `SeedImage` 资源被删除。
+
+`SeedImage` 资源还有一个 `type` 字段，可以设置为 `iso`，以构建 ISO，或 `raw`，以构建原始磁盘映像。原始磁盘映像可以直接复制到目标驱动器，并在首次启动时会自动启动到恢复分区，以展开驱动器以使用可用磁盘空间并注册节点，之后将以与 .iso 映像安装相同的方式重启。
+
+如果未为种子映像指定 `BuildContainer`，则将根据默认值和 `type` 自动填充。
+
+为不同平台构建种子映像是通过使用 `targetPlatform` 字段实现的。平台通过 `os/arch` 指定，例如 (`linux/x86_64` 或 `linux/aarch64`)。默认情况下，映像将为操作员所在的平台构建。
+
+[CAUTION]
+.种子映像可能会占满本地存储
+====
+种子映像保存在节点的本地存储中：请注意您同时启动的 `SeedImage` 资源数量，以及在禁用自动清理功能时可能遗留的那些资源 (`cleanupAfterMinutes` = `0`)，因为这可能会耗尽集群节点上的存储空间。
+====
+
+== SeedImageSpec 参考
+
+|===
+| 键 | 类型 | 默认值 | 说明
+
+| baseImage
+| 字符串
+| 空
+| 用于构建种子映像的基础元素图像。
+
+| registrationRef
+| 对象引用。
+| null
+| 对将用于所有已安装机器进行注册的MachineRegistration的引用。
+
+| buildContainer
+| 对象
+| null
+| 用于生成可下载图像的自定义容器的设置。（请参见<<_buildcontainer,文档>>）。
+
+| cleanupAfterMinutes
+| 整数
+| 60
+| 构建的种子映像将在此时间后被清理。活动下载将在图像被移除之前完成。
+
+| retriggerBuild
+| 布尔
+| false
+| 触发重新构建已清理的种子映像。
+
+| size
+| 字符串
+| 6Gi
+| 指定用于存储图像的卷的大小。
+
+| type
+| 字符串
+| iso
+| 指定要构建的种子映像的类型：`iso` 或 `raw`。（请参见<<_iso_and_raw_images,文档>>）
+
+| targetPlatform
+| 字符串
+| 空
+| 指定构建图像的目标平台。示例：`linux/x86_64`或`linux/aarch64`。（请参见<<_multi_platform_support,文档>>）。
+
+| cloud-config
+| 对象
+| null
+| 包含将要嵌入生成镜像中的 cloud-config 数据。（请参见xref:references/cloud-config-reference.adoc[文档]）。
+
+|===
+
+=== BuildContainer
+
+可以使用 `buildContainer` 设置来自定义 `build` pod 中的 `SeedImage` 初始化容器。
+例如，在构建自定义 Elemental 镜像时可能会出现这种情况。
+
+[,yaml]
+----
+buildContainer:
+  name: "custom-build"
+  image: my.registry.com/elemental-custom-builder:1.2.3
+  command:
+    - build-image
+  args:
+    - foo
+    - bar
+  imagePullPolicy: Always
+----
+
+请注意，容器还将额外挂载两个卷，分别位于 `/iso` 和 `/overlay`。
+种子映像构建过程期望构建容器将构建工件放置在 `/iso/$(ELEMENTAL_OUTPUT_NAME)`。
+
+配置文件可在以下位置获得：
+
+- `/overlay/reg/livecd-cloud-config.yaml`：可以被 `elemental-register` 用于注册机器的配置文件。
+
+- `/overlay/iso-config/cloud-config.yaml`：在 `SeedImage.spec.cloud-config` 中定义的 cloud-config
+
+以下环境变量列表也可以在自定义构建容器中使用：
+
+- `ELEMENTAL_DEVICE`：`MachineRegistration.spec.config.elemental.install.device` 的值。
+- `ELEMENTAL_REGISTRATION_URL`：MachineRegistration 的唯一 URL。
+- `ELEMENTAL_BASE_IMAGE`：在 `SeedImage` 中定义的基础镜像。
+- `ELEMENTAL_OUTPUT_NAME`：构建工件的预期文件名。
+
+=== ISO 和 Raw 镜像
+
+`SeedImage` 能够构建 `iso` 或 `raw` 类型的镜像。
+请注意，Elemental 提供两种不同类型的镜像，`iso` 或 `container` 类型。请参见 xref:references/managedosversion-reference.adoc#_managedosversionspec_reference[ManagedOSversion's type]。
+
+在构建 `iso` `SeedImage` 时，可以使用 `iso` Elemental 镜像。`iso` 镜像包含预构建的 `.iso` 工件。这是官方 ISO 的默认 Elemental 交付方式，因此每次定义 `SeedImage` 时都不需要重新构建。
+
+.点击这里查看 ISO 种子映像示例
+[%collapsible]
+====
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: SeedImage
+metadata:
+  name: fire-iso
+  namespace: fleet-default
+spec:
+  type: iso
+  baseImage: registry.suse.com/suse/sl-micro/6.0/baremetal-iso-image:2.1.1-3.36
+  registrationRef:
+    apiVersion: elemental.cattle.io/v1beta1
+    kind: MachineRegistration
+    name: fire-nodes
+    namespace: fleet-default
+----
+====
+
+或者，在构建 `raw` `SeedImage` 时，您应该使用 `container` Elemental 镜像。这些镜像在升级过程中也会使用（见：xref:references/managedosimage-reference.adoc[管理操作系统镜像]，但也可以用于构建`raw` `SeedImages`。
+
+.点击这里查看原始种子映像示例
+[%collapsible]
+====
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: SeedImage
+metadata:
+  name: fire-raw
+  namespace: fleet-default
+spec:
+  type: raw
+  baseImage: registry.suse.com/suse/sl-micro/6.0/baremetal-os-container:2.1.1-3.29
+  registrationRef:
+    apiVersion: elemental.cattle.io/v1beta1
+    kind: MachineRegistration
+    name: fire-nodes
+    namespace: fleet-default
+----
+====
+
+=== 多平台支持
+
+Elemental 为大多数变体提供 `linux/x86_64` 和 `linux/aarch64` 镜像。
+为了确定 `ManagedOSVersion` 镜像是否支持两个平台，您可以验证 `ManagedOSVersion.spec.metadata.platform` 值。（请参见 xref:references/managedosversion-reference.adoc#_metadata[文档]）。
+
+在定义 `SeedImage` 时，您可以将此值用于镜像的 `targetPlatform`。
+如果 `targetPlatform` 留空，则默认使用运行 `elemental-operator` 的平台。
+
+.点击这里查看原始 aarch64 种子映像示例
+[%collapsible]
+====
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: SeedImage
+metadata:
+  name: fire-raw-aarch64
+  namespace: fleet-default
+spec:
+  targetPlatform: linux/aarch64
+  type: raw
+  baseImage: registry.suse.com/suse/sl-micro/6.0/baremetal-os-container:2.1.1-3.29
+  registrationRef:
+    apiVersion: elemental.cattle.io/v1beta1
+    kind: MachineRegistration
+    name: fire-nodes
+    namespace: fleet-default
+----
+====
+
+== 可下载的 URL
+
+`SeedImage` 资源通过两个状态条件跟踪种子映像构建过程：
+
+- **准备就绪**：跟踪所有执行实际构建过程所需的子资源的创建。
+- **种子映像准备就绪**：跟踪子资源中构建过程的状态.
+
+或者，也可以等待 `SeedImage` pod 准备就绪：
+
+[,bash]
+----
+kubectl wait --for=condition=ready pod -n fleet-default fire-img
+----
+
+在下载任何工件之前，等待准备条件是一种最佳实践。
+
+一旦 `SeedImage` 准备就绪，`.status.downloadURL` 将包含可下载的 URL。
+请注意，URL 将使用与 Rancher 相同的端点，因此在使用自签名证书时要注意 HTTPS 验证。
+
+[,bash]
+----
+kubectl get seedimage -n fleet-default fire-img -o jsonpath="{.status.downloadURL}"
+----
+
+镜像的校验和也可用以验证下载是否正确：
+
+[,bash]
+----
+kubectl get seedimage -n fleet-default fire-img -o jsonpath="{.status.checksumURL}"
+----

@@ -1,0 +1,97 @@
+= Derrière un proxy
+:revdate: 2025-11-06
+:page-revdate: {revdate}
+
+:tabs-sync-option:
+
+Dans de nombreux environnements d'entreprise, les serveurs ou les machines virtuelles fonctionnant sur site n'ont pas d'accès direct à Internet. Au lieu de cela, la connexion aux services externes se fait via un proxy HTTP(S) pour des raisons de sécurité. Ce tutoriel vous montre comment configurer un {elemental-product-name} déploiement dans un tel environnement.
+
+[IMPORTANT]
+====
+Ce guide ne couvrira pas l'installation de Rancher derrière un proxy. C'est un cas d'utilisation différent et vous pouvez trouver la documentation détaillée sur la page https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/other-installation-methods/http-proxy/http-proxy.html[Installer SUSE Rancher Prime derrière un proxy HTTP].
+====
+
+
+[NOTE]
+====
+Pour cette documentation, nous supposons que vous utilisez un système de la famille SUSE (comme SLE Micro), donc les paramètres du proxy doivent être écrits dans `/etc/sysconfig/proxy`.
+====
+
+
+Les paramètres du proxy doivent être configurés aux emplacements suivants :
+
+* Point de terminaison d'enregistrement de machine
+* Ressource SeedImage
+* {elemental-product-name} Configuration du cluster
+
+Le `elemental-system-agent` a besoin de paramètres de proxy pour atteindre le Rancher Manager.
+Pour cela, vous devez remplir la section cloud-init du point de terminaison d'enregistrement de machine.
+
+Vous pouvez le faire soit avec xref:quickstarts/quickstart-ui.adoc#_add_a_machine_registration_endpoint[UI], soit avec xref:quickstarts/quickstart-cli.adoc#_prepare_your_kubernetes_resources[CLI].
+
+[tabs]
+======
+CLI::
++
+====
+[,yaml]
+----
+include::example$proxy/registration-proxy.yaml[]
+----
+====
+
+UI::
++
+====
+image:proxy-settings-machine-registration-ui.png[Ajouter des paramètres de proxy dans l'enregistrement de machine]
+====
+======
+
+== {elemental-product-name}-enregistrer
+
+xref:rancher-os-management/architecture/architecture-components.adoc#_elemental_register_command_line_tool[{elemental-product-name}-enregistrer] est le premier point de communication entre le nouvel hôte et le Rancher Manager, c'est le premier endroit où les paramètres de proxy doivent être définis.
+
+[CAUTION]
+====
+Au moment de la rédaction, il n'est possible de configurer les paramètres de proxy pour l'ISO qu'avec le CLI. Les paramètres de proxy ne sont pas implémentés dans l'UI.
+====
+
+Le processus se produit lorsque vous démarrez votre {elemental-product-name} ISO pour la première fois, afin de configurer les paramètres de proxy, vous devez inclure une `cloud-init` définition dans l'ISO.
+Pour ce faire, vous devez créer une définition de xref:references/seedimage-reference.adoc[SeedImage].
+
+[,yaml]
+----
+include::example$proxy/seedimage-proxy.yaml[]
+----
+
+Appliquez le YAML avec `kubectl` puis, imprimez votre définition de SeedImage pour obtenir l'URL pour le télécharger :
+
+[,bash]
+----
+kubectl apply -f <my_seedimage_yaml_file>
+kubectl get seedimage <seed_image_name> -n <namespace> -o yaml
+----
+
+Démarrez l'ISO et vous devriez voir votre nouveau système apparaître dans xref:references/machineinventory-reference.adoc[Machine inventory].
+
+== Créez {elemental-product-name} un cluster.
+
+Pour cette étape, vous pouvez utiliser soit l'UI, soit le CLI.
+
+[tabs]
+======
+CLI::
++
+====
+[,yaml]
+----
+include::example$proxy/cluster-proxy.yaml[]
+----
+====
+
+UI::
++
+====
+image:proxy-settings-cluster-ui.png[Ajouter les paramètres de proxy pour {elemental-product-name} le cluster]
+====
+======

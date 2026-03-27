@@ -1,0 +1,48 @@
+= Trusted Platform Module 2.0 (TPM)
+:revdate: 2024-09-24
+:page-revdate: {revdate}
+
+Das Trusted Platform Module (TPM, auch bekannt als ISO/IEC 11889) ist ein internationaler Standard für einen sicheren Kryptoprozessor, einen speziellen Mikrocontroller, der entwickelt wurde, um Hardware durch integrierte kryptografische Schlüssel zu sichern. Der Begriff kann sich auch auf einen Chip beziehen, der dem Standard entspricht.
+
+== TPM-Modul zur virtuellen Maschine hinzufügen
+
+Ein einfacher Weg, TPM zur virtuellen Maschine hinzuzufügen, ist die Verwendung von Libvirt mit Virt-Manager.
+
+=== Virtuelle Maschine erstellen
+
+Nach dem Starten von Virt-Manager eine neue virtuelle Maschine erstellen
+
+image::tpm1.png[Neue VM erstellen]
+
+=== Hardwaremodul-Liste überprüfen und bearbeiten
+
+Überprüfen Sie auf dem Bildschirm zur Hardwarekonfiguration die Liste der Module und klicken Sie auf die Schaltfläche *_Hardware hinzufügen_*
+
+image::tpm2.png[Gerätesliste]
+
+=== TPM-Modul zur VM hinzufügen
+
+Wählen Sie aus der Liste der emulierten Geräte das TPM-Modul aus und fügen Sie es zur VM hinzu.
+
+image::tpm3.png[TPM-Modul hinzufügen]
+
+=== VM-Konfiguration abschließen
+
+Überprüfen Sie auf dem letzten Bildschirm erneut, ob das TPM-Modul ordnungsgemäß hinzugefügt wurde.
+
+image::tpm4.png[Verify TPM]
+
+== TPM-Emulation zur Bare-Metal-Maschine hinzufügen
+
+Beim Anwenden von `#!yaml MachineRegistration` den folgenden Schlüssel zur YAML `config:elemental:registration:emulate-tpm: true` hinzufügen.
+
+[IMPORTANT]
+====
+Wenn Sie planen, mehr als eine Maschine mit TPM-Emulation bereitzustellen, stellen Sie sicher, dass Sie `config:elemental:registration:emulated-tpm-seed: -1` setzen, damit der für die TPM-Emulation verwendete Seed pro Maschine randomisiert wird. Andernfalls erhalten Sie denselben TPM-Hash für alle bereitgestellten Maschinen, und nur die zuletzt registrierte ist gültig.
+====
+
+.registration-tpm.yaml
+[,yaml]
+----
+include::example$quickstart/registration-tpm.yaml[]
+----

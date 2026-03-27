@@ -1,0 +1,82 @@
+= Cómo añadir RPMs de terceros en el momento de la instalación
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+Este ejemplo cubre el caso en el que se incluyen RPMs adicionales (por ejemplo, controladores de hardware específicos) en el ISO y durante la instalación se instalan sobre la imagen del sistema operativo.
+
+Para ese caso de uso, se requieren los siguientes archivos:
+
+* RPMs adicionales a instalar
+* archivo de configuración adicional de cloud-config que define ganchos para copiar e instalar binarios como ganchos de instalación
+
+Podemos manejarlo todo en una única sección `SeedImage.spec.cloud-config` asumiendo que el RPM adicional está disponible para descargarlo desde un servidor remoto en el momento de la instalación.
+
+Considera los siguientes datos de cloud-config que podrían usarse como contenido de la sección `cloud-config` en un recurso xref:references/seedimage-reference.adoc#_seedimagespec_reference[SeedImage].
+
+[,yaml]
+----
+name: "Install extra drivers"
+stages:
+  before-install:
+  # Preload data to the persistent storage
+  # During installation persistent partition is mounted at /run/elemental/persistent
+  - downloads:
+    - path: /tmp/some_package.rpm
+      url: "<REMOTE_PACKAGE_URL>"
+      permissions: 0777
+  - commands:
+    - mkdir -o /run/elemental/persistent/extra-pkgs
+    - cp -p /tmp/some_package.rpm /run/elemental/persistent/extra-pkgs
+
+  after-install-chroot:
+  # Install the package at install time
+  - commands:
+    - rpm -iv /run/elemental/extra-pkgs/some_package.rpm
+
+  # Include to the install system analog upgrade and reset hooks
+  - files:
+    - path: /oem/extra-pkg.yaml
+      permissions: 0664
+      content: |
+        name: "Install extra drivers"
+        stages:
+          after-upgrade-chroot:
+          # Install the package after upgrading to a new image
+          - commands:
+            - rpm -iv /run/elemental/extra-pkgs/some_package.rpm
+          after-reset-chroot:
+          # Install the package on reset
+          - commands:
+            - rpm -iv /run/elemental/extra-pkgs/some_package.rpm
+----
+
+Ten en cuenta que los ganchos de instalación solo cubren procedimientos de instalación, por lo que los datos adicionales de cloud-config también deberían ser parte del sistema instalado para seguir instalando el paquete como parte de los procesos de actualización o reinicio.
+
+== Reempaquetando una imagen ISO generada con archivos adicionales
+
+Alternativamente, si no se desea el comportamiento de descarga dinámica de contenido en el momento de la instalación y el objetivo real es tener un ISO que ya incluya todos los binarios adicionales, esto también es posible pero requiere reempaquetar manualmente el ISO. Usando `xorriso`, la utilidad de Linux para crear ISOs, este proceso resulta ser relativamente fácil.
+
+Vamos a crear un directorio `overlay` para crear el árbol de directorios que necesita ser añadido en la raíz del ISO. En ese caso, el directorio `overlay` podría contener:
+
+[,yaml]
+----
+overlay/
+  data/
+    extra-pkgs/
+      some_package.rpm
+  iso-config/
+    install_hooks.yaml
+----
+
+Estamos asumiendo que `install_hooks.yaml` es el contenido del cloud-config real expuesto en la sección anterior que se incluye manualmente en la imagen en lugar de estar incrustado en un recurso SeedImage. La carpeta `data` incluye eventualmente los binarios que queremos añadir al ISO.
+
+Asumiendo que ya hemos descargado un ISO Elemental vinculado a un registro de máquina específico con la siguiente llamada `xorriso`, todo el contenido de la carpeta `overlay` se incluiría en un nuevo ISO:
+
+[,bash]
+----
+xorriso -indev elemental.x86_64.iso -outdev elemental.custom.x86_64.iso -map overlay / -boot_image any replay
+----
+
+Requiere `xorriso` igual o superior a la versión 1.5.
+
+El contenido de `install_hooks.yaml` podría eventualmente ser el mismo que la sección anterior, pero omitiendo la descarga del paquete RPM y también adaptando la vía del RPM a `/run/initramfs/live/data/extra-pkgs/some_package.rpm` ya que la carpeta raíz del ISO se monta en `/run/initramfs/live`.

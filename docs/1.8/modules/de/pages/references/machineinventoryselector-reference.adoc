@@ -1,0 +1,10 @@
+= MaschinenInventarAuswähler-Referenz
+:revdate: 2024-09-24
+:page-revdate: {revdate}
+
+Ein MaschinenInventarAuswähler wählt MaschinenInventare basierend auf angewendeten Selektoren aus (in der Regel Musterabgleich an den Werten der MaschinenInventarbezeichnungen).
+
+MaschinenInventarAuswähler haben zwei Bedingungen:
+
+* `InventoryReady`, wird wahr, wenn der MaschinenInventarAuswähler ein passendes MaschinenInventar gefunden hat und sich erfolgreich als Eigentümer des MaschinenInventars festgelegt hat.
+* `Ready`, verfolgt, ob der MaschinenInventarAuswähler bereits eine Maschine übernommen hat und den Kubernetes-Bereitstellungsprozess (Node neu starten) gestartet hat.

@@ -1,0 +1,64 @@
+= ManagedOSVersionChannel リファレンス
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+`ManagedOSVersionChannel` リソースは、OS イメージ チャネルを定義する責任があります。
+
+`ManagedOSVersionChannel` リソース仕様の下に構成できるいくつかのキーがあります。
+
+.managedosversionchannel-example.yaml
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: ManagedOSVersionChannel
+metadata:
+  name: elemental-channel
+  namespace: fleet-default
+spec:
+  options:
+    image: registry.suse.com/rancher/elemental-channel:1.4.2
+  syncInterval: 1h
+  type: custom
+----
+
+== `ManagedOSVersionChannelSpec` リファレンス
+
+|===
+| キー | タイプ | ［デフォルト値］ | 説明
+
+| options
+| object
+| null
+| OS チャネルに追加できるオプション情報を定義します。
+
+| syncInterval
+| 文字列
+| 1時間
+| OS チャネルをsyncするタイミングを定義します。
+
+| type
+| 文字列
+| empty
+| チャネルタイプを定義します。現在サポートされているのは `custom` のみです。
+
+| upgradeContainer
+| object
+| null
+| 定義できるアップグレード用コンテナ。<<_upgradecontainer,リファレンス>> を参照してください。
+
+| deleteNoLongerInSyncVersions
+| bool
+| false
+| チャネルに含まれなくなった廃止された OS バージョンを自動的に削除します。
+
+| 対応
+| bool
+| true
+| このチャネルを有効にします。OS バージョンのsyncを許可します。
+|===
+
+== `upgradeContainer`
+
+これにより、この ManagedOSVersion に基づいて、System Upgrade Controller プランのデフォルト `upgrade` フィールドを上書きすることができます（xref:rancher-os-management/upgrade-lifecycle.adoc#_components[アップグレードコンポーネント] を参照してください）。
+これらのキーは、System Upgrade Controller によって Kubernetes https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#Container[コンテナ] 仕様に翻訳されます。
+これは、OS アップグレードを実行する責任を持つコンテナです。

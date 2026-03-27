@@ -1,0 +1,148 @@
+= Wie man {elemental-product-name} mit Rancher und VMware verwendet
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+== Excerpt
+
+In diesem Dokument werden wir sehen, wie man eine virtuelle Maschine in VMware Workstation einrichtet, um Elemental-Knoten zu booten.
+
+== Voraussetzungen
+
+Rancher 2.8 oder höher installiert und in Betrieb. Siehe die Kurzanleitungen.
+
+== Schritt 1: Erstellen Sie den Registrierungsendpunkt
+
+Wir müssen ein ISO-Image erstellen, um Knoten neu zu starten und an der Rancher-Instanz zu registrieren. Dafür ist ein Registrierungsendpunkt (xref:references/machineregistration-reference.adoc[MachineRegistration] Ressource) erforderlich.
+
+Siehe dieses Beispiel von `MachineRegistration`:
+
+[,yaml]
+.registration.yaml
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: MachineRegistration
+metadata:
+  name: fire-nodes
+  namespace: fleet-default
+spec:
+  config:
+    cloud-config:
+      users:
+        - name: root
+          passwd: root
+    elemental:
+      install:
+        reboot: true
+        device: /dev/sda
+        debug: true
+  machineInventoryLabels:
+    element: fire
+    manufacturer: "${Product/Vendor}"
+    productName: "${Product/Name}"
+    serialNumber: "${Product/Serial Number}"
+    machineUUID: "${Product/UUID}"
+----
+
+Die oben genannte MachineRegistration geht davon aus, dass die Knoten TPM 2.0 enthalten. Falls die virtualisierte Zielmaschine kein virtuelles TPM-Gerät enthält, kann eine Softwareemulation im `config.elemental.registration` Abschnitt konfiguriert werden.
+
+Das folgende Beispiel dient zur Verdeutlichung:
+
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: MachineRegistration
+metadata:
+  ...
+spec:
+  config:
+    cloud-config:
+      ...
+    elemental:
+      install:
+        ...
+      registration:
+        emulate-tpm: true
+        emulated-tpm-seed: -1
+  machineInventoryLabels:
+    ...
+----
+
+`emulated-tpm-seed: -1` setzt den Client so, dass er einen zufälligen Seed verwendet, um den TPM-Hash zu berechnen. Dies ist nützlich, um die gleiche Definition des Registrierungsendpunkts für mehrere Maschinen wiederverwenden zu können. Siehe weitere xref:operator-operational-tasks/tpm.adoc[TPM-Dokumentation].
+
+== 2. Schritt: Erstellen Sie das Installations-ISO
+
+Das Installationsmedium muss an einen bestimmten Registrierungsendpunkt gebunden sein. Dies wird mit der xref:references/seedimage-reference.adoc[SeedImage] Ressource erstellt und verwaltet.
+
+Das folgende Beispiel dient zur Verdeutlichung:
+
+[,yaml]
+.seedimage.yaml
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: SeedImage
+metadata:
+  name: fire-img
+  namespace: fleet-default
+spec:
+  baseImage: registry.suse.com/suse/sle-micro-iso/5.5:2.0.2
+  registrationRef:
+    apiVersion: elemental.cattle.io/v1beta1
+    kind: MachineRegistration
+    name: fire-nodes
+    namespace: fleet-default
+----
+
+Sobald die SeedImage-Ressource erstellt ist, beginnt sie mit dem Erstellen eines ISO mit dem bereitgestellten Betriebssystem-Image und verknüpft es mit dem gegebenen Registrierungsendpunkt. Sobald dies abgeschlossen ist, wird eine Download-URL im Status der SeedImage-Ressource verfügbar sein.
+
+Sie können es herunterladen mit:
+
+[,shell]
+----
+wget --no-check-certificate --content-disposition $(kubectl get seedimages.elemental.cattle.io -n fleet-default fire-img -o jsonpath="{.status.downloadURL}")
+----
+
+== Schritt 3: Starten Sie das Zielgerät
+
+Idealerweise würden Sie das ISO-Image einfach auf ein USB-Laufwerk brennen und Ihr Edge-Gerät mit dem USB-Gerät starten. Sobald es startet und aktiv in Rancher unter Maschineninventar wird, können Sie es auswählen und einen Cluster daraus erstellen. Hier verwenden wir jedoch eine VM, um ein Edge-Gerät für Tests zu simulieren.
+
+=== 3.1 Bereiten Sie die VM vor, um TPM zu emulieren
+
+Erstellen Sie in VMware Workstation eine VM, wie Sie es normalerweise tun würden, und stellen Sie sicher, dass die HDD-Größe mindestens 40 GB beträgt.
+
+Bearbeiten Sie nun die Maschineneinstellungen und gehen Sie zum Tab "Optionen". Die letzte Option wäre "Erweitert".
+
+Klicken Sie auf "Erweitert" und ändern Sie im rechten Fensterbereich den Firmwaretyp von "BIOS" auf "UEFI" und aktivieren Sie die Option "Sicheren Start aktivieren" wie folgt:
+
+* Standardeinstellungen mit ausgewähltem BIOS
+
+image::rancher-vmware-vm-boot-bios.png[VM-Bootoptionen mit BIOS]
+
+* Aktualisierte Einstellungen mit ausgewähltem UEFI und aktiviertem sicherem Start
+
+image::rancher-vmware-vm-boot-uefi.png[VM-Bootoptionen mit UEFI]
+
+Klicken Sie nun im selben Tab "Optionen" auf die Option "Zugriffskontrolle" und klicken Sie auf "Verschlüsseln" auf der rechten Seite.
+
+image::rancher-vmware-access-control-menu.png[Zugriffskontrollmenü]
+
+Dies wird Sie auffordern, ein Passwort einzugeben, um die Maschine zu verschlüsseln. Geben Sie ein Passwort ein und klicken Sie auf "Verschlüsseln"
+
+image::rancher-vmware-access-control-encrypt.png[Zugriffskontrolle Verschlüsselungsanmeldeinformationen]
+
+Es ist wichtig, die TPM-Hardware hinzuzufügen. Gehen Sie als Nächstes zurück zu den Hardwareoptionen und klicken Sie auf "Hinzufügen"
+
+Fügen Sie die TPM (Trusted Platform Module)-Hardware hinzu und klicken Sie auf "Fertigstellen"
+
+Nach Abschluss dieses Schrittes ist unsere VM bereit.
+
+=== 3.2 Starten Sie die VM mit dem Elemental-ISO
+
+Fügen Sie als Nächstes das ISO hinzu, das wir zuvor in der VM erstellt haben, und starten Sie es.
+
+Es sollte mit dem ISO starten und mit der Installation von Elemental beginnen:
+
+image::rancher-vmware-elemental-install-grub.png[{elemental-product-name} OS-Installations-Grub-Menü]
+
+image::rancher-vmware-elemental-install-logs.png[{elemental-product-name} OS-Installationsprotokolle]
+
+Und sobald es abgeschlossen ist, wird die VM neu gestartet und sie wird im Maschineninventar in Rancher als aktiv angezeigt.

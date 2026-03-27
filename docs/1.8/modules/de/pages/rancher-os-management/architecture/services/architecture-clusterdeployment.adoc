@@ -1,0 +1,13 @@
+= Implementierung des Kubernetes-Clusters
+:revdate: 2025-11-06
+:page-revdate: {revdate}
+
+Das Ziel der Implementierungsphase des Kubernetes-Clusters ist es, einen neuen RKE2- oder K3s-Cluster unter Verwendung der verfügbaren xref:references/machineinventory-reference.adoc[MachineInventories] zu erstellen, d.h. der Hosts, die die Phase xref:rancher-os-management/architecture/services/architecture-machineonboarding.adoc[Machine onboarding] erfolgreich abgeschlossen haben.
+
+Die Implementierung des {elemental-product-name} Kubernetes-Clusters umfasst die folgenden Schritte:
+
+* Der Benutzer erstellt eine xref:references/machineinventoryselectortemplate-reference.adoc[MachineInventorySelectorTemplate]-Ressource: Sie ermöglicht die Definition eines _selectors_, um eine Teilmenge der verfügbaren xref:references/machineinventory-reference.adoc[MachineInventories] basierend auf dem Wert ihrer Labels zu identifizieren.
+* Der Benutzer definiert einen xref:references/cluster-reference.adoc[Rancher-Cluster] und fügt der `machinePools` Definition einen Verweis auf die im vorherigen Schritt erstellte xref:references/machineinventoryselectortemplate-reference.adoc[MachineInventorySelectorTemplate] hinzu.
+* Die https://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-deployment/launch-kubernetes-with-rancher.html[Implementierung des Rancher RKE2/K3s Clusters] reagiert auf die Erstellung der Rancher-Cluster-Ressource, indem sie eine Anzahl von xref:references/machineinventoryselector-reference.adoc[MachineInventorySelectors]-Ressourcen generiert, die der im _quantity_ angegebenen Menge entspricht.
+* Der {elemental-product-name} Operator koppelt jede generierte xref:references/machineinventoryselector-reference.adoc[MachineInventorySelector]-Ressource mit einer verfügbaren xref:references/machineinventory-reference.adoc[MachineInventory] und installiert den https://github.com/rancher/system-agent[rancher-system-agent] Daemon auf dem Host, der von der xref:references/machineinventory-reference.adoc[MachineInventory] verfolgt wird.
+Die https://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-deployment/launch-kubernetes-with-rancher.html[Implementierung des Rancher RKE2/K3s Clusters] übernimmt die K3s/RKE2-Implementierung unter Verwendung von https://github.com/rancher/system-agent[rancher-system-agent] _Plänen_: Sie installiert die erforderlichen Komponenten (z. B. containerd, K3s, ...) und erstellt die Konfigurationsdateien bis zur erfolgreichen Implementierung des neuen Kubernetes-Clusters.

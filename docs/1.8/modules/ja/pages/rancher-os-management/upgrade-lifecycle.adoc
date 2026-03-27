@@ -1,0 +1,88 @@
+= アップグレードライフサイクル
+:revdate: 2025-11-06
+:page-revdate: {revdate}
+
+image::upgrade-lifecycle.png[アップグレードフロー]
+
+== コンポーネント
+
+* https://documentation.suse.com/cloudnative/os-manager/[{elemental-product-name} 演算子]
+
+{elemental-product-name} 演算子は、クラスターレベルでOSバージョンを構成するためのいくつかの方法をサポートしています。 +
+新しい `ManagedOSIMage` が定義されるたびに、関連するFleet `Bundle` も {elemental-product-name} 演算子によって生成されます。
+
+* https://documentation.suse.com/cloudnative/continuous-delivery/[Fleet]
+
+この文脈では、Fleet は `ManagedOSImage` によってターゲットとされる各クラスターに `upgrade.cattle.io/v1` `Plan` を適用するために使用されます。 +
+その後、`Plan` は、ダウンストリーム クラスターで実行されている `System Upgrade Controller`{elemental-product-name} によって実行されます。
+
+* https://github.com/rancher/system-upgrade-controller[Upgrade Controller]
+
+Upgrade Controllerは、https://documentation.suse.com/cloudnative/k3s/latest/en/upgrades/automated.html[K3s] および https://documentation.suse.com/cloudnative/rke2/latest/en/upgrade/automated_upgrade.html[RKE2] クラスターで使用されるアップグレードツールです。常に各プロビジョニングされた {elemental-product-name} クラスターに自動的にインストールされるべきです。この文脈では、Upgrade Controllerは `upgrade.cattle.io/v1` `Plan` を {elemental-product-name} ノードに適用するためのオーケストレーションを行います。
+
+== バージョニングとコンポーネントライフサイクル
+
+https://documentation.suse.com/cloudnative/continuous-delivery/[Fleet] と https://github.com/rancher/system-upgrade-controller[Upgrade Controller] のバージョンは、Rancher によって管理されています。
+
+Rancher クラスター上で、次のコマンドを実行できます：
+
+[,bash]
+----
+kubectl get settings fleet-version system-upgrade-controller-chart-version
+----
+
+チャートバージョンに関する詳細情報は、https://github.com/rancher/charts[リポジトリ] を訪問するか、https://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-admin/helm-charts-in-rancher/helm-charts-in-rancher.html[ドキュメント] を読むことができます。
+
+チャートのバージョンは、Rancher によって決定されます。 +
+Rancher のインストール方法に応じて、次の環境変数を設定できます。例えば、https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/references/helm-chart-options.html#_setting_extra_environment_variables[Rancher Helm チャート] をインストールする際に：
+
+[,bash]
+----
+CATTLE_SYSTEM_UPGRADE_CONTROLLER_CHART_VERSION
+CATTLE_FLEET_VERSION
+----
+
+バージョンを手動で更新することは一般的に推奨されません。 +
+新しい `CATTLE_SYSTEM_UPGRADE_CONTROLLER_CHART_VERSION` がトリガーされると、すべてのプロビジョニングされたダウンストリーム クラスターで `system-upgrade-controller` チャートの更新が発生することに注意してください。
+
+== アップグレードの成功を確認する
+
+アップグレードジョブの正しい実行を確認することは、{elemental-product-name} アップグレードプロセスが完了していることを保証するための基本的な部分です。
+
+全体のアップグレードプロセス内の各ステップをトラブルシューティングするには、xref:troubleshooting/troubleshooting-upgrade.adoc[関連文書]を参照してください。 +
+このセクションでは、ターゲットクラスターに対してアップグレードプランの正しい適用を確認するために必要な最後のステップのみを説明します。
+
+* `system-upgrade-controller`の*v0.13.4*以上のバージョン：
++
+[,shell]
+----
+kubectl -n cattle-system describe plan os-upgrader-my-upgrade
+----
++
+プランがすべてのノードに適用されると、`Complete` ステータス条件になります。
+
+* 古いバージョン：
++
+各プランには、各ノードのプランラベルと一致する必要がある`latestHash` ステータス値があります。 +
+プランがまだ適用されていないすべてのノードをリストするために、シンプルなスクリプトを使用できます：
++
+[,shell]
+----
+#!/bin/bash
+
+# This script prints a list of all nodes where an upgrade plan was not applied.
+# To further determine the cause of failures, you can analyze the Plan status and the related jobs.
+# For ex: kubectl -n cattle-system get plans,jobs
+
+# Edit this variable according to your ManagedOSImage name.
+MANAGED_OS_IMAGE_NAME=my-upgrade
+
+PLAN_NAME=os-upgrader-$MANAGED_OS_IMAGE_NAME
+LATEST_HASH=$(kubectl -n cattle-system get plan $PLAN_NAME -o=jsonpath='{.status.latestHash}')
+
+printf "Plan '$PLAN_NAME' latest hash is: '$LATEST_HASH'\n"
+
+PLAN_LABEL=plan.upgrade.cattle.io/$PLAN_NAME
+printf "Listing all nodes with mismatching or missing label '$PLAN_LABEL':\n"
+kubectl get nodes -l $PLAN_LABEL!=$LATEST_HASH
+----

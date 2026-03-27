@@ -1,0 +1,8 @@
+= Serviços
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+{elemental-product-name} A funcionalidade é fornecida através da seguinte lista de serviços:
+
+* xref:rancher-os-management/architecture/services/architecture-machineonboarding.adoc[Onboarding de Máquinas]: permite que os hosts sejam provisionados com o SO e registrados no catálogo do {elemental-product-name} Operador.
+* xref:rancher-os-management/architecture/services/architecture-clusterdeployment.adoc[Implantação de Cluster Kubernetes]: aciona a criação de um Cluster Kubernetes no host disponível registrado no catálogo do {elemental-product-name} Operador.

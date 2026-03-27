@@ -1,0 +1,78 @@
+= 如何在安装过程中添加额外的 LVM 卷组磁盘
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+本示例涵盖了具有多个磁盘的主机的设置，其中一些磁盘作为 LVM 设置的一部分使用。
+
+例如，我们有一台主机，配备三块磁盘（`/dev/sda`、`/dev/sdb` 和 `/dev/sdc`）。
+
+第一块磁盘用于常规的 Elemental 安装，而另外两块磁盘则作为 LVM 组的一部分使用。在该组中，可在启动时通过扩展的 `fstab` 文件创建、格式化并挂载任意逻辑卷。
+
+在这个示例中，云配置步骤在两个不同的阶段是必需的。首先，需要一些 xref:references/cloud-config-reference.adoc#_elemental_client_cloud_config_hooks[安装钩子] 来准备和处理安装过程中的 LVM 卷。其次，在启动时需要一个云配置，以确保创建的 LVM 卷包含在 `/etc/fstab` 中，并因此被挂载。
+
+安装钩子可以被包含在 `SeedImage.spec.cloud-config` 部分中，例如：
+
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: SeedImage
+metadata:
+  name: custom-seed
+  namespace: fleet-default
+spec:
+  ...
+  cloud-config:
+    name: "Create LVM logic volumes over some physical disks"
+    stages:
+      post-install:
+      - name: "Create physical volume, volume group and logical volumes"
+        if: '[ -e "/dev/sdb" ] && [ -e "/dev/sdc" ]'
+        commands:
+        - | 
+          # Create the physical volume, volume group and logical volumes
+          pvcreate /dev/sdb /dev/sdc
+          vgcreate elementalLVM /dev/sdb /dev/sdc
+          lvcreate -L 8G -n elementalVol1 elementalLVM
+          lvcreate -l 100%FREE -n elementalVol2 elementalLVM
+          # Trigger udev detection
+          if [ ! -e "/dev/elementalLVM/elementalVol1" ] || [ ! -e "/dev/elementalLVM/elementalVol2" ]; then
+            sleep 10
+            udevadm settle
+          fi
+          # Ensure devices are already available
+          [ -e "/dev/elementalLVM/elementalVol1" ] || exit 1
+          [ -e "/dev/elementalLVM/elementalVol2" ] || exit 1
+          # Format logical volumes with a known label for later use in fstab
+          mkfs.xfs -L eVol1 /dev/elementalLVM/elementalVol1
+          mkfs.xfs -L eVol2 /dev/elementalLVM/elementalVol2
+----
+
+LVM 设备按需创建和格式化。这是一个很好的安装钩子示例，因为这种设置仅在安装期间执行一次。作为替代方案，可以在第一次启动时执行相同的操作，但这需要更复杂的逻辑，以确保它仅在第一次启动时应用一次。最后，启动时的云配置数据包含触发挂载的安装点设置。Elemental OS `fstab` 文件是临时的，并且在启动时动态创建。这就是它在安装过程中不存在，无法在安装钩子中使用的原因。
+
+考虑以下示例，以使用机器注册资源的 `cloud-config` 部分自定义 `/etc/fstab` 文件：
+
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: MachineRegistration
+metadata:
+  name: my-nodes
+  namespace: fleet-default
+spec:
+  ...
+  config:
+    ...
+    cloud-config:
+      stages:
+        initramfs:
+        - name: "Extend fstab to mount LVM logical volumes at boot"
+          commands:
+          - |
+            echo "LABEL=eVol1 /run/elemental/eVol1  xfs defaults  0 0" >> /etc/fstab
+            echo "LABEL=eVol2 /run/elemental/eVol2  xfs defaults  0 0" >> /etc/fstab
+----
+
+[NOTE]
+====
+`initramfs` xref:references/cloud-config-reference.adoc[阶段] 是切换到实际的 root 树之前的最后阶段。在此阶段，`/etc/fstab` 文件已经存在，可以在切换根之前进行调整。一旦在最终根树中运行，SystemD 将处理其余的初始化并应用。
+====

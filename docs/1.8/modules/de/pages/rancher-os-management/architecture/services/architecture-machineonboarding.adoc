@@ -1,0 +1,14 @@
+= Maschinen-Onboarding
+:revdate: 2025-11-06
+:page-revdate: {revdate}
+
+Ziel des Maschinen-Onboarding-Dienstes ist es, eine neue Maschine im {elemental-product-name} Operator-Katalog (xref:references/machineinventory-reference.adoc[MachineInventory] Ressourcen) zu registrieren und den Host mit dem Betriebssystem bereitzustellen, wobei die gewünschte Konfiguration angewendet wird.
+
+Das Maschinen-Onboarding umfasst die folgenden Schritte:
+
+* Der Benutzer erstellt eine xref:references/machineregistration-reference.adoc[MachineRegistration] Ressource: die MachineRegistration enthält die für die OS-Installation erforderliche Konfiguration.
+Sobald die MachineRegistration erstellt ist, stellt der {elemental-product-name} Operator einen HTTP _Registrierungsendpunkt_ zur Verfügung: dies ist der Einstiegspunkt, den die Onboarding-Hosts benötigen, um sich beim Operator zu registrieren.
+* Der Benutzer fordert ein selbstinstallierendes Image über eine xref:references/seedimage-reference.adoc[SeedImage] Ressource an: es benötigt lediglich einen Verweis auf eine MachineRegistration-Ressource und auf ein OS-Container-Image, das mit dem {elemental-product-name} Toolkit kompatibel ist.
+Sobald das SeedImage erstellt ist, löst der {elemental-product-name} Operator den Build-Prozess der selbstinstallierenden image: once completed, the URL is exposed in the `status.downloadURL` field of the xref:references/seedimage-reference.adoc[SeedImage] Ressource aus.
+* Der Benutzer lädt das selbstinstallierende Image herunter und verwendet es, um einen nicht bereitgestellten Host zu starten: der Host https://documentation.suse.com/cloudnative/os-manager/latest/en/rancher-os-management/authentication.html[authentifiziert] sich beim _Registrierungsendpunkt_ des {elemental-product-name} Operators, erhält die vollständige Konfiguration, die in der MachineRegistration gespeichert ist, und installiert das Betriebssystem auf dem lokalen Speichergerät. Sobald der Host den Registrierungsprozess abgeschlossen hat, erstellt der {elemental-product-name} Operator eine eindeutige xref:references/machineinventory-reference.adoc[MachineInventory] Ressource, die den Host verfolgt.
+Das selbstinstallierende Image kann verwendet werden, um beliebig viele Hosts zu onboarden.

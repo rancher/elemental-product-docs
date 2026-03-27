@@ -1,0 +1,148 @@
+= {elemental-product-name}をRancherとVMwareで使用するハウツー
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+== 引用
+
+この文書では、VMwareワークステーションでElementalノードを起動するための仮想マシンの設定方法を見ていきます。
+
+== 前提条件
+
+Rancher 2.8以上がインストールされ、実行中であること。クイックスタートガイドをご覧ください。
+
+== 手順1:登録エンドポイントを作成する
+
+ノードを起動し、Rancherインスタンスに登録するためにISOイメージを作成する必要があります。そのためには、登録エンドポイント（xref:references/machineregistration-reference.adoc[MachineRegistration]リソース）が必要です。
+
+次の`MachineRegistration`の例をご覧ください：
+
+[,yaml]
+.registration.yaml
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: MachineRegistration
+metadata:
+  name: fire-nodes
+  namespace: fleet-default
+spec:
+  config:
+    cloud-config:
+      users:
+        - name: root
+          passwd: root
+    elemental:
+      install:
+        reboot: true
+        device: /dev/sda
+        debug: true
+  machineInventoryLabels:
+    element: fire
+    manufacturer: "${Product/Vendor}"
+    productName: "${Product/Name}"
+    serialNumber: "${Product/Serial Number}"
+    machineUUID: "${Product/UUID}"
+----
+
+上記のMachineRegistrationは、ノードがTPM 2.0を含むことを前提としています。仮想化されたターゲットマシンに仮想TPMデバイスが含まれていない場合、`config.elemental.registration`セクションでソフトウェアエミュレーションを構成できます。
+
+次に例を示します。
+
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: MachineRegistration
+metadata:
+  ...
+spec:
+  config:
+    cloud-config:
+      ...
+    elemental:
+      install:
+        ...
+      registration:
+        emulate-tpm: true
+        emulated-tpm-seed: -1
+  machineInventoryLabels:
+    ...
+----
+
+`emulated-tpm-seed: -1`は、クライアントがTPMハッシュを計算するためにランダムシードを使用するように設定します。これは、複数のマシンに対して同じ登録エンドポイント定義を再利用できるようにするために便利です。さらにxref:operator-operational-tasks/tpm.adoc[TPMドキュメント]をご覧ください。
+
+== ステップ2:インストールISOを作成する
+
+インストールメディアは、特定の登録エンドポイントに結び付ける必要があります。これはxref:references/seedimage-reference.adoc[SeedImage]リソースで作成および管理されます。
+
+次に例を示します。
+
+[,yaml]
+.seedimage.yaml
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: SeedImage
+metadata:
+  name: fire-img
+  namespace: fleet-default
+spec:
+  baseImage: registry.suse.com/suse/sle-micro-iso/5.5:2.0.2
+  registrationRef:
+    apiVersion: elemental.cattle.io/v1beta1
+    kind: MachineRegistration
+    name: fire-nodes
+    namespace: fleet-default
+----
+
+SeedImageリソースが作成されると、提供されたOSイメージを使用してISOを構築し、指定された登録エンドポイントにリンクし始めます。完了すると、SeedImageリソースのステータスにダウンロードURLが表示されます。
+
+次の方法でダウンロードできます：
+
+[,shell]
+----
+wget --no-check-certificate --content-disposition $(kubectl get seedimages.elemental.cattle.io -n fleet-default fire-img -o jsonpath="{.status.downloadURL}")
+----
+
+== ステップ3:ターゲットデバイスを起動する
+
+理想的には、ISOをUSBドライブに書き込み、USBデバイスを使用してエッジデバイスを起動し、起動してRancherのマシンインベントリにアクティブになると、そこからクラスターを選択して作成できますが、ここではテストのためにVMを使用してエッジデバイスを模倣します。
+
+=== 3.1 TPMをエミュレートするためにVMを準備する
+
+VMware Workstationで通常通りにVMを作成し、HDDのサイズを少なくとも40GBに設定してください。
+
+次に、マシン設定を編集し、「オプション」タブに移動します。最後のオプションは「詳細」です。
+
+「詳細」をクリックし、右側のウィンドウペインでファームウェアタイプを「BIOS」から「UEFI」に変更し、「セキュアブートを有効にする」オプションを次のようにチェックします：
+
+* BIOSが選択されたデフォルト設定
+
+image::rancher-vmware-vm-boot-bios.png[BIOSのVMブートオプション]
+
+* UEFIが選択され、セキュアブートが有効になった更新設定
+
+image::rancher-vmware-vm-boot-uefi.png[UEFIのVMブートオプション]
+
+同じ「オプション」タブで「アクセス制御」オプションをクリックし、右側で「暗号化」をクリックします。
+
+image::rancher-vmware-access-control-menu.png[アクセス制御メニュー]
+
+これにより、マシンを暗号化するためのパスワードを入力するよう求められます。パスワードを入力し、「暗号化」をクリックします。
+
+image::rancher-vmware-access-control-encrypt.png[アクセス制御暗号化資格情報]
+
+TPMハードウェアを追加することが重要です。次に、ハードウェアオプションに戻り、「追加」をクリックします。
+
+TPM（トラステッドプラットフォームモジュール）ハードウェアを追加し、「完了」をクリックします。
+
+このステップが完了すると、私たちのVMは準備完了です。
+
+=== 3.2 Elemental ISOでVMを起動する
+
+次に、以前に作成した.isoをVMに追加し、起動します。
+
+ISOで起動し、Elementalのインストールを開始するはずです：
+
+image::rancher-vmware-elemental-install-grub.png[{elemental-product-name} OSインストールgrubメニュー]
+
+image::rancher-vmware-elemental-install-logs.png[{elemental-product-name} OSインストールログ]
+
+完了すると、VMが再起動し、Rancherのマシンインベントリにアクティブとして表示されます。

@@ -1,0 +1,126 @@
+= referência da versão do ManagedOS
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+O recurso `ManagedOSVersion` é responsável por definir uma versão de imagem do SO que pode ser usada com os recursos `SeedImage` ou `ManagedOSImage`.
+
+Existem várias chaves que podem ser configuradas sob uma especificação de recurso `ManagedOSVersion`.
+
+.managedosversion-example.yaml
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: ManagedOSVersion
+metadata:
+  labels:
+    elemental.cattle.io/channel: elemental-channel
+  name: v2.0.2
+  namespace: fleet-default
+spec:
+  metadata:
+    displayName: SLE Micro
+    upgradeImage: registry.suse.com/suse/sle-micro/5.5:2.0.2
+  type: container
+  version: v2.0.2
+----
+
+== `ManagedOSVersionSpec` referência
+
+|===
+| Chave | Tipo | Valor padrão | Descrição
+
+| metadados
+| object
+| nulo
+| Isso define alguns dados sobre a imagem do SO. Veja [referência](#metadata)
+
+| minVersion
+| string
+| nulo
+| Não usado
+
+| type
+| string
+| esvaziar
+| Define o tipo de imagem do SO, que pode ser `container` ou `iso`
+
+| versão
+| string
+| esvaziar
+| versão da imagem do SO
+
+| upgradeContainer
+| object
+| nulo
+| Um contêiner de atualização que pode ser definido. Veja [referência](#upgradecontainer)
+|===
+
+.Clique aqui para detalhes
+[%collapsible]
+====
+.Exemplo de imagem ISO
+[,yaml]
+----
+metadata:
+  displayName: SLE Micro ISO x86_64
+  uri: registry.suse.com/suse/sl-micro/6.0/baremetal-iso-image:2.2.0
+type: iso
+version: v2.2.0
+----
+====
+
+.Clique aqui para detalhes
+[%collapsible]
+====
+.Exemplo de imagem de contêiner
+[,yaml]
+----
+metadata:
+  displayName: SLE Micro upgrade
+  upgradeImage: registry.suse.com/suse/sl-micro/6.0/baremetal-os-container:2.2.0
+type: container
+version: v2.2.0
+----
+====
+
+== metadados
+
+Isso descreve as informações necessárias para definir uma imagem do SO em {elemental-product-name}.
+
+Se `type` estiver definido como `container`:
+
+|===
+| Chave | Tipo | Valor padrão | Descrição
+
+| displayName
+| string
+| esvaziar
+| Nome da imagem do SO conforme visto na interface do Rancher
+
+| upgradeImage
+| string
+| esvaziar
+| Imagem de contêiner totalmente qualificada (referência OCI ou URI HTTP)
+|===
+
+Se `type` estiver definido como `iso`:
+
+|===
+| Chave | Tipo | Valor padrão | Descrição
+
+| displayName
+| string
+| esvaziar
+| Nome da imagem do SO conforme visto na interface do Rancher
+
+| uri
+| string
+| esvaziar
+| Imagem ISO totalmente qualificada
+|===
+
+== `upgradeContainer`
+
+Isso permite sobrescrever o campo padrão `upgrade` dos planos do Upgrade Controller (veja xref:rancher-os-management/upgrade-lifecycle.adoc#_components[componentes de upgrade]) com base nesta ManagedOSVersion.
+Essas chaves são traduzidas pelo Upgrade Controller para uma especificação de https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#Container[contêiner] do Kubernetes.
+Este é o contêiner responsável por executar uma atualização do SO.

@@ -1,0 +1,183 @@
+= {elemental-product-name} la manière visuelle
+:revdate: 2025-11-06
+:page-revdate: {revdate}
+
+[NOTE]
+====
+Les instructions suivantes nécessitent au moins Rancher 2.9.x.
+====
+
+Ce guide rapide vous montrera comment déployer le plugin et l'opérateur {elemental-product-name} dans une instance existante de Rancher Manager.
+
+Une fois installé, vous pourrez provisionner un nouveau cluster {elemental-product-name} basé sur RKE2 ou K3s.
+
+Cependant, si vous souhaitez installer l'opérateur de staging ou de développement, vous ne pouvez le faire qu'en mode xref:quickstarts/quickstart-cli.adoc#_non_stable_installations[CLI].
+
+== Ajouter le dépôt officiel des extensions Rancher
+
+Si l'extension Elemental n'est pas disponible, vous devez ajouter le `Official Rancher Extensions Repository` :
+
+image::quickstart-ui-extension-repository.png[Ajouter le dépôt des extensions de Rancher Manager]
+
+Si ce dépôt ne peut pas être ajouté via les paramètres de l'interface utilisateur des extensions, il peut être géré manuellement en https://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-admin/helm-charts-in-rancher/helm-charts-in-rancher.html#_manage_repositories[ajoutant] le dépôt `https://github.com/rancher/ui-plugin-charts` `git`, ou alternativement en appliquant la ressource suivante :
+
+[source,yaml]
+----
+apiVersion: catalog.cattle.io/v1
+kind: ClusterRepo
+metadata:
+  name: rancher-ui-charts
+spec:
+  gitBranch: main
+  gitRepo: https://github.com/rancher/ui-plugin-charts
+----
+
+== Installer le plugin élémentaire
+
+Après que le support des extensions de Rancher Manager soit activé, vous pouvez installer le plugin `elemental` comme suit :
+
+* Sous l'onglet `Available`, vous verrez le plugin `elemental` disponible
+
+image::quickstart-ui-extensions-available.png[Plugins disponibles de Rancher Manager]
+
+[NOTE]
+====
+Si l'onglet `Available` ne montre aucune entrée, rafraîchissez la page. Le plugin `elemental` apparaîtra alors.
+====
+
+* Cliquez sur le bouton `Install`, une fenêtre contextuelle apparaîtra et cliquez à nouveau sur `Install` pour continuer.
+
+image::quickstart-ui-elemental-plugin-install.png[{elemental-product-name} installation du plugin]
+
+* Dans l'onglet `Installed`, le plugin `elemental` est maintenant listé.
+
+[NOTE]
+====
+Si le plugin `elemental` est listé et que le statut reste à `Installing...`, rafraîchissez la page. Le plugin `elemental` s'affichera correctement.
+====
+
+Une fois le plugin `elemental` installé, vous pouvez voir l'option `OS Management` dans le menu Rancher Manager, rafraîchissez la page si vous ne la voyez pas.
+
+image::quickstart-ui-elemental-plugin-menu.png[Menu de gestion du système d'exploitation Rancher Manager]
+
+== Installez l'opérateur élémentaire
+
+[NOTE]
+====
+Le guide suivant vous montrera comment installer l'opérateur via l'interface utilisateur {elemental-product-name}. Mais vous pouvez également l'installer directement depuis le Marketplace.
+====
+
+Cliquez sur le bouton de gestion du système d'exploitation dans le menu de navigation.
+
+Si l'opérateur n'est pas déjà installé, l'interface utilisateur élémentaire vous permettra de le déployer en cliquant sur le bouton `Install {elemental-product-name} Operator` :
+
+image::quickstart-ui-extension-operator-button.png[Bouton pour déployer l'opérateur élémentaire]
+
+Cela vous redirigera vers le Marketplace Rancher pour installer l'opérateur.
+
+Cliquez sur le bouton `Next` :
+
+image::quickstart-ui-extension-operator-install-1.png[Installer l'opérateur {elemental-product-name} capture d'écran 1]
+
+Dans cet écran, vous pouvez personnaliser ou utiliser les valeurs par défaut, cliquez sur `Install` pour continuer :
+
+image::quickstart-ui-extension-operator-install-2.png[Installer l'opérateur {elemental-product-name} capture d'écran 2]
+
+Vous devriez voir ``elemental-operator-CRD``et `elemental-operator` déployés dans l'espace de noms `cattle-elemental-system` :
+
+image::quickstart-ui-extension-operator-install-3.png[Installer l'opérateur {elemental-product-name} capture d'écran 3]
+
+[CAUTION]
+====
+Si vous ne les voyez pas, assurez-vous de sélectionner l'espace de noms correct en haut de la page.
+====
+
+== Ajoutez un point de terminaison d'enregistrement de machine
+
+Dans le tableau de bord de gestion du système d'exploitation, cliquez sur le bouton `Create Registration Endpoint`.
+
+image::quickstart-ui-registration-endpoint-create.png[Points de terminaison d'enregistrement de gestion du système d'exploitation]
+
+Maintenant, ici, soit vous pouvez entrer chaque détail dans ses emplacements respectifs, soit vous pouvez modifier cela en YAML et créer le point de terminaison en une seule fois. Ici, nous allons modifier tous les champs.
+
+image::quickstart-ui-registration-endpoint-create-details.png[Créer un point de terminaison d'enregistrement avec une interface utilisateur]
+
+[IMPORTANT]
+.Options principales
+====
+`name: elemental-cluster1`: modifiez ceci selon vos besoins
+
+`device-selector` : Le champ xref:references/machineregistration-reference.adoc#_config_elemental_install_device_selector[sélecteur de périphérique] peut être utilisé pour sélectionner dynamiquement le périphérique lors de l'installation. Le champ contient une liste de règles pour sélectionner le périphérique souhaité.
+
+`snapshotter` : Type de périphérique utilisé pour gérer les instantanés dans les images du système d'exploitation.
+====
+
+Une fois que vous avez créé le point de terminaison d'enregistrement de la machine, il devrait apparaître comme actif.
+
+image::quickstart-ui-registration-endpoint-complete.png[Machine enregistrée dans les points de terminaison d'enregistrement]
+
+== Préparation de l'image d'installation (seed)
+
+Maintenant, c'est la dernière étape, vous devez préparer une image seed qui inclut la configuration d'enregistrement initiale, afin qu'elle puisse être enregistrée automatiquement, installée et entièrement déployée dans votre cluster. Le contenu du fichier n'est rien d'autre que l'URL d'enregistrement dont le nœud a besoin pour s'enregistrer et le certificat de serveur approprié, afin qu'il puisse se connecter en toute sécurité.
+
+Cette image seed peut ensuite être utilisée pour provisionner un nombre infini de machines.
+
+L'image seed est créée en tant que ressource Kubernetes ci-dessus et peut être construite en utilisant le bouton `Build Media`, mais d'abord, vous devez sélectionner une image ISO ou RAW.
+
+Contrairement à l'ISO qui nécessite deux périphériques (un périphérique avec l'ISO et un autre disque où installer {elemental-product-name}), l'image RAW permet de démarrer à partir d'un seul périphérique et d'installer directement le système d'exploitation sur le périphérique.
+L'image RAW ne contient qu'une partition de démarrage et une partition de récupération et elle démarre d'abord en mode de récupération pour installer {elemental-product-name} (pour information, le processus est similaire à celui de xref:node-operational-tasks/reset.adoc#_reset_workflow[réinitialiser]).
+
+image::quickstart-ui-registration-endpoint-build-media.png[Construire des médias dans les points de terminaison d'enregistrement]
+
+Une fois la construction terminée, les médias peuvent être téléchargés en utilisant le bouton `Download Media` :
+
+image::quickstart-ui-registration-endpoint-download-media.png[Télécharger des médias dans les points de terminaison d'enregistrement]
+
+Vous pouvez maintenant démarrer vos nœuds avec cette image et ils vont :
+
+* Inscrivez-vous avec l'URL d'enregistrement donnée et créez un `MachineInventory` par machine
+* Installez SLE Micro sur le dispositif donné
+* Redémarrer
+
+== Inventaire des machines
+
+Lorsque les nœuds démarrent pour la première fois, ils se connectent à Rancher Manager et un xref:references/machineinventory-reference.adoc[`Machine Inventory`] est créé pour chaque nœud.
+
+image::quickstart-ui-machine-inventory-menu.png[Menu d'inventaire des machines]
+
+Les colonnes personnalisées sont basées sur `Machine Inventory Labels` que vous pouvez ajouter lorsque vous créez votre `Machine Registration Endpoint` :
+
+image::quickstart-ui-registration-endpoint-hardware-labels.png[Étiquettes matérielles du point de terminaison d'enregistrement des machines]
+
+Sur la capture d'écran suivante, `Hardware Labels` sont utilisés comme colonnes personnalisées :
+
+Vous pouvez également ajouter des colonnes personnalisées en cliquant sur le menu trois points.
+
+image::quickstart-ui-machine-inventory-custom-columns.png[Colonnes personnalisées de l'inventaire des machines]
+
+Enfin, vous pouvez également filtrer votre `Machine Inventory` en utilisant ces étiquettes.
+
+Par exemple, si vous souhaitez uniquement voir vos machines AMD, vous pouvez filtrer sur `CPUModel` comme ci-dessous :
+
+image::quickstart-ui-machine-inventory-filtering.png[Filtrage de l'inventaire des machines]
+
+== Créez votre premier {elemental-product-name} Cluster
+
+Maintenant, utilisons ces `Machine Inventory` pour créer un cluster en cliquant sur `Create {elemental-product-name} Cluster` :
+
+image::quickstart-ui-create-cluster-button.png[Bouton Créer un Cluster {elemental-product-name}]
+
+Pour votre cluster {elemental-product-name}, vous pouvez choisir K3s ou RKE2 pour Kubernetes.
+
+image::quickstart-ui-create-cluster-standard-screen-.png[{elemental-product-name} Écran de création de Cluster]
+
+La plupart des options proviennent de Rancher, c'est pourquoi nous ne détaillerons pas toutes les possibilités.
+N'hésitez pas à consulter la https://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-deployment/configuration/k3s.html[documentation de configuration de la distribution K3s de Rancher Manager] ou la https://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-deployment/configuration/rke2.html[documentation de configuration de la distribution RKE2 de Rancher Manager] si vous souhaitez en savoir plus.
+
+Cependant, il est important de mettre en avant la section `Inventory of Machines Selector Template`.
+
+Cela vous permet de choisir quel `Machine Inventory` vous souhaitez utiliser pour créer votre cluster {elemental-product-name} en utilisant le `Machine Inventory Labels` défini précédemment :
+
+image::quickstart-ui-create-cluster-machine-selector-template.png[Utiliser le modèle de sélecteur d'inventaire de machines]
+
+Comme nos trois inventaires de machines contiennent l'étiquette `CPUVendor` avec la clé `AuthenticAMD`, les trois machines seront utilisées pour créer le cluster {elemental-product-name}.

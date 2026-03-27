@@ -1,0 +1,47 @@
+= 备份
+:revdate: 2025-11-06
+:page-revdate: {revdate}
+
+由于{elemental-product-name}作为Rancher的一部分运行，{elemental-product-name}资源被打包在Rancher备份中。
+有关Rancher备份、恢复和灾难恢复选项的更多详细信息，请参阅官方https://documentation.suse.com/cloudnative/rancher-manager/latest/en/rancher-admin/back-up-restore-and-disaster-recovery/back-up-restore-and-disaster-recovery.html[Rancher文档]。
+
+== 为 Rancher 安装 Rancher 备份操作器
+
+遵循https://documentation.suse.com/cloudnative/rancher-manager/latest/en/rancher-admin/back-up-restore-and-disaster-recovery/back-up.html[Rancher 备份指南]以了解如何安装和配置 Rancher 备份操作器。
+
+
+== 使用 Rancher 备份操作器备份{elemental-product-name}
+
+创建一个`backup object`（根据您的需求调整）以备份在Kubernetes集群上运行的Rancher。
+
+[,yaml]
+----
+apiVersion: resources.cattle.io/v1
+kind: Backup
+metadata:
+  name: rancher-backup
+spec:
+  resourceSetName: rancher-resource-set
+  schedule: "10 3 * * *"
+  retentionCount: 10
+----
+
+Rancher 备份操作器提供多种选项，包括调度、加密和存储类。
+您可以通过阅读https://documentation.suse.com/cloudnative/rancher-manager/latest/en/rancher-admin/back-up-restore-and-disaster-recovery/configuration/backup.html[官方文档]来探索所有选项。
+
+检查 Rancher 备份操作器的日志。
+
+[,shell]
+----
+kubectl logs -n cattle-resources-system -l app.kubernetes.io/name=rancher-backup -f
+----
+
+验证备份文件是否已在持久卷上创建。
+
+[,shell]
+----
+...
+INFO[2022/10/17 07:45:04] Finding files starting with /var/lib/backups/rancher-backup-430169aa-edde-4a61-85e8-858f625a755b*.tar.gz
+INFO[2022/10/17 07:45:04] File rancher-backup-430169aa-edde-4a61-85e8-858f625a755b-2022-10-17T05-15-00Z.tar.gz was created at 2022-10-17 0
+...
+----

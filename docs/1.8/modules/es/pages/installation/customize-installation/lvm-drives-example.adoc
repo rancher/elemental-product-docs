@@ -1,0 +1,78 @@
+= Cómo añadir discos adicionales al grupo de volúmenes LVM durante la instalación
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+Este ejemplo cubre la configuración de un host con múltiples discos, algunos de los cuales se utilizan como parte de una configuración LVM.
+
+Como ejemplo, tenemos un host con tres discos (`/dev/sda`, `/dev/sdb` y `/dev/sdc`). 
+
+El primer disco se utiliza para una instalación Elemental regular y los otros dos restantes se utilizan como parte de un grupo LVM donde se crean, formatean y montan volúmenes lógicos arbitrarios al inicio mediante un archivo `fstab` extendido.
+
+Para este ejemplo, se requieren pasos de cloud-config en dos etapas diferentes. Primero, se necesitan algunos xref:references/cloud-config-reference.adoc#_elemental_client_cloud_config_hooks[ganchos de instalación] para preparar y manejar los volúmenes LVM durante la instalación. En segundo lugar, se requiere un cloud-config al inicio para asegurar que los volúmenes LVM creados estén incluidos en `/etc/fstab` y, en consecuencia, montados.
+
+Los ganchos de instalación se pueden incluir en la sección `SeedImage.spec.cloud-config` con algo como:
+
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: SeedImage
+metadata:
+  name: custom-seed
+  namespace: fleet-default
+spec:
+  ...
+  cloud-config:
+    name: "Create LVM logic volumes over some physical disks"
+    stages:
+      post-install:
+      - name: "Create physical volume, volume group and logical volumes"
+        if: '[ -e "/dev/sdb" ] && [ -e "/dev/sdc" ]'
+        commands:
+        - | 
+          # Create the physical volume, volume group and logical volumes
+          pvcreate /dev/sdb /dev/sdc
+          vgcreate elementalLVM /dev/sdb /dev/sdc
+          lvcreate -L 8G -n elementalVol1 elementalLVM
+          lvcreate -l 100%FREE -n elementalVol2 elementalLVM
+          # Trigger udev detection
+          if [ ! -e "/dev/elementalLVM/elementalVol1" ] || [ ! -e "/dev/elementalLVM/elementalVol2" ]; then
+            sleep 10
+            udevadm settle
+          fi
+          # Ensure devices are already available
+          [ -e "/dev/elementalLVM/elementalVol1" ] || exit 1
+          [ -e "/dev/elementalLVM/elementalVol2" ] || exit 1
+          # Format logical volumes with a known label for later use in fstab
+          mkfs.xfs -L eVol1 /dev/elementalLVM/elementalVol1
+          mkfs.xfs -L eVol2 /dev/elementalLVM/elementalVol2
+----
+
+Los dispositivos LVM se crean y formatean según lo deseado. Este es un buen ejemplo de un gancho de instalación, ya que esta configuración solo se necesita una vez, en el momento de la instalación. Como alternativa, la misma acción podría realizarse en el primer arranque, sin embargo, requeriría una lógica más sofisticada para asegurar que solo se aplique una vez en el primer arranque. Finalmente, los datos de cloud-config al inicio contienen la configuración del punto de montaje para activar los montajes. El archivo Elemental OS `fstab` es efímero y se crea dinámicamente al inicio. Por eso no existe durante la instalación y no se puede utilizar en un gancho de instalación.
+
+Considera el siguiente ejemplo para personalizar el archivo `/etc/fstab` utilizando la sección `cloud-config` de un recurso MachineRegistration:
+
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: MachineRegistration
+metadata:
+  name: my-nodes
+  namespace: fleet-default
+spec:
+  ...
+  config:
+    ...
+    cloud-config:
+      stages:
+        initramfs:
+        - name: "Extend fstab to mount LVM logical volumes at boot"
+          commands:
+          - |
+            echo "LABEL=eVol1 /run/elemental/eVol1  xfs defaults  0 0" >> /etc/fstab
+            echo "LABEL=eVol2 /run/elemental/eVol2  xfs defaults  0 0" >> /etc/fstab
+----
+
+[NOTE]
+====
+La `initramfs` xref:references/cloud-config-reference.adoc[etapa] es la última etapa antes de cambiar al árbol raíz real. En esta etapa, el archivo `/etc/fstab` ya existe y puede ser adaptado antes de cambiar la raíz. Una vez en el árbol raíz final, SystemD se encargará del resto de la inicialización y la aplicará.
+====

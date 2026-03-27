@@ -1,0 +1,50 @@
+= Personalizar el nombre de host
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+== {elemental-product-name} Descripción general de la gestión del nombre de host
+
+Cuando un host arranca desde el {elemental-product-name} ISO, el nombre de host se establece temporalmente (_nombre de host transitorio_) al proporcionado por el servidor DHCP.
+Si el servidor DHCP no proporciona un nombre de host, el {elemental-product-name} ISO proporciona un nombre de host transitorio en la forma: `rancher-$\{RANDOM}`.
+
+Tan pronto como finaliza el proceso de arranque, comienza la fase de registro: el host se conecta al {elemental-product-name} Operador, que crea un `MachineInventory` para el host.
+Cada host registrado con el {elemental-product-name} Operador es rastreado por un recurso `MachineInventory`.
+
+*El `name` del recurso `MachineInventory` asociado con el nodo es el nombre de host permanente (estático)* *que eventualmente se establece en el host*.
+Este nombre de host permanente *se establece en el nodo durante la fase de aprovisionamiento del clúster K8s únicamente*.
+Antes de la fase de aprovisionamiento de K8s, el nombre de host del nodo es el asignado por DHCP o `rancher-$\{RANDOM}`.
+
+Para el resto de esta sección, nos referiremos al `hostname` significando el _permanente_ nombre de host, es decir, el nombre de host que se establece después de que el host ha sido aprovisionado como parte de un clúster K8s.
+
+== Nombre de host predeterminado
+
+El nombre predeterminado asignado a cada MachineInventory recién creado está en la forma `m-{$UUID}`.
+Cuando el host es aprovisionado como parte de un Cluster, ese nombre `m-\{UUID}` se establece como el nombre de host del host correspondiente, sobrescribiendo el nombre de host asignado previamente (`rancher-{$RANDOM}` o el asignado por DHCP).
+
+== Establecer un nombre de host personalizado
+
+El nombre de host se puede especificar configurando el campo xref:references/machineregistration-reference.adoc#_machinename[`machineName`] en el recurso xref:references/machineregistration-reference.adoc['MachineRegistration'].
+
+Se espera que el nombre de host establecido en el campo `machineName` esté en forma de plantilla, para ser generado de manera única para cada nodo que se registre, utilizando datos de SMBIOS y Etiquetas de Hardware.
+
+[IMPORTANT]
+====
+El campo `machineName` en el recurso `MachineRegistration` se utiliza como el plano no solo para el nombre de host del host que se registra, sino también para el nombre del recurso `MachineInventory` creado para rastrear el host.
+
+Esto significa que si no utilizas un `machineName` en plantilla para generar un nombre único para cada host que arranque utilizando los mismos datos `MachineRegistration` (es decir, el mismo ISO), solo el primer host que se registre tendrá éxito mientras que los demás fallarán: el nombre `MachineInventory` debe ser único.
+====
+
+
+importar Registro desde "!!raw-loader!@site/examples/quickstart/registration-hardware-dhcphostname.yaml"
+
+== Mantener el nombre de host asignado por DHCP
+
+Para mantener el nombre de host asignado por el servidor DHCP antes de que el host se registre con el operador, el `MachineRegistration` xref:references/machineregistration-reference.adoc#_machinename[`machineName field`] debe configurarse con la etiqueta de hardware `${System Data/Runtime/Hostname}`.
+
+De esta manera, {elemental-product-name} utilizará el nombre de host actual como el nombre `MachineInventory` durante la fase de registro, que luego se establecerá como el nombre de host estático del host durante la fase de aprovisionamiento.
+
+.ejemplo de registro con el nombre de host y el nombre de MachineInventory establecidos en el nombre de host obtenido del servidor DHCP
+[,yaml]
+----
+include::example$quickstart/registration-hardware-dhcphostname.yaml[]
+----

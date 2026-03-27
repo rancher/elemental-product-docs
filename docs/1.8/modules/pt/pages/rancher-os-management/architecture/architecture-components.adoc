@@ -1,0 +1,47 @@
+= Componentes de Arquitetura
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+Os componentes necessários para fornecer os xref:rancher-os-management/architecture/services/architecture-services.adoc[{elemental-product-name} serviços] são:
+
+* a ferramenta de linha de comando <<_elemental_command_line_tool,`elemental`>>
+* o daemon <<_elemental_operator_daemon,`elemental-operator`>>
+* a ferramenta de linha de comando <<_elemental_register_command_line_tool,`elemental-register`>>
+* o daemon <<_elemental_system_agent_daemon,`elemental-system-agent`>>
+* uma ou mais imagens de contêiner de SO <<_suse_rancher_prime_os_manager_os_container_image,{elemental-product-name}>>
+
+== `elemental` ferramenta de linha de comando
+
+A ferramenta `elemental` faz parte do projeto link:{elemental_toolkit_url}[{elemental_toolkit_name}].
+Ela realiza as operações reais de instalação e de upgrade do SO no host e é usada para executar as diretivas xref:references/cloud-config-reference.adoc[cloud-config] adicionadas nos xref:rancher-os-management/architecture/custom-resources.adoc[{elemental-product-name} CRDs].
+
+O binário `elemental` está incluído em todas as imagens base do SO distribuídas com {elemental-product-name}.
+
+== `elemental-operator` daemon
+
+O daemon *elemental-operator* realiza duas tarefas principais:
+
+. incorpora os controladores Kubernetes {elemental-product-name} para gerenciar todos os xref:rancher-os-management/architecture/custom-resources.adoc[{elemental-product-name} CRDs]
+. expõe os _endpoints de registro_ para permitir que o host registre e baixe a configuração de instalação do SO durante a xref:rancher-os-management/architecture/services/architecture-machineonboarding.adoc[integração da máquina].
+
+O daemon `elemental-operator` é implantado no cluster Rancher como um `Deployment` via o xref:references/operatorchart-reference.adoc[{elemental-product-name} Operator Helm Chart].
+
+== `elemental-register` ferramenta de linha de comando
+
+O binário *elemental-register* é o cliente usado para registrar o host contra os _endpoints de registro_ expostos pelo <<_elemental_operator_daemon,elemental-operator>>. Ele coleta e encaminha os dados do host para permitir que o <<_elemental_operator_daemon,elemental-operator>> preencha os templates de SMBIOS e de rótulo de Hardware.
+
+Se a fase de registro for realizada com sucesso, o *elemental-register* obtém a configuração completa armazenada no xref:references/machineregistration-reference.adoc[MachineRegistration] do *elemental-operator*.
+Como último passo, o cliente *elemental-register* chama o binário <<_elemental_command_line_tool,elemental>> passando a configuração recuperada para iniciar a instalação do SO.
+
+== `elemental-system-agent` daemon
+
+O `elemental-system-agent` é construído a partir do projeto https://github.com/rancher/system-agent[Rancher System Agent project] e permite que {elemental-product-name} implante _planos_ para auxiliar na provisão do host.
+Notavelmente, a `rancher-system-agent` instalação e configuração necessárias para o xref:rancher-os-management/architecture/services/architecture-clusterdeployment.adoc[serviço de provisão do Cluster Kubernetes] são realizadas através de um `elemental-system-agent`_plano_.
+
+== {elemental-product-name} imagem de contêiner de SO
+
+Uma imagem de SO link:{elemental_toolkit_url}[{elemental_toolkit_name}] é uma imagem de contêiner OCI que contém todos os arquivos que compõem o sistema operacional do host de destino. Ela contém não apenas todos os binários e bibliotecas, mas também o kernel e os arquivos de inicialização necessários para um sistema Linux.
+
+A imagem do SO {elemental-product-name} é uma imagem de SO link:{elemental_toolkit_url}[{elemental_toolkit_name}] opinativa que é baseada em https://www.suse.com/products/micro/[SLE Micro] e contém configurações e binários específicos {elemental-product-name} (os <<_elemental_command_line_tool,elemental>> e os <<_elemental_register_command_line_tool,elemental-register>>).
+
+As imagens do SO {elemental-product-name} são rastreadas nos recursos xref:references/managedosversion-reference.adoc[ManagedOSVersions]. Os recursos xref:references/managedosversion-reference.adoc[ManagedOSVersions] são criados dinamicamente a partir dos recursos xref:references/managedosversionchannel-reference.adoc[ManagedOSVersionChannel]. Um recurso padrão `ManagedOSVersionChannel` é implantado com cada instalação do Operador {elemental-product-name}.

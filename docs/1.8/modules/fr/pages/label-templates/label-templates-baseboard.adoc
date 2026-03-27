@@ -1,0 +1,33 @@
+= Variables du modèle de la carte mère
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+Les informations collectées dans les variables de la carte mère définissent les attributs d'une carte mère du système (par exemple, une carte mère, un planar, une lame de serveur ou un autre module standard du système).
+
+Sous-ensemble des données SMBIOS relatives à la carte mère (ou au module) (type 2).
+
+Pour plus d'informations sur SMBIOS, voir le https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.7.1.pdf[SMSBIOS specification].
+
+|===
+| Variable | Description | from
+
+| `${BaseBoard/AssetTag}`
+| Étiquette d'actif de la carte mère
+| 1.7.0
+
+| `${BaseBoard/Product}`
+| Nom du produit de la carte mère
+| 1.7.0
+
+| `${BaseBoard/SerialNumber}`
+| Numéro de série de la carte mère
+| 1.7.0
+
+| `${BaseBoard/Vendor}`
+| Fournisseur de la carte mère
+| 1.7.0
+
+| `${BaseBoard/Version}`
+| Révision de la carte mère
+| 1.7.0
+|===

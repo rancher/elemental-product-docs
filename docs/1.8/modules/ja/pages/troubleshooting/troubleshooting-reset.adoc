@@ -1,0 +1,145 @@
+= リセットのトラブルシューティング
+:revdate: 2025-07-03
+:page-revdate: {revdate}
+
+`MachineInventory`と`elemental.cattle.io/resettable: "true"`の注釈が付けられた各項目は、削除時にリセットプランの実行をトリガーします。 +
+`elemental-system-agent`がマシン上で実行されている間に、プランが正常に実行された後にのみ、`machineinventory.elemental.cattle.io`ファイナライザーが削除されます。
+
+`MachineInventory`がまだ削除されていない理由を調査するには、次のように確認できます：
+
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: MachineInventory
+metadata:
+  # deletionTimestamp has been set. This object has been marked for deletion.
+  deletionTimestamp: "2023-08-04T08:41:25Z"
+  annotations:
+    # `resettable` annotation is enabled.
+    # This means the machine has to go through reset, before deletion of this object.
+    elemental.cattle.io/resettable: "true"
+  # `machineinventory.elemental.cattle.io` finalizer is set.
+  #  The `elemental-operator` is going to create a reset plan for the machine to execute.
+  #  After successful execution of the reset plan, the finalizer is removed and the object will be deleted.
+  finalizers:
+  - machineinventory.elemental.cattle.io
+status:
+  conditions:
+  # Most recent condition shows that the MachineInventory is waiting for a plan to be applied.
+  - lastTransitionTime: "2023-08-04T08:41:25Z"
+    message: waiting for plan to be applied
+    reason: WaitingForPlan
+    status: "False"
+    type: Ready
+  # The plan to be executed is referenced.
+  # Normally it has the same name of the MachineInventory and lives within the same namespace.
+  plan:
+    checksum: 5aba8b6b3161bc52d8953b2428e54ecda3b59e8e0043b49d761d1e79174eded6
+    secretRef:
+      name: m-bf1008a1-61d6-4355-b5f5-f7d1c527affe
+      namespace: fleet-default
+----
+
+参照されたプラン`Secret`も確認できます。 +
+マシン上で実行されている`elemental-system-agent`がこのシークレットを監視しており、プランを実行する必要があることに注意してください。 +
+マシンのログからその進行状況を監視することもできます：`journalctl -u elemental-system-agent -f`。
+
+[,yaml]
+----
+apiVersion: v1
+kind: Secret
+# This is a `elemental.cattle.io/plan` secret plan.
+type: elemental.cattle.io/plan
+metadata:
+  annotations:
+    # This is a `reset` plan type.
+    elemental.cattle.io/plan.type: reset
+  labels:
+    elemental.cattle.io/managed: "true"
+  name: m-bf1008a1-61d6-4355-b5f5-f7d1c527affe
+  namespace: fleet-default
+  # It is owned by the `MachineInventory` waiting for deletion.
+  ownerReferences:
+  - apiVersion: elemental.cattle.io/v1beta1
+    controller: true
+    kind: MachineInventory
+    name: m-bf1008a1-61d6-4355-b5f5-f7d1c527affe
+    uid: 5aa3863c-63a5-4cb9-91fd-7a45191d4842
+data:
+  # The plan has not been applied yet.
+  applied-checksum: ""
+  # It also hasn't failed.
+  failed-checksum: ""
+  # The actual plan to be executed, base64 encoded.
+  plan: eyJmaWxlcyI6W3siY29udGVudCI6ImJtRnRaVG9nUld4bGJXVnVkR0ZzSUZKbGMyVjBDbk4wWVdkbGN6b0tJQ0FnSUc1bGRIZHZjbXN1WVdaMFpYSTZDaUFnSUNBZ0lDQWdMU0JqYjIxdFlXNWtjem9LSUNBZ0lDQWdJQ0FnSUNBZ0xTQmxiR1Z0Wlc1MFlXd3RjbVZuYVhOMFpYSWdMUzFrWldKMVp5QXRMWEpsYzJWMENpQWdJQ0FnSUNBZ0lDQnBaam9nSjFzZ0xXWWdMM0oxYmk5amIzTXZjbVZqYjNabGNubGZiVzlrWlNCZEp3b2dJQ0FnSUNBZ0lDQWdibUZ0WlRvZ1VuVnVjeUJsYkdWdFpXNTBZV3dnY21WelpYUUsiLCJwYXRoIjoiL29lbS9yZXNldC1jbG91ZC1jb25maWcueWFtbCIsInBlcm1pc3Npb25zIjoiMDYwMCJ9XSwiaW5zdHJ1Y3Rpb25zIjpbeyJuYW1lIjoiY29uZmlndXJlIG5leHQgYm9vdCB0byByZWNvdmVyeSBtb2RlIiwiYXJncyI6WyIvb2VtL2dydWJlbnYiLCJzZXQiLCJuZXh0X2VudHJ5PXJlY292ZXJ5Il0sImNvbW1hbmQiOiJncnViMi1lZGl0ZW52In0seyJuYW1lIjoic2NoZWR1bGUgcmVib290IiwiYXJncyI6WyItciIsIisxIl0sImNvbW1hbmQiOiJzaHV0ZG93biJ9XX0K
+----
+
+`elemental-operator`によって作成されたプランには、次の指示が含まれている必要があります：
+
+[,json]
+----
+{
+  "files": [
+    // A cloud-init config file is created on the default /oem directory.
+    // This config will be executed once in recovery mode.
+    {
+      "content": "bmFtZTogRWxlbWVudGFsIFJlc2V0CnN0YWdlczoKICAgIG5ldHdvcmsuYWZ0ZXI6CiAgICAgICAgLSBjb21tYW5kczoKICAgICAgICAgICAgLSBlbGVtZW50YWwtcmVnaXN0ZXIgLS1kZWJ1ZyAtLXJlc2V0CiAgICAgICAgICBpZjogJ1sgLWYgL3J1bi9jb3MvcmVjb3ZlcnlfbW9kZSBdJwogICAgICAgICAgbmFtZTogUnVucyBlbGVtZW50YWwgcmVzZXQK",
+      "path": "/oem/reset-cloud-config.yaml",
+      "permissions": "0600"
+    }
+  ],
+  "instructions": [
+    {
+      "name": "configure next boot to recovery mode",
+      "args": [
+        "/oem/grubenv",
+        "set",
+        "next_entry=recovery"
+      ],
+      "command": "grub2-editenv"
+    },
+    {
+      "name": "schedule reboot",
+      "args": [
+        "-r",
+        "+1"
+      ],
+      "command": "shutdown"
+    }
+  ]
+}
+----
+
+`elemental-system-agent`がプランを正常に実行した場合、`MachineInventory`上の`machineinventory.elemental.cattle.io`ファイナライザーは削除され、`MachineInventory`が削除されます。 +
+これは、マシンが完全にリセットされたことを示すものではないことに注意してください。 +
+これは現在の実装の制限であり、最終的には改善され、リセット状態を完全に追跡できるようになるでしょう。
+
+ただし、この段階ではホストが再起動し、リカバリモードで再起動することを期待しています。 +
+リカバリモードに入ったら、`cos-setup-network`は`/oem/reset-cloud-config.yaml`に書き込まれたcloud-init設定を実行する必要があります。 +
+`journalctl -u cos-setup-network -f`で状態を監視できます。
+
+cloud-initの指示は次のようになります：
+
+[,yaml]
+----
+name: {elemental-product-name} Reset
+stages:
+    network.after:
+        - if: '[ -f /run/cos/recovery_mode ]'
+          name: Runs elemental reset
+          commands:
+            - systemctl start elemental-register-reset
+----
+
+`elemental-register` CLIは`elemental-operator`に新しいマシンとして登録されます。これにより、新しい`MachineInventory`オブジェクトが作成されます。 +
+リモート`MachineRegistration`設定も取得され、リセットオプション（例えば`reset-persistent`、`reset-oem`、または電源設定、`reboot`または`power-off`）が適用されます。 +
+リセット後、設定に応じて、マシンはシャットダウンするか再起動し、新しいクラスター内で採用される準備が整います。
+
+== リセット中のMachineInventoryを強制的に削除する
+
+もし機械がリセット指示を実行できず、関連する`MachineInventory`が削除されていない場合、手動で問題を修正するための2つの同等の方法があります。
+
+* `MachineInventory`から`elemental.cattle.io/resettable: "true"`の注釈を削除してください。
+* `MachineInventory`から`machineinventory.elemental.cattle.io`のファイナライザーを削除してください。
+
+機械自体の管理も忘れずに、完全に再プロビジョニングするか、リカバリーモードで再起動し、`elemental reset`コマンドを直接使用してください。

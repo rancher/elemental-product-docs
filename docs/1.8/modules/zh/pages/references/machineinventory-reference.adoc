@@ -1,0 +1,11 @@
+= MachineInventory
+:revdate: 2025-07-03
+:page-revdate: {revdate}
+
+当新的主机成功注册时，{elemental_operator_name} 创建一个表示该主机的 MachineInventory 资源。
+MachineInventory 存储在注册过程中检索到的被跟踪主机的 TPM 哈希，并允许在机器上执行任意命令（计划）。
+
+MachineInventory 有两个条件：
+
+* `AdoptionReady`，表示该机器已被选择器采用，成为集群的一部分。
+* `Ready`，表示该机器已注册并配置了 {elemental-product-name} 操作系统。

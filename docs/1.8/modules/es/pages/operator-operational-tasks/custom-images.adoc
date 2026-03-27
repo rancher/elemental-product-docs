@@ -1,0 +1,224 @@
+= Cómo construir y usar imágenes de sistema operativo personalizadas
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+== Remasterizando una imagen de sistema operativo con un Dockerfile personalizado
+
+Dado que las imágenes de sistema operativo proporcionadas por {elemental-product-name} son imágenes de contenedor, también se pueden usar como imagen base en un Dockerfile para crear una nueva imagen de contenedor.
+
+El proyecto Elemental publica varios sabores para imágenes:
+
+* baremetal: Una imagen que contiene firmware y controladores adecuados para el despliegue baremetal.
+* rt: Basada en la imagen baremetal, pero contiene el núcleo de Linux en tiempo real.
+* kvm: Una imagen más ligera adecuada para máquinas virtuales.
+* base: El sistema base necesario para Elemental utilizado por los otros sabores.
+
+Imagina que se requieren algunos paquetes adicionales de un repositorio extra, el siguiente ejemplo muestra cómo se podría añadirlo:
+
+[,docker]
+----
+# The version of Elemental to modify.
+FROM registry.suse.com/suse/sl-micro/6.0/baremetal-os-container:latest
+
+# Custom commands
+RUN rpm --import <repo-signing-key-url> && \
+    zypper addrepo --refresh <repo_url> extra_repo && \
+    zypper install -y <extra_package>
+
+# IMPORTANT: /etc/os-release is used for versioning/upgrade. The
+# values here should reflect the tag of the image currently being built
+ARG IMAGE_REPO=norepo
+ARG IMAGE_TAG=latest
+RUN \
+    sed -i -e "s|^IMAGE_REPO=.*|IMAGE_REPO=\"${IMAGE_REPO}\"|g" /etc/os-release && \
+    sed -i -e "s|^IMAGE_TAG=.*|IMAGE_TAG=\"${IMAGE_TAG}\"|g" /etc/os-release && \
+    sed -i -e "s|^IMAGE=.*|IMAGE=\"${IMAGE_REPO}:${IMAGE_TAG}\"|g" /etc/os-release
+
+# IMPORTANT: it is good practice to recreate the initrd and re-apply `elemental-init`
+# command that was used in the base image. This ensures that any eventual change that should
+# be synced in initrd included binaries is also applied there and consistent.
+RUN elemental init --force elemental-rootfs,grub-config,dracut-config,cloud-config-essentials,elemental-setup
+----
+
+Donde `latest` es la versión base que queremos personalizar.
+
+Y luego ejecutar los siguientes comandos
+
+[,bash]
+----
+docker build --build-arg IMAGE_REPO=myrepo/custom-build \
+             --build-arg IMAGE_TAG=v1.1.1 \
+             -t myrepo/custom-build:v1.1.1 .
+docker push myrepo/custom-build:v1.1.1
+----
+
+El nuevo sistema operativo personalizado está disponible como la imagen de Docker `myrepo/custom-build:v1.1.1` y se puede ejecutar y verificar usando docker con
+
+[,bash]
+----
+docker run -it myrepo/custom-build:v1.1.1 bash
+----
+
+## Crear una ISO de instalación personalizada y arrancable
+
+{elemental-product-name} aprovecha las imágenes de contenedor para construir sus sistemas de archivos raíz; por lo tanto, es posible usarlo en un entorno de múltiples etapas para crear medios de arranque personalizados que agrupan una imagen de contenedor personalizada.
+
+[,docker]
+----
+FROM registry.suse.com/suse/sl-micro/6.0/baremetal-os-container:latest AS os
+
+# Check the previous section on building custom images
+
+# The released OS already includes the toolchain for building ISOs
+FROM registry.suse.com/suse/sl-micro/6.0/baremetal-os-container:latest AS builder
+
+ARG TARGETARCH
+WORKDIR /iso
+COPY --from=os / rootfs
+
+# work around buildah issue: https://github.com/containers/buildah/issues/4242
+RUN rm -f rootfs/etc/resolv.conf
+
+RUN elemental build-iso \
+        dir:rootfs \
+        --bootloader-in-rootfs \
+        --squash-no-compression \
+        -o /output -n "elemental-${TARGETARCH}"
+
+FROM busybox
+COPY --from=builder /output /elemental-iso
+
+ENTRYPOINT ["busybox", "sh", "-c"]
+----
+
+Constrúyelo con el comando regular `docker build`:
+
+[,bash]
+----
+docker build -t myrepo/custom-build:v1.1.1 \
+              --build-arg IMAGE_REPO=myrepo/custom-build-iso \
+              --build-arg IMAGE_TAG=v1.1.1 \
+              .
+----
+
+La imagen de contenedor resultante es en realidad una imagen de contenedor que incluye la ISO, esta imagen de contenedor también se puede enviar a un registro OCI. La imagen ISO se puede extraer del contenedor a la carpeta actual ejecutando el contenedor como:
+
+[,bash]
+----
+docker run --rm -v $(pwd):/host mytest-image "busybox cp /elemental-iso/*.iso /host"
+----
+
+Los nuevos medios de instalación personalizados se pueden encontrar en `elemental-<arch>.iso`.
+
+La ejecución del contenedor anterior es equivalente a lo que _elemental-operator_ hace para extraer la ISO de un contenedor para construir uno nuevo que incluya la URL de registro, por lo tanto, esto también es un buen indicador para verificar que el contenedor se puede enviar a un registro y ser utilizado por el _elemental-operator_ como un `baseImage` para un recurso xref:references/seedimage-reference.adoc[SeedImage].
+
+== Lista de imágenes personalizadas como un recurso ManagedOSVersion
+
+En {elemental-product-name}, listar imágenes de contenedores de SO e imágenes de contenedores ISO como recursos ManagedOSVersion no es obligatorio, pero es útil. Especialmente desde una perspectiva de interfaz de usuario, esto hace que las imágenes personalizadas sean visibles y fáciles de usar desde la extensión {elemental-product-name} de la interfaz de usuario.
+
+Continuando con el ejemplo de la sección anterior, se construyó un contenedor de SO personalizado referenciado como `myrepo/custom-build:v1.1.1` y finalmente se envió a un registro. Entonces, esta imagen está lista para ser añadida como un recurso ManagedOSVersion con:
+
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: ManagedOSVersion
+metadata:
+  name: v1.1.1-custom-build
+  namespace: fleet-default
+spec:
+  metadata:
+    displayName: Custom build image
+    upgradeImage: myrepo/custom-build:v1.1.1
+  type: container
+  version: v1.1.1
+----
+
+Nota que el `type: container` indica que este es un contenedor de SO. Esto hace que la imagen `myrepo/custom-build:v1.1.1` sea elegible para actualizaciones de SO desde la interfaz de usuario.
+
+Finalmente, el contenedor personalizado para la ISO `myrepo/custom-build-iso:v1.1.1` también se puede incluir como un recurso ManagedOSVersion con:
+
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: ManagedOSVersion
+metadata:
+  name: v1.1.1-custom-build-iso
+  namespace: fleet-default
+spec:
+  metadata:
+    displayName: Custom build ISO image
+    uri: myrepo/custom-build-iso:v1.1.1
+  type: iso
+  version: v1.1.1
+----
+
+Nota que `type: iso` indica que esto es una ISO. Esto hace que la imagen `myrepo/custom-build-iso:v1.1.1` sea elegible para la generación de SeedImages desde la interfaz de usuario.
+
+== Tamaño de partición personalizado
+
+Al construir imágenes personalizadas, es importante tener en cuenta los tamaños de las particiones del disco, para asegurar que la imagen y las instantáneas de actualización puedan ajustarse correctamente con el tiempo.
+
+La configuración de las particiones se puede incluir en tu imagen personalizada, o alternativamente, se puede aplicar convenientemente al xref:references/seedimage-reference.adoc[SeedImage] utilizado para generar los medios de instalación.
+
+Ten en cuenta que todos los valores de `size` se expresan en megabytes, y un valor de `0` ocupará el resto del disco. Este es el comportamiento predeterminado de la partición `persistent` si no se ha definido ningún `size` para ella. Para más información, consulta el https://github.com/rancher/elemental-toolkit/blob/main/config.yaml.example[ejemplo de configuración] completo.
+
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: SeedImage
+metadata:
+  name: custom-partitions-iso
+  namespace: fleet-default
+spec:
+  cloud-config:
+    write_files:
+    - path: /etc/elemental/config.d/partitions.yaml
+      content: |
+        install:
+          partitions:
+            recovery:
+              size: 8192
+            state:
+              size: 16384
+    - path: /etc/elemental/config.d/snapshotter.yaml
+      content: |
+        snapshotter:
+          max-snaps: 2
+  baseImage: myrepo/custom-build-iso:v1.1.1
+  registrationRef:
+    name: my-machine-registration
+    namespace: fleet-default
+----
+
+La partición `state` contendrá todas las instantáneas del sistema. Por lo tanto, al dimensionar esta partición, se puede considerar la siguiente fórmula: `$image_size * ($max_number_of_snapshots + 1 + 1)`. El `$max_number_of_snapshots` se puede configurar de manera similar con un archivo de configuración personalizado como se muestra en el ejemplo anterior.
+
+Ten en cuenta que por defecto es `4` para el tipo de snapshotter `btrfs`, y `2` para el tipo `loopdevice`. Puedes configurar el tipo de instantánea en uso editando el xref:references/machineregistration-reference.adoc#_config_elemental_install_snapshotter[MachineRegistration]. Dado que la partición de estado también se utiliza para el directorio de trabajo link:{elemental_toolkit_url}[{elemental_toolkit_name}], es mejor dejar un espacio libre adicional de `$image_size`, para que la imagen pueda descomprimirse correctamente, por ejemplo, al realizar actualizaciones.
+
+Por último, se puede utilizar un espacio libre adicional de `$image_size` como margen de seguridad. Esto es especialmente importante al utilizar el tipo de instantánea `loopdevice`, en caso de que las imágenes más nuevas aumenten de tamaño respecto a la originalmente instalada. Por el contrario, se puede utilizar el tipo de instantánea `btrfs` en su lugar para ahorrar espacio en la partición `state`, o para utilizar el mismo espacio para mantener más instantáneas.
+
+== Encontrando imágenes base {elemental-product-name}
+
+Usando crane, podemos encontrar las siguientes imágenes SL-Micro adecuadas para extender:
+
+[,shell]
+----
+$ crane catalog registry.suse.com | grep -i "suse/sl-micro"
+suse/sl-micro/6.0/baremetal-iso-image
+suse/sl-micro/6.0/baremetal-os-container
+suse/sl-micro/6.0/base-iso-image
+suse/sl-micro/6.0/base-os-container
+suse/sl-micro/6.0/kvm-iso-image
+suse/sl-micro/6.0/kvm-os-container
+suse/sl-micro/6.0/rt-iso-image
+suse/sl-micro/6.0/rt-os-container
+suse/sl-micro/6.1/baremetal-iso-image
+suse/sl-micro/6.1/baremetal-os-container
+suse/sl-micro/6.1/base-iso-image
+suse/sl-micro/6.1/base-os-container
+suse/sl-micro/6.1/kvm-iso-image
+suse/sl-micro/6.1/kvm-os-container
+suse/sl-micro/6.1/rt-iso-image
+suse/sl-micro/6.1/rt-os-container
+----
+
+Las imágenes con el sufijo `-iso-image` contienen una imagen ISO preconstruida y un sistema busybox para poder copiar los contenidos a un volumen. Las imágenes con un sufijo `-os-container` contienen un sistema de archivos raíz que se puede utilizar como base para imágenes personalizadas.

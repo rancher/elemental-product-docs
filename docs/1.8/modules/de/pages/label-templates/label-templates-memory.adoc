@@ -1,0 +1,25 @@
+= Speicher-Template-Variablen
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+Die in den Speicher-Template-Variablen gesammelten Informationen definieren die Attribute des (flüchtigen) Speichers, der im System verfügbar ist.
+
+|===
+| Variable | Beschreibung | Von
+
+| `${Memory/Modules}`
+| Speichermodule
+| 1.7.0
+
+| `${Memory/SupportedPageSizes}`
+| Erlaubte Seitengrößen für den Speicher
+| 1.7.0
+
+| `${Memory/TotalPhysicalBytes}`
+| Gesamter Speicher
+| 1.7.0
+
+| `${Memory/TotalUsableBytes}`
+| Verfügbarer Gesamtspeicher
+| 1.7.0
+|===

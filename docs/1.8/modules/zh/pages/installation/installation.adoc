@@ -1,0 +1,188 @@
+= 安装
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+== 概述
+
+{elemental-product-name} 堆栈使用 OCI 容器和 Kubernetes 提供操作系统管理。{elemental-product-name} 堆栈安装包括将 {elemental_operator_name} 安装到管理集群中，并创建和使用安装媒体以将操作系统提供给集群节点。请参阅 xref:rancher-os-management/architecture/architecture.adoc[架构] 部分以了解组件之间的交互。
+
+安装配置主要在注册过程中应用和设置。
+注册过程由 `elemental-register`（{elemental_operator_name} 客户端部分）完成，负责在 Rancher 管理集群中注册节点并获取安装配置。
+
+请参考 xref:quickstarts/quickstart-cli.adoc[快速入门] 指南以获取简单的逐步部署说明。
+
+== {elemental-product-name} 操作员安装
+
+{elemental_operator_name} 负责管理 {elemental-product-name} 版本并维护机器清单，以协助边缘或裸机安装。{elemental_operator_name} 需要一个包括 Rancher 管理器的集群，并可以通过 helm 图表进行安装。
+
+请参阅 {elemental_operator_name} xref:references/operatorchart-reference.adoc[helm 图表参考] 以获取安装、卸载、升级和配置详细信息。
+
+== 准备 Kubernetes 资源
+
+一旦 {elemental_operator_name} 在管理集群中启动并运行，就需要一些 Kubernetes 资源以准备基于 {elemental-product-name} 的集群部署。
+
+* xref:references/machineinventoryselectortemplate-reference.adoc[机器清单选择器模板]:
+此资源识别与可用 Rancher 2.6 集群匹配的注册盒子的标准（作为机器清单的一部分列出）。一旦匹配，选定的 Kubernetes 集群将接管注册的盒子。
+* xref:references/machineregistration-reference.adoc[机器注册]:
+此资源定义任何尝试注册的机器的操作系统部署细节。机器注册是 {elemental-product-name} 节点的入口，因为它处理基于 TPM 的身份验证、操作系统部署，以及将节点纳入机器清单，以便在依据机器清单选择器模板匹配时将节点添加到集群中。机器注册对象包括节点用于注册的机器注册 URL。
+
+还需要一个 Rancher 集群资源来部署 {elemental-product-name}，可以按照 xref:quickstarts/quickstart-cli.adoc[快速入门] 指南中的示例手动创建，或从 Rancher 2.6 UI 创建。
+
+== 准备安装媒体
+
+安装介质是用于启动操作系统部署的介质。当前支持的介质是实时 .iso 映像。实时 .iso 映像必须包含注册配置 YAML，因此必须在创建 MachineRegistration 后进行制作。安装介质是通过创建xref:references/seedimage-reference.adoc[种子映像]资源生成的（请参见xref:quickstarts/quickstart-cli.adoc#_preparing_the_installation_seed_image[快速入门]和xref:operator-operational-tasks/custom-images.adoc#_create_a_custom_bootable_installation_iso[自定义映像]）。
+
+实时 .iso 映像支持 PXE 引导，以便与 https://documentation.suse.com/suma/4.3/en/suse-manager/client-configuration/autoinst-distributions.html#based-on-iso-image[SUSE Manager] 进行直接集成。
+
+在 MachineRegistration 中，仅能配置部分操作系统安装参数，所有可用参数均在 xref:references/machineregistration-reference.adoc[MachineRegistration] 参考页面中列出。
+
+为了配置超出xref:references/machineregistration-reference.adoc#_config_elemental_install[`elemental.install`]部分提供的常见选项的安装，可以将`config.yaml`配置文件包含到.iso 映像中（请参见xref:installation/customize-installation/custom-install.adoc#_custom_suse_rancher_prime_os_manager_client_configuration_file[自定义映像]）。
+请注意，作为 MachineRegistration 的 `elemental.install` 部分应用的任何配置，都将叠加在任何自定义 `config.yaml` 配置文件中所包含的设置之上。
+
+cloud-init配置很可能足以在启动时配置和设置已部署的节点，然而如果出于某种原因需要首次启动操作或脚本，也可以将Rancher系统代理计划包含到安装介质中。请参阅xref:rancher-os-management/plans.adoc[计划]部分以获取详细信息和一些示例计划。计划可以包含在`/var/lib/elemental/agent/plans`文件夹中的压缩rootfs中，系统代理将在首次启动时看到它们。
+
+== 开始安装过程
+
+安装通过在节点上启动安装介质来开始。一旦安装介质启动后，它将尝试联系管理集群，并通过调用 `elemental-register` 命令进行注册。
+由于注册 YAML 配置已包含在 .iso 映像中，`elemental-register` 知道注册 URL 及任何其它必需的注册数据。
+
+在注册成功后，安装介质将根据已包含在介质中的配置和 MachineRegistration 参数开始在主机上进行安装。安装完成后，节点准备重新启动。已部署的操作系统包含一个系统代理计划，用以启动常规的 Rancher 预配流程来安装所选的 Kubernetes 版本。系统启动几分钟后，节点安装完成，并被纳入集群，在 Rancher UI 中可见。
+
+== 已部署的分区表
+
+一旦操作系统安装完成，操作系统分区表将根据默认值显示如下
+
+|===
+| 标签 | 默认大小 | 包含
+
+| COS_GRUB
+| 64 MiB
+| UEFI 引导分区
+
+| COS_STATE
+| 8 GiB
+| 从 OCI 镜像构建的 A/B 可引导文件系统映像
+
+| COS_OEM
+| 64 MiB
+| OEM 云配置文件和其他数据
+
+| COS_RECOVERY
+| 4 GiB
+| 如果 COS_STATE 被破坏，则为恢复文件系统映像
+
+| COS_PERSISTENT
+| 剩余空间
+| 持久文件夹的所有内容
+|===
+
+请注意，这是由 {elemental_toolkit_url}[{elemental_toolkit_name}] 构建的任何操作系统的基本结构。
+
+== {elemental-product-name} 不可变根
+
+{elemental-product-name} 操作系统的特点之一是构建不可变根文件系统，并在其上叠加一些临时或持久存储位置。默认的文件夹结构列在下方的矩阵中。
+
+[cols=",^,^,^"]
+|===
+| 路径 | 只读 | 临时 | 持久
+
+| /
+| x
+|
+|
+
+| /etc
+|
+| x
+|
+
+| /etc/cni
+|
+|
+| x
+
+| /etc/iscsi
+|
+|
+| x
+
+| /etc/rancher
+|
+|
+| x
+
+| /etc/ssh
+|
+|
+| x
+
+| /etc/systemd
+|
+|
+| x
+
+| /srv
+|
+| x
+|
+
+| /home
+|
+|
+| x
+
+| /opt
+|
+|
+| x
+
+| /root
+|
+|
+| x
+
+| /var
+|
+| x
+|
+
+| /usr/libexec
+|
+|
+| x
+
+| /var/lib/cni
+|
+|
+| x
+
+| /var/lib/kubelet
+|
+|
+| x
+
+| /var/lib/rancher
+|
+|
+| x
+
+| /var/lib/elemental
+|
+|
+| x
+
+| /var/lib/NetworkManager
+|
+|
+| x
+
+| /var/lib/calico
+|
+|
+| x
+
+| /var/log
+|
+|
+| x
+|===

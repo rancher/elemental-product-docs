@@ -1,0 +1,83 @@
+= Autenticación
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+La autenticación ocurre durante la incorporación de la máquina, cuando la máquina _se registra_ en el {elemental_operator_name}.
+
+{elemental-product-name} por defecto autentica a los hosts a través del _Módulo de Plataforma Confiable_ (TPM): la máquina es autenticada a través de _atestación_, es decir, la máquina prueba su identidad a través de su dispositivo TPM.
+
+Para que _la atestación_ funcione, cada máquina en incorporación *debe tener un dispositivo TPM 2.0*, de lo contrario no podrá registrarse utilizando la autenticación segura de TPM.
+
+== Alternativas a TPM
+
+*El único método de registro oficialmente soportado se basa en la atestación de TPM y requiere dispositivos habilitados con TPM 2.0.*
+
+Si deseas inscribir dispositivos sin un chip TPM 2.0 eludiendo la autenticación segura, hay múltiples formas de _identificar_ esas máquinas y permitir el registro:
+
+* emulando un dispositivo TPM a través de una simple implementación de software
+* identificándose a través de su dirección MAC de red
+* identificándose utilizando su UUID SMBIOS
+
+El método de autenticación/identificación puede especificarse en el xref:references/machineregistration-reference.adoc#_config_elemental_registration[config:elemental:registration:auth] del recurso MachineRegistration.
+
+[CAUTION]
+====
+El único método de *autenticación* seguro y oficialmente soportado en {elemental-product-name} es el predeterminado, basado en la atestación de TPM.
+Las alternativas de TPM pueden usarse para fines de demostración o implementaciones locales, pero no se recomiendan para uso en producción ya que la identidad de las máquinas en incorporación no se verifica de forma segura.
+====
+
+=== Emulación de TPM
+
+La emulación de TPM realiza la autenticación utilizando un software que imita el comportamiento de TPM y que está integrado en el {elemental_register_name}.
+Las claves del dispositivo TPM emulado son generadas todas por una única semilla de manera determinista: la misma semilla resulta en las mismas claves de TPM, por lo que se debe elegir una semilla diferente en cada host que se inscriba.
+
+La emulación de TPM se habilita configurando los campos `emulate-tpm` y `emulated-tpm-seed` en la configuración de `MachineRegistration` (véase la xref:references/machineregistration-reference.adoc#_config_elemental_registration[config:elemental:registration] en la referencia de MachineRegistration para más detalles).
+
+.ejemplo de MachineRegistration utilizando emulación de TPM
+[,yaml]
+----
+include::example$authentication/registration-emulate-tpm.yaml[]
+----
+
+La configuración de emulación de TPM se detalla en la xref:operator-operational-tasks/tpm.adoc#_add_tpm_emulation_to_bare_metal_machine[sección de configuración de emulación de TPM].
+
+=== identificación por dirección MAC
+
+Al utilizar la identificación por dirección MAC, el host se registra en el {elemental_operator_name} utilizando la dirección MAC de su interfaz de red (NIC) como identificador.
+En caso de que la máquina tenga más de una interfaz de red, las direcciones MAC se ordenan lexicográficamente y se selecciona la primera.
+
+Para reemplazar la autenticación TPM con la identificación por dirección MAC, basta con establecer el valor de `mac` en el campo `auth` de la sección xref:references/machineregistration-reference.adoc#_config_elemental_registration[config:elemental:registration] en la referencia MachineRegistration.
+
+.ejemplo de MachineRegistration utilizando la dirección MAC como identificador de máquina
+[,yaml]
+----
+include::example$authentication/registration-mac.yaml[]
+----
+
+[CAUTION]
+====
+La dirección MAC es considerada única por el {elemental_operator_name}.
+Esto es cierto para dispositivos físicos, mientras que si se utilizan máquinas virtuales de diferentes hipervisores y diferentes segmentos de red, depende del administrador asegurarse de que las VMs que se registran tengan una dirección MAC única.
+====
+
+
+=== Identificación por UUID de SMBIOS
+
+La especificación del BIOS de gestión del sistema (SMBIOS) define estructuras de datos que se pueden utilizar para leer información de gestión producida por el BIOS de un host.
+
+Al utilizar el valor de `sys-uuid` como el campo `auth` de la sección xref:references/machineregistration-reference.adoc#_config_elemental_registration[config:elemental:registration en MachineRegistration], el host se registra en el {elemental_operator_name} utilizando el valor de `UUID` de la tabla `System Information` de los datos SMBIOS del host.
+
+.Ejemplo de MachineRegistration utilizando el UUID de la tabla de Información del Sistema SMBIOS como identificador de máquina
+[,yaml]
+----
+include::example$authentication/registration-sys-uuid.yaml[]
+----
+
+[CAUTION]
+====
+El valor de SMBIOS `System information/UUID` debe ser completado por el proveedor de hardware como un UUID único para el host.
+
+Los datos de SMBIOS no siempre son fiables. Esto depende del fabricante. Puede que experimentes que el UUID esté ausente, o que el mismo UUID se aplique a múltiples dispositivos dentro del mismo lote.
+
+Depende del administrador asegurarse de que las máquinas tengan valores SMBIOS `System information/UUID` únicos (la herramienta `dmidecode` podría ser de ayuda), de lo contrario, las máquinas seguirán sobrescribiendo el mismo recurso `MachineInventory` y el aprovisionamiento {elemental-product-name} fallará.
+====

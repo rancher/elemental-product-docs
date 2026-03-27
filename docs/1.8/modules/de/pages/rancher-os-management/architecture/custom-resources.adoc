@@ -1,0 +1,14 @@
+= Benutzerdefinierte Ressourcen
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+Die {elemental_operator_name} ermöglicht die Steuerung der {elemental-product-name} Nodes, indem die Kubernetes-APIs mit einer Reihe von _elemental.cattle.io_ https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/[Kubernetes CRDs] erweitert werden:
+
+* xref:references/machineregistration-reference.adoc[MachineRegistration]
+* xref:references/machineinventory-reference.adoc[MachineInventory]
+* xref:references/machineinventoryselector-reference.adoc[MachineInventorySelector]
+* xref:references/machineinventoryselectortemplate-reference.adoc[MachineInventorySelectorTemplate]
+* xref:references/managedosimage-reference.adoc[ManagedOSImage]
+* xref:references/managedosversion-reference.adoc[ManagedOSVersion]
+* xref:references/managedosversionchannel-reference.adoc[ManagedOSVersionChannel]
+* xref:references/seedimage-reference.adoc[SeedImage]

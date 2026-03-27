@@ -1,0 +1,25 @@
+= Variáveis de modelo de memória
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+As informações coletadas nas variáveis do modelo de memória definem atributos da memória (volátil) disponível no sistema.
+
+|===
+| Variável | Descrição | from
+
+| `${Memory/Modules}`
+| Módulos de memória
+| 1.7.0
+
+| `${Memory/SupportedPageSizes}`
+| Tamanhos de página de memória permitidos
+| 1.7.0
+
+| `${Memory/TotalPhysicalBytes}`
+| Memória total
+| 1.7.0
+
+| `${Memory/TotalUsableBytes}`
+| Memória total disponível
+| 1.7.0
+|===

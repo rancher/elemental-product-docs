@@ -1,0 +1,73 @@
+= Variáveis de Modelo de CPU
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+As informações coletadas nas variáveis de modelo de CPU definem atributos dos processadores instalados no sistema.
+
+Os dados são expostos pelo número do processador (0, 1, 2, ...).
+
+Para referenciar o primeiro processador, o número do processador (_`<Number>`_) pode ser omitido (por exemplo, a variável `${CPU/Processor/Model}` é a mesma que `${CPU/Processor/0/Model}`).
+
+|===
+| Variável | Descrição | from
+
+| `${CPU/Processor/Capabilities}`
+| Lista de capacidades do processador separadas por vírgula
+| 1.7.0
+
+| `${CPU/Processor/ID}`
+| ID do processador
+| 1.7.0
+
+| `${CPU/Processor/Model}`
+| Modelo do processador
+| 1.7.0
+
+| `${CPU/Processor/NumCores}`
+| Quantidade de núcleos
+| 1.7.0
+
+| `${CPU/Processor/NumThreads}`
+| Número de threads
+| 1.7.0
+
+| `${CPU/Processor/Vendor}`
+| Fornecedor do processador
+| 1.7.0
+
+| `${CPU/Processor/_<Number>_/Capabilities}`
+| Lista separada por vírgula de _número_ do processador
+| 1.7.0
+
+| `${CPU/Processor/_<Number>_/ID}`
+| ID do processador _número_
+| 1.7.0
+
+| `${CPU/Processor/_<Number>_/Model}`
+| Modelo do processador _número_
+| 1.7.0
+
+| `${CPU/Processor/_<Number>_/NumCores}`
+| Número de kernels do processador _número_
+| 1.7.0
+
+| `${CPU/Processor/_<Number>_/NumThreads}`
+| Número de threads do processador _número_
+| 1.7.0
+
+| `${CPU/Processor/_<Number>_/Vendor}`
+| Fornecedor do processador _número_
+| 1.7.0
+
+| `${CPU/TotalCores}`
+| Número total de kernels no sistema
+| 1.7.0
+
+| `${CPU/TotalProcessors}`
+| Número de processadores no sistema
+| 1.7.0
+
+| `${CPU/TotalThreads}`
+| Número total de threads no sistema
+| 1.7.0
+|===

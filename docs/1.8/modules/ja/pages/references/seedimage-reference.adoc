@@ -1,0 +1,225 @@
+= SeedImageの参照
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+
+`SeedImage`リソースは、{elemental-product-name}をノードにインストールするために使用できるインストールメディアを構築することを可能にします。
+
+それには、`baseImage`、すなわち{elemental-product-name}インストールISOまたはノードコンテナイメージへのURL、および`registrationRef`リソースへの`MachineRegistration`参照が必要であり、そこから{elemental-product-name}構成の登録部分が抽出され、メディアに注入されて最終的な_seed image_が生成されます。
+
+`cloud-config`フィールドにカスタマイズを注入することも可能です。yipとcloud-initの両方の構文がサポートされています。完全な情報については、xref:references/cloud-config-reference.adoc[Cloud Config Reference]を参照してください。
+
+シードイメージが準備できたら、ダウンロードURLが`.status.downloadURL`フィールドに共有されます。
+ダウンロード可能な状態は`cleanupAfterMinutes`分間（デフォルトは`60`、1時間）保持され、その後削除されます。
+
+`retriggerBuild`を`true`に設定するとシードイメージのビルドプロセスが再トリガーされ、`cleanupAfterMinutes`を`0`に設定すると`SeedImage`リソースが削除されるまでシードイメージが保持されます。
+
+`SeedImage`リソースには、ISOを構築するための`iso`または生ディスクイメージを構築するための`raw`に設定できる`type`フィールドもあります。生ディスクイメージはターゲットドライブに直接コピーでき、最初のブート時に自動的にリカバリパーティションにブートして、利用可能なディスクスペースを使用するためにドライブを拡張し、ノードを登録します。その後、ISOインストールと同じ方法で再起動します。
+
+シードイメージに対して`BuildContainer`が指定されていない場合、デフォルト値と`type`に基づいて自動的に埋められます。
+
+異なるプラットフォーム用のSeedImageを構築するには、`targetPlatform`フィールドを使用します。プラットフォームは`os/arch`を使用して指定されます。例えば、(`linux/x86_64`または`linux/aarch64`)のように。デフォルトでは、イメージはオペレーターがホストされているのと同じプラットフォーム用に構築されます。
+
+[CAUTION]
+.シードイメージがローカルストレージをいっぱいにする可能性があります。
+====
+シードイメージはノードのローカルストレージに保持されます：同時に開始する`SeedImage`リソースの数や、自動クリーンアップ機能が無効のまま残す可能性のあるリソースに注意してください（`cleanupAfterMinutes` = `0`）と、クラスターのノードのストレージを使い果たす可能性があります。
+====
+
+== SeedImageSpecの参照
+
+|===
+| キー | タイプ | ［デフォルト値］ | 説明
+
+| baseImage
+| 文字列
+| empty
+| シードイメージを構築するために使用される基本的なElementalイメージ。
+
+| registrationRef
+| オブジェクト参照。
+| null
+| すべてのインストールされたマシンが登録に使用するMachineRegistrationへの参照。
+
+| buildContainer
+| object
+| null
+| ダウンロード可能なイメージを生成するために使用されるカスタムコンテナの設定。（<<_buildcontainer,ドキュメント>>を参照してください）。
+
+| cleanupAfterMinutes
+| int
+| 60
+| ビルドされたシードイメージがクリーンアップされるまでの時間。アクティブなダウンロードは、イメージが削除される前に完了します。
+
+| retriggerBuild
+| bool
+| false
+| クリーンアップされたシードイメージを再度ビルドするためのトリガー。
+
+| size
+| 文字列
+| 6Gi
+| イメージを保存するために使用されるボリュームのサイズを指定します。
+
+| type
+| 文字列
+| iso
+| ビルドするシードイメージのタイプを指定します。`iso`または`raw`。（<<_iso_and_raw_images,ドキュメント>>を参照してください）
+
+| targetPlatform
+| 文字列
+| empty
+| ビルドされたイメージのターゲットプラットフォームを指定します。例：`linux/x86_64`または`linux/aarch64`。（<<_multi_platform_support,ドキュメント>>を参照してください）。
+
+| cloud-config
+| object
+| null
+| 生成されたイメージに含めるcloud-configデータを含みます。（xref:references/cloud-config-reference.adoc[ドキュメント]を参照してください）。
+
+|===
+
+=== BuildContainer
+
+`buildContainer`の設定は、`SeedImage`のポッド内で`build`の初期コンテナをカスタマイズするために使用できます。
+これは、カスタムElementalイメージを構築する場合の例です。
+
+[,yaml]
+----
+buildContainer:
+  name: "custom-build"
+  image: my.registry.com/elemental-custom-builder:1.2.3
+  command:
+    - build-image
+  args:
+    - foo
+    - bar
+  imagePullPolicy: Always
+----
+
+コンテナには、`/iso`と`/overlay`に2つのボリュームが追加でマウントされます。
+SeedImageビルドプロセスは、ビルドコンテナがビルドアーティファクトを`/iso/$(ELEMENTAL_OUTPUT_NAME)`に配置することを期待しています。
+
+設定ファイルは以下の場所にあります：
+
+- `/overlay/reg/livecd-cloud-config.yaml`:`elemental-register`がマシンを登録するために使用できる設定ファイル。
+
+- `/overlay/iso-config/cloud-config.yaml`:`SeedImage.spec.cloud-config`で定義されたcloud-config
+
+以下の環境変数のリストもカスタムビルドコンテナ内で使用できます：
+
+- `ELEMENTAL_DEVICE`:`MachineRegistration.spec.config.elemental.install.device`の値。
+- `ELEMENTAL_REGISTRATION_URL`:MachineRegistrationのユニークなURL。
+- `ELEMENTAL_BASE_IMAGE`:`SeedImage`で定義されたベースイメージ。
+- `ELEMENTAL_OUTPUT_NAME`:ビルドアーティファクトの期待されるファイル名。
+
+=== ISOおよびRawイメージ
+
+`SeedImage`は、`iso`または`raw`のイメージタイプをビルドできます。
+Elementalは、`iso`または`container`の2つの異なるフレーバーのイメージを提供していることに注意してください。xref:references/managedosversion-reference.adoc#_managedosversionspec_reference[ManagedOSversionのタイプ]を参照してください。
+
+`iso` `SeedImage`をビルドする際には、`iso` Elementalイメージを使用できます。`iso`イメージには、事前にビルドされた`.iso`アーティファクトが含まれています。これは、公式ISOを出荷するElementalのデフォルトの方法であり、`SeedImage`を定義するたびに再構築する必要がありません。
+
+.ISO SeedImageの例はこちらをクリックしてください。
+[%collapsible]
+====
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: SeedImage
+metadata:
+  name: fire-iso
+  namespace: fleet-default
+spec:
+  type: iso
+  baseImage: registry.suse.com/suse/sl-micro/6.0/baremetal-iso-image:2.1.1-3.36
+  registrationRef:
+    apiVersion: elemental.cattle.io/v1beta1
+    kind: MachineRegistration
+    name: fire-nodes
+    namespace: fleet-default
+----
+====
+
+また、`raw` `SeedImage`をビルドする際には、`container` Elementalイメージを使用するべきです。これらの画像はアップグレードプロセス中にも使用されます（参照：xref:references/managedosimage-reference.adoc[ManagedOSImage]）、ただし、`raw` `SeedImages`を構築するためにも使用できます。
+
+.Raw SeedImageの例はこちらをクリックしてください。
+[%collapsible]
+====
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: SeedImage
+metadata:
+  name: fire-raw
+  namespace: fleet-default
+spec:
+  type: raw
+  baseImage: registry.suse.com/suse/sl-micro/6.0/baremetal-os-container:2.1.1-3.29
+  registrationRef:
+    apiVersion: elemental.cattle.io/v1beta1
+    kind: MachineRegistration
+    name: fire-nodes
+    namespace: fleet-default
+----
+====
+
+=== マルチプラットフォームのサポート
+
+Elementalは、ほとんどのフレーバー向けに`linux/x86_64`および`linux/aarch64`イメージを提供します。
+`ManagedOSVersion`画像が両方のプラットフォームをサポートしているかどうかを判断するには、`ManagedOSVersion.spec.metadata.platform`の値を確認できます。（xref:references/managedosversion-reference.adoc#_metadata[documentation]を参照）。
+
+`SeedImage`を定義する際には、この値を画像の`targetPlatform`に使用できます。
+`targetPlatform`を空白のままにすると、`elemental-operator`が実行されているプラットフォームがデフォルトになります。
+
+.Raw aarch64 SeedImageの例はこちらをクリックしてください。
+[%collapsible]
+====
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: SeedImage
+metadata:
+  name: fire-raw-aarch64
+  namespace: fleet-default
+spec:
+  targetPlatform: linux/aarch64
+  type: raw
+  baseImage: registry.suse.com/suse/sl-micro/6.0/baremetal-os-container:2.1.1-3.29
+  registrationRef:
+    apiVersion: elemental.cattle.io/v1beta1
+    kind: MachineRegistration
+    name: fire-nodes
+    namespace: fleet-default
+----
+====
+
+== ダウンロード可能なURL
+
+`SeedImage`リソースは、シード画像のビルドプロセスを2つのステータス条件で追跡します：
+
+- **Ready**：実際のビルドプロセスを実行するために必要なすべての子リソースの作成を追跡します。
+- **SeedImageReady**：子リソースにおけるビルドプロセスのステータスを追跡します。
+
+また、`SeedImage`ポッドが準備完了になるのを待つことも可能です：
+
+[,bash]
+----
+kubectl wait --for=condition=ready pod -n fleet-default fire-img
+----
+
+準備条件を待つことは、アーティファクトをダウンロードする前のベストプラクティスです。
+
+`SeedImage`が準備完了になると、`.status.downloadURL`にはダウンロード可能なURLが含まれます。
+URLはRancherと同じエンドポイントを使用するため、自己署名証明書を使用する際はHTTPS検証に注意してください。
+
+[,bash]
+----
+kubectl get seedimage -n fleet-default fire-img -o jsonpath="{.status.downloadURL}"
+----
+
+画像のチェックサムも利用可能で、ダウンロードが正しかったことを確認できます：
+
+[,bash]
+----
+kubectl get seedimage -n fleet-default fire-img -o jsonpath="{.status.checksumURL}"
+----

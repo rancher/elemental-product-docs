@@ -1,0 +1,153 @@
+= Visão Geral dos Modelos de Rótulos
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+Elemental permite especificar _modelos de rótulos_ nas seções `spec.machineInventoryLabels` e `spec.machineInventoryAnnotations` dos recursos xref:references/machineregistration-reference.adoc[MachineRegistration].
+
+O formato deles é o canônico `key`:``value`` usado em rótulos e anotações do Kubernetes.
+
+Esses modelos de rótulos são convertidos em rótulos e anotações reais anexados a cada recurso xref:references/machineinventory-reference.adoc[MachineInventory] criado durante a fase de integração da máquina.
+
+Os rótulos e anotações resultantes têm o mesmo `key` formato do modelo de rótulo.
+
+O `value` associado é gerado:
+
+* *renderizando o <<_label_templates_variables,`label template variables`>>* (se presente)
+* *`sanitizing`* o valor resultante (no caso dos rótulos apenas)
+
+[IMPORTANT]
+====
+A funcionalidade de modelagem do Elemental cobre também o campo xref:references/machineregistration-reference.adoc[MachineRegistration] `spec.machineName`, que define o hostname resultante da máquina que está se registrando e o `name` do recurso xref:references/machineinventory-reference.adoc[MachineInventory] associado.
+
+Veja a seção <<_custom_machine_names,Nome da Máquina>> para mais detalhes.
+====
+
+
+== Variáveis dos Modelos de Rótulos
+
+A Modelagem de Rótulos do Elemental inclui um conjunto de variáveis predefinidas que podem ser usadas dentro do `value` dos _modelos de rótulos_ especificados no xref:references/machineregistration-reference.adoc[MachineRegistration].
+
+A sintaxe usada para especificar as variáveis dos modelos de rótulos é:
+
+`${ _VARFAMILY_ \/ _VARPATH_ }`
+
+onde _VARFAMILY_ define um grupo (família) de variáveis suportadas e _VARPATH_ define o nome da variável real dentro do grupo familiar ao qual pertence.
+
+Atualmente, o Elemental suporta as seguintes _famílias de variáveis de modelo_:
+
+* xref:label-templates/label-templates-bios.adoc[*BIOS*]: *${ BIOS \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-baseboard.adoc[*Placa Mãe*]: *${ Placa Mãe \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-cpu.adoc[*CPU*]: *${ CPU \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-chassis.adoc[*Chassi*]: *${ Chassi \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-gpu.adoc[*GPU*]: *${ GPU \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-memory.adoc[*Memória*]: *${ Memória \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-network.adoc[*Rede*]: *${ Rede \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-product.adoc[*Produto*]: *${ Produto \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-runtime.adoc[*Runtime*]: *${ Runtime \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-storage.adoc[*Armazenamento*]: *${ Armazenamento \/* _VARPATH_ *}*
+
+[CAUTION]
+====
+Todas as _famílias de variáveis de template_ (exceto _`Random`_) estão habilitadas apenas se o campo xref:references/machineregistration-reference.adoc[MachineRegistration] estiver definido como `false` (padrão).
+
+Quando o campo `elemental.registration.no-smbios` está definido como `true`, as máquinas registradoras não enviam nenhum dado necessário para renderizar as variáveis de template, portanto, nenhuma variável estará disponível, exceto as variáveis *Aleatórias*, que são a única exceção notável.
+
+As variáveis *Aleatórias* estão sempre disponíveis, pois são incorporadas no lado do operador. Elas também são especiais, pois são calculadas apenas uma vez: veja a seção xref:label-templates/label-templates-random.adoc[Variáveis de Template Aleatórias] para mais detalhes.
+====
+
+
+As variáveis de template podem ser misturadas com texto estático para formar os rótulos reais atribuídos a (xref:references/machineinventory-reference.adoc[Inventários de Máquinas]).
+
+[NOTE]
+.Exemplos de Renderização
+====
+
+* Modelo de Rótulo que rastreia o número de kernels de CPU do host registrador (assuma que o host tem 4 kernels):
+ ** rótulo original: *cpu: ${CPU\/TotalCores}-kernels*
+ ** rótulo renderizado: *cpu: 4-kernels*
+* Rótulo de Template rastreando o UUID SMBIOS do host registrador:
+ ** rótulo original: *sbios-UUID: ${Product\/UUID}*
+ ** rótulo renderizado: *sbios-UUID: fd95324a-c26b-4e28-8727-1dcec293a0ec*
+====
+
+
+== Sanitização
+
+Uma vez que o valor do modelo de etiqueta tenha sido renderizado de acordo com as variáveis do modelo de etiqueta incluídas <<_label_templates_variables,variáveis do modelo de etiqueta>>, o valor resultante é `sanitized` antes de ser atribuído à etiqueta resultante.
+
+*O `sanitization` impõe que o valor da etiqueta contenha apenas letras (maiúsculas ou não), números e os caracteres hífen (`-`), ponto (`.`) e sublinhado (`_`)*:
+
+Todos os caracteres não incluídos são substituídos por um hífen.
+
+Qualquer caractere no início e no final do valor da etiqueta deve ser uma letra ou um número. Se não for, ele é descartado.
+
+Dois hífens consecutivos são substituídos por um só.
+
+[NOTE]
+.Exemplo de Renderização
+====
+
+* Modelo de Rótulo com sanitização de caracteres proibidos:
+ ** rótulo original: *sanitized: this:needs--sanitizing!*
+ ** rótulo renderizado: *sanitized: this-needs-sanitizing*
+====
+
+
+== Uso de Modelos de Rótulos
+
+Os Modelos de Rótulos permitem anexar e atualizar automaticamente rótulos e anotações a cada xref:references/machineinventory-reference.adoc[Inventário de Máquinas] de host sempre que um host se registra no Elemental Operator.
+
+[IMPORTANT]
+====
+O registro acontece não apenas durante a xref:rancher-os-management/architecture/services/architecture-machineonboarding.adoc[fase de integração]: cada host se registra novamente a cada 30 minutos (e toda vez que reinicia). Durante o novo registro, os Modelos de Rótulos no xref:references/machineregistration-reference.adoc[MachineRegistration] são reavaliados e adicionados/atualizados no xref:references/machineinventory-reference.adoc[Inventário de Máquinas].
+====
+
+
+Basicamente, existem três casos principais em que os Modelos de Rótulos podem ser úteis:
+
+* para anexar dados de hardware ao Catálogo Elemental.
+* para adicionar seletores para escolher hosts para Provisionamento de Cluster.
+* para definir um modelo personalizado para os Nomes das Máquinas.
+
+=== Dados de hardware para o catálogo Elemental
+
+As variáveis dos Modelos de Rótulos podem ser usadas para anexar dados de hardware a cada recurso xref:references/machineinventory-reference.adoc[Inventário de Máquinas] (que formam o Catálogo Elemental).
+
+Neste caso, anotações podem ser uma escolha melhor, pois seus valores não são sanitizados.
+
+=== Seletores para Provisionamento de Cluster
+
+O `Label Templates` pode ser usado para gerar rótulos utilizados para identificar e selecionar máquinas com propriedades de hardware especiais para formar novos Clusters Kubernetes.
+
+Os rótulos anexados a cada xref:references/machineinventory-reference.adoc[Inventário de Máquinas] são elegíveis para _seletor_ para o recurso xref:references/machineinventoryselectortemplate-reference.adoc[Modelo Seletor de Inventário de Máquinas] (veja a seção xref:rancher-os-management/architecture/services/architecture-clusterdeployment.adoc[provisionamento de Cluster Kubernetes] para mais detalhes).
+
+=== Nomes de Máquinas Personalizados
+
+O nome do host da máquina em integração pode ser especificado usando o campo xref:references/machineregistration-reference.adoc[MachineRegistration] `spec.machineName`.
+
+O valor `spec.machineName` passa pelos mesmos processos de `Label Templates' variables` e `sanitization` reservados para o campo `spec.machineInventoryLabels`.
+
+[CAUTION]
+====
+Há uma diferença notável entre os campos xref:references/machineregistration-reference.adoc[MachineRegistration] `spec.machineName` e `spec.machineInventorylabels`: durante o processo de <<_sanitization,sanitização>>, o sublinhado (`_`) é substituído pelos outros caracteres proibidos (ou seja, é substituído por um hífen: `-`). Isso é necessário, pois o sublinhado não é permitido em nomes de hosts Linux.
+====
+
+
+Para mais informações sobre como definir o nome do host para hosts Elemental, veja a seção xref:installation/hostname.adoc[HowTo/Customize hostname].
+
+[NOTE]
+.Exemplo de Renderização
+====
+* Defina um modelo de nome de host como `SLE-Micro-[random string of 6 hexadecimal values]`:
+ ** Especificação de MachineRegistration: *machineName: SLE-Micro-${Random\/Hex\/6}*
+ ** Nome do Inventário de Máquinas: *SLE-Micro-32ad41*
+====
+
+
+== Exemplo de Modelos de Rótulos
+
+.Exemplo de registro com variáveis de Modelos de Rótulos
+[,yaml]
+----
+include::example$quickstart/registration-hardware-dhcphostname.yaml[]
+----

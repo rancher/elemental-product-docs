@@ -1,0 +1,35 @@
+= 如何添加自定义证书
+:revdate: 2024-09-24
+:page-revdate: {revdate}
+
+前提条件：`.pem` 格式的证书
+
+目标：使自定义证书在系统范围内可用
+
+[NOTE]
+.这是供系统级服务使用的证书。
+====
+Kubernetes 工作负载应将其证书包含在容器镜像中。
+====
+
+为了安装自定义证书，我们需要
+
+* 将 `.pem` 文件复制到 `/etc/pki/trust/anchors/`
+* 运行 `update-ca-certificates`
+
+相应的 `cloud-config` 代码片段如下：
+
+[,yaml]
+----
+write_files:
+  - path: /etc/pki/trust/anchors/my-custom-certificate.pem
+    permission: 0444
+    content: |-
+      -----BEGIN CERTIFICATE-----
+      ...
+      -----END CERTIFICATE-----
+runcmd:
+  - update-ca-certificates
+----
+
+（实际证书内容为简洁起见省略）

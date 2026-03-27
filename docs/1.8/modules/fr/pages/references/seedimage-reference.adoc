@@ -1,0 +1,225 @@
+= Référence SeedImage
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+
+Une ressource `SeedImage` permet de créer un support d'installation qui peut être utilisé pour installer {elemental-product-name} sur un nœud.
+
+Cela nécessite un `baseImage`, c'est-à-dire une URL vers une image ISO d'installation {elemental-product-name} ou une image de conteneur de nœud, et une référence `registrationRef` à une ressource `MachineRegistration`, à partir de laquelle la partie d'enregistrement de la configuration {elemental-product-name} est extraite et injectée dans le support pour produire l'image de semence finale _seed image_.
+
+Il est également possible d'injecter des personnalisations dans le champ `cloud-config`. Les syntaxes yip et cloud-init sont prises en charge. Voir la xref:references/cloud-config-reference.adoc[Référence Cloud Config] pour des informations complètes.
+
+Une fois l'image de semence prête, l'URL de téléchargement est partagée dans le champ `.status.downloadURL`.
+Elle reste disponible au téléchargement pendant `cleanupAfterMinutes` minutes (la valeur par défaut est `60`, 1 heure), après quoi elle est supprimée.
+
+Définir `retriggerBuild` sur `true` relance le traitement de la construction de l'image de semence, tandis que définir `cleanupAfterMinutes` sur `0` maintient l'image de semence jusqu'à ce que la ressource `SeedImage` soit supprimée.
+
+La ressource `SeedImage` a également un champ `type` qui peut être défini sur `iso`, pour construire une ISO, ou `raw` pour construire une image disque brute. Les images disque brutes peuvent être copiées directement sur le disque cible et, au premier démarrage, démarreront automatiquement dans une partition de récupération pour étendre le disque afin d'utiliser l'espace disque disponible et d'enregistrer le nœud, après quoi il redémarrera de la même manière que pour l'installation ISO.
+
+Si aucun `BuildContainer` n'est spécifié pour l'image de semence, il sera automatiquement rempli en fonction des valeurs par défaut et de `type`.
+
+Construire une SeedImage pour une plateforme différente se fait en utilisant le champ `targetPlatform`. La plateforme est spécifiée en utilisant `os/arch`, par exemple (`linux/x86_64` ou `linux/aarch64`). Par défaut, l'image sera construite pour la même plateforme sur laquelle l'opérateur est hébergé.
+
+[CAUTION]
+.Les images de semence peuvent remplir le stockage local.
+====
+Les images de semence sont conservées sur le stockage local du nœud : faites attention au nombre de ressources `SeedImage` que vous démarrez simultanément et à celles que vous pouvez laisser autour avec la fonction de nettoyage automatique désactivée (`cleanupAfterMinutes` = `0`) car vous pourriez épuiser le stockage sur vos nœuds de cluster.
+====
+
+== Référence SeedImageSpec
+
+|===
+| Clé | Type | Default value (Valeur par défaut) | Description
+
+| baseImage
+| chaîne
+| vidage
+| L'image de base Elemental utilisée pour construire l'image de semence.
+
+| référenceInscription
+| référence objet.
+| null
+| Une référence à une MachineRegistration qui sera utilisée pour enregistrer toutes les machines installées.
+
+| buildContainer
+| objet
+| null
+| Paramètres pour un conteneur personnalisé utilisé pour générer l'image téléchargeable. (Voir <<_buildcontainer,documentation>>).
+
+| cleanupAfterMinutes
+| entier
+| 60
+| Le temps après lequel l'image de semence construite sera nettoyée. Les téléchargements actifs se termineront avant que l'image ne soit supprimée.
+
+| re-déclencherConstruction
+| bool
+| false
+| Déclenchement pour reconstruire une image de semence nettoyée.
+
+| size
+| chaîne
+| 6Gi
+| Spécifie la taille du volume utilisé pour stocker l'image.
+
+| type
+| chaîne
+| iso
+| Spécifie le type d'image de semence à construire. `iso` ou `raw`. (Voir <<_iso_and_raw_images,documentation>>)
+
+| plateformeCible
+| chaîne
+| vidage
+| Spécifie la plateforme cible pour l'image construite. Exemple : `linux/x86_64` ou `linux/aarch64`. (Voir <<_multi_platform_support,documentation>>).
+
+| cloud-config
+| objet
+| null
+| Contient des données cloud-config à inclure dans l'image générée. (Voir xref:references/cloud-config-reference.adoc[documentation]).
+
+|===
+
+=== BuildContainer
+
+Les paramètres `buildContainer` peuvent être utilisés pour personnaliser le conteneur d'initialisation `build` au sein du pod de `SeedImage`.
+Cela pourrait être le cas, par exemple, lors de la construction d'images Elemental personnalisées.
+
+[,yaml]
+----
+buildContainer:
+  name: "custom-build"
+  image: my.registry.com/elemental-custom-builder:1.2.3
+  command:
+    - build-image
+  args:
+    - foo
+    - bar
+  imagePullPolicy: Always
+----
+
+Notez que le conteneur aura également deux volumes montés à `/iso` et `/overlay`.
+Le processus de construction de SeedImage s'attend à ce que le conteneur de construction place l'artéfact de construction dans `/iso/$(ELEMENTAL_OUTPUT_NAME)`.
+
+Les fichiers de configuration sont disponibles dans :
+
+- `/overlay/reg/livecd-cloud-config.yaml` : Un fichier de configuration qui peut être utilisé par `elemental-register` pour enregistrer la machine.
+
+- `/overlay/iso-config/cloud-config.yaml` : Le cloud-config défini dans `SeedImage.spec.cloud-config`
+
+La liste suivante de variables d'environnement peut également être utilisée dans le conteneur de construction personnalisé:
+
+- `ELEMENTAL_DEVICE` : La valeur `MachineRegistration.spec.config.elemental.install.device`.
+- `ELEMENTAL_REGISTRATION_URL` : L'URL unique de la MachineRegistration.
+- `ELEMENTAL_BASE_IMAGE` : L'image de base définie dans le `SeedImage`.
+- `ELEMENTAL_OUTPUT_NAME` : Le nom de fichier attendu de l'artéfact de construction.
+
+=== Images ISO et Raw
+
+Le `SeedImage` est capable de construire des types d'images `iso` ou `raw`.
+Notez qu'Elemental propose deux variantes d'images, de type `iso` ou `container`. Voir xref:references/managedosversion-reference.adoc#_managedosversionspec_reference[type de ManagedOSversion].
+
+Lors de la construction d'un `iso` `SeedImage`, vous pouvez utiliser une image Elemental `iso`. Les images `iso` contiennent un artéfact `.iso` pré-construit. C'est la manière par défaut d'Elemental d'expédier des ISOs officielles, afin qu'elles n'aient pas besoin d'être reconstruites chaque fois que vous définissez un `SeedImage`.
+
+.Cliquez ici pour un exemple d'ISO SeedImage
+[%collapsible]
+====
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: SeedImage
+metadata:
+  name: fire-iso
+  namespace: fleet-default
+spec:
+  type: iso
+  baseImage: registry.suse.com/suse/sl-micro/6.0/baremetal-iso-image:2.1.1-3.36
+  registrationRef:
+    apiVersion: elemental.cattle.io/v1beta1
+    kind: MachineRegistration
+    name: fire-nodes
+    namespace: fleet-default
+----
+====
+
+Alternativement, lors de la création d'un `raw` `SeedImage`, vous devez utiliser des images Elemental `container`. Ces images sont également utilisées lors du processus de mise à niveau (voir : xref:references/managedosimage-reference.adoc[ManagedOSImage]), mais peuvent également être utilisées pour créer un `raw` `SeedImages`.
+
+.Cliquez ici pour un exemple de SeedImage brute
+[%collapsible]
+====
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: SeedImage
+metadata:
+  name: fire-raw
+  namespace: fleet-default
+spec:
+  type: raw
+  baseImage: registry.suse.com/suse/sl-micro/6.0/baremetal-os-container:2.1.1-3.29
+  registrationRef:
+    apiVersion: elemental.cattle.io/v1beta1
+    kind: MachineRegistration
+    name: fire-nodes
+    namespace: fleet-default
+----
+====
+
+=== Prise en charge multi-plateforme
+
+Elemental fournit des images `linux/x86_64` et `linux/aarch64` pour la plupart des variantes.
+Pour déterminer si une image `ManagedOSVersion` prend en charge les deux plateformes, vous pouvez vérifier les valeurs `ManagedOSVersion.spec.metadata.platform`. (Voir xref:references/managedosversion-reference.adoc#_metadata[documentation]).
+
+Lors de la définition d'un `SeedImage`, vous pouvez ensuite utiliser cette valeur pour le `targetPlatform` de l'image.
+Laisser le `targetPlatform` vide par défaut utilisera la plateforme sur laquelle le `elemental-operator` est en cours d'exécution.
+
+.Cliquez ici pour un exemple de SeedImage aarch64 brute
+[%collapsible]
+====
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: SeedImage
+metadata:
+  name: fire-raw-aarch64
+  namespace: fleet-default
+spec:
+  targetPlatform: linux/aarch64
+  type: raw
+  baseImage: registry.suse.com/suse/sl-micro/6.0/baremetal-os-container:2.1.1-3.29
+  registrationRef:
+    apiVersion: elemental.cattle.io/v1beta1
+    kind: MachineRegistration
+    name: fire-nodes
+    namespace: fleet-default
+----
+====
+
+== URLs téléchargeables
+
+La ressource `SeedImage` suit le processus de création de l'image de semence à travers deux conditions de statut :
+
+- **Ready** : suit la création de toutes les ressources enfants requises qui effectuent le processus de construction réel.
+- **SeedImageReady**  : suit l'état du processus de construction dans les ressources enfants.
+
+Alternativement, il est également possible d'attendre que le pod `SeedImage` soit prêt :
+
+[,bash]
+----
+kubectl wait --for=condition=ready pod -n fleet-default fire-img
+----
+
+Attendre les conditions de disponibilité est une bonne pratique avant de télécharger un artefact.
+
+Une fois qu'un `SeedImage` est prêt, le `.status.downloadURL` contiendra l'URL téléchargeable.
+Notez que l'URL utilisera le même point de terminaison que Rancher, donc attention à la validation HTTPS lors de l'utilisation de certificats auto-signés.
+
+[,bash]
+----
+kubectl get seedimage -n fleet-default fire-img -o jsonpath="{.status.downloadURL}"
+----
+
+La somme de contrôle de l'image est également disponible pour vérifier que le téléchargement était correct :
+
+[,bash]
+----
+kubectl get seedimage -n fleet-default fire-img -o jsonpath="{.status.checksumURL}"
+----

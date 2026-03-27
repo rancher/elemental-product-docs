@@ -1,0 +1,160 @@
+= {elemental-product-name} Planes
+:revdate: 2025-10-27
+:page-revdate: {revdate}
+
+{elemental-product-name} utiliza el https://github.com/rancher/system-agent[Agente del Sistema Rancher], renombrado como {elemental-product-name} Agente del Sistema, para iniciar el nodo con un plan simple.
+
+El plan aplicará las siguientes configuraciones:
+
+* Establecer algunas etiquetas para el nodo
+* Establecer el nombre de host adecuado según el valor de `MachineInventory`
+* Instalar el Agente del Sistema Rancher por defecto desde el Servidor Rancher, e instalar los componentes de Kubernetes adecuados
+
+El servicio de inicio también acepta planes locales almacenados bajo `/var/lib/elemental/agent/plans`. Cualquier plan escrito allí también se aplicará durante el inicio del nodo después de que se complete la instalación.
+
+[TIP]
+====
+Los planes locales se ejecutan únicamente durante el inicio de {elemental-product-name} *antes* de que Kubernetes se instale en el nodo.
+====
+
+== Tipos de Planes
+
+Los tipos de planes que {elemental-product-name} puede utilizar son:
+
+* Instrucciones de una sola vez: Solo se ejecuta una vez
+* Instrucciones periódicas: Se ejecutan periódicamente
+* Archivos: Crea archivos
+* Sondeos: sondeos http
+
+[TIP]
+====
+Tanto las instrucciones de una sola vez como las instrucciones periódicas pueden ejecutar un comando directo o una imagen de docker.
+====
+
+== Añadiendo planes locales en {elemental-product-name}
+
+Puedes añadir planes locales a {elemental-product-name} como parte del `MachineRegistration` CRD, en la sección `cloud-config` de la siguiente manera:
+
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: MachineRegistration
+metadata:
+  name: my-nodes
+  namespace: fleet-default
+spec:
+  config:
+    cloud-config:
+      users:
+        - name: root
+          passwd: root
+      write_files:
+        - path: /var/lib/elemental/agent/plans/mycustomplan.plan
+          permissions: "0600"
+          content: |
+            {"instructions":
+                [
+                  {
+                    "name":"set hostname",
+                    "command":"hostnamectl",
+                    "args": ["set-hostname", "myHostname"]
+                  },
+                  {
+                    "name":"stop sshd service",
+                    "command":"systemctl",
+                    "args": ["stop", "sshd"]
+                  }
+                ]
+            }
+    elemental:
+      install:
+        reboot: true
+        device: /dev/sda
+        debug: true
+  machineName: my-machine
+  machineInventoryLabels:
+    element: fire
+----
+
+== Ejemplos de planes
+
+Los siguientes planes se proporcionan como una referencia rápida y no se garantiza que funcionen en tu entorno. Para aprender más sobre los planes, por favor consulta https://github.com/rancher/system-agent[Agente del Sistema Rancher].
+
+[tabs]
+======
+Ejemplo 1: instrucciones de una sola vez::
++
+====
+[,json]
+----
+{"instructions":
+    [
+        {
+            "name":"set hostname",
+            "command":"hostnamectl",
+            "args": ["set-hostname", "myHostname"]
+        },
+        {
+            "name":"stop sshd service",
+            "command":"systemctl",
+            "args": ["stop", "sshd"]
+        }
+    ]
+}
+----
+====
+
+Ejemplo 2: instrucciones periódicas::
++
+====
+[,json]
+----
+{"periodicInstructions":
+    [
+        {
+            "name":"set hostname",
+            "image":"ghcr.io/rancher-sandbox/elemental-example-plan:main"
+            "command": "run.sh"
+        }
+    ]
+}
+----
+====
+
+Ejemplo 3: archivos::
++
+====
+[,json]
+----
+{"files":
+    [
+        {
+            "content":"Welcome to the system",
+            "path":"/etc/motd",
+            "permissions": "0644"
+        }
+    ]
+}
+----
+====
+
+Ejemplo 4: sondeos::
++
+====
+[,json]
+----
+{"probes":
+    "probe1": {
+        "name": "Service Up",
+        "httpGet": {
+            "url": "http://10.0.0.1/healthz",
+            "insecure": "false",
+            "clientCert": "....",
+            "clientKey": "....",
+            "caCert": "....."
+        }
+    }
+}
+----
+====
+======

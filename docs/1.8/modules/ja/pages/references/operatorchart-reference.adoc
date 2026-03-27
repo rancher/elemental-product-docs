@@ -1,0 +1,103 @@
+= {elemental-product-name} オペレーター Helm チャート
+:revdate: 2025-07-03
+:page-revdate: {revdate}
+
+{elemental_operator_url}[{elemental_operator_name}] は、{elemental-product-name} バージョンの管理と、エッジまたはベアメタルインストールを支援するためのマシンインベントリの維持を担当しています。
+
+関連するチャートは、https://rancher.com/docs/rancher/v2.6/[Rancher Manager v2.6] クラスター上で https://helm.sh[Helm] パッケージマネージャーを使用してエレメンタルオペレーターのデプロイメントを起動します。
+
+== 前提条件
+
+* Rancher Manager バージョン v2.6
+* Helm クライアントバージョン v3.8.0+
+
+== Helm チャート情報を取得
+
+[,console]
+----
+helm pull oci://registry.suse.com/rancher/elemental-operator-chart
+helm show all oci://registry.suse.com/rancher/elemental-operator-chart
+----
+
+== チャートをインストール
+
+[,console]
+----
+helm install --create-namespace -n cattle-elemental-system elemental-operator-crds \
+             oci://registry.suse.com/rancher/elemental-operator-crds-chart
+helm install --create-namespace -n cattle-elemental-system elemental-operator \
+             oci://registry.suse.com/rancher/elemental-operator-chart
+----
+
+このコマンドは、デフォルト設定で Kubernetes クラスターにエレメンタルオペレーターをデプロイします。
+
+_以下の <<_configuration,設定>> を参照してください。_
+
+_コマンドのドキュメントについては、https://helm.sh/docs/helm/helm_install/[helm install] を参照してください。_
+
+== チャートをアンインストール
+
+[,console]
+----
+helm uninstall -n cattle-elemental-system elemental-operator
+----
+
+これにより、チャートに関連するすべての Kubernetes コンポーネントが削除され、リリースが削除されます。
+
+_コマンドのドキュメントについては、https://helm.sh/docs/helm/helm_uninstall/[helm uninstall] を参照してください。_
+
+== チャートをアップグレードする
+
+[,console]
+----
+helm upgrade -n cattle-elemental-system \
+             --install elemental-operator \
+             oci://registry.suse.com/rancher/elemental-operator-chart
+----
+
+_コマンドのドキュメントについては、https://helm.sh/docs/helm/helm_upgrade/[helm upgrade] を参照してください。_
+
+== 設定
+
+https://helm.sh/docs/intro/using_helm/#customizing-the-chart-before-installing[インストール前のチャートのカスタマイズ] を参照してください。詳細なコメント付きのすべての設定可能なオプションを確認するには、チャートの <<_values,values>> を訪問するか、次の設定コマンドを実行してください：
+
+`console showLineNumbers +
+helm show values oci://registry.suse.com/rancher/elemental-operator-chart +
+`
+
+== 値
+
+[cols="2,1,2,2"]
+|===
+| キー | タイプ | デフォルト | 説明
+
+| image.empty | 文字列 | `rancher/pause:3.1` |
+
+| image.repository | 文字列 | `registry.suse.com/rancher/elemental-operator-chart` | エレメンタルオペレーターのソースイメージとリポジトリ名
+
+| image.tag | tag | `""` |
+
+| image.imagePullPolicy | 文字列 | `IfNotPresent` |
+
+| noProxy | 文字列 | `127.0.0.0/8,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,.svc,.cluster.local` | プロキシを使用しないドメインまたはIPアドレスのカンマ区切りリスト 
+
+| global.cattle.systemDefaultRegistry | 文字列 | `""` | デフォルトのコンテナレジストリ名
+
+| sync_interval | 文字列 | `"60m"` | アップグレードチャネルのデフォルトの sync インターバル 
+
+| sync_namespaces | リスト | `[]` | オペレーターが監視するネームスペース、すべての場合は空白のままにしてください 
+
+| debug | bool | `false` | オペレーターのデバッグ出力を有効にする 
+
+| nodeSelector.kubernetes.io/os | 文字列 | `linux` |
+
+| tolerations | object | `{}` |
+
+| tolerations.key | 文字列 | `cattle.io/os` |
+
+| tolerations.operator | 文字列 | `"Equal"` |
+
+| tolerations.value | 文字列 | `"linux"` |
+
+| tolerations.effect | 文字列 | `NoSchedule` |
+|===
