@@ -1,5 +1,5 @@
 = Release Notes
-:revdate: 2026-01-16
+:revdate: 2026-03-27
 :page-revdate: {revdate}
 
 The {elemental-product-name} project stack is made of various components such as the `Operator` and `UI` for example.
@@ -12,8 +12,8 @@ Here's the different components, their latest version and a link to the respecti
 | Name | Version | Release Notes
 
 | https://github.com/rancher/elemental-operator/[{elemental-product-name} Operator]
-| v1.8.0
-| https://github.com/rancher/elemental-operator/releases/tag/v1.8.0[Link]
+| v1.9.1
+| https://github.com/rancher/elemental-operator/releases/tag/v1.9.1[Link]
 
 | https://github.com/rancher/elemental-toolkit/[{elemental-product-name} Toolkit]
 | v2.3.2
@@ -71,13 +71,14 @@ helm upgrade --install -n cattle-elemental-system --create-namespace \
 
 == Known issues
 
-=== Selinux in permissive mode
+=== Rancher compatibility
 
-{elemental-product-name} does not support Selinux in enforcing mode.
+Since version v1.9.x Elemental Operator must be paired with Rancher v2.14.x or later. Kubernetes provisioning
+is not functional otherwise, MachineInventory resources do not succeed when attempting to join an Elemental cluster.
 
-=== Install hooks not applicable in MachineRegistration resources
+=== SElinux in permissive mode
 
-The cloud-config defined in `MachineRegistrations` is not applying the `after-install-chroot` stage. Since SL Micro 6.1, in order to apply the `after-install-chroot` xref:references/cloud-config-reference.adoc#_elemental_client_cloud_config_hooks[yip stages] they should be defined as part of the `SeedImage` cloud-config. This stage is executed at install time and needs to be present in the installation media.
+Setting SElinux in enforcing mode is not supported in v1.9.x Elemental.
 
 === ManagedOSVersion of type ISO may report a wrong version number
 
