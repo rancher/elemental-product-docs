@@ -1,5 +1,5 @@
 = Release Notes
-:revdate: 2025-09-30
+:revdate: 2026-03-27
 :page-revdate: {revdate}
 
 The {elemental-product-name} project stack is made of various components such as the `Operator` and `UI` for example.
@@ -71,9 +71,13 @@ helm upgrade --install -n cattle-elemental-system --create-namespace \
 
 == Known issues
 
-=== Selinux in permissive mode
+=== Rancher compatibility
 
-{elemental-product-name} does not support Selinux in enforcing mode.
+Any version prior to v1.9.x is not compatible with Rancher v2.14.x and above.
+
+=== SElinux in permissive mode
+
+{elemental-product-name} does not support SElinux in enforcing mode.
 
 === Install hooks not applicable in MachineRegistration resources
 

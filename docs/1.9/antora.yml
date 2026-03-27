@@ -1,7 +1,7 @@
 name: os-manager
 title: OS Manager
-version: '1.9'
-prerelease: -dev
+version: 1.9
+display_version: '1.9'
 start_page: en:index.adoc
 nav:
 - modules/en/nav.adoc
