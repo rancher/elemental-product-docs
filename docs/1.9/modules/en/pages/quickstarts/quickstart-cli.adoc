@@ -37,11 +37,7 @@ include::example$quickstart/selector.yaml[]
 
 As you can see this is a very simple selector that looks for `MachineInventory`s having a label with the key `element` and the value `fire`. 
 
-.cluster.yaml
-[,yaml]
-----
-include::example$quickstart/cluster.yaml[]
-----
+include::example$quickstart/cluster.adoc[]
 
 As you can see the `machineConfigRef` is of kind `MachineInventorySelectorTemplate` with the name `fire-machine-selector`: it matches the selector we created. You can get more information about cluster options like https://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-deployment/configuration/rke2.html#_machineglobalconfig[`machineGlobalConfig`] or https://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-deployment/configuration/rke2.html#_machineselectorconfig[`machineSelectorConfig`] directly in the https://documentation.suse.com/cloudnative/rancher-manager/latest/en/about-rancher/what-is-rancher.html[Rancher Manager documentation].
 

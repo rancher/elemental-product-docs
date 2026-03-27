@@ -4,11 +4,7 @@
 
 Given the following sample registration:
 
-.example MachineRegistration using Declarative Networking
-[,yaml]
-----
-include::example$network/machineregistration.yaml[]
-----
+include::example$network/MachineRegistration.adoc[]
 
 We can expect each Elemental Machine to be configured using the defined `nm-configurator` `_all.yaml` template.
 
