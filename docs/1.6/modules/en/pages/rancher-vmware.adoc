@@ -1,5 +1,5 @@
 = How to use {elemental-product-name} with Rancher and VMware
-:revdate: 2025-07-03
+:revdate: 2026-03-09
 :page-revdate: {revdate}
 
 == Excerpt
@@ -101,6 +101,13 @@ You can download it with:
 ----
 wget --no-check-certificate --content-disposition $(kubectl get seedimages.elemental.cattle.io -n fleet-default fire-img -o jsonpath="{.status.downloadURL}")
 ----
+
+[TIP]
+====
+When using the baremetal iso/raw image you can enable the vmtoolsd systemd-unit in the seedimage. Consider the following example:
+
+include::example$quickstart/seedimage-vm-tools.adoc[]
+====
 
 == Step 3: Boot the target device
 
