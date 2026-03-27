@@ -4,7 +4,7 @@
 
 Given the following sample registration:
 
-include::example$network/MachineRegistration.adoc[]
+include::example$network/machineregistration.adoc[]
 
 We can expect each Elemental Machine to be configured using the defined `nm-configurator` `_all.yaml` template.
 
