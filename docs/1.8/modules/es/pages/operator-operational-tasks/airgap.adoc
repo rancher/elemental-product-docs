@@ -1,4 +1,5 @@
 = Instalar {elemental-product-name} en un entorno aislado.
+:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 6/11/2025
 :page-revdate: {revdate}
 

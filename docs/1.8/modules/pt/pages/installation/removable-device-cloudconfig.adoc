@@ -1,4 +1,5 @@
 = Como incluir arquivos de cloud-config de dispositivos removíveis
+:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-09-08
 :page-revdate: {revdate}
 

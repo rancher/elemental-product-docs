@@ -1,4 +1,5 @@
 = 使用 {elemental-product-name} 的 NTP 配置
+:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-07-03
 :page-revdate: {revdate}
 

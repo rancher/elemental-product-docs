@@ -1,4 +1,5 @@
 = Konfigurieren Sie die internen und externen IP-Adressen von K3s und RKE2
+:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-09-08
 :page-revdate: {revdate}
 

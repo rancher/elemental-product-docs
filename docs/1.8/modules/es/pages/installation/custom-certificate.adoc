@@ -1,4 +1,5 @@
 = Cómo añadir un certificado personalizado
+:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2024-09-24
 :page-revdate: {revdate}
 

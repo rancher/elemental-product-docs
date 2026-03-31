@@ -1,4 +1,5 @@
 = Trusted Platform Module 2.0 (TPM)
+:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2024-09-24
 :page-revdate: {revdate}
 

@@ -1,4 +1,5 @@
 = Cómo construir y usar imágenes de sistema operativo personalizadas
+:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-09-08
 :page-revdate: {revdate}
 

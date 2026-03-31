@@ -1,4 +1,5 @@
 = Resolución de problemas al actualizar la versión de Rancher
+:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-07-03
 :page-revdate: {revdate}
 

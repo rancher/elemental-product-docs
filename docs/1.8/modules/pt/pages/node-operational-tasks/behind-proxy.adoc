@@ -1,4 +1,5 @@
 = Por trás de um proxy
+:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 06-11-2025
 :page-revdate: {revdate}
 

@@ -1,4 +1,5 @@
 = Instrucciones para construir imágenes de disco en bruto para Raspberry Pi
+:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2024-09-24
 :page-revdate: {revdate}
 

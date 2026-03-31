@@ -1,4 +1,5 @@
 = Gestion des systèmes d'exploitation pour Rancher
+:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2026-01-16
 :page-revdate: {revdate}
 

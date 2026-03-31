@@ -1,4 +1,5 @@
 = Variables de plantilla de GPU
+:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 15/08/2025
 :page-revdate: {revdate}
 

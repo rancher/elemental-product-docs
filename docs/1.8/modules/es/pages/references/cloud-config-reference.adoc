@@ -1,4 +1,5 @@
 = Referencia de Cloud-config
+:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-10-21
 :page-revdate: {revdate}
 

@@ -1,4 +1,5 @@
 = Kubernetes 集群配置
+:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-11-06
 :page-revdate: {revdate}
 

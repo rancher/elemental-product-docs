@@ -1,4 +1,5 @@
 = Variables du modèle de la carte mère
+:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-08-15
 :page-revdate: {revdate}
 

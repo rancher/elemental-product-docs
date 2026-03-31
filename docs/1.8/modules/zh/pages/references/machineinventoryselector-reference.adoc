@@ -1,4 +1,5 @@
 = 机器库存选择器参考
+:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2024-09-24
 :page-revdate: {revdate}
 

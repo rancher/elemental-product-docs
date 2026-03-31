@@ -1,4 +1,5 @@
 = Comment ajouter des disques supplémentaires au groupe de volumes LVM lors de l'installation
+:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-09-08
 :page-revdate: {revdate}
 

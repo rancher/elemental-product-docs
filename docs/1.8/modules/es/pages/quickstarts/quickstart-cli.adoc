@@ -1,4 +1,5 @@
 = {elemental-product-name} la forma de usar la línea de comandos
+:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 6/11/2025
 :page-revdate: {revdate}
 
