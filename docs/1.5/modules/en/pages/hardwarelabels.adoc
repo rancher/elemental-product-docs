@@ -121,8 +121,4 @@ On both `Block Devices` and `Network` the device name is used as a sub-block, as
 
 == Example MachineRegistration
 
-.registration example with Hardware template variables
-[,yaml]
-----
-include::example$quickstart/registration-hardware-dhcphostname.yaml[]
-----
+include::example$quickstart/registration-hardware-dhcphostname.adoc[]

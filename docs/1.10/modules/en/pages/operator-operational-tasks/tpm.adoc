@@ -43,8 +43,4 @@ so the seed used for the TPM emulation is randomized per machine. Otherwise, you
 one to be registered will be valid.
 ====
 
-.registration-tpm.yaml
-[,yaml]
-----
-include::example$quickstart/registration-tpm.yaml[]
-----
+include::example$quickstart/registration-tpm.adoc[]

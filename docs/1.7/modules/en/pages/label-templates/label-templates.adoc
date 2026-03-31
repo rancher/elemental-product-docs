@@ -147,8 +147,4 @@ For more information on how to define the hostname for Elemental hosts, see the 
 
 == Label Templates Example
 
-.registration example with Label Templates' variables
-[,yaml]
-----
-include::example$quickstart/registration-hardware-dhcphostname.yaml[]
-----
+include::example$quickstart/registration-hardware-dhcphostname.adoc[]
