@@ -1,5 +1,5 @@
 = Customize hostname
-:revdate: 2025-07-03
+:revdate: 2026-04-01
 :page-revdate: {revdate}
 
 == {elemental-product-name} hostname management overview
@@ -52,8 +52,6 @@ In order to keep the hostname assigned from the DHCP server before the host regi
 the `MachineRegistration` xref:machineregistration-reference.adoc#_machinename[`machineName field`] should be set
 to the `${System Data/Runtime/Hostname}` xref:hardwarelabels.adoc[Hardware Label].
 
-This way {elemental-product-name} will use the current hostname as the `MachineInventory` name during
-the registration phase, which will be later set as the static hostname of the host during the
-provisioning phase.
+This way {elemental-product-name} will use the current hostname as the `MachineInventory` name during the registration phase, which will be later set as the static hostname of the host during the provisioning phase. Below is a registration example with the hostname and `MachineInventory` name set on the hostname received by the DHCP server.
 
 include::example$quickstart/registration-hardware-dhcphostname.adoc[]
