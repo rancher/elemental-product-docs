@@ -37,8 +37,4 @@ The labels can be added to the xref:references/machineregistration-reference.ado
 
 Example: xref:references/machineregistration-reference.adoc[MachineRegistration] where nodes will have the internal IP address set from interface eth0 and the external IP address from eth1.
 
-.registration.yaml
-[,yaml]
-----
-include::example$labeltemplates/registration.yaml[]
-----
+include::example$labeltemplates/registration.adoc[]

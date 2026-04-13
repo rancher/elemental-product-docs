@@ -61,6 +61,7 @@
 ** xref:troubleshooting/troubleshooting-reset.adoc[Reset]
 ** xref:troubleshooting/troubleshooting-network.adoc[Declarative Networking]
 ** xref:troubleshooting/troubleshooting-label-templates.adoc[Label Templates]
+** xref:troubleshooting/troubleshooting-verification.adoc[Verification]
 * References
 ** xref:references/cloud-config-reference.adoc[Cloud-config]
 ** xref:references/machineregistration-reference.adoc[MachineRegistration]

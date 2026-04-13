@@ -14,11 +14,7 @@ Json syncer::
 ====
 This syncer will fetch a json from url and parse it into valid `ManagedOSVersion` resources. 
 
-.managed-os-version-channel-json.yaml
-[,yaml]
-----
-include::example$upgrade/managed-os-version-channel-json.yaml[]
-----
+include::example$upgrade/managed-os-version-channel-json.adoc[]
 ====
 
 Custom syncer::
@@ -26,11 +22,7 @@ Custom syncer::
 ====
 A custom syncer allows more flexibility on how to gather `ManagedOSVersion` by allowing custom commands with custom images. This type of syncer allows to run a given command with arguments and env vars in a custom image and output a json file to `/data/output`. The generated data is then automounted by the syncer and then parsed so it can gather create the proper versions. {elemental-product-name} project provides channels to list all `ManagedOSVersions` released as a custom syncer. See the channel resource definition below: 
 
-.managed-os-version-channel-custom.yaml
-[,yaml]
-----
-include::example$upgrade/managed-os-version-channel-custom.yaml[]
-----
+include::example$upgrade/managed-os-version-channel-custom.adoc[]
 ====
 ======
 

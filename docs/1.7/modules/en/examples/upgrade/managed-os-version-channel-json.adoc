@@ -1,0 +1,14 @@
+.managed-os-version-channel-json.yaml
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: ManagedOSVersionChannel
+metadata:
+  name: elemental-versions
+  namespace: fleet-default
+spec:
+  options:
+    URI: "https://raw.githubusercontent.com/rancher/elemental-product-docs/main/docs/1.7/modules/en/examples/upgrade/versions.json"
+    Timeout: "1m"
+  type: json
+----

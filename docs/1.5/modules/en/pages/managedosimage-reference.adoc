@@ -6,11 +6,7 @@ The ManagedOSImage resource is responsible of defining an OS image or image vers
 
 There are several keys that can be configured under a `ManagedOSImage` resource spec.
 
-.upgrade-cluster-target.yaml
-[,yaml]
-----
-include::example$upgrade/upgrade-cluster-target.yaml[]
-----
+include::example$upgrade/upgrade-cluster-target.adoc[]
 
 == `ManagedOSImageSpec` reference
 

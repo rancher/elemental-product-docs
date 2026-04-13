@@ -31,11 +31,7 @@ With 'clusterTarget'::
 ====
 You can target nodes for an upgrade via a `clusterTarget` by setting it to the cluster name that you want to upgrade. All nodes in a cluster that matches that name will match and be upgraded. 
 
-.upgrade-cluster-target.yaml
-[,yaml]
-----
-include::example$upgrade/upgrade-cluster-target.yaml[]
-----
+include::example$upgrade/upgrade-cluster-target.adoc[]
 ====
 
 With nodeSelector::
@@ -43,11 +39,7 @@ With nodeSelector::
 ====
 You can target nodes for an upgrade via a `nodeSelector` by setting it to the label and value that you want to match. Any nodes containing that key with the value will match and be upgraded. 
 
-.upgrade-node-selector.yaml
-[,yaml]
-----
-include::example$upgrade/upgrade-node-selector.yaml[]
-----
+include::example$upgrade/upgrade-node-selector.adoc[]
 ====
 
 With FORCE flag::
@@ -55,11 +47,7 @@ With FORCE flag::
 ====
 When upgrading to an older version or the same version that is already running the upgrade-procedure will be skipped. It is possible to force upgrades to older versions by setting the FORCE environment variable as shown below. 
 
-.upgrade-force.yaml
-[,yaml]
-----
-include::example$upgrade/upgrade-force.yaml[]
-----
+include::example$upgrade/upgrade-force.adoc[]
 ====
 
 With UPGRADE_RECOVERY flag::
@@ -67,11 +55,7 @@ With UPGRADE_RECOVERY flag::
 ====
 You can decide upgrade the Recovery partition when upgrading the system, or alternatively to upgrade the Recovery partition only.
 
-.upgrade-recovery.yaml
-[,yaml]
-----
-include::example$upgrade/upgrade-recovery.yaml[]
-----
+include::example$upgrade/upgrade-recovery.adoc[]
 ====
 ======
 
@@ -84,11 +68,7 @@ Via 'osImage'::
 ====
 Just specify an OCI image on the `osImage` field 
 
-.upgrade-cluster-target.yaml
-[,yaml]
-----
-include::example$upgrade/upgrade-cluster-target.yaml[]
-----
+include::example$upgrade/upgrade-cluster-target.adoc[]
 ====
 
 Tab Via 'ManagedOSVersion'::
@@ -96,11 +76,7 @@ Tab Via 'ManagedOSVersion'::
 ====
 In this case we use the auto populated `ManagedOSVersion` resources to set the wanted `managedOSVersionName` field. See section [Managing available versions](#managing-available-versions) to understand how the `ManagedOSVersion` are managed. 
 
-.upgrade-managedos-version.yaml
-[,yaml]
-----
-include::example$upgrade/upgrade-managedos-version.yaml[]
-----
+include::example$upgrade/upgrade-managedos-version.adoc[]
 ====
 ======
 

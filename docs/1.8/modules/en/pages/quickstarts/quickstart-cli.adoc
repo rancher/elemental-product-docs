@@ -30,19 +30,11 @@ Manually creating the resource yamls::
 ========
 You will need to create the following files: 
 
-.selector.yaml
-[,yaml]
-----
-include::example$quickstart/selector.yaml[]
-----
+include::example$quickstart/selector.adoc[]
 
 As you can see this is a very simple selector that looks for `MachineInventory`s having a label with the key `element` and the value `fire`. 
 
-.cluster.yaml
-[,yaml]
-----
-include::example$quickstart/cluster.yaml[]
-----
+include::example$quickstart/cluster.adoc[]
 
 As you can see the `machineConfigRef` is of kind `MachineInventorySelectorTemplate` with the name `fire-machine-selector`: it matches the selector we created. You can get more information about cluster options like https://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-deployment/configuration/rke2.html#_machineglobalconfig[`machineGlobalConfig`] or https://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-deployment/configuration/rke2.html#_machineselectorconfig[`machineSelectorConfig`] directly in the https://documentation.suse.com/cloudnative/rancher-manager/latest/en/about-rancher/what-is-rancher.html[Rancher Manager documentation].
 
@@ -51,21 +43,13 @@ As you can see the `machineConfigRef` is of kind `MachineInventorySelectorTempla
 Registration::
 +
 ====
-.register.yaml
-[,yaml]
-----
-include::example$quickstart/registration.yaml[]
-----
+include::example$quickstart/registration.adoc[]
 ====
 
 Registration for Raspberry Pi::
 +
 ====
-.rpi-registration.yaml
-[,yaml]
-----
-include::example$quickstart/rpi-registration.yaml[]
-----
+include::example$quickstart/rpi-registration.adoc[]
 
 For deployment on Raspberry Pi, you need to enable emulated TPM (except you have [a hardware TPM for Raspberry Pi](https://thepihut.com/products/letstrust-tpm-for-raspberry-pi)). You also need to disable writing to the EFI store (since Raspberry Pi doesn't have one) via `disable-boot-entry: true`.
 ====
@@ -85,11 +69,7 @@ The SD-card on a Raspberry Pi is usually `/dev/mmcblk0`.
 Seed Image (x86_64)::
 +
 ====
-.seedimage.yaml
-[,yaml]
-----
-include::example$quickstart/seedimage.yaml[]
-----
+include::example$quickstart/seedimage.adoc[]
 
 The `SeedImage` is required to generate the *seed image* (like a bootable ISO) that will boot and start the {elemental-product-name} provisioning on the target machines.
 

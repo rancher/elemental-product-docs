@@ -108,11 +108,7 @@ The `network` section of the `MachineRegistration` allows users to define:
 . A map of IPPool references.
 . A network config template (in this case `nmc` configurator is in use).
 
-.example MachineRegistration using Declarative Networking
-[,yaml]
-----
-include::example$network/machineregistration.yaml[]
-----
+include::example$network/machineregistration.adoc[]
 
 Here we can observe that one `InClusterIPPool` has been defined, since we are using the https://github.com/kubernetes-sigs/cluster-api-ipam-provider-in-cluster[InCluster IPAM Provider] for this example.
 
@@ -215,11 +211,7 @@ nmc::
 --
 The `nmc` configurator uses the https://github.com/suse-edge/nm-configurator?tab=readme-ov-file#unified-configurations[nm-configurator unified syntax] to generate NetworkManager's connection files.
 
-.example MachineRegistration using nmc configurator
-[,yaml]
-----
-include::example$network/machineregistration-nmc.yaml[]
-----
+include::example$network/machineregistration-nmc.adoc[]
 
 --
 
@@ -228,11 +220,7 @@ nmstate::
 --
 The `nmstate` configurator uses https://nmstate.io/examples.html[nmstate syntax] to generate NetworkManager's connection files. Note that https://github.com/nmstate/nmstate/releases[nmstatectl] needs to be installed on the Elemental system to use this configurator. This is not included by default in Elemental images, but can be installed when building a xref:operator-operational-tasks/custom-images.adoc[custom image].
 
-.example MachineRegistration using nmstate configurator
-[,yaml]
-----
-include::example$network/machineregistration-nmstate.yaml[]
-----
+include::example$network/machineregistration-nmstate.adoc[]
 
 --
 
@@ -244,10 +232,7 @@ The `nmconnections` configurator is the simplest option available and allows the
 .Click here for example MachineRegistration using nmstate configurator
 [%collapsible]
 ====
-[,yaml]
-----
-include::example$network/machineregistration-nmconnections.yaml[]
-----
+include::example$network/machineregistration-nmconnections.adoc[]
 ====
 
 --

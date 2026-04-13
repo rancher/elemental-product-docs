@@ -1,5 +1,5 @@
 = Hardware Labels
-:revdate: 2024-09-24
+:revdate: 2026-04-01
 :page-revdate: {revdate}
 
 When a node is registered, hardware data is collected and made available to the MachineRegistration in the same way as xref:smbios.adoc[SMBIOS data].
@@ -121,8 +121,6 @@ On both `Block Devices` and `Network` the device name is used as a sub-block, as
 
 == Example MachineRegistration
 
-.registration example with Hardware template variables
-[,yaml]
-----
-include::example$quickstart/registration-hardware-dhcphostname.yaml[]
-----
+Registration example with Hardware Label template variables:
+
+include::example$quickstart/registration-hardware-dhcphostname.adoc[]

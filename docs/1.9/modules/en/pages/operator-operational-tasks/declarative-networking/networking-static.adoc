@@ -16,11 +16,7 @@ In this example, we are going to customize an Elemental image, and include a xre
 
 The following configuration covers 2 nodes with a very basic network setup.
 
-.99_static_network_config.yaml
-[,yaml]
-----
-include::example$network/yip-nmc-static-config.yaml[]
-----
+include::example$network/yip-nmc-static-config.adoc[]
 
 == Include the static network configuration in a custom OS image
 

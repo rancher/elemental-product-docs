@@ -1,6 +1,6 @@
 = How to use {elemental-product-name} with Rancher and VMware
 :page-languages: [en, de, es, fr, ja, pt, zh]
-:revdate: 2025-09-08
+:revdate: 2026-04-01
 :page-revdate: {revdate}
 
 == Excerpt
@@ -76,22 +76,7 @@ The installation media needs to be tied to a specific registration end point. Th
 
 Consider the following example:
 
-[,yaml]
-.seedimage.yaml
-----
-apiVersion: elemental.cattle.io/v1beta1
-kind: SeedImage
-metadata:
-  name: fire-img
-  namespace: fleet-default
-spec:
-  baseImage: registry.suse.com/suse/sle-micro-iso/5.5:2.0.2
-  registrationRef:
-    apiVersion: elemental.cattle.io/v1beta1
-    kind: MachineRegistration
-    name: fire-nodes
-    namespace: fleet-default
-----
+include::example$quickstart/seedimage.adoc[]
 
 Once the SeedImage resource is created it starts building an ISO with the provided OS image and linking it to
 the given registration end point. Once done a download URL will be available in the SeedImage resource status.
@@ -102,6 +87,13 @@ You can download it with:
 ----
 wget --no-check-certificate --content-disposition $(kubectl get seedimages.elemental.cattle.io -n fleet-default fire-img -o jsonpath="{.status.downloadURL}")
 ----
+
+[TIP]
+====
+When using the baremetal iso/raw image you can enable the vmtoolsd systemd-unit in the seedimage. Consider the following example:
+
+include::example$quickstart/seedimage-vm-tools.adoc[]
+====
 
 == Step 3: Boot the target device
 
