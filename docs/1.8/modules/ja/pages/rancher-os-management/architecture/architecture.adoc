@@ -1,0 +1,15 @@
+= アーキテクチャの概要
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-11-06
+:page-revdate: {revdate}
+
+{elemental-product-name}は、2つの主要なプロジェクトの組み合わせです：link:{elemental_toolkit_url}[{elemental_toolkit_name}]とlink:{elemental_operator_url}[{elemental_operator_name}]です。
+
+link:{elemental_toolkit_url}[{elemental_toolkit_name}]は、OCIコンテナイメージからOSをインストールしたり更新したりできるようにし、OSをコンテナレジストリを介して配布および取得できるようにします。
+
+link:{elemental_operator_url}[{elemental_operator_name}]は、{elemental-product-name}ツールキットを活用して、OSプロビジョニングおよびOS管理機能をRancherに拡張します。
+それは、link:{elemental_toolkit_url}[{elemental_toolkit_name}]とhttps://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-deployment/launch-kubernetes-with-rancher.html[Rancher RKE2/K3sクラスタプロビジョニング]の間のギャップを埋め、OSのないホストから完全に構成されたKubernetesクラスターへのシームレスな体験を提供します。
+
+これは、xref:rancher-os-management/architecture/services/architecture-services.adoc[サービスのセット]を通じて実現され、{elemental-product-name}によって提供され、{elemental-product-name}ツールキットと{elemental-product-name}オペレータープロジェクトから借用されたxref:rancher-os-management/architecture/architecture-components.adoc[コンポーネント]のおかげです。
+
+image:elemental-architecture-v1.5.png[]

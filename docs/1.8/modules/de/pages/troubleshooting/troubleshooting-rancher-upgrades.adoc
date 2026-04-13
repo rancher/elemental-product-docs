@@ -1,0 +1,26 @@
+= Fehlerbehebung bei Rancher-Upgrades
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-07-03
+:page-revdate: {revdate}
+
+[WARNING]
+====
+Das Upgrade auf Rancher v2.7.2 schlägt fehl, wenn {elemental-product-name} Cluster definiert sind. Der Rancher-Pod bleibt in einer Absturzschleife stecken (siehe https://github.com/rancher/rancher/issues/41145).)
+====
+
+Beachten Sie, dass das Problem nur auftritt, wenn mindestens ein {elemental-product-name} Cluster definiert ist.
+
+Um das Problem zu umgehen, erstellen Sie eine leere `dynamicschemas.management.cattle.io` Ressource mit dem Namen `machineinventoryselectortemplate`:
+
+[,shell]
+----
+kubectl apply -f - <<EOF
+kind: DynamicSchema
+apiVersion: management.cattle.io/v3
+metadata:
+  name: machineinventoryselectortemplate
+EOF
+
+----
+
+Die Absturzschleife wird beendet und das Rancher-Upgrade wird erfolgreich abgeschlossen.

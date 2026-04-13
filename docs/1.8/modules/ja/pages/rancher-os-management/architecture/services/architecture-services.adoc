@@ -1,0 +1,9 @@
+= サービス
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+{elemental-product-name} 機能は、以下のサービスのリストを通じて提供されます：
+
+* xref:rancher-os-management/architecture/services/architecture-machineonboarding.adoc[マシンオンボーディング]: ホストがOSのプロビジョニングを受け、{elemental-product-name} オペレーターカタログに登録されることを可能にします。
+* xref:rancher-os-management/architecture/services/architecture-clusterdeployment.adoc[Kubernetesクラスターのデプロイメント]: {elemental-product-name} オペレーターカタログに登録された利用可能なホスト上でKubernetesクラスターの作成を開始します。

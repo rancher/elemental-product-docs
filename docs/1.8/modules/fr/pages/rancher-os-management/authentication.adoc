@@ -1,0 +1,84 @@
+= Authentification
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+L'authentification se produit lors de l'intégration de la machine, lorsque la machine _s'enregistre_ auprès de la {elemental_operator_name}.
+
+{elemental-product-name} authentifie par défaut les hôtes via le _Module de plateforme de confiance_ (TPM) : la machine est authentifiée par _attestation_, c'est-à-dire que la machine prouve son identité par le biais de son dispositif TPM.
+
+Pour que _l'attestation_ fonctionne, chaque machine d'intégration *doit avoir un dispositif TPM 2.0*, sinon elle ne pourra pas s'enregistrer en utilisant l'authentification sécurisée TPM.
+
+== Alternatives au TPM
+
+*La seule méthode d'enregistrement officiellement supportée est basée sur l'attestation TPM et nécessite des dispositifs avec TPM 2.0 activés.*
+
+Si vous souhaitez inscrire des dispositifs sans puce TPM 2.0 en contournant l'authentification sécurisée, il existe plusieurs façons d'_identifier_ ces machines de manière unique et de permettre l'enregistrement :
+
+* émuler un dispositif TPM via une simple implémentation logicielle
+* s'identifier par leur adresse MAC
+* s'identifier en utilisant leur UUID SMBIOS
+
+La méthode d'authentification/identification peut être spécifiée dans le xref:references/machineregistration-reference.adoc#_config_elemental_registration[champ config:elemental:registration:auth] de la ressource MachineRegistration.
+
+[CAUTION]
+====
+La seule méthode d'*authentification* sécurisée et officiellement supportée dans {elemental-product-name} est celle par défaut, basée sur l'attestation TPM.
+Les alternatives au TPM peuvent être utilisées à des fins de démonstration ou pour des déploiements locaux, mais ne sont pas recommandées pour un usage en production car l'identité des machines d'intégration n'est pas vérifiée de manière sécurisée.
+====
+
+=== Émulation TPM
+
+L'émulation TPM effectue l'authentification en utilisant un logiciel qui imite le comportement du TPM et qui est intégré dans le {elemental_register_name}.
+Les clés du dispositif TPM émulé sont toutes générées par une seule graine de manière déterministe : la même graine produit les mêmes clés TPM, donc une graine différente doit être choisie pour chaque hôte lors de l'enregistrement.
+
+L'émulation TPM est activée en configurant les champs `emulate-tpm` et `emulated-tpm-seed` dans la configuration `MachineRegistration` (voir la xref:references/machineregistration-reference.adoc#_config_elemental_registration[section config:elemental:registration dans la référence MachineRegistration] pour plus de détails).
+
+.exemple de MachineRegistration utilisant l'émulation TPM
+[,yaml]
+----
+include::example$authentication/registration-emulate-tpm.yaml[]
+----
+
+La configuration de l'émulation TPM est détaillée dans la xref:operator-operational-tasks/tpm.adoc#_add_tpm_emulation_to_bare_metal_machine[section de configuration de l'émulation TPM].
+
+=== identification par adresse MAC
+
+Lors de l'utilisation de l'identification par adresse MAC, l'hôte s'enregistre auprès du {elemental_operator_name} en utilisant l'adresse MAC de sa carte d'interface réseau (NIC) comme identifiant.
+Dans le cas où la machine dispose de plusieurs interfaces réseau, les adresses MAC sont triées par ordre lexicographique et la première est sélectionnée.
+
+Pour remplacer l'authentification TPM par l'identification par adresse MAC, il suffit de définir la valeur `mac` dans le champ `auth` de la section xref:references/machineregistration-reference.adoc#_config_elemental_registration[config:elemental:registration dans la référence MachineRegistration].
+
+.exemple de MachineRegistration utilisant l'adresse MAC comme identifiant de machine
+[,yaml]
+----
+include::example$authentication/registration-mac.yaml[]
+----
+
+[CAUTION]
+====
+L'adresse MAC est considérée comme unique par le {elemental_operator_name}.
+Cela est vrai pour les dispositifs physiques, tandis que si l'on utilise des machines virtuelles provenant de différents hyperviseurs et de différents segments réseau, il appartient à l'administrateur de s'assurer que les machines virtuelles enregistrées ont une adresse MAC unique.
+====
+
+
+=== Identification par UUID SMBIOS
+
+La spécification du BIOS de gestion du système (SMBIOS) définit des structures de données qui peuvent être utilisées pour lire les informations de gestion produites par le BIOS d'un hôte.
+
+Lors de l'utilisation de la valeur `sys-uuid` comme champ `auth` de la section xref:references/machineregistration-reference.adoc#_config_elemental_registration[config:elemental:registration dans la MachineRegistration], l'hôte s'enregistre auprès du {elemental_operator_name} en utilisant la valeur `UUID` de la table `System Information` des données SMBIOS de l'hôte.
+
+.exemple de MachineRegistration utilisant l'UUID de la table d'informations système SMBIOS comme identifiant de machine
+[,yaml]
+----
+include::example$authentication/registration-sys-uuid.yaml[]
+----
+
+[CAUTION]
+====
+La valeur `System information/UUID` du SMBIOS doit être remplie par le fournisseur de matériel en tant qu'UUID unique pour l'hôte.
+
+Les données SMBIOS ne sont pas toujours fiables. Cela dépend du fabricant. Vous pouvez rencontrer des cas où l'UUID est manquant, ou le même UUID est appliqué à plusieurs dispositifs au sein du même lot.
+
+Il appartient à l'administrateur de s'assurer que les machines ont des valeurs SMBIOS `System information/UUID` uniques (l'outil `dmidecode` pourrait être utile), sinon les machines continueront à écraser la même ressource `MachineInventory` et le provisionnement {elemental-product-name} échouera.
+====

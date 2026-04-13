@@ -1,0 +1,71 @@
+= Variables de modèle aléatoires
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+Les variables de modèle aléatoires sont intégrées dans l'Opérateur Élémentaire.
+
+Elles permettent d'inclure des valeurs aléatoires `Int`, `Hex` ou `UUID` dans des xref:label-templates/label-templates.adoc[modèles d'étiquettes personnalisés].
+
+Les valeurs sont calculées à la volée lors du rendu de la `label template variables`.
+
+[IMPORTANT]
+.Les modèles d'étiquettes aléatoires ne sont rendus qu'une seule fois
+====
+
+Un modèle d'étiquette contenant une variable aléatoire n'est rendu que si le xref:references/machineinventory-reference.adoc[MachineInventory] de l'hôte en cours d'enregistrement n'a pas encore de valeur pour cette étiquette (une étiquette avec la même clé est manquante ou sa valeur est vide).
+
+Ainsi, les trois cas dans lesquels un modèle d'étiquette avec une variable aléatoire est rendu sont :
+
+. l'hôte s'enregistre pour la première fois et le xref:references/machineinventory-reference.adoc[MachineInventory] est créé à nouveau.
+. le modèle d'étiquette a été ajouté à la MachineRegistration après que l'hôte se soit (ré)enregistré la dernière fois.
+. l'étiquette xref:references/machineinventory-reference.adoc[MachineInventory] correspondante au modèle d'étiquette (même clé d'étiquette) a été supprimée manuellement ou sa valeur a été effacée.
+====
+
+
+|===
+| Variable | Description | from
+
+| `${Random/UUID}`
+| UUID aléatoire (par exemple, fd95324a-c26b-4e28-8727-1dcec293a0ec)
+| 1.7.0
+
+| `${Random/Hex/[1-32]}`
+| chaîne hexadécimale aléatoire de la longueur spécifiée (min 1, max 32)
+| 1.7.0
+
+| `${Random/Int/[MAXINT]`
+| entier aléatoire (min 0, max MAXINT-1)
+| 1.7.0
+|===
+
+[NOTE]
+.Exemples de rendu
+====
+|===
+| valeur du modèle | exemple de valeur rendue
+
+| `${Random/UUID}`
+| fd95324a-c26b-4e28-8727-1dcec293a0ec
+
+| `${Random/Hex/12}`
+| acd231f222b8
+
+| `${Random/Int/10000}` 
+| 9432
+
+|===
+====
+
+
+Les Variables de Modèle Aléatoires peuvent être utiles pour générer des noms d'hôtes personnalisés à attribuer à l'hôte en cours d'enregistrement.
+
+Puisque le nom d'hôte doit être unique et est attribué via le champ xref:references/machineregistration-reference.adoc[MachineRegistration] `spec.machineName`, des variables aléatoires peuvent être utilisées pour garantir l'unicité d'un groupe d'hôtes partageant le même préfixe et/ou suffixe personnalisés.
+
+Consultez la section xref:installation/hostname.adoc[HowTo/Customize hostname] pour plus d'informations.
+
+.exemple d'inscription Variables de modèle aléatoires
+[,yaml]
+----
+include::example$quickstart/registration-random-hostname.yaml[]
+----

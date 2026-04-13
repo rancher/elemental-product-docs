@@ -1,0 +1,43 @@
+= Variables de plantilla de producto
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+La información en estas variables se refiere a los atributos del sistema en general.
+
+Subconjunto de datos de información del sistema SMBIOS (tipo 1).
+
+Para más información sobre SMBIOS, consulta la
+https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.7.1.pdf[especificación SMBIOS].
+
+|===
+| Variable | Descripción | desde
+
+| `${Product/Family}`
+| Familia del sistema
+| 1.7.0
+
+| `${Product/Name}`
+| Nombre del producto
+| 1.7.0
+
+| `${Product/SKU}`
+| Número SKU del sistema
+| 1.7.0
+
+| `${Product/SerialNumber}`
+| Número de serie del sistema
+| 1.7.0
+
+| `${Product/UUID}`
+| UUID del sistema
+| 1.7.0
+
+| `${Product/Vendor}`
+| Proveedor del sistema
+| 1.7.0
+
+| `${Product/Version}`
+| Versión del sistema
+| 1.7.0
+|===

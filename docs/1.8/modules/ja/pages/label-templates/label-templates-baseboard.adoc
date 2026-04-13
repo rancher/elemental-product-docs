@@ -1,0 +1,34 @@
+= ベースボードテンプレート変数
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+ベースボード変数に収集された情報は、システムベースボードの属性を定義します（例えば、マザーボード、プラナー、サーバーブレード、または他の標準システムモジュール）。
+
+SMBIOSベースボード（またはモジュール）情報データのサブセット（タイプ2）。
+
+SMBIOSに関する詳細は、https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.7.1.pdf[SMBIOS仕様]を参照してください。
+
+|===
+| [可変] | 説明 | from
+
+| `${BaseBoard/AssetTag}`
+| マザーボード資産タグ
+| 1.7.0
+
+| `${BaseBoard/Product}`
+| マザーボード製品名
+| 1.7.0
+
+| `${BaseBoard/SerialNumber}`
+| マザーボードシリアル番号
+| 1.7.0
+
+| `${BaseBoard/Vendor}`
+| マザーボードベンダー
+| 1.7.0
+
+| `${BaseBoard/Version}`
+| マザーボードリビジョン
+| 1.7.0
+|===

@@ -1,0 +1,44 @@
+= Konfigurieren Sie die internen und externen IP-Adressen von K3s und RKE2
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+K3s und RKE2 ermöglichen es, die internen und externen IP-Adressen eines Knotens über die Parameter `--node-ip` und `--node-external-ip` anzugeben.
+
+Die Rancher-Bereitstellung ermöglicht es, diese Parameter zu füllen, indem die IP-Adresse der Netzwerkschnittstelle jedes Knotens erfasst wird.
+
+Die Methoden zur Erfassung dieser IP-Optionen für _Custom_ Rancher-Cluster und _Elemental_ Rancher-Cluster unterscheiden sich jedoch.
+
+== Konfiguration der internen und externen IP-Adressen von K3s und RKE2 in der Rancher-Cluster-Bereitstellung
+
+Die Rancher-Bereitstellung ermöglicht es, im Abschnitt Rancher-Agent die Netzwerkschnittstellen anzugeben, die an die internen und externen IP-Adressen jedes bereitgestellten Knotens gebunden werden sollen.
+
+Dies erfolgt durch Hinzufügen der Namen der Netzwerkschnittstellen, von denen die IP-Adressen extrahiert werden sollen, in die `CATTLE_INTERNAL_ADDRESS` und die `CATTLE_ADDRESS` Agent-Umgebungsvariablen (https://ranchermanager.docs.rancher.com/reference-guides/cluster-configuration/rancher-server-configuration/use-existing-nodes/rancher-agent-options#ip-address-options [siehe Rancher-Dokumentation]).
+
+[NOTE]
+====
+Die `CATTLE_INTERNAL_ADDRESS` und die `CATTLE_ADDRESS` Agent-Umgebungsvariablen können direkt mit den gewünschten IP-Adressen gefüllt werden. Da die internen und externen IP-Adressen jedoch _pro Knoten_ sind, würde dies nur für Cluster mit einem einzelnen Knoten funktionieren.
+====
+
+
+[CAUTION]
+====
+Während bei der Erstellung eines Elemental-Clusters Agent-Umgebungsvariablen hinzugefügt werden können, werden die `CATTLE_ADDRESS` und `CATTLE_INTERNAL_ADDRESS` ignoriert und führen nicht zur Konfiguration der internen und externen IP-Adressen der bereitgestellten Knoten.
+====
+
+
+== Konfigurieren Sie die internen und externen IP-Adressen von K3s und RKE2 in Elemental-Clustern
+
+Elemental ermöglicht es, die internen und externen IP-Adressen der Cluster-Knoten zu konfigurieren, indem die `elemental.cattle.io/InternalIP` und `elemental.cattle.io/ExternalIP` Labels an die xref:references/machineinventory-reference.adoc[MachineInventory] Ressourcen angehängt werden, die die Zielknoten verfolgen.
+
+Diese Labels, wenn sie an eine xref:references/machineinventory-reference.adoc[MachineInventory] Ressource angehängt werden, werden verwendet, um die internen und externen IP-Adressen der zugehörigen Knoten zu füllen.
+
+Die Labels können in die xref:references/machineregistration-reference.adoc[MachineRegistration] `machineInventoryLabels` Felder hinzugefügt werden, wobei die xref:label-templates/label-templates-network.adoc[Network Label Template] IP-Adressvariablen als Werte verwendet werden, um die IP-Adressen jedes Knotens zu erfassen.
+
+Beispiel: xref:references/machineregistration-reference.adoc[MachineRegistration], wo die Knoten die interne IP-Adresse von der Netzwerkschnittstelle eth0 und die externe IP-Adresse von der Netzwerkschnittstelle eth1 erhalten.
+
+.registration.yaml
+[,yaml]
+----
+include::example$labeltemplates/registration.yaml[]
+----

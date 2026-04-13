@@ -1,0 +1,90 @@
+= MachineInventorySelectorTemplate-Referenz
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+Das MachineInventorySelectorTemplate ist eine benutzerdefinierte Ressource, die als Vorlage zur Erstellung der erforderlichen xref:references/machineinventoryselector-reference.adoc[MachineInventorySelectors] verwendet wird.
+
+Es ist die Ressource, die für die Definition der Übereinstimmungskriterien verantwortlich ist, um eine inventarisierte Maschine mit einer Cluster-Ressource zu koppeln.
+
+Der relevante Schlüssel ist der `selector`, der Label-Selektor-Ausdrücke enthält.
+
+.MachineInventorySelectorTemplate
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: MachineInventorySelectorTemplate
+metadata:
+  name: my-machine-selector
+  namespace: fleet-default
+spec:
+  template:
+    spec:
+      selector:
+        ...
+----
+
+`template.spec.selector` kann `matchLabels` und/oder `matchExpressions` Schlüssel enthalten.
+
+== `template.spec.selector.matchLabels`
+
+Es ist eine Zuordnung von `{key,value}` Paaren `(map[string]string)`. Wenn mehrere Labels angegeben sind, müssen alle Labels übereinstimmen.
+
+.Klicken Sie hier für Details
+[%collapsible]
+====
+[yaml]
+----
+...
+spec:
+  template:
+    spec:
+      selector:
+        matchLabels:
+          element: fire
+          manufacturer: somevalue
+----
+====
+
+Ein Cluster, das mit dem obigen Selektor definiert ist, wird nur versuchen, Knoten zu provisionieren, die diese beiden Labels enthalten.
+
+== `template.spec.selector.matchExpressions`
+
+Es ist eine Liste von Label-Selektoren, jeder Label-Selektor kann definiert werden als:
+
+|===
+| Tasten | Typ | Beschreibung
+
+| key
+| Zeichenfolge
+| Dies ist der Label-Schlüssel, auf den der Selektor angewendet wird
+
+| operator
+| Zeichenfolge
+| Stellt die Beziehung des Schlüssels zu einer Menge von Werten dar. Gültige Operatoren sind 'In', 'NotIn', 'Exists' und 'DoesNotExist'
+
+| values
+| []string
+| Werte sind ein Array von Zeichenfolgenwerten. Wenn der Operator 'In' oder 'NotIn' ist, darf das Werte-Array nicht leer sein. Wenn der Operator 'Exists' oder 'DoesNotExist' ist, muss das Werte-Array leer sein.
+|===
+
+.Klicken Sie hier für Details
+[%collapsible]
+====
+[,yaml]
+----
+...
+spec:
+  template:
+    spec:
+      selector:
+        matchExpressions:
+        - key: element
+          operator: In
+          values: [ 'fire' ]
+        - key: manufacturer
+          operator: Exists
+----
+====
+
+Ein Cluster, der mit dem oben genannten Selektor definiert ist, wird nur versuchen, Knoten bereitzustellen, die mit dem `element=fire` Label inventarisiert sind und ein `manufacturer` Label mit beliebigem Wert enthalten.

@@ -1,0 +1,15 @@
+= Integração de Máquinas
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 06-11-2025
+:page-revdate: {revdate}
+
+O objetivo do serviço de Integração de Máquinas é registrar uma nova máquina no catálogo do {elemental-product-name} Operador (xref:references/machineinventory-reference.adoc[InventárioDeMáquinas] recursos) e provisionar o host com o sistema operacional, aplicando a configuração desejada.
+
+A Integração de Máquinas envolve os seguintes passos:
+
+* O usuário cria um recurso xref:references/machineregistration-reference.adoc[RegistroDeMáquina]: o RegistroDeMáquina inclui a configuração necessária para a instalação do sistema operacional.
+Assim que o RegistroDeMáquina é criado, o {elemental-product-name} Operador expõe um HTTP _endpoint de registro_: é o ponto de entrada necessário para que os hosts de integração se registrem no operador.
+* O usuário solicita uma imagem de auto-instalação através de um recurso xref:references/seedimage-reference.adoc[ImagemDeSemente]: ela apenas requer uma referência a um recurso de RegistroDeMáquina e a uma imagem de contêiner do sistema operacional compatível com o {elemental-product-name} Toolkit.
+Assim que a ImagemDeSemente é criada, o {elemental-product-name} Operador aciona o processo de construção do recurso de auto-instalação image: once completed, the URL is exposed in the `status.downloadURL` field of the xref:references/seedimage-reference.adoc[ImagemDeSemente].
+* O usuário baixa a imagem de auto-instalação e a utiliza para inicializar um host não provisionado: o host https://documentation.suse.com/cloudnative/os-manager/latest/en/rancher-os-management/authentication.html[autentica] no _endpoint de registro_ do {elemental-product-name} Operador, obtém a configuração completa armazenada no RegistroDeMáquina e instala o sistema operacional no dispositivo de armazenamento local. Assim que o host conclui o processo de registro, o {elemental-product-name} Operador cria um recurso único xref:references/machineinventory-reference.adoc[InventárioDeMáquinas] para rastrear o host.
+A imagem de auto-instalação pode ser usada para integrar qualquer número de hosts.

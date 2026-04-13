@@ -1,0 +1,51 @@
+= 自定义主机名
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+== {elemental-product-name} 主机名管理概述
+
+当主机从 {elemental-product-name} ISO 启动时，主机名会暂时设置为从 DHCP 服务器提供的名称（_临时主机名_）。
+如果 DHCP 服务器未提供主机名，{elemental-product-name} ISO 会以以下形式提供一个临时主机名：`rancher-$\{RANDOM}`。
+
+一旦启动过程完成，注册阶段开始：主机连接到 {elemental-product-name} 操作员，操作员为主机创建一个 `MachineInventory`。
+每个注册到 {elemental-product-name} 操作员的主机都由一个 `MachineInventory` 资源进行跟踪。
+
+*与节点关联的 `name` 资源的 `MachineInventory` 是永久（静态）主机名* *最终设置为主机*。
+这个永久主机名 *仅在 K8s 集群配置阶段设置在节点上*。
+在 K8s 配置阶段之前，节点主机名要么是 DHCP 分配的，要么是 `rancher-$\{RANDOM}`。
+
+在本节的其余部分，我们将提到 `hostname`，指的是 _永久_ 主机名，即在主机作为 K8s 集群的一部分被配置后设置的主机名。
+
+== 默认主机名
+
+分配给每个新创建的 MachineInventory 的默认名称形式为 `m-{$UUID}`。
+当主机作为集群的一部分被配置时，该 `m-\{UUID}` 名称被设置为相应主机的主机名，覆盖之前分配的主机名（`rancher-{$RANDOM}` 或 DHCP 分配的主机名）。
+
+== 设置自定义主机名
+
+可以通过在 xref:references/machineregistration-reference.adoc['MachineRegistration'] 资源中设置 xref:references/machineregistration-reference.adoc#_machinename[`machineName`] 字段来指定主机名。
+
+在 `machineName` 字段中设置的主机名应为模板形式，以便为每个注册节点唯一生成，使用 SMBIOS 和硬件标签数据。
+
+[IMPORTANT]
+====
+`MachineRegistration` 资源中的 `machineName` 字段不仅用作注册主机的主机名的蓝图，还用于跟踪主机的 `MachineInventory` 资源的名称。
+
+这意味着，如果您不使用模板化的 `machineName` 为每个使用相同 `MachineRegistration` 数据（即相同 ISO）启动的主机生成唯一的名称，则只有第一个注册的主机会成功，而其他主机将失败：`MachineInventory` 的名称必须是唯一的。
+====
+
+
+从 "!!raw-loader!@site/examples/quickstart/registration-hardware-dhcphostname.yaml" 导入 Registration
+
+== 保留从 DHCP 分配的主机名
+
+为了在主机注册到操作员之前保持从 DHCP 服务器分配的主机名，`MachineRegistration` xref:references/machineregistration-reference.adoc#_machinename[`machineName field`] 应该设置为 `${System Data/Runtime/Hostname}` 硬件标签。
+
+这样 {elemental-product-name} 在注册阶段将使用当前主机名作为 `MachineInventory` 名称，稍后将在配置阶段设置为主机的静态主机名。
+
+.注册示例：将主机名和 MachineInventory 名称都设置为从 DHCP 服务器获取的主机名。
+[,yaml]
+----
+include::example$quickstart/registration-hardware-dhcphostname.yaml[]
+----

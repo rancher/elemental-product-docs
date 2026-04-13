@@ -1,0 +1,46 @@
+= Gerenciamento de OS para Rancher
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2026-01-16
+:page-revdate: {revdate}
+
+{elemental-product-name} é uma pilha de software que permite o gerenciamento centralizado e completo de OS nativo de nuvem com Kubernetes.
+
+xref:release-notes.adoc[**Última Versão: v1.8.0**]
+
+A Pilha {elemental-product-name} consiste em um conjunto de pacotes no SLE Micro:
+
+* *elemental-toolkit* - Inclui um conjunto de utilitários de sistema operacional para permitir o gerenciamento de OS via contêineres. Inclui módulos dracut, configuração do carregador de inicialização, serviços de configuração estilo cloud-init, etc.
+* *elemental-operator* - Conecta-se ao Rancher Manager e gerencia as CRDs de MachineRegistration e MachineInventory.
+* *elemental-register* - Registra máquinas via machineRegistrations e as instala via elemental-cli.
+* *elemental-cli* - Instala qualquer derivado baseado no elemental-toolkit. Basicamente, um instalador baseado em nosso sistema A/B de instalação e de fazer upgrade.
+* *rancher-system-agent* - Executa no sistema instalado e recebe instruções ("Planos") do Rancher Manager sobre o que instalar e executar no sistema.
+
+Os OS dos nós do cluster são construídos e mantidos por meio de imagens de contêiner pelo {elemental_cli_name} e podem ser instalados em novos hosts usando o {elemental_ui_url}[{elemental_ui_name}] para https://www.rancher.com/products/rancher[Rancher Manager] ou o {elemental_cli_url}[{elemental_cli_name}].
+
+O {elemental_operator_url}[{elemental_operator_name}] e o {ranchersystemagent_url}[{ranchersystemagent_name}] permitem que o Rancher Manager controle totalmente os clusters {elemental-product-name}, desde a instalação e gerenciamento do OS nos nós até o provisionamento de novos clusters K3s ou RKE2 de forma centralizada.
+
+== {elemental-product-name} em hardware x86-64
+
+{elemental-product-name} está pronto para produção e totalmente suportado em x86-64 a partir do Rancher v2.7.0.
+
+== {elemental-product-name} em hardware ARM
+
+ARM (aarch64) está funcional na fase de desenvolvimento. ARM atualmente é testado apenas no Raspberry Pi 4 Model B com k3s 1.24.8 (ou posterior). Feedback é bem-vindo.
+
+== {elemental-product-name} em outro hardware
+
+{elemental-product-name} está atualmente direcionado a cenários 'edge' e, portanto, não suporta outro hardware. Reavaliaremos isso à medida que o mercado evolui.
+
+== Pronto para experimentar?
+
+Coloque um Cluster {elemental-product-name} em funcionamento com seu método preferido
+
+* Com o Rancher Manager xref:quickstarts/quickstart-ui.adoc[{elemental-product-name} plugin]
+* Com o xref:quickstarts/quickstart-cli.adoc[{elemental-product-name} CLI]
+
+[NOTE]
+.Próximos passos
+====
+Quer mais detalhes? Dê uma olhada na seção xref:rancher-os-management/architecture/architecture.adoc[Arquitetura] ou entre em contato com o {elemental_slack_url}[{elemental_slack_name}].
+====
+

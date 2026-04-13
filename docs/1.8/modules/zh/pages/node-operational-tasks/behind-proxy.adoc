@@ -1,0 +1,98 @@
+= 通过代理
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-11-06
+:page-revdate: {revdate}
+
+:tabs-sync-option:
+
+在许多企业环境中，运行在本地的服务器或虚拟机没有直接的互联网访问。相反，出于安全原因，连接外部服务是通过 HTTP(S) 代理进行的。本教程将向您展示如何在这样的环境中设置 {elemental-product-name} 部署。
+
+[IMPORTANT]
+====
+本指南不涵盖在代理后安装 Rancher。这是一个不同的用例，您可以在 https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/other-installation-methods/http-proxy/http-proxy.html[在 HTTP 代理后安装 SUSE Rancher Prime] 页面找到详细文档。
+====
+
+
+[NOTE]
+====
+在本文档中，我们假设您使用的是 SUSE 家族系统（如 SLE Micro），因此代理设置必须写入 `/etc/sysconfig/proxy`。
+====
+
+
+代理设置必须在以下位置配置：
+
+* 机器注册端点
+* SeedImage 资源
+* {elemental-product-name} 集群配置
+
+`elemental-system-agent` 需要代理设置以访问 Rancher 管理器。
+为此，您需要填写机器注册端点的 cloud-init 部分。
+
+您可以通过 xref:quickstarts/quickstart-ui.adoc#_add_a_machine_registration_endpoint[UI] 或 xref:quickstarts/quickstart-cli.adoc#_prepare_your_kubernetes_resources[CLI] 来完成。
+
+[tabs]
+======
+CLI::
++
+====
+[,yaml]
+----
+include::example$proxy/registration-proxy.yaml[]
+----
+====
+
+UI::
++
+====
+image:proxy-settings-machine-registration-ui.png[在机器注册中添加代理设置]
+====
+======
+
+== {elemental-product-name}-注册
+
+xref:rancher-os-management/architecture/architecture-components.adoc#_elemental_register_command_line_tool[{elemental-product-name}-注册] 是新主机与 Rancher 管理器之间的第一个通信端点，这是需要设置代理设置的第一个地方。
+
+[CAUTION]
+====
+在撰写本文时，仅可以通过 CLI 为 ISO 配置代理设置。UI中未实现代理设置。
+====
+
+该过程发生在您第一次启动 {elemental-product-name} ISO 时，为了配置代理设置，您必须在 ISO 中包含 `cloud-init` 定义。
+要做到这一点，您必须创建一个 xref:references/seedimage-reference.adoc[SeedImage] 定义。
+
+[,yaml]
+----
+include::example$proxy/seedimage-proxy.yaml[]
+----
+
+应用带有 `kubectl` 的 YAML，然后打印您的 SeedImage 定义以获取下载 URL：
+
+[,bash]
+----
+kubectl apply -f <my_seedimage_yaml_file>
+kubectl get seedimage <seed_image_name> -n <namespace> -o yaml
+----
+
+启动 ISO，您应该会看到您的新系统出现在 xref:references/machineinventory-reference.adoc[Machine inventory] 中。
+
+== 创建 {elemental-product-name} 集群
+
+在此步骤中，您可以使用 UI 或 CLI。
+
+[tabs]
+======
+CLI::
++
+====
+[,yaml]
+----
+include::example$proxy/cluster-proxy.yaml[]
+----
+====
+
+UI::
++
+====
+image:proxy-settings-cluster-ui.png[为 {elemental-product-name} 集群添加代理设置]
+====
+======

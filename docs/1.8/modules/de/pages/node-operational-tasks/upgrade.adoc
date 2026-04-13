@@ -1,0 +1,152 @@
+= Aufrüsten
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+Alle Komponenten in {elemental-product-name} werden mit Kubernetes verwaltet. Im Folgenden wird erläutert, wie man Kubernetes-Ansätze zum Upgrade der Komponenten verwendet.
+
+== {elemental-product-name} Knoten-Upgrade
+
+{elemental-product-name} Knoten werden mit dem {elemental_operator_name} geupgradet. Bitte beziehen Sie sich auf die Dokumentation xref:references/operatorchart-reference.adoc[{elemental_operator_name}] für vollständige Informationen.
+
+Das Upgrade kann entweder über die Kommandozeilenschnittstelle (CLI) oder die Benutzeroberfläche (UI) erfolgen:
+
+* <<_upgrade_via_command_line_interface,Befehlszeilenschnittstelle>>
+* <<_upgrade_via_user_interface,User Interface>>
+
+== Upgrade über die Befehlszeilenschnittstelle
+
+Es gibt zwei Möglichkeiten, Knoten für das Upgrade auszuwählen. Über ein Clusterziel, das ALLE Knoten in einem Cluster auswählt, die unserem Selektor entsprechen, oder über den Knoten-Selektor, der Knoten basierend auf den Knoten-Labels auswählt. Der Knoten-Selektor ermöglicht es uns, gezielter mit dem Upgrade umzugehen, während der Cluster-Selektor einfach alle Knoten in einem übereinstimmenden Cluster auswählt.
+
+Das Upgrade eines bestehenden `ManagedOSImage` löst einen neuen Upgrade-Zyklus aus, um das konfigurierte Image (oder die Image-Version) auf alle Zielknoten abzugleichen.
+
+[tabs]
+======
+Mit 'clusterTarget'::
++
+====
+Sie können Knoten für ein Upgrade über ein `clusterTarget` anvisieren, indem Sie es auf den Cluster-Namen setzen, den Sie upgraden möchten. Alle Knoten in einem Cluster, die diesem Namen entsprechen, werden ausgewählt und geupgradet. 
+
+.upgrade-cluster-target.yaml
+[,yaml]
+----
+include::example$upgrade/upgrade-cluster-target.yaml[]
+----
+====
+
+Mit Knoten-Selektor::
++
+====
+Sie können Knoten für ein Upgrade über ein `nodeSelector` anvisieren, indem Sie es auf das Label und den Wert setzen, die übereinstimmen sollen. Alle Knoten, die diesen Schlüssel mit dem Wert enthalten, werden ausgewählt und geupgradet. 
+
+.upgrade-node-selector.yaml
+[,yaml]
+----
+include::example$upgrade/upgrade-node-selector.yaml[]
+----
+====
+
+Mit dem FORCE-Flag::
++
+====
+Bei einem Upgrade auf eine ältere Version oder die gleiche Version, die bereits läuft, wird das Upgrade-Verfahren übersprungen. Es ist möglich, ein Upgrade auf ältere Versionen zu erzwingen, indem die Umgebungsvariable FORCE wie unten gezeigt gesetzt wird. 
+
+.upgrade-force.yaml
+[,yaml]
+----
+include::example$upgrade/upgrade-force.yaml[]
+----
+====
+
+Mit dem UPGRADE_RECOVERY-Flag::
++
+====
+Sie können entscheiden, die Wiederherstellungspartition beim Upgrade des Systems zu upgraden oder alternativ nur die Wiederherstellungspartition zu upgraden.
+
+.upgrade-recovery.yaml
+[,yaml]
+----
+include::example$upgrade/upgrade-recovery.yaml[]
+----
+====
+======
+
+=== Auswahl der Quelle für das Upgrade
+
+[tabs]
+======
+Über 'osImage'::
++
+====
+Geben Sie einfach ein OCI-Image im `osImage`-Feld an 
+
+.upgrade-cluster-target.yaml
+[,yaml]
+----
+include::example$upgrade/upgrade-cluster-target.yaml[]
+----
+====
+
+Tab Via 'ManagedOSVersion'::
++
+====
+In diesem Fall verwenden wir die automatisch ausgefüllten `ManagedOSVersion`-Ressourcen, um das gewünschte `managedOSVersionName`-Feld festzulegen. Siehe Abschnitt [Verfügbare Versionen verwalten](#managing-available-versions), um zu verstehen, wie die `ManagedOSVersion` verwaltet werden. 
+
+.upgrade-managedos-version.yaml
+[,yaml]
+----
+include::example$upgrade/upgrade-managedos-version.yaml[]
+----
+====
+======
+
+[WARNING]
+====
+Wenn sowohl `osImage` als auch `ManagedOSVersion` im selben `ManagedOSImage` definiert sind, beachten Sie, dass `osImage` Vorrang hat.
+====
+
+
+=== Verfügbare Versionen verwalten
+
+Es ist möglich, xref:references/managedosversion-reference.adoc[ManagedOSVersions] direkt zu erstellen oder xref:references/managedosversionchannel-reference.adoc[ManagedOSVersionChannels] zu abonnieren, um `ManagedOSVersions` automatisch von ihnen zu synchronisieren.
+
+Für weitere Details und eine Liste der verfügbaren Kanäle oder um sogar eigene zu erstellen, lesen Sie bitte die xref:operator-operational-tasks/channels.adoc[Dokumentation].
+
+== Upgrade über die Benutzeroberfläche
+
+Um über die Benutzeroberfläche ein Upgrade durchzuführen, müssen Sie im {elemental-product-name}-Menü "Erweitert" gehen und dann auf `Update Groups` klicken.
+
+Wählen Sie einen Namen, wählen Sie Zielcluster aus und entscheiden Sie sich zwischen den beiden Upgrade-Möglichkeiten :
+
+image::upgrade-ui-menu.png[{elemental-product-name} Upgrade-Menü]
+
+[tabs]
+======
+Über die verwaltete OS-Version::
++
+====
+In diesem Fall wird ein `OS Version Channels` verwendet, um die `OS Versions`-Ressourcen automatisch zu befüllen. 
+
+Der untenstehende Kanal wird von uns bereitgestellt, aber Sie können auch Ihren eigenen Kanal mitbringen. 
+
+Siehe Abschnitt <<_managing_available_versions,Verfügbare Versionen verwalten>>, um zu verstehen, wie die `ManagedOSVersion` verwaltet werden. 
+
+image:upgrade-ui-version-channel.png[OS-Version-Kanal erstellen] 
+
+Nach einer kurzen Synchronisationszeit wird Ihr `OS Versions` im `OS Versions`-Menü angezeigt. 
+
+image:upgrade-ui-os-version.png[{elemental-product-name} OS-Version-Menü] 
+
+Schließlich können Sie das `OS Versions` auswählen, wenn Sie Ihr `Upgrade Group` gemäß dem folgenden Screenshot erstellen : 
+
+image:upgrade-ui-upgrade-group-channel.png[OS-Version in Upgrade-Gruppe auswählen]
+====
+
+Tab über Bild aus der Registry::
++
+====
+Geben Sie einfach ein OCI-Image im `Image path`-Feld an, auf das geupgradet werden soll: image:upgrade-ui-image-registry.png[Upgrade via Image Registry]
+====
+======
+
+Klicken Sie auf die `Create`-Schaltfläche, um den Upgrade-Prozess zu starten. Wenn Sie mehrere Knoten haben, wird das Upgrade nacheinander Knoten für Knoten durchgeführt.

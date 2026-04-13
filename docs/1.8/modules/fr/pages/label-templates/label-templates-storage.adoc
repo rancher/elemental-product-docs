@@ -1,0 +1,122 @@
+= Variables de modèle de stockage
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+Les informations collectées dans les variables de modèle de stockage définissent les attributs des disques disponibles dans le système.
+
+Les disques sont suivis à la fois par numéro (0, 1, 2, ...) et par nom de périphérique (_sda_, _vda_, _nvme0n1_, ...).
+
+Par exemple, si `${Storage/Disks/2/Name}` est égal à `sda`, le modèle de disque peut être récupéré via les variables `${Storage/Disks/2/Model}` et `${Storage/Disks/sda/Model}`.
+
+[NOTE]
+====
+Les disques suivis incluent également des lecteurs de disques optiques et des dispositifs amovibles (par exemple, des clés USB).
+====
+
+|===
+| Variable | Description | from
+
+| `${Storage/Disks/_<Number>_/DriveType}`
+| Type de disque
+| 1.7.0
+
+| `${Storage/Disks/_<Number>_/Model}`
+| Modèle de disque
+| 1.7.0
+
+| `${Storage/Disks/_<Number>_/Name}`
+| Nom du périphérique
+| 1.7.0
+
+| `${Storage/Disks/_<Number>_/Removable}`
+| est un support amovible ?
+| 1.7.0
+
+| `${Storage/Disks/_<Number>_/Size}`
+| Taille (octets)
+| 1.7.0
+
+| `${Storage/Disks/_<Number>_/StorageController}`
+| Type de contrôleur
+| 1.7.0
+
+| `${Storage/Disks/_<DeviceName>_/DriveType}`
+| Type de disque
+| 1.7.0
+
+| `${Storage/Disks/_<DeviceName>_/Model}`
+| Modèle de disque
+| 1.7.0
+
+| `${Storage/Disks/_<DeviceName>_/Name}`
+| Nom du périphérique
+| 1.7.0
+
+| `${Storage/Disks/_<DeviceName>_/Removable}`
+| est un support amovible ?
+| 1.7.0
+
+| `${Storage/Disks/_<DeviceName>_/Size}`
+| Taille (octets)
+| 1.7.0
+
+| `${Storage/Disks/_<DeviceName>_/StorageController}`
+| Type de contrôleur
+| 1.7.0
+
+| `${Storage/TotalDisks}`
+| Nombre de disques présents dans le système
+| 1.7.0
+|===
+
+== Types de lecteurs de disques
+
+|===
+| Type | Description
+
+| Disque dur
+| Disque dur
+
+| FDD
+| Lecteur de disquettes
+
+| ODD
+| Lecteur de disque optique
+
+| SSD
+| Disque statique à semiconducteurs
+
+| virtuel
+| Lecteur virtuel, c'est-à-dire des dispositifs de boucle
+
+| Inconnu
+| type de lecteur inconnu
+|===
+
+== types de contrôleurs de stockage de disques
+
+|===
+| Type | Description
+
+| IDE
+| Électronique d'unité intégrée
+
+| SCSI
+| interface de système informatique de petite taille
+
+| NVMe
+| Mémoire non volatile Express
+
+| MMC
+| contrôleur multimédia (utilisé pour les dispositifs de stockage de téléphones mobiles)
+
+| virtio
+| contrôleur/driver de stockage virtualisé
+
+| loop
+| dispositif de boucle
+
+| Inconnu
+| type de contrôleur inconnu
+|===

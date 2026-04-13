@@ -1,0 +1,79 @@
+= Como adicionar discos extras ao grupo de volumes LVM durante a instalação
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+Este exemplo aborda a configuração de um host com múltiplos discos, alguns dos quais são usados como parte da configuração LVM.
+
+Como exemplo, temos um host com três discos (`/dev/sda`, `/dev/sdb` e `/dev/sdc`). 
+
+O primeiro disco é usado para uma instalação Elemental regular e os outros dois restantes são usados como parte de um grupo LVM onde volumes lógicos arbitrários são criados, formatados e montados na inicialização via um arquivo `fstab` estendido.
+
+Para este exemplo, etapas de cloud-config são necessárias em duas fases diferentes. Primeiro, alguns xref:references/cloud-config-reference.adoc#_elemental_client_cloud_config_hooks[ganchos de instalação] são necessários para preparar e gerenciar volumes LVM durante a instalação. Em segundo lugar, um cloud-config é necessário na inicialização para garantir que os volumes LVM criados sejam incluídos em `/etc/fstab` e, consequentemente, montados.
+
+Ganchos de instalação podem ser incluídos na seção `SeedImage.spec.cloud-config` com algo como:
+
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: SeedImage
+metadata:
+  name: custom-seed
+  namespace: fleet-default
+spec:
+  ...
+  cloud-config:
+    name: "Create LVM logic volumes over some physical disks"
+    stages:
+      post-install:
+      - name: "Create physical volume, volume group and logical volumes"
+        if: '[ -e "/dev/sdb" ] && [ -e "/dev/sdc" ]'
+        commands:
+        - | 
+          # Create the physical volume, volume group and logical volumes
+          pvcreate /dev/sdb /dev/sdc
+          vgcreate elementalLVM /dev/sdb /dev/sdc
+          lvcreate -L 8G -n elementalVol1 elementalLVM
+          lvcreate -l 100%FREE -n elementalVol2 elementalLVM
+          # Trigger udev detection
+          if [ ! -e "/dev/elementalLVM/elementalVol1" ] || [ ! -e "/dev/elementalLVM/elementalVol2" ]; then
+            sleep 10
+            udevadm settle
+          fi
+          # Ensure devices are already available
+          [ -e "/dev/elementalLVM/elementalVol1" ] || exit 1
+          [ -e "/dev/elementalLVM/elementalVol2" ] || exit 1
+          # Format logical volumes with a known label for later use in fstab
+          mkfs.xfs -L eVol1 /dev/elementalLVM/elementalVol1
+          mkfs.xfs -L eVol2 /dev/elementalLVM/elementalVol2
+----
+
+Os dispositivos LVM são criados e formatados conforme desejado. Este é um bom exemplo de um gancho de instalação, pois essa configuração é necessária apenas uma vez, no momento da instalação. Como alternativa, a mesma ação poderia ser realizada na primeira inicialização, no entanto, exigiria uma lógica mais sofisticada para garantir que seja aplicada apenas uma vez na primeira inicialização. Finalmente, os dados de cloud-config no tempo de inicialização contêm as configurações do ponto de montagem para acionar as montagens. O arquivo `fstab` do Elemental OS é efêmero e é criado dinamicamente no tempo de inicialização. É por isso que ele não existe durante a instalação e não pode ser usado em um gancho de instalação.
+
+Considere o seguinte exemplo para personalizar o arquivo `/etc/fstab` usando a seção `cloud-config` de um recurso MachineRegistration:
+
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: MachineRegistration
+metadata:
+  name: my-nodes
+  namespace: fleet-default
+spec:
+  ...
+  config:
+    ...
+    cloud-config:
+      stages:
+        initramfs:
+        - name: "Extend fstab to mount LVM logical volumes at boot"
+          commands:
+          - |
+            echo "LABEL=eVol1 /run/elemental/eVol1  xfs defaults  0 0" >> /etc/fstab
+            echo "LABEL=eVol2 /run/elemental/eVol2  xfs defaults  0 0" >> /etc/fstab
+----
+
+[NOTE]
+====
+A `initramfs` xref:references/cloud-config-reference.adoc[fase] é a última fase antes de mudar para a árvore raiz real. Nesta fase, o arquivo `/etc/fstab` já existe e pode ser adaptado antes de mudar a raiz. Uma vez em execução na árvore raiz final, o SystemD cuidará do restante da inicialização e a aplicará.
+====

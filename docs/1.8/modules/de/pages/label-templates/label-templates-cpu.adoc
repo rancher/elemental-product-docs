@@ -1,0 +1,74 @@
+= CPU-Vorlagenvariablen
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+Die in den CPU-Vorlagenvariablen gesammelten Informationen definieren die Attribute der auf dem System installierten Prozessoren.
+
+Die Daten werden je Prozessornummer (0, 1, 2, ...) bereitgestellt.
+
+Um auf den ersten Prozessor zuzugreifen, kann die Prozessornummer (_`<Number>`_) weggelassen werden (z. B. ist die Variable `${CPU/Processor/Model}` die gleiche wie `${CPU/Processor/0/Model}`).
+
+|===
+| Variable | Beschreibung | Von
+
+| `${CPU/Processor/Capabilities}`
+| Durch Kommas getrennte Liste der Prozessorfähigkeiten
+| 1.7.0
+
+| `${CPU/Processor/ID}`
+| Prozessor-ID
+| 1.7.0
+
+| `${CPU/Processor/Model}`
+| Prozessor-Modell
+| 1.7.0
+
+| `${CPU/Processor/NumCores}`
+| Anzahl der Cores
+| 1.7.0
+
+| `${CPU/Processor/NumThreads}`
+| Anzahl der Threads
+| 1.7.0
+
+| `${CPU/Processor/Vendor}`
+| Prozessor-Anbieter
+| 1.7.0
+
+| `${CPU/Processor/_<Number>_/Capabilities}`
+| Durch Kommas getrennte Liste der Prozessor-_nummer_
+| 1.7.0
+
+| `${CPU/Processor/_<Number>_/ID}`
+| Prozessor-_nummer_-ID
+| 1.7.0
+
+| `${CPU/Processor/_<Number>_/Model}`
+| Prozessor-_nummer_-Modell
+| 1.7.0
+
+| `${CPU/Processor/_<Number>_/NumCores}`
+| Anzahl der Kerne des Prozessors _nummer_
+| 1.7.0
+
+| `${CPU/Processor/_<Number>_/NumThreads}`
+| Anzahl der Threads des Prozessors _nummer_
+| 1.7.0
+
+| `${CPU/Processor/_<Number>_/Vendor}`
+| Prozessor-_nummer_-Anbieter
+| 1.7.0
+
+| `${CPU/TotalCores}`
+| Gesamtanzahl der Kerne im System
+| 1.7.0
+
+| `${CPU/TotalProcessors}`
+| Anzahl der Prozessoren im System
+| 1.7.0
+
+| `${CPU/TotalThreads}`
+| Gesamtanzahl der Threads im System
+| 1.7.0
+|===

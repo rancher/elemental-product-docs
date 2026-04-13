@@ -1,0 +1,202 @@
+= Die ausgelaufenen Variablen der Label-Vorlagen
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+*SMBIOS* und *Hardware* Variablenfamilien sind im Elemental Operator v1.7.0 ausgelaufen.
+
+Obwohl diese Variablenfamilien in den aktuellen Versionen des Elemental Operators weiterhin korrekt dargestellt werden, wird ihre Unterstützung in zukünftigen Versionen entfernt.
+
+Wenn Sie weiterhin diese alten Variablenfamilien der Label-Vorlagen verwenden, wechseln Sie bitte, wenn möglich, zu xref:label-templates/label-templates.adoc#_label_templates_variables[den neueren verfügbaren Varianten].
+
+Um die Einführung der neuen Variablen zu erleichtern, überprüfen Sie die Tabellen, die die ausgelaufenen Variablen den neuen unterstützten zuordnen:
+
+* <<_hardware_labels_to_new_label_templates_variables_table,Hardware-Labels zu neuen Variablen der Label-Vorlagen>>
+* <<_smbios_labels_to_new_label_templates_variable_table,SMBIOS-Labels zu neuen Variablen der Label-Vorlagen>>
+
+== Tabelle der Hardware-Labels zu neuen Variablen der Label-Vorlagen
+
+|===
+| Ausgelaufene Variable | Entsprechende neue Variable
+
+| `${System Data/Block Devices/Number Devices}`
+| `${Storage/TotalDisks}`
+
+| `${System Data/Block Devices/_<DeviceName>_/Drive Type} `
+| `${Storage/Disks/_<DeviceName>_/DriveType}`
+
+| `${System Data/Block Devices/_<DeviceName>_/Name} `
+| `${Storage/Disks/_<DeviceName>_/Name}`
+
+| `${System Data/Block Devices/_<DeviceName>_/Removable} `
+| `${Storage/Disks/_<DeviceName>_/Removable}`
+
+| `${System Data/Block Devices/_<DeviceName>_/Size} `
+| `${Storage/Disks/_<DeviceName>_/Size}`
+
+| `${System Data/Block Devices/_<DeviceName>_/Storage Controller} `
+| `${Storage/Disks/_<DeviceName>_/StorageController}`
+
+| `${System Data/CPU/Model}`
+| `${CPU/Model}`
+
+| `${System Data/CPU/Total Cores}`
+| `${CPU/TotalCores}`
+
+| `${System Data/CPU/Total Threads}`
+| `${CPU/TotalThreads}`
+
+| `${System Data/CPU/Vendor}`
+| `${CPU/Processor/Vendor}`
+
+| `${System Data/GPU/Model}`
+| `${GPU/GraphicsCard/ProductName}`
+
+| `${System Data/GPU/Vendor}`
+| `${GPU/GraphicsCard/VendorName}`
+
+| `${System Data/Memory/Total Physical Bytes}`
+| `${Memory/TotalPhysicalBytes}`
+
+| `${System Data/Memory/Total Usable Bytes}`
+| `${Memory/TotalUsableBytes}`
+
+| `${System Data/Network/Number Interfaces}`
+| `${Network/TotalNICs}`
+
+| `${System Data/Network/_<IfaceName>_/IsVirtual}`
+| `${Network/NICs/_<IfaceName>_/IsVirtual}`
+
+| `${System Data/Network/_<IfaceName>_/MacAddress}`
+| `${Network/NICs/_<IfaceName>_/MacAddress}`
+
+| `${System Data/Network/_<IfaceName>_/Name}`
+| `${Network/NICs/_<IfaceName>_/Name}`
+
+| `${System Data/Runtime/Hostname}`
+| `${Runtime/Hostname}`
+|===
+
+== Tabelle der SMBIOS-Labels zu neuen Variablen der Label-Vorlagen
+
+|===
+| Ausgelaufene Variable | Entsprechende neue Variable
+
+| `${BIOS Information/Address}`
+| _nicht verfügbar_
+
+| `${BIOS Information/BIOS Revision}`
+| _nicht verfügbar_
+
+| `${BIOS Information/ROM Size}`
+| _nicht verfügbar_ 
+
+| `${BIOS Information/Release Date}`
+| `${BIOS/Date}`
+
+| `${BIOS Information/Runtime Size}`
+| _nicht verfügbar_
+
+| `${BIOS Information/Vendor}`
+| `${BIOS/Vendor}`
+
+| `${BIOS Information/Version}
+| `${BIOS/Version}`
+
+| `${Base Board Information/Asset Tag}`
+| `${BaseBoard/AssetTag}`
+
+| `${Base Board Information/Chassis Handle}`
+| _nicht verfügbar_
+
+| `${Base Board Information/Contained Object Handles}`
+| _nicht verfügbar_
+
+| `${Base Board Information/Location In Chassis}`
+| _nicht verfügbar_
+
+| `${Base Board Information/Manufacturer}`
+| `${BaseBoard/Vendor}`
+
+| `${Base Board Information/Product Name}`
+| `${BaseBoard/Product}`
+
+| `${Base Board Information/Serial Number}`
+| `${BaseBoard/SerialNumber}`
+
+| `${Base Board Information/Type}`
+| _nicht verfügbar_
+
+| `${Base Board Information/Version}`
+| `${BaseBoard/Version}`
+
+| `${Chassis Information/Asset Tag}`
+| `${Chassis/AssetTag}`
+
+| `${Chassis Information/Boot-up State}`
+| _nicht verfügbar_
+
+| `${Chassis Information/Contained Elements}`
+| _nicht verfügbar_
+
+| `${Chassis Information/Height}`
+| _nicht verfügbar_
+
+| `${Chassis Information/Lock}`
+| _nicht verfügbar_
+
+| `${Chassis Information/Manufacturer}`
+| `${Chassis/Vendor}`
+
+| `${Chassis Information/Number Of Power Cords}`
+| _nicht verfügbar_
+
+| `${Chassis Information/OEM Information}`
+| _nicht verfügbar_
+
+| `${Chassis Information/Power Supply State}`
+| _nicht verfügbar_
+
+| `${Chassis Information/SKU Number}`
+| _nicht verfügbar_
+
+| `${Chassis Information/Security Status}`
+| _nicht verfügbar_
+
+| `${Chassis Information/Serial Number}`
+| `${Chassis/SerialNumber}`
+
+| `${Chassis Information/Thermal State}`
+| _nicht verfügbar_
+
+| `${Chassis Information/Type}`
+| `${Chassis/TypeDescription}`
+
+| `${Chassis Information/Version}`
+| `${Chassis/Version}`
+
+| `${System Information/Family}`
+| `${Product/Family}`
+
+| `${System Information/Manufacturer}`
+| `${Product/Vendor}`
+
+| `${System Information/Product Name}`
+| `${Product/Name}`
+
+| `${System Information/SKU Number}`
+| `${Product/SKU}`
+
+| `${System Information/Serial Number}`
+| `${Product/SerialNumber}`
+
+| `${System Information/UUID}`
+| `${Product/UUID}`
+
+| `${System Information/Version}`
+| `${Product/Version}`
+
+| `${System Information/Wake-up Type}`
+| _nicht verfügbar_
+
+|===

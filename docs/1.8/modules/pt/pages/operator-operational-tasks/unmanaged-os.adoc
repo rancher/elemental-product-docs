@@ -1,0 +1,41 @@
+= Registrar um SO não gerenciado
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+Normalmente, o {elemental_operator_url}[{elemental_operator_name}] gerencia sistemas operacionais que são instalados e configurados pelo {elemental_toolkit_url}[{elemental_toolkit_name}]. +
+Por exemplo, para automatizar a instalação, fazer upgrade e redefinição do SO, o `elemental-register` depende do `elemental` CLI para executar essas operações.
+
+No entanto, também é possível registrar e provisionar {elemental-product-name} sistemas "sem toolkit".
+
+Nesse cenário, xref:rancher-os-management/architecture/architecture-components.adoc#_elemental_register_command_line_tool[elemental-register] precisa ser instalado no sistema. +
+Opcionalmente, o xref:rancher-os-management/architecture/architecture-components.adoc#_elemental_system_agent_daemon[elemental-system-agent] pode ser instalado. Observe que sem o `elemental-system-agent`, o {elemental_operator_name} não poderá provisionar nenhum cluster k8s na máquina. Nesse caso, o {elemental_operator_name} só pode ser usado para fins de inventário do SO.
+
+Finalmente, no cluster de gerenciamento, o `MachineRegistration` deve habilitar a flag `spec.config.elemental.registration.no-toolkit`.
+
+Uma vez que `no-toolkit` está habilitado no `MachineRegistration`, e um novo registro ocorre usando `elemental-register --install` no sistema, um novo `MachineInventory` será criado no cluster de gerenciamento:
+
+[,bash]
+----
+kubectl -n fleet-default describe machineinventory my-unmanaged-os-machine
+----
+
+O `MachineInventory` será anotado com a anotação `elemental.cattle.io/os.unmanaged: "true"`, destacando que esta máquina não é gerenciada e tem funcionalidade limitada.
+
+No sistema, após o registro bem-sucedido, os arquivos `/etc/rancher/elemental/agent/config.yaml` e `/var/lib/elemental/agent/elemental_connection.json` são criados automaticamente para configurar o `elemental-system-agent`.
+O componente `elemental-system-agent` é necessário para o provisionamento do K8s e gatilhos de redefinição.
+
+Quando um xref:node-operational-tasks/reset.adoc[machine reset] é acionado, por exemplo, ao excluir o `MachineInventory` diretamente, o `elemental-system-agent` executará um plano de redefinição simples que criará o arquivo sentinela `/var/lib/elemental/.unmanaged_reset`. +
+A presença deste arquivo indica que a máquina precisa de uma redefinição. Isso pode envolver a parada de serviços, desinstalação de pacotes, formatação de dispositivos, e assim por diante, dependendo de como a máquina é gerenciada customizadamente.
+
+== Recursos suportados
+
+* Registro de um `MachineInventory`
+* Provisionamento do K8s (quando o xref:rancher-os-management/architecture/architecture-components.adoc#_elemental_system_agent_daemon[elemental-system-agent] está instalado e em execução na máquina)
+* Gatilhos de redefinição (quando o xref:rancher-os-management/architecture/architecture-components.adoc#_elemental_system_agent_daemon[elemental-system-agent] está instalado e em execução na máquina)
+
+== Recursos não suportados
+
+* xref:references/cloud-config-reference.adoc[Configuração] impulsionada pelo Cloud-init.
+* SO xref:node-operational-tasks/upgrade.adoc[Fazer upgrade]
+* SO xref:node-operational-tasks/reset.adoc[Redefinição]

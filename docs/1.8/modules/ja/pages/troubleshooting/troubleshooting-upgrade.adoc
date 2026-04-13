@@ -1,0 +1,146 @@
+= アップグレードのトラブルシューティング
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+アップグレードライフサイクルとコンポーネントの概要については、xref:rancher-os-management/upgrade-lifecycle.adoc[関連文書]を参照してください。
+
+== Rancher側
+
+この例では、次のManagedOSImage定義を使用してクラスターのノードをアップグレードしました：
+
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: ManagedOSImage
+metadata:
+  name: my-upgrade
+  namespace: fleet-default
+spec:
+  # Set to the new {elemental-product-name} version you would like to upgrade to or track the latest tag
+  osImage: "registry.suse.com/rancher/sle-micro/5.5:latest"
+  clusterTargets:
+    - clusterName: my-cluster
+----
+
+`ManagedOSImage`が適用されると、`elemental-operator`がそれを検証し、関連する`Bundle`を生成します。
+`Bundle`の名前は`mos`で接頭辞が付けられ、その後`ManagedOSImage`の名前が続きます。この例では、次のようになります `mos-my-upgrade`.
+
+`Bundle`の定義には、アップグレードプランと希望するターゲットに関する詳細が含まれています。
+次に例を示します。
+
+[,shell]
+----
+
+kubectl -n fleet-default get bundle mos-my-upgrade -o yaml
+----
+
+.詳しくは、ここをクリックしてください
+[%collapsible]
+====
+[,yaml]
+----
+apiVersion: fleet.cattle.io/v1alpha1
+kind: Bundle
+metadata:
+  creationTimestamp: "2023-06-16T09:01:47Z"
+  generation: 1
+  name: mos-my-upgrade
+  namespace: fleet-default
+  ownerReferences:
+  - apiVersion: elemental.cattle.io/v1beta1
+    controller: true
+    kind: ManagedOSImage
+    name: my-upgrade
+    uid: e468ed21-23bb-487a-a022-dbc7ef753720
+  resourceVersion: "1038645"
+  uid: 35e83fc4-28c8-4b10-8059-cae6cdff2cda
+spec:
+  resources:
+  - content: '{"kind":"ClusterRole","apiVersion":"rbac.authorization.k8s.io/v1","metadata":{"name":"os-upgrader-my-upgrade","creationTimestamp":null},"rules":[{"verbs":["update","get","list","watch","patch"],"apiGroups":[""],"resources":["nodes"]},{"verbs":["list"],"apiGroups":[""],"resources":["pods"]}]}'
+    name: ClusterRole--os-upgrader-my-upgrade-296a3abf3451.yaml
+  - content: '{"kind":"ClusterRoleBinding","apiVersion":"rbac.authorization.k8s.io/v1","metadata":{"name":"os-upgrader-my-upgrade","creationTimestamp":null},"subjects":[{"kind":"ServiceAccount","name":"os-upgrader-my-upgrade","namespace":"cattle-system"}],"roleRef":{"apiGroup":"rbac.authorization.k8s.io","kind":"ClusterRole","name":"os-upgrader-my-upgrade"}}'
+    name: ClusterRoleBinding--os-upgrader-my-upgrade-f63eaecde935.yaml
+  - content: '{"kind":"ServiceAccount","apiVersion":"v1","metadata":{"name":"os-upgrader-my-upgrade","namespace":"cattle-system","creationTimestamp":null}}'
+    name: ServiceAccount-cattle-system-os-upgrader-my-upgrade-ce93d-01096.yaml
+  - content: '{"kind":"Secret","apiVersion":"v1","metadata":{"name":"os-upgrader-my-upgrade","namespace":"cattle-system","creationTimestamp":null},"data":{"cloud-config":""}}'
+    name: Secret-cattle-system-os-upgrader-my-upgrade-a997ee6a67ef.yaml
+  - content: '{"kind":"Plan","apiVersion":"upgrade.cattle.io/v1","metadata":{"name":"os-upgrader-my-upgrade","namespace":"cattle-system","creationTimestamp":null},"spec":{"concurrency":1,"nodeSelector":{},"serviceAccountName":"os-upgrader-my-upgrade","version":"latest","secrets":[{"name":"os-upgrader-my-upgrade","path":"/run/data"}],"tolerations":[{"operator":"Exists"}],"cordon":true,"upgrade":{"image":"registry.suse.com/suse/sle-micro/5.5","command":["/usr/sbin/suc-upgrade"]}},"status":{}}'
+    name: Plan-cattle-system-os-upgrader-my-upgrade-273c2c09afca.yaml
+  targets:
+  - clusterName: my-cluster
+.
+.
+.
+----
+====
+
+== {elemental-product-name} クラスター側
+
+正しく登録され、ターゲットクラスターの一部である{elemental-product-name}ノードは、バンドルを取得し、それを適用し始めます。 +
+この操作は、{elemental-product-name}クラスター上で実行されているRancherの`system-upgrade-controller`によって行われます。 +
+このコントローラーの正しい動作を監視するには、そのログを読むことができます：
+
+[,shell]
+----
+kubectl -n cattle-system logs deployment/system-upgrade-controller
+----
+
+すべてが正しければ、`system-upgrade-controller`はクラスター上にアップグレードプランを作成します：
+
+[,shell]
+----
+kubectl -n cattle-system get plans
+----
+
+各プランについて、コントローラーはターゲットノードごとにそれを適用するジョブを調整します。 +
+ジョブ名は、プラン名（`os-upgrader-my-upgrade`）とターゲットマシンのホスト名（`my-host`）を使用して、簡単に発見できるようにします。 +
+次に例を示します。`apply-os-upgrader-my-upgrade-on-my-host-7a25e` +
+これらのジョブを監視するには：
+
+[,shell]
+----
+kubectl -n cattle-system get jobs
+----
+
+各ジョブは、`privileged: true`コンテナを使用し、`ManagedOSImage`定義で指定されたSLE Microイメージを使用します。このコンテナは、システムをアップグレードし、再起動を試みます。
+
+ジョブが失敗した場合は、ログを調べてそのステータスを確認できます：
+
+[,shell]
+----
+kubectl -n cattle-system logs job.batch/apply-os-upgrader-my-upgrade-on-my-host-7a25e
+----
+
+[IMPORTANT]
+.二段階のジョブプロセス
+====
+
+アップグレードプロセスは二段階で実施されることに注意してください。 +
+同じジョブが二回実行され、最初のものは`Unknown`ステータスで終了し、完了しないことに気付くでしょう。 +
+*これは予想されることです*。なぜなら、{elemental-product-name}はマシンが再起動した後にジョブが再度実行されることに依存しているため、新しいバージョンが正しくインストールされたかを確認できるからです。 +
+ジョブの二回目の実行があり、今回は正しく完了することに気付くでしょう。
+
+[,shell]
+----
+kubectl -n cattle-system get jobs
+NAMESPACE       NAME                                            COMPLETIONS   DURATION   AGE
+cattle-system   apply-os-upgrader-my-upgrade-on-my-host-0b392   1/1           2m34s      6m23s
+cattle-system   apply-os-upgrader-my-upgrade-on-my-host-7a25e   0/1           6m23s      6m23s
+
+----
+
+[,shell]
+----
+kubectl -n cattle-system get pods
+NAME                                            READY   STATUS      RESTARTS      AGE
+apply-os-upgrader-my-upgrade-on-my-host-zbkrh   0/1     Completed   0             9m40s
+apply-os-upgrader-my-upgrade-on-my-host-zvrff   0/1     Unknown     0             12m
+----
+====
+
+== エラーからの回復
+
+ManagedOSImageのアップグレードプロセスが失敗し、一つ以上のノードが不良状態のまま残る可能性があります。例えば、アップグレード対象のイメージがレジストリに見つからない場合や、その他の理由で壊れている場合、ダウンストリームクラスターで実行されているアップグレードジョブは成功しません。
+
+このような場合、失敗したアップグレードジョブを実行しているノードはスケジューリング不可のままとなります。機能している`osImage`でManagedOSImageを更新するか、あるいは削除して今後のアップグレードの試行を停止することができます。いずれにせよ、影響を受けたノードは手動でスケジューリング可能に戻す必要があり、これによって次のアップグレードもスケジュールできるようになります。

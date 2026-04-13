@@ -1,0 +1,12 @@
+= Inventario maquinas
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-07-03
+:page-revdate: {revdate}
+
+Cuando un nuevo host se registra con éxito, el {elemental_operator_name} crea un recurso MachineInventory que representa a ese host en particular.
+El MachineInventory almacena el hash TPM del host rastreado, recuperado durante el proceso de registro, y permite ejecutar comandos arbitrarios (planes) en la máquina.
+
+Un MachineInventory tiene dos condiciones:
+
+* `AdoptionReady`, que indica que la máquina ha sido adoptada por un selector para formar parte de un clúster.
+* `Ready`, que indica que la máquina ha sido registrada y aprovisionada con un {elemental-product-name} sistema operativo.

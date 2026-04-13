@@ -1,0 +1,283 @@
+= 在隔离环境中安装{elemental-product-name}
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-11-06
+:page-revdate: {revdate}
+
+== 假设条件
+
+Rancher隔离安装应根据https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/other-installation-methods/air-gapped/air-gapped.html[官方Rancher文档]进行配置。
+特别是，隔离基础设施中应提供一个私有注册表。
+
+== 概述
+
+为了在隔离环境中运行{elemental-product-name}，需要以下工件：
+
+* {elemental-product-name} Operator 图表
+* 图表中引用的容器镜像（_elemental-operator_和_seedimage-builder_镜像）
+* 容器化的操作系统镜像
+
+此外，创建一个引用可用容器化操作系统镜像的_通道镜像_可能会很方便。
+官方通道镜像（_elemental-channel_）引用了官方SUSE注册表中操作系统镜像的绝对URL，因此不能在隔离场景中直接使用。
+
+== {elemental-product-name}从命令行进行隔离安装
+
+所有必需的步骤可以通过在具有互联网访问权限的主机上执行https://raw.githubusercontent.com/rancher/elemental-operator/main/scripts/elemental-airgap.sh[`elemental-airgap.sh`脚本]来完成。
+
+{elemental-product-name}图表是脚本的必需参数，可以作为下载的归档、URL或作为`stable`、`staging`和`dev`关键字之一提供，以便让脚本为您检索正确的图表版本。
+
+`elemental-airgap.sh`检查{elemental-product-name}操作员图表，识别所有必需的容器镜像，下载并将它们保存在一个单独的docker归档中。
+它还构建了一个新的操作系统通道镜像，操作系统镜像的URL指向作为参数传递的私有注册表（这也是一个必需的参数）。
+
+最新版本的elemental脚本可以从官方github仓库轻松下载：
+
+[,shell]
+----
+wget https://raw.githubusercontent.com/rancher/elemental-operator/main/scripts/elemental-airgap.sh
+chmod 755 elemental-airgap.sh
+----
+
+现在让我们下载所有工件，并从{elemental-product-name}的最新稳定版本构建一个自定义通道：
+
+[tabs]
+====
+创建Docker归档::
++
+======
+[,shell]
+----
+./elemental-airgap.sh stable -r <REGISTRY.YOURDOMAIN.COM:PORT>
+----
+
+完成后（脚本可能需要一段时间），当前目录中将可用以下文件：
+
+* `elemental-operator-crds-chart-<*VERSION*>.tgz`
+* `elemental-operator-chart-<*VERSION*>.tgz`
+* `elemental-images.txt`
+* `elemental-images.tar.gz`
+======
+
+创建Hauler归档::
++
+======
+[,shell]
+----
+./elemental-airgap.sh -ha stable -r <REGISTRY.YOURDOMAIN.COM:PORT>
+----
+
+完成后（脚本可能需要一段时间），图表和容器镜像将被打包在名为`elemental-haul.tar.zst`的Hauler归档中。
+======
+====
+
+=== {elemental-product-name} 安装 
+
+脚本创建的文件和档案应复制到一个主机，该主机：
+
+* 可以访问私有注册表。
+* 已安装并配置 kubectl 二进制文件以访问隔离的 Rancher 集群。
+* 已安装 helm 二进制文件。
+
+[tabs]
+========
+从 Docker 档案安装::
++
+======
+如果私有注册表需要身份验证，您需要使用 docker 登录：
+
+[,shell]
+----
+docker login <REGISTRY.YOURDOMAIN.COM:PORT>
+----
+
+执行 {elemental-product-name} 安装需要两个步骤：
+
+* 在私有注册表上加载包含所有所需容器镜像的档案：这可以使用与 Rancher 版本一起分发的 `rancher-load-images.sh` 脚本完成，该脚本已用于 Rancher 隔离部署：
+
+[,shell]
+----
+rancher-load-images.sh \ 
+    --image-list elemental-images.txt \ 
+    --images elemental-images.tar.gz \ 
+    --registry <REGISTRY.YOURDOMAIN.COM:PORT>
+----
+
+* 安装下载的 elemental 图表，配置本地镜像仓库和新创建的通道：
+
+[,shell]
+----
+helm upgrade --create-namespace -n cattle-elemental-system \ 
+    --install elemental-operator-crds elemental-operator-crds-chart-<VERSION>.tgz 
+
+helm upgrade --create-namespace -n cattle-elemental-system \ 
+    --install elemental-operator elemental-operator-chart-<VERSION>.tgz \ 
+    --set registryUrl=<REGISTRY.YOURDOMAIN.COM:PORT>\ 
+    --set channel.repository=rancher/elemental-channel-<REGISTRY.YOURDOMAIN.COM>
+----
+======
+
+从 Hauler 归档安装::
++
+======
+要从 https://rancherfederal.github.io/hauler-docs/[Hauler] 归档安装（`-ha` 选项在 `elemental-airgap.sh` 中），在执行安装的主机上也需要安装 Hauler。
+
+如果私有镜像仓库需要身份验证，您需要使用 Hauler 登录：
+
+[,shell]
+----
+hauler login <REGISTRY.YOURDOMAIN.COM:PORT>-u $USERNAME -p $PASSWORD
+----
+
+执行 {elemental-product-name} 安装需要三个步骤：
+
+
+* 在隔离基础设施的 Hauler 实例中加载 'elemental-haul.tar.zst' Haul 档案：
+
+[,shell]
+----
+hauler store load 'elemental-haul.tar.zst' 
+----
+
+* 如果隔离环境中的本地镜像仓库不是由 Hauler 提供服务，请在本地镜像仓库中加载 Haul 归档：
+
+[,shell]
+----
+hauler store copy registry://<REGISTRY.YOURDOMAIN.COM:PORT>
+----
+
+[NOTE]
+.Hauler 也可以作为镜像仓库提供服务
+====
+如果隔离的本地镜像仓库由 Hauler 实例提供服务，只需直接在此处加载 Haul 归档（如步骤（1）所示），并跳过步骤（2）。
+====
+
+* 从 Hauler 存储中提取 elemental图表并安装它们：
+
+[,shell]
+----
+hauler store extract elemental-operator-crds-chart-<ELEMENTAL-VERSION>.tgz 
+hauler store extract elemental-operator-chart-<ELEMENTAL-VERSION>.tgz 
+
+helm upgrade --create-namespace -n cattle-elemental-system \ 
+    --install elemental-operator-crds elemental-operator-crds-chart-<ELEMENTAL-VERSION>.tgz 
+helm upgrade --create-namespace -n cattle-elemental-system \ 
+    --install elemental-operator elemental-operator-chart-<ELEMENTAL-VERSION>.tgz \ 
+    --set registryUrl=<REGISTRY.YOURDOMAIN.COM:PORT>\ -
+    --set channel.repository=rancher/elemental-channel-<REGISTRY.YOURDOMAIN.COM:PORT>
+----
+======
+========
+
+[NOTE]
+.elemental隔离脚本输出所需的命令 
+====
+`elemental-airgap.sh` 脚本打印出上述所示的所需命令，但使用实际的图表版本和提供的镜像仓库 URL，以便轻松复制和粘贴确切的命令。
+====
+
+== {elemental-product-name} 从 Rancher 市场进行的隔离安装 
+
+Rancher 隔离安装还包括 {elemental-product-name} Operator 图表以及 Operator 和 seedimage 容器镜像。
+
+要收集缺失的操作系统镜像并为您的私有镜像仓库构建操作系统通道镜像，请从具有 Internet 访问权限的主机上执行 https://raw.githubusercontent.com/rancher/elemental-operator/main/scripts/elemental-airgap.sh[`elemental-airgap.sh` 脚本]，使用 `-co` 选项。
+
+作为示例，让我们以 `elemental-channel` 镜像为目标，来自 {elemental-product-name} 的最新稳定版本。该脚本将负责下载 {elemental-product-name} Operator 图表（如有需要），提取操作系统通道镜像 URL，下载它，检查所有引用的操作系统镜像，下载所有镜像并创建一个新的操作系统通道，链接到隔离场景的私有镜像仓库。
+
+[tabs]
+========
+创建 Docker 归档::
++
+======
+[,shell]
+----
+wget https://raw.githubusercontent.com/rancher/elemental-operator/main/scripts/elemental-airgap.sh 
+chmod 755 elemental-airgap.sh 
+./elemental-airgap.sh stable -co -r <REGISTRY.YOURDOMAIN.COM:PORT>
+----
+
+完成后（脚本可能需要一段时间），当前目录中将可用以下文件：
+
+- `elemental-operator-crds-chart-<*VERSION*>.tgz` 
+- `elemental-operator-chart-<*VERSION*>.tgz` 
+- `elemental-images.txt` 
+- `elemental-images.tar.gz`
+======
+
+创建 Hauler 归档::
++
+======
+[,shell]
+----
+./elemental-airgap.sh -ha -co stable -r <REGISTRY.YOURDOMAIN.COM:PORT>
+----
+
+完成后（脚本可能需要一段时间），容器镜像将被打包在名为 `elemental-haul.tar.zst` 的 Hauler 归档中。
+======
+========
+
+=== {elemental-product-name} 安装 
+
+生成的归档应加载到隔离的私有注册表中。
+
+[tabs]
+========
+从 Docker 档案安装::
++
+======
+如果私有镜像仓库需要身份验证，您需要使用 docker 登录：
+[,shell]
+----
+docker login <REGISTRY.YOURDOMAIN.COM:PORT>
+----
+
+该脚本将打印出通过 Rancher `rancher-load-images.sh` 工具加载镜像所需的命令，该工具用于 Rancher 隔离安装。它应该是这样的：
+
+[,shell]
+----
+NEXT STEPS: 
+
+1) Load the 'elemental-images.tar.gz' to the local registry (<REGISTRY.YOURDOMAIN.COM:PORT>) available in the airgapped infrastructure: 
+
+./rancher-load-images.sh \ 
+    --image-list elemental-images.txt \ 
+    --images elemental-images.tar.gz \ 
+    --registry <REGISTRY.YOURDOMAIN.COM:PORT>
+----
+
+一旦操作系统和通道镜像加载完成，您应该跳过脚本输出中的第 (2) 点（这将从下载的归档中安装 {elemental-product-name} 图表），而是从 Rancher UI 安装 {elemental-product-name} Operator。
+======
+
+从 Hauler 档案安装::
++
+======
+如果私有注册表需要身份验证，您需要使用 Hauler 登录：
+[,shell]
+----
+hauler login <REGISTRY.YOURDOMAIN.COM:PORT>-u $USERNAME -p $PASSWORD 
+----
+
+该脚本将打印出加载镜像所需的命令。它应该是这样的：
+
+[,shell]
+----
+NEXT STEPS: 
+
+* Load the 'elemental-haul.tar.zst' Haul archive in the Hauler instance in the airgapped infrastructure: 
+
+hauler store load 'elemental-haul.tar.zst' 
+
+* If the local registry in the air-gapped environment is not server by Hauler, load the Haul archive in the local registry: 
+
+hauler store copy registry://<REGISTRY.YOURDOMAIN.COM:PORT>
+----
+
+一旦操作系统和通道镜像加载完成，您应该跳过脚本输出中的第 (3) 点（这将从下载的归档中安装 {elemental-product-name} 图表），而是从 Rancher UI 安装 {elemental-product-name} Operator。
+======
+========
+
+在请求时，输入刚刚上传到您的私有注册表中的操作系统通道镜像的完整路径：
+
+image:airgap-os-channel-image.png[]
+
+== {elemental-product-name} UI 扩展 
+
+Rancher 2.7.x 不支持隔离环境中的 UI 扩展插件，因此 {elemental-product-name} UI 在 Rancher 2.7.x 中不可用。
+
+{elemental-product-name} UI 插件将在 Rancher 2.8.0 的可用 UI 扩展中提供。

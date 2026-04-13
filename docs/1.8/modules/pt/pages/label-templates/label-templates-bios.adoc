@@ -1,0 +1,26 @@
+= Variáveis de Modelo do BIOS
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+Informações do BIOS.
+
+Subconjunto dos dados de informações do BIOS do SMBIOS (tipo 0).
+
+Para mais informações sobre SMBIOS, consulte a https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.7.1.pdf[especificação SMSBIOS].
+
+|===
+| Variável | Descrição | from
+
+| `${BIOS/Date}`
+| Data de lançamento do BIOS
+| 1.7.0
+
+| `${BIOS/Vendor}`
+| Fornecedor do BIOS
+| 1.7.0
+
+| `${BIOS/Version}`
+| Número da versão do BIOS
+| 1.7.0
+|===

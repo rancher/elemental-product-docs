@@ -1,0 +1,71 @@
+= ランダムテンプレート変数
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+ランダムテンプレート変数は、エレメンタルオペレーターにビルトインされています。
+
+これにより、カスタムxref:label-templates/label-templates.adoc[ラベルテンプレート]にランダムな`Int`、`Hex`、または`UUID`の値を含めることができます。
+
+値は、`label template variables`のレンダリング中に即座に計算されます。
+
+[IMPORTANT]
+.ランダムラベルテンプレートは、一度だけレンダリングされます。
+====
+
+ランダム変数を含むラベルテンプレートは、登録ホストのxref:references/machineinventory-reference.adoc[マシンインベントリ]にそのラベルの値がまだない場合にのみレンダリングされます（同じキーのラベルが欠けているか、その値が空です）。
+
+したがって、ランダム変数を持つラベルテンプレートがレンダリングされる三つのケースは次のとおりです：
+
+. ホストが初めて登録され、xref:references/machineinventory-reference.adoc[マシンインベントリ]が新たに作成される。
+. ラベルテンプレートがホストが最後に（再）登録された後にマシン登録に追加された。
+. ラベルテンプレートに一致するxref:references/machineinventory-reference.adoc[MachineInventory]ラベル（同じラベルキー）が手動で削除されたか、その値が空にされた。
+====
+
+
+|===
+| [可変] | 説明 | from
+
+| `${Random/UUID}`
+| ランダムUUID（例：fd95324a-c26b-4e28-8727-1dcec293a0ec）
+| 1.7.0
+
+| `${Random/Hex/[1-32]}`
+| 指定された長さのランダム16進数文字列（最小1、最大32）
+| 1.7.0
+
+| `${Random/Int/[MAXINT]`
+| ランダム整数（最小0、最大MAXINT-1）
+| 1.7.0
+|===
+
+[NOTE]
+.レンダリング例
+====
+|===
+| テンプレート値 | レンダリングされた値の例
+
+| `${Random/UUID}`
+| fd95324a-c26b-4e28-8727-1dcec293a0ec
+
+| `${Random/Hex/12}`
+| acd231f222b8
+
+| `${Random/Int/10000}` 
+| 9432
+
+|===
+====
+
+
+ランダムテンプレート変数は、登録ホストに割り当てるカスタムホスト名を生成するのに便利です。
+
+ホスト名は一意でなければならず、xref:references/machineregistration-reference.adoc[マシン登録]の`spec.machineName`フィールドを通じて割り当てられるため、ランダム変数を使用して、同じカスタムプレフィックスおよび/またはサフィックスを共有するホストのグループの一意性を確保できます。
+
+詳細については、xref:installation/hostname.adoc[ホスト名のカスタマイズ方法]セクションを確認してください。
+
+.登録例 ランダムテンプレート変数
+[,yaml]
+----
+include::example$quickstart/registration-random-hostname.yaml[]
+----

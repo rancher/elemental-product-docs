@@ -1,0 +1,48 @@
+= Composants d'architecture
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+Les composants nécessaires pour fournir les xref:rancher-os-management/architecture/services/architecture-services.adoc[{elemental-product-name} services] sont :
+
+* l'outil de ligne de commande <<_elemental_command_line_tool,`elemental`>>
+* le daemon <<_elemental_operator_daemon,`elemental-operator`>>
+* l'outil de ligne de commande <<_elemental_register_command_line_tool,`elemental-register`>>
+* le daemon <<_elemental_system_agent_daemon,`elemental-system-agent`>>
+* une ou plusieurs <<_suse_rancher_prime_os_manager_os_container_image,{elemental-product-name}images de conteneur OS>>
+
+== `elemental` outil de ligne de commande
+
+L'outil `elemental` fait partie du projet link:{elemental_toolkit_url}[{elemental_toolkit_name}].
+Il effectue les opérations réelles d'installation et de mise à niveau de l'OS sur l'hôte et est utilisé pour exécuter les directives xref:references/cloud-config-reference.adoc[cloud-config] ajoutées dans les xref:rancher-os-management/architecture/custom-resources.adoc[{elemental-product-name} CRDs].
+
+Le binaire `elemental` est inclus dans toutes les images de base de l'OS distribuées avec {elemental-product-name}.
+
+== `elemental-operator` le daemon
+
+Le daemon *elemental-operator* effectue deux tâches principales :
+
+. intègre les {elemental-product-name} contrôleurs Kubernetes pour gérer tous les xref:rancher-os-management/architecture/custom-resources.adoc[{elemental-product-name} CRDs]
+. expose les _points de terminaison d'enregistrement_ pour permettre à l'hôte de s'enregistrer et de télécharger la configuration d'installation de l'OS pendant le xref:rancher-os-management/architecture/services/architecture-machineonboarding.adoc[onboarding de la machine].
+
+Le daemon `elemental-operator` est déployé sur le cluster Rancher en tant que `Deployment` via le xref:references/operatorchart-reference.adoc[{elemental-product-name} Helm Chart de l'Opérateur].
+
+== `elemental-register` outil de ligne de commande
+
+Le binaire *elemental-register* est le client utilisé pour enregistrer l'hôte auprès des _points de terminaison d'enregistrement_ exposés par le <<_elemental_operator_daemon,elemental-operator>>. Il collecte et transmet les données de l'hôte pour permettre au <<_elemental_operator_daemon,elemental-operator>> de remplir les modèles SMBIOS et les modèles d'étiquettes matérielles.
+
+Si la phase d'enregistrement est effectuée avec succès, le *elemental-register* obtient la configuration complète stockée dans le xref:references/machineregistration-reference.adoc[MachineRegistration] du *elemental-operator*.
+Comme dernière étape, le client *elemental-register* appelle le binaire <<_elemental_command_line_tool,elemental>> en passant la configuration récupérée pour lancer l'installation de l'OS.
+
+== `elemental-system-agent` le daemon
+
+Le `elemental-system-agent` est construit à partir du https://github.com/rancher/system-agent[projet Rancher System Agent] et permet à {elemental-product-name} de déployer des _plans_ pour aider au provisionnement de l'hôte.
+Notamment, `rancher-system-agent` l'installation et la configuration requises pour le xref:rancher-os-management/architecture/services/architecture-clusterdeployment.adoc[service de provisionnement du cluster Kubernetes] sont effectuées via un `elemental-system-agent`_plan_.
+
+== {elemental-product-name} image de conteneur OS
+
+Une image link:{elemental_toolkit_url}[{elemental_toolkit_name}] OS est une image de conteneur OCI contenant tous les fichiers qui composeront le système d'exploitation de l'hôte cible. Elle contient non seulement tous les binaires et bibliothèques, mais aussi le noyau Linux et les fichiers de démarrage requis par un système Linux.
+
+L'image {elemental-product-name} OS est une image OS link:{elemental_toolkit_url}[{elemental_toolkit_name}] à orientations définies, basée sur https://www.suse.com/products/micro/[SLE Micro] et comprenant des configurations et des binaires spécifiques {elemental-product-name} (les <<_elemental_command_line_tool,elemental>> et <<_elemental_register_command_line_tool,elemental-register>>).
+
+Les {elemental-product-name} images OS sont suivies dans les ressources xref:references/managedosversion-reference.adoc[ManagedOSVersions]. Les ressources xref:references/managedosversion-reference.adoc[ManagedOSVersions] sont créées dynamiquement à partir des ressources xref:references/managedosversionchannel-reference.adoc[ManagedOSVersionChannel]. Une `ManagedOSVersionChannel` ressource par défaut est déployée avec chaque installation de l'Opérateur {elemental-product-name}.

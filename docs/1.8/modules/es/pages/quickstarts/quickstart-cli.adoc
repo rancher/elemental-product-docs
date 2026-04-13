@@ -1,0 +1,330 @@
+= {elemental-product-name} la forma de usar la línea de comandos
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 6/11/2025
+:page-revdate: {revdate}
+
+Sigue esta guía para tener un clúster auto-desplegado a través de rke2/k3s y gestionado por Rancher con la única ayuda de un {elemental-product-name} ISO.
+
+include::partial$quickstart-prereqs.adoc[]
+
+include::partial$operator-install.adoc[]
+
+== Prepara tus recursos de Kubernetes
+
+La ampliación de nodos comienza con un `MachineRegistration`, identificando un conjunto de máquinas que comparten la misma configuración (discos duros, red, etc.).
+
+El `MachineRegistration` es necesario para realizar la ampliación del sistema operativo {elemental-product-name} en los hosts de destino. Al arrancar, cada host se registra en el {elemental-product-name} Operador que rastrea el nuevo host con un recurso `MachineInventory`.
+
+Luego continúa con tener un recurso de Clúster que utiliza un `MachineInventorySelectorTemplate` para saber qué máquinas son para ese clúster.
+
+Este selector es un simple comparador basado en etiquetas establecidas en el `MachineInventory`, así que si tu selector coincide con la etiqueta `cluster-id` con un valor `cluster-id-val` y tu `MachineInventory` tiene esa misma etiqueta `cluster-id`:``cluster-id-val`, coincidirá y se iniciará como parte del clúster.
+
+En este inicio rápido vamos a desplegar los recursos para provisionar un clúster llamado _volcano_ que coincidirá con ``MachineInventory``s con la etiqueta _element_:__fire__.
+
+[tabs]
+==========
+Creando manualmente los archivos de recursos yamls::
++
+========
+Necesitarás crear los siguientes archivos: 
+
+.selector.yaml
+[,yaml]
+----
+include::example$quickstart/selector.yaml[]
+----
+
+Como puedes ver, este es un selector muy simple que busca `MachineInventory`s que tengan una etiqueta con la clave `element` y el valor `fire`. 
+
+.cluster.yaml
+[,yaml]
+----
+include::example$quickstart/cluster.yaml[]
+----
+
+Como puedes ver, el `machineConfigRef` es de tipo `MachineInventorySelectorTemplate` con el nombre `fire-machine-selector`: coincide con el selector que creamos. Puedes obtener más información sobre las opciones del clúster como https://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-deployment/configuration/rke2.html#_machineglobalconfig[`machineGlobalConfig`] o https://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-deployment/configuration/rke2.html#_machineselectorconfig[`machineSelectorConfig`] directamente en la https://documentation.suse.com/cloudnative/rancher-manager/latest/en/about-rancher/what-is-rancher.html[documentación de Rancher Manager].
+
+[tabs]
+======
+Registro::
++
+====
+.register.yaml
+[,yaml]
+----
+include::example$quickstart/registration.yaml[]
+----
+====
+
+Registro para Raspberry Pi::
++
+====
+.rpi-registration.yaml
+[,yaml]
+----
+include::example$quickstart/rpi-registration.yaml[]
+----
+
+Para el despliegue en Raspberry Pi, necesitas habilitar TPM emulado (excepto si tienes [un TPM de hardware para Raspberry Pi](https://thepihut.com/products/letstrust-tpm-for-raspberry-pi)). También necesitas deshabilitar la escritura en la tienda EFI (ya que Raspberry Pi no tiene una) a través de `disable-boot-entry: true`.
+====
+======
+
+El `MachineRegistration` define la configuración de registro e instalación. Una vez creado, el operador {elemental-product-name} expone una URL única que se utilizará con el binario `elemental-register` para comunicarse con el clúster de gestión y registrar la máquina durante la instalación: si el registro es exitoso, el operador crea un `MachineInventory` que rastrea la máquina, que puede ser utilizado para provisionar la máquina como un nodo de nuestro clúster. Definimos la etiqueta que coincide con nuestro selector aquí, aunque también se puede añadir más tarde a los `MachineInventory`s creados.
+
+[WARNING]
+====
+Asegúrate de modificar el archivo registration.yaml anterior para establecer el dispositivo de instalación adecuado que apunte a un dispositivo válido según tu configuración de nodo (es decir, /dev/sda, /dev/vda, /dev/nvme0, etc\...).
+
+La tarjeta SD en una Raspberry Pi suele ser `/dev/mmcblk0`. 
+====
+
+[tabs]
+======
+Imagen de Semilla (x86_64)::
++
+====
+.seedimage.yaml
+[,yaml]
+----
+include::example$quickstart/seedimage.yaml[]
+----
+
+El `SeedImage` es necesario para generar la *imagen de semilla* (como un ISO de arranque) que iniciará y comenzará el aprovisionamiento de {elemental-product-name} en las máquinas objetivo.
+
+Ahora que hemos definido todos los archivos de configuración, apliquémoslos para crear los recursos adecuados en Kubernetes:
+
+[,console]
+----
+kubectl apply -f selector.yaml
+kubectl apply -f cluster.yaml
+kubectl apply -f registration.yaml
+kubectl apply -f seedimage.yaml
+----
+====
+
+Imagen de Semilla para Raspberry Pi::
++
+====
+El recurso `SeedImage`, que automatiza la creación de una imagen de arranque {elemental-product-name} (la *imagen de semilla*), no admite ISOs de Raspberry Pi todavía (haz clic [aquí](raspi-disk.md) para una guía sobre cómo construir una imagen de disco en bruto).
+
+Generaremos una *imagen de semilla* manualmente en la [siguiente sección](quickstart-cli.md#preparing-the-installation-seed-image).
+
+Ahora que hemos definido todos los archivos de configuración, apliquémoslos para crear los recursos adecuados en Kubernetes: 
+
+[,console]
+----
+kubectl apply -f selector.yaml
+kubectl apply -f cluster.yaml
+kubectl apply -f registration.yaml
+----
+====
+======
+========
+
+Usando archivos de inicio rápido directamente del repositorio de docs de {elemental-product-name}::
++
+========
+Puedes aplicar directamente los archivos de recursos del ejemplo de inicio rápido desde el [repositorio de docs de {elemental-product-name}](https://github.com/rancher/elemental-docs). 
+
+[WARNING]
+====
+Los archivos de recursos del ejemplo de inicio rápido asumen que el almacenamiento predeterminado del host objetivo está mapeado a la `/dev/sda`. Si el archivo del dispositivo de almacenamiento de tu host es diferente, debes cambiar el archivo registration.yaml antes de aplicarlo, modificando el `config.elemental.install.device` en consecuencia.
+====
+
+[,console]
+----
+kubectl apply -f https://raw.githubusercontent.com/rancher/elemental-docs/main/examples/quickstart/selector.yaml
+kubectl apply -f https://raw.githubusercontent.com/rancher/elemental-docs/main/examples/quickstart/cluster.yaml
+kubectl apply -f https://raw.githubusercontent.com/rancher/elemental-docs/main/examples/quickstart/registration.yaml
+kubectl apply -f https://raw.githubusercontent.com/rancher/elemental-docs/main/examples/quickstart/seedimage.yaml
+----
+
+[NOTE]
+====
+El `seedimage.yaml` no admite aarch64 actualmente.
+====
+========
+==========
+
+== Preparando la imagen de instalación (de semilla)
+
+Este es el último paso: necesitas una {elemental-product-name} imagen de semilla que incluya la configuración de registro inicial, para que pueda ser registrada automáticamente, instalada y completamente desplegada como parte de tu clúster.
+
+[NOTE]
+.nota
+====
+El archivo de configuración de registro inicial se genera cuando creas un `Machine Registration`.
+
+Puedes descargarlo con:
+
+[,shell]
+----
+wget --no-check-certificate `kubectl get machineregistration -n fleet-default fire-nodes -o jsonpath="{.status.registrationURL}"` -O initial-registration.yaml
+----
+====
+
+El contenido del archivo de configuración de registro no es más que la URL de registro que el nodo necesita para registrarse, el certificado de servidor adecuado y algunas opciones para el proceso de registro.
+
+Una vez generada, una imagen de semilla puede ser utilizada para aprovisionar cualquier número de máquinas.
+
+[tabs]
+========
+Descargando el ISO de inicio rápido::
++
+======
+La imagen de semilla creada por el recurso `SeedImage` anterior se puede descargar como un ISO a través del siguiente script: 
+
+[,shell]
+----
+kubectl wait --for=condition=ready pod -n fleet-default fire-img 
+wget --no-check-certificate `kubectl get seedimage -n fleet-default fire-img -o jsonpath="{.status.downloadURL}"` -O elemental.x86_64.iso 
+----
+
+El primer comando espera a que el ISO se construya y esté listo, el segundo lo descarga en el directorio actual con el nombre `elemental-x86_64.iso`. 
+======
+
+Preparando la imagen semilla (aarch64) manualmente::
++
+======
+El soporte de {elemental-product-name} para Raspberry Pi es principalmente con fines de demostración en este momento. Por lo tanto, el proceso de instalación está modelado de manera similar a x86_64. Arrancas desde una imagen de semilla (una memoria USB en este caso) e instalas en un medio de almacenamiento (tarjeta SD para Raspberry Pi). 
+
+*Recuperando la imagen de semilla preconstruida*
+
+[,shell]
+----
+wget -q https://download.opensuse.org/repositories/isv:/Rancher:/SUSE® Rancher Prime OS Manager:/Stable/containers/rpi.raw
+----
+
+_Verificando la descarga_ 
+
+Para verificar la integridad de los artefactos descargados, deberías hacer una verificación de suma de comprobación: 
+
+[,shell]
+----
+wget -q https://download.opensuse.org/repositories/isv:/Rancher:/SUSE® Rancher Prime OS Manager:/Stable/containers/rpi.raw.sha256 sha256sum -c rpi.raw.sha256
+----
+
+Esto debería imprimir `rpi.raw: OK` como salida. 
+
+*Inyectando la información de registro*
+
+Agregar el `initial-registration.yaml` aún no está automatizado. Este sigue siendo un proceso manual: 
+
+La memoria USB escrita tendrá dos particiones. `RPI_BOOT` contiene los archivos del cargador de inicio y `COS_LIVE` los archivos de {elemental-product-name}. Monta la partición `COS_LIVE` y escribe `initial-registration.yaml` como `livecd-cloud-config.yaml` en esta partición. 
+
+Si has montado la memoria USB con un gestor de archivos, este comando debería funcionar para copiar la información de registro: 
+
+[,shell]
+----
+sudo cp initial-registration.yaml /run/media/$USER/COS_LIVE/livecd-cloud-config.yaml
+----
+
+Si prefieres usar algunas herramientas de CLI: 
+
+[,shell]
+----
+IMAGE=rpi.raw 
+DEST=$(mktemp -d) 
+
+SECTORSIZE=$(sfdisk -J $\{IMAGE} | jq '.partitiontable.sectorsize') 
+DATAPARTITIONSTART=$(sfdisk -J $\{IMAGE} | jq '.partitiontable.partitions[1].start') 
+sudo mount -o rw,loop,offset=$(($\{SECTORSIZE}*$\{DATAPARTITIONSTART})) $\{IMAGE} $\{DEST} 
+sudo cp initial-registration.yaml $\{DEST}/livecd-cloud-config.yaml 
+sudo umount $\{DEST} 
+rmdir $\{DEST}
+----
+
+*Escribiendo la imagen semilla en una memoria USB*
+
+La imagen `.raw` necesita ser escrita en una memoria USB para arrancar desde ella. Esto se puede hacer con `dd` en la línea de comandos de Linux si te sientes cómodo con este comando. [openSUSE](https://www.opensuse.org) tiene buenas instrucciones sobre cómo escribir una imagen en un medio de almacenamiento para [Linux](https://en.opensuse.org/SDB:Live_USB_stick), [Windows](https://en.opensuse.org/SDB:Create_a_Live_USB_stick_using_Windows) y [OS X](https://en.opensuse.org/SDB:Create_a_Live_USB_stick_using_macOS). 
+
+*Arrancando la Raspberry Pi*
+
+Ahora desmonta la memoria USB y conéctala a tu Raspberry Pi. 
+
+Conecta una tarjeta micro SD grande (32 GB o más) y **rápida** (!!) en la ranura correspondiente. 
+
+Conecta el sistema a Ethernet. 
+
+Un ciclo de energía reiniciará la Pi. Todo lo demás es idéntico a x86-64. 
+
+[CAUTION]
+====
+Asegúrate de que la tarjeta micro SD no esté particionada. De lo contrario, el cargador de arranque de la Pi intentará arrancar desde ella y fallará.
+====
+
+Ahora puedes arrancar tus nodos con esta imagen y lo harán:
+
+* Regístrate con la URL de registro proporcionada y crea un `MachineInventory` por máquina.
+* Instala SLE Micro en el dispositivo dado.
+* Reiniciar
+======
+========
+
+=== Seleccionando las máquinas adecuadas para unirse a un clúster.
+
+El `MachineInventorySelectorTemplate` selecciona las máquinas necesarias para aprovisionar el clúster de los ``MachineInventory`` que tienen la etiqueta _element:fire_.
+Hemos añadido la etiqueta _element_:__fire__ en el `MachineRegistration``machineInventoryLabels` mapa, por lo que todos los ``MachineInventory`` originados de él ya tienen la etiqueta.
+De todos modos, se podría omitir la etiqueta del `MachineRegistration` y añadirla más tarde:
+
+[,shell]
+----
+kubectl -n fleet-default label machineinventory $(kubectl get machineinventory -n fleet-default --no-headers -o custom-columns=":metadata.name") element=fire
+----
+
+Tan pronto como estén presentes los ``MachineInventory`` con el _element_:__fire__, las máquinas correspondientes auto-desplegarán el clúster a través del proveedor elegido (k3s/rke).
+
+¡Después de unos minutos, tu nuevo clúster estará completamente aprovisionado!
+
+== ¿Cómo puedo elegir la versión de kubernetes y el desplegador para el clúster?
+
+En tu archivo cluster.yaml hay una clave en el `Spec` llamada `kubernetesVersion`. Eso establece la versión y el desplegador que se utilizarán para el clúster, por ejemplo, Kubernetes``v1.24.8`` para rke2 sería `v1.24.8+rke2r1` y para k3s `v1.24.8+k3s1`.
+
+Para ver todas las versiones compatibles, consulta el PDF de la https://www.suse.com/suse-rancher/support-matrix/all-supported-versions/[Matriz de Soporte de Rancher] para las versiones de rke/rke2/k3s y sus componentes.
+
+También puedes consultar nuestro xref:references/kubernetesversions.adoc[documento de versiones] para saber cómo obtener esas versiones.
+
+Consulta nuestra página de xref:references/cluster-reference.adoc[Especificación del Clúster] para más información sobre el recurso `Cluster`.
+
+== ¿Cómo puedo seguir lo que está sucediendo tras bambalinas?
+
+Deberías poder seguir lo que la máquina está haciendo a través de:
+
+* Durante el arranque de ISO:
+ ** ssh en la máquina (usuario/contraseña: root/ros):
+  *** Ejecutar `journalctl -f -t elemental` te muestra el progreso del registro (_elemental-register_) y la instalación de {elemental-product-name} (_elemental install_).
+* Una vez que el sistema esté instalado:
+ ** En la interfaz de Rancher \-> `Cluster Management` te permite ver tu nuevo clúster y el `Provisioning Log` en los detalles del clúster.
+ ** ssh en la máquina (usuario/contraseña: Lo que hayas configurado en el registration.yaml bajo `Spec.config.cloud-config.users`):
+  *** Ejecutar `journalctl -f -u elemental-system-agent` muestra la salida de la configuración inicial elemental y la instalación del `rancher-system-agent`.
+  *** Ejecutar `journalctl -f -u rancher-system-agent` muestra la salida del proceso de inicio de los componentes del clúster, como k3s.
+  *** Ejecutar `journalctl -f -u k3s` muestra los registros del despliegue de k3s.
+
+== Opcional: Instala la extensión de la interfaz de usuario Elemental a través de CLI.
+
+Crea y aplica un nuevo ClusterRepo para añadir el repositorio oficial de extensiones de Rancher.
+
+[source,yaml]
+----
+apiVersion: catalog.cattle.io/v1
+kind: ClusterRepo
+metadata:
+  name: rancher-ui-charts
+spec:
+  gitBranch: main
+  gitRepo: https://github.com/rancher/ui-plugin-charts
+----
+
+Añade un repositorio helm para los charts de extensiones de la interfaz de usuario de Rancher.
+
+[source,shell]
+----
+helm repo add rancher-ui-plugins https://raw.githubusercontent.com/rancher/ui-plugin-charts/main/
+----
+
+Instala la extensión de la interfaz de usuario Elemental.
+
+[source,shell]
+----
+helm install elemental rancher-ui-plugins/elemental -n cattle-ui-plugin-system
+----

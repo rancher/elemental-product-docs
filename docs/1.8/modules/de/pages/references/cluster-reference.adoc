@@ -1,0 +1,178 @@
+= Clusterreferenz
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+Eine `Cluster` Definition umfasst ein `kubernetesVersion` und eine Liste von `machinePools`, um den Cluster bereitzustellen.
+
+Für Informationen zur Auswahl eines `kubernetesVersion` besuchen Sie bitte unsere xref:references/kubernetesversions.adoc[Kubernetes-Versionen] Seite.
+
+Ein `machinePool` ist ein Bündel von Konfigurationen mit einem `ObjectReference`, sodass der Cluster auf diese `machinePools` mit den entsprechenden Rollen (etcd, Steuerungsebene, Arbeiter) mit einer Menge (wie viele Knoten aus diesem Pool bereitgestellt werden sollen) und einigen zusätzlichen Konfigurationen (Rolling-Update-Konfiguration, maximale ungesunde Knoten usw....) bereitgestellt wird.
+
+.Klicken Sie hier für Details
+[%collapsible]
+====
+.Example
+[,yaml]
+----
+kind: Cluster
+apiVersion: provisioning.cattle.io/v1
+metadata:
+  name: ...
+  namespace: ...
+spec:
+  rkeConfig:
+    machinePools:
+      - name: ...
+        controlPlaneRole: ...
+        etcdRole: ...
+        workerRole: ...
+        quantity: ...
+        machineConfigRef:
+          apiVersion: elemental.cattle.io/v1beta1
+          kind: MachineInventorySelectorTemplate
+          name: ...
+      - name: ...
+        controlPlaneRole: ...
+        etcdRole: ...
+        workerRole: ...
+        quantity: ...
+        machineConfigRef:
+          apiVersion: elemental.cattle.io/v1beta1
+          kind: MachineInventorySelectorTemplate
+          name: ...
+----
+====
+
+
+Es ist auch möglich, Clusterkomponenten über das `Cluster` Objekt in `spec.rkeConfig.machineGlobalConfig` zu deaktivieren, zum Beispiel:
+
+.Klicken Sie hier für Details
+[%collapsible]
+====
+.Beispiel zur Deaktivierung von Diensten
+[,yaml]
+----
+kind: Cluster
+apiVersion: provisioning.cattle.io/v1
+metadata:
+  name: ...
+  namespace: ...
+spec:
+  rkeConfig:
+    machinePools:
+      - name: ...
+        controlPlaneRole: ...
+        etcdRole: ...
+        workerRole: ...
+        quantity: ...
+        machineConfigRef:
+          apiVersion: elemental.cattle.io/v1beta1
+          kind: MachineInventorySelectorTemplate
+          name: ...
+    machineGlobalConfig:
+      disable:
+        - servicelb
+        - ...
+----
+====
+
+
+== rkeConfig.machinePools
+
+Eine Liste von `machinePools`. Mindestens 1 `machinePools` ist erforderlich, damit der Cluster bereitgestellt werden kann.
+
+== Spezifikationsreferenz für Maschinenpools
+
+|===
+| Tasten | Typ | Standardwert | Beschreibung
+
+| controlPlaneRole
+| bool
+| false
+| Maschinen in diesem Pool als Steuerungsebene festlegen
+
+| etcdRole
+| bool
+| false
+| Maschinen in diesem Pool als etcd festlegen
+
+| workerRole
+| bool
+| false
+| Maschinen in diesem Pool als Arbeiter festlegen
+
+| name
+| Zeichenfolge
+| nil
+| Name für diesen Pool
+
+| Menge
+| int
+| nil
+| Anzahl der Maschinen, die aus diesem Pool bereitgestellt werden sollen
+
+| unhealthyNodeTimeout
+| int
+| nil
+| Zeitüberschreitung für die Gesundheitsprüfungen ungesunder Knoten
+
+| machineConfigRef
+| int
+| Objektverweis
+| Verweis auf ein Objekt, das verwendet wird, um zu wissen, welche Knoten Teil dieses Pools sind
+|===
+
+Ein Minimum von `quantity`, das auf eins gesetzt ist, ist erforderlich, damit dieser Pool verwendet werden kann.
+Im Grunde genommen bedeutet dies, wie viele Knoten aus diesem Pool für diesen Cluster setup werden sollen.
+
+.Klicken Sie hier für Details
+[%collapsible]
+====
+.Example
+[,yaml]
+----
+kind: Cluster
+apiVersion: provisioning.cattle.io/v1
+metadata:
+  name: cluster-example
+  namespace: example-default
+spec:
+  rkeConfig:
+    machinePools:
+      - name: examplePool 
+        controlPlaneRole: true
+        etcdRole: true
+        workerRole: false
+        quantity: 3
+        unhealthyNodeTimeout: 0s
+        machineConfigRef:
+          apiVersion: elemental.cattle.io/v1beta1
+          kind: MachineInventorySelectorTemplate
+          name: exampleSelector
+----
+====
+
+
+== machineConfigRef Spezifikationsverweis
+
+Ein `machineConfigRef` ist ein generisches k8s `ObjectReference`, das normalerweise ein `kind` `name` und `apiVersion` enthält, um auf ein anderes Objekt zu verweisen.
+
+In {elemental-product-name} setzen wir dies auf eine xref:references/machineinventoryselectortemplate-reference.adoc[MachineInventorySelectorTemplate].
+Dies ermöglicht es uns, auf mehr als ein Objekt zu verweisen, indem wir den Selektor verwenden.
+
+=== Beispiel
+
+Das folgende Beispiel erstellt einen Cluster, der 2 verschiedene ``machinePool`` verwendet, um verschiedene Knoten als Steuerungsebene und Arbeitsknoten festzulegen, basierend auf 2 verschiedenen `MachineInventorySelectorTemplate`, die ihre Knoten anhand eines `MachineInventory` Labels (Standort) auswählen:
+
+[CAUTION]
+.warning
+====
+Die Labels für das Beispiel sind manuell festgelegte Labels, sie werden nicht automatisch von {elemental-product-name} gesetzt.
+====
+
+.Beispiel eines Clusters mit mehr als einem machinePool
+[,yaml]
+----
+include::example$clusters/clusters-several-machinepools.yml[]
+----

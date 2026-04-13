@@ -1,0 +1,255 @@
+= 带有{elemental-product-name}的网络配置
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+
+[CAUTION]
+.warning
+====
+声明式网络处于*技术预览*状态，支持有限。
+因此，不建议在生产环境中使用。
+====
+
+xref:references/machineregistration-reference.adoc[机器注册]支持声明式网络和与https://github.com/kubernetes-sigs/cluster-api/blob/main/docs/proposals/20220125-ipam-integration.md#ipam-provider[CAPI IPAM提供者]的集成。
+
+== 先决条件
+
+* 首次启动注册和机器重置仍然需要DHCP服务器。因此，租约时间可以保持最小，因为在机器的整个生命周期内，将使用IPAM驱动的IP地址。
+* 您选择的 IPAM 提供者 已安装在 Rancher 管理集群上。
+例如 https://github.com/kubernetes-sigs/cluster-api-ipam-provider-in-cluster[InCluster IPAM 提供者]。
+* https://networkmanager.dev[网络管理器]需要安装在操作系统镜像上，并且可以使用`nmconnections`网络<<_configurators,配置器>>直接配置。
+已包含在Elemental提供的镜像中。
+* （可选）https://github.com/suse-edge/nm-configurator/releases[nmc]可以与`nmc`网络<<_configurators,配置器>>一起使用。
+* （可选）https://github.com/nmstate/nmstate/releases[nmstatectl]可以与`nmstate`网络<<_configurators,配置器>>一起使用。
+
+=== 在操作系统镜像上安装nmc或nmstatectl
+
+使用`nmc`或`nmstate`配置器时，需要在机器上安装https://github.com/suse-edge/nm-configurator/releases[nmc]或https://github.com/nmstate/nmstate/releases[nmstatectl]工具。
+
+目前可以通过xref:operator-operational-tasks/custom-images.adoc#_remastering_an_os_image_with_a_custom_dockerfile[自定义Elemental操作系统镜像]和自定义命令来实现：
+
+[tabs]
+======
+nmc::
++
+--
+[,yaml]
+----
+# Install nmc
+RUN curl -LO https://github.com/suse-edge/nm-configurator/releases/download/v0.3.3/nmc-linux-x86_64 && \ install -o root -g root -m 0755 nmc-linux-x86_64 /usr/sbin/nmc
+----
+--
+
+nmstatectl::
++
+--
+[,yaml]
+----
+# Install nmstatectl
+RUN curl -LO https://github.com/nmstate/nmstate/releases/download/v2.2.40/nmstatectl-linux-x64.zip && \ unzip nmstatectl-linux-x64.zip && \ chmod +x nmstatectl && \ mv ./nmstatectl /usr/sbin/nmstatectl && \ rm nmstatectl-linux-x64.zip
+----
+--
+======
+
+=== 如何安装 CAPI IPAM 提供者
+
+将任何 CAPI 提供者 安装到 Rancher 中的推荐方法是使用 https://documentation.suse.com/cloudnative/cluster-api/v0.22/en/index.html[Rancher Turtles]。
+
+Rancher Turtles 将允许用户安装和管理任何 CAPI 提供者的生命周期。要在您的系统上安装它，请遵循https://documentation.suse.com/cloudnative/cluster-api/v0.22/en/tutorials/quickstart.html[Rancher Turtles 安装文档]。
+
+一旦安装了 Rancher Turtles，安装 IPAM CAPI 提供者，例如 https://github.com/kubernetes-sigs/cluster-api-ipam-provider-in-cluster[InCluster IPAM 提供者]，可以通过应用以下资源来完成：
+
+[,yaml]
+----
+kind: CAPIProvider
+metadata:
+  name: in-cluster
+  namespace: default
+spec:
+  name: in-cluster
+  type: ipam
+  fetchConfig:
+    url: "https://github.com/kubernetes-sigs/cluster-api-ipam-provider-in-cluster/releases"
+  version: v0.1.0
+----
+
+==== 没有 Rancher Turtles
+
+安装 CAPI IPAM 提供者的另一种选择是直接在 Rancher 集群中应用清单。
+
+请注意，此解决方案最终可能会导致与已应用的 CRD 和资源发生冲突，因为它们需要手动应用和维护。
+
+. `ipaddresses.ipam.cluster.x-k8s.io` 和 `ipaddressclaims.ipam.cluster.x-k8s.io` CRD 必须安装在 Rancher 管理集群上：
++
+[,bash]
+----
+ kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/cluster-api/main/config/crd/bases/ipam.cluster.x-k8s.io_ipaddressclaims.yaml
+ kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/cluster-api/main/config/crd/bases/ipam.cluster.x-k8s.io_ipaddresses.yaml
+----
+
+[IMPORTANT]
+.info
+====
+这些 CRD 预计最终将成为 Rancher 的一部分，不需要手动安装。请参见：https://github.com/rancher/rancher/issues/46385
+====
+
+
+. 从发布的清单中安装 https://github.com/kubernetes-sigs/cluster-api-ipam-provider-in-cluster[InCluster IPAM 提供者]：
++
+[,bash]
+----
+ kubectl apply -f https://github.com/kubernetes-sigs/cluster-api-ipam-provider-in-cluster/releases/download/v0.1.0/ipam-components.yaml
+----
+
+=== 配置网络
+
+`network` 的 `MachineRegistration` 部分允许用户定义：
+
+. IPPool 引用的映射。
+. 网络配置模板（在这种情况下使用 `nmc` 配置器）。
+
+.使用声明式网络的示例 MachineRegistration
+[,yaml]
+----
+include::example$network/machineregistration.yaml[]
+----
+
+在这里我们可以观察到已经定义了一个 `InClusterIPPool`，因为我们在这个示例中使用了 https://github.com/kubernetes-sigs/cluster-api-ipam-provider-in-cluster[InCluster IPAM 提供者]。
+
+接下来我们将在 `MachineRegistration` 中引用该 IPPool。此引用的关键是 `inventory-ip`，我们每个注册的机器只需要一个 IP。如果您的机器有多个 NIC，您可以定义更多引用，并使用不同的 IPPool，例如：
+
+[,yaml]
+----
+ipAddresses:
+  main-nic-ip:
+    apiGroup: ipam.cluster.x-k8s.io
+    kind: InClusterIPPool
+    name: elemental-inventory-pool
+  secondary-nic-ip:
+    apiGroup: ipam.cluster.x-k8s.io
+    kind: InClusterIPPool
+    name: elemental-inventory-pool
+  private-nic-ip:
+    apiGroup: ipam.cluster.x-k8s.io
+    kind: InClusterIPPool
+    name: elemental-private-pool
+----
+
+每个定义的 IPPool 引用键可以用于网络配置模板：
+
+[,yaml]
+----
+config:
+  dns-resolver:
+    config:
+      server:
+      - 192.168.122.1
+      search: []
+  routes:
+    config:
+    - destination: 0.0.0.0/0
+      next-hop-interface: eth0
+      next-hop-address: 192.168.122.1
+      metric: 150
+      table-id: 254
+  interfaces:
+    - name: eth0
+      type: ethernet
+      description: Main-NIC
+      state: up
+      ipv4:
+        enabled: true
+        dhcp: false
+        address:
+        - ip: "{inventory-ip}"
+          prefix-length: 24
+      ipv6:
+        enabled: false
+----
+
+上面的代码片段几乎是 1:1 的 https://github.com/suse-edge/nm-configurator?tab=readme-ov-file#unified-configurations[nm-configurator 语法]，唯一的例外是 `{inventory-ip}` 占位符。在元素机器的安装或重置阶段，`elemental-operator` 将从引用的 IP 池中获取一个 IP 地址，并用真实的 IP 地址替换 `{inventory-ip}` 占位符。
+
+=== 已获取的 IP 地址
+
+`IPAddressClaim` 将跟踪 `MachineInventory` 的整个生命周期，确保每台注册的机器都将分配唯一的 IP 地址。每个声明都以使用它的 `MachineInventory` 命名，例如 `$MachineInventoryName-$IPPoolRefKey`：
+
+[,yaml]
+----
+apiVersion: ipam.cluster.x-k8s.io/v1beta1
+kind: IPAddressClaim
+metadata:
+  finalizers:
+    - ipam.cluster.x-k8s.io/ReleaseAddress
+  name: m-e5331e3b-1e1b-4ce7-b080-235ed9a6d07c-inventory-ip
+  namespace: fleet-default
+  ownerReferences:
+    - apiVersion: elemental.cattle.io/v1beta1
+      kind: MachineInventory
+      name: m-e5331e3b-1e1b-4ce7-b080-235ed9a6d07c
+spec:
+  poolRef:
+    apiGroup: ipam.cluster.x-k8s.io
+    kind: InClusterIPPool
+    name: elemental-inventory-pool
+status:
+  addressRef:
+    name: m-e5331e3b-1e1b-4ce7-b080-235ed9a6d07c-inventory-ip
+----
+
+每当删除 `MachineInventory` 时，默认的 (DHCP) 网络配置将被恢复，删除机器上的任何网络控制文件并重启网络堆栈。最后，分配的 IP 地址将被释放。
+
+有关更多信息和故障排除问题的详细信息，请查阅 xref:troubleshooting/troubleshooting-network.adoc[Troubleshooting Declarative Networking 文档]。
+
+=== 配置器
+
+在元素机器上，`elemental-register` 可以以不同的方式配置 `NetworkManager`。正在使用的配置器在 xref:references/machineregistration-reference.adoc#_config_network[MachineRegistration.spec.network] 中定义：
+
+* https://github.com/suse-edge/nm-configurator[nmc]
+* https://nmstate.io/[nmstate]
+* https://networkmanager.pages.freedesktop.org/NetworkManager/NetworkManager/nm-settings-keyfile.html[nmconnections]
+
+[tabs]
+======
+nmc::
++
+--
+`nmc` 配置器使用 https://github.com/suse-edge/nm-configurator?tab=readme-ov-file#unified-configurations[nm-configurator 统一语法] 来生成 NetworkManager 的连接文件。
+
+.使用 nmc 配置器的示例机器注册
+[,yaml]
+----
+include::example$network/machineregistration-nmc.yaml[]
+----
+
+--
+
+nmstate::
++
+--
+`nmstate` 配置器使用 https://nmstate.io/examples.html[nmstate 语法] 来生成 NetworkManager 的连接文件。请注意，https://github.com/nmstate/nmstate/releases[nmstatectl] 需要在元素系统上安装才能使用此配置器。这在元素镜像中默认不包含，但可以在构建 xref:operator-operational-tasks/custom-images.adoc[自定义镜像] 时安装。
+
+.使用 nmstate 配置器的示例机器注册
+[,yaml]
+----
+include::example$network/machineregistration-nmstate.yaml[]
+----
+
+--
+
+nmconnections::
++
+--
+`nmconnections` 配置器是可用的最简单选项，允许用户直接编写 `nmconnection` 文件。为复杂的网络设置定义这些文件可能会很具挑战性，但始终可以使用 https://networkmanager.dev/docs/api/latest/nmcli.html[nmcli]，甚至 https://nmstate.io[nmstate]，或 [nm-configurator](https://github.com/suse-edge/nm-configurator)，并使用生成的 `nmconnection` 文件作为模板。这个配置器只需要 `NetworkManager`，没有任何额外的依赖。使用 nmconnections 配置器的示例 MachineRegistration。
+
+.点击这里查看使用 nmstate 配置器的 MachineRegistration 示例。
+[%collapsible]
+====
+[,yaml]
+----
+include::example$network/machineregistration-nmconnections.yaml[]
+----
+====
+
+--
+======

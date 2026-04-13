@@ -1,0 +1,154 @@
+= 标签模板概述
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+Elemental允许在`spec.machineInventoryLabels`和`spec.machineInventoryAnnotations`部分指定_标签模板_，这些部分属于xref:references/machineregistration-reference.adoc[机器注册]资源。
+
+它们的格式是Kubernetes标签和注释中使用的规范`key`:``value``。
+
+这些标签模板会被转换为实际的标签和注释，附加到在xref:rancher-os-management/architecture/services/architecture-machineonboarding.adoc[机器入驻]阶段创建的每个xref:references/machineinventory-reference.adoc[机器清单]资源上。
+
+生成的标签和注释具有与标签模板相同的`key`。
+
+相关的`value`被生成：
+
+* *渲染<<_label_templates_variables,`label template variables`>>*（如果存在）
+* *`sanitizing`*生成的值（仅在标签的情况下）
+
+[IMPORTANT]
+====
+Elemental模板功能还涵盖了xref:references/machineregistration-reference.adoc[机器注册]的`spec.machineName`字段，该字段定义了注册机器的结果主机名以及相关xref:references/machineinventory-reference.adoc[机器清单]资源的`name`。
+
+有关更多详细信息，请参见<<_custom_machine_names,机器名称>>部分。
+====
+
+
+== 标签模板的变量
+
+Elemental标签模板包括一组预定义变量，可在xref:references/machineregistration-reference.adoc[机器注册]中指定的`value`的_标签模板_内部使用。
+
+用于指定标签模板变量的语法是：
+
+`${ _VARFAMILY_ \/ _VARPATH_ }`
+
+其中_VARFAMILY_定义了一组（家族）支持的变量，而_VARPATH_定义了属于该家族组的实际变量名称。
+
+Elemental当前支持以下_模板变量家族_：
+
+* xref:label-templates/label-templates-bios.adoc[*BIOS*]：*${ BIOS \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-baseboard.adoc[*BaseBoard*]：*${ BaseBoard \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-cpu.adoc[*CPU*]：*${ CPU \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-chassis.adoc[*机箱*]：*${ Chassis \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-gpu.adoc[*GPU*]：*${ GPU \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-memory.adoc[*内存*]: *${ Memory \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-network.adoc[*网络*]: *${ Network \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-product.adoc[*产品*]: *${ Product \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-runtime.adoc[*运行时*]: *${ 运行时 \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-storage.adoc[*存储*]: *${ Storage \/* _VARPATH_ *}*
+
+[CAUTION]
+====
+所有的 _模板变量家族_（但 _`Random`_）仅在 xref:references/machineregistration-reference.adoc[机器注册] 的 `elemental.registration.no-smbios` 字段设置为 `false`（默认）时启用。
+
+当 `elemental.registration.no-smbios` 字段设置为 `true` 时，注册的机器不会发送任何渲染模板变量所需的数据，因此不会有变量可用，但 *随机* 变量是唯一的显著例外。
+
+*随机* 变量始终可用，因为它们是在操作员端内置的。它们也很特别，因为它们只计算一次：有关更多详细信息，请参见 xref:label-templates/label-templates-random.adoc[随机模板变量] 部分。
+====
+
+
+模板变量可以与静态文本混合，以形成分配给 (xref:references/machineinventory-reference.adoc[机器清单]) 的实际标签。
+
+[NOTE]
+.渲染示例
+====
+
+* 标签模板跟踪注册主机的 CPU 内核数量（假设主机有 4 个内核）：
+ ** 原始标签： *cpu: ${CPU\/TotalCores}-内核*
+ ** 渲染标签： *cpu:4-内核*
+* 标签模板跟踪注册主机的 SMBIOS UUID：
+ ** 原始标签： *sbios-UUID: ${Product\/UUID}*
+ ** 渲染标签： *sbios-UUID: fd95324a-c26b-4e28-8727-1dcec293a0ec*
+====
+
+
+== 清理
+
+一旦标签模板值根据包含的 <<_label_templates_variables,标签模板变量>> 渲染，结果值为 `sanitized`，然后分配给结果标签。
+
+*该 `sanitization` 强制标签值仅包含字母（无论大小写）、数字以及连字符 (`-`)、点 (`.`) 和下划线 (`_`) 字符*:
+
+所有未包含的字符都将被替换为连字符。
+
+标签值的开头和结尾必须是字母或数字。如果不是，则会被删除。
+
+两个连续的连字符将被替换为一个。
+
+[NOTE]
+.渲染示例
+====
+
+* 带有禁止字符清理的标签模板：
+ ** 原始标签： *sanitized: this:needs--sanitizing!*
+ ** 渲染标签： *sanitized: this-needs-sanitizing*
+====
+
+
+== 标签模板的使用
+
+标签模板允许在每次主机注册到元素操作员时，自动附加和更新每个主机的 xref:references/machineinventory-reference.adoc[机器清单] 的标签和注释。
+
+[IMPORTANT]
+====
+注册不仅发生在 xref:rancher-os-management/architecture/services/architecture-machineonboarding.adoc[入驻阶段]：每个主机每30分钟重新注册一次（以及每次重启时）。在重新注册期间，关联的 xref:references/machineregistration-reference.adoc[机器注册] 中的标签模板会被重新评估，并在 xref:references/machineinventory-reference.adoc[机器清单] 中添加/更新。
+====
+
+
+基本上有三种主要情况，标签模板可以派上用场：
+
+* 将硬件数据附加到元素目录。
+* 添加选择器以选择主机进行集群配置。
+* 为机器名称定义自定义模板。
+
+=== 元素目录的硬件数据
+
+标签模板的变量可用于将硬件数据附加到每个 xref:references/machineinventory-reference.adoc[机器清单] 资源（构成元素目录）。
+
+在这种情况下，注释可能是更好的选择，因为它们的值不会被清理。
+
+=== 集群配置选择器
+
+`Label Templates` 可用于生成标签，以识别和选择具有特殊硬件属性的机器，从而形成新的 Kubernetes 集群。
+
+附加到每个 xref:references/machineinventory-reference.adoc[机器清单] 的标签可以用于 _选择器_，以便于 xref:references/machineinventoryselectortemplate-reference.adoc[机器库存选择器模板] 资源（有关更多详细信息，请参见 xref:rancher-os-management/architecture/services/architecture-clusterdeployment.adoc[Kubernetes 集群配置] 部分）。
+
+=== 自定义机器名称
+
+可以使用 xref:references/machineregistration-reference.adoc[机器注册] `spec.machineName` 字段指定入驻机器的主机名。
+
+`spec.machineName` 值经过与 `Label Templates' variables` 和 `sanitization` 字段相同的处理，专用于 `spec.machineInventoryLabels` 字段。
+
+[CAUTION]
+====
+xref:references/machineregistration-reference.adoc[机器注册] `spec.machineName` 和 `spec.machineInventorylabels` 字段之间有一个显著的区别：在 <<_sanitization,清理>> 过程中，底线 (`_`) 被替换为其他禁止字符（即，它被替换为连字符：`-`）。这是必需的，因为在 Linux 主机名中不允许使用底线。
+====
+
+
+有关如何为 Elemental 主机定义主机名的更多信息，请参见 xref:installation/hostname.adoc[如何/自定义主机名] 部分。
+
+[NOTE]
+.渲染示例
+====
+* 定义一个主机名模板，如 `SLE-Micro-[random string of 6 hexadecimal values]`：
+ ** 机器注册规范： *机器名称：SLE-Micro-${Random\/Hex\/6}*
+ ** 机器清单名称：*SLE-Micro-32ad41*
+====
+
+
+== 标签模板示例
+
+.带有标签模板变量的注册示例
+[,yaml]
+----
+include::example$quickstart/registration-hardware-dhcphostname.yaml[]
+----

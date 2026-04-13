@@ -1,0 +1,37 @@
+= 復元のトラブルシューティング
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-07-03
+:page-revdate: {revdate}
+
+[WARNING]
+====
+復元を実行する際には、エレメンタルノード上の`rancher-system-agent`を再起動しないでください。再起動すると、状態が無効になり、以下のエラーで終了してしまう可能性があります：
+
+`panic: error while connecting to Kubernetes cluster: the server has asked for the client to provide credentials`
+
+この問題に直面した場合は、以下の手順に従ってください。
+====
+
+
+復元を開始する前に、エレメンタルノードから`/var/lib/rancher/agent/rancher2_connection_info.json`をコピーし、Rancher UIでアクセスできる場所に置く必要があります。
+
+ファイルがコピーされたら、https://github.com/rancher/elemental[{elemental-product-name}リポジトリ]から`rancher-agent-token-update.sh`スクリプトをダウンロードします：
+
+[,shell]
+----
+wget -q https://raw.githubusercontent.com/rancher/elemental/main/scripts/rancher-agent-token-update && chmod +x rancher-agent-token-update
+----
+
+追加のオプションなしでスクリプトを実行します：
+
+[,shell]
+----
+./rancher-agent-token-update
+----
+
+復元が正常に完了したら、`rancher2_connection_info.json`をエレメンタルノードのパス`/var/lib/rancher/agent/rancher2_connection_info.json`に戻します。最後に、`rancher-system-agent`サービスを再起動します：
+
+[,shell]
+----
+systemctl restart rancher-system-agent
+----

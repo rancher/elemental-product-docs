@@ -1,0 +1,26 @@
+= メモリテンプレート変数
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+メモリテンプレート変数に収集された情報は、システム上で利用可能な（揮発性）メモリの属性を定義します。
+
+|===
+| [可変] | 説明 | from
+
+| `${Memory/Modules}`
+| メモリモジュール
+| 1.7.0
+
+| `${Memory/SupportedPageSizes}`
+| 許可されているメモリページサイズ
+| 1.7.0
+
+| `${Memory/TotalPhysicalBytes}`
+| 合計メモリ
+| 1.7.0
+
+| `${Memory/TotalUsableBytes}`
+| 利用可能な合計メモリ
+| 1.7.0
+|===

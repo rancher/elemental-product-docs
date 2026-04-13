@@ -1,0 +1,11 @@
+= Référence du sélecteur d'inventaire de machines
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2024-09-24
+:page-revdate: {revdate}
+
+Un sélecteur d'inventaire de machines sélectionne des inventaires de machines en fonction des sélecteurs appliqués (généralement par correspondance de modèle sur les valeurs des étiquettes d'inventaire de machines).
+
+Les sélecteurs d'inventaire de machines ont deux conditions :
+
+* `InventoryReady`, devient vrai si le sélecteur d'inventaire de machines a trouvé un inventaire de machines correspondant et s'est déclaré propriétaire de celui-ci.
+* `Ready`, suit si le sélecteur a déjà adopté une machine et a commencé le processus de provisionnement Kubernetes (démarrage du nœud).

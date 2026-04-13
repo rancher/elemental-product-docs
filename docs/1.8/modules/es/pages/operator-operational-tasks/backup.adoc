@@ -1,0 +1,48 @@
+= Copia de seguridad
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 6/11/2025
+:page-revdate: {revdate}
+
+Dado que {elemental-product-name} se ejecuta como parte de Rancher, los recursos {elemental-product-name} están incluidos en la copia de seguridad de Rancher.
+Para más detalles sobre las copias de seguridad de Rancher, la restauración y las opciones de recuperación ante desastres, sigue la https://documentation.suse.com/cloudnative/rancher-manager/latest/en/rancher-admin/back-up-restore-and-disaster-recovery/back-up-restore-and-disaster-recovery.html[documentación oficial de Rancher].
+
+== Instala el operador rancher-backup para Rancher
+
+Sigue la https://documentation.suse.com/cloudnative/rancher-manager/latest/en/rancher-admin/back-up-restore-and-disaster-recovery/back-up.html[guía de copia de seguridad de Rancher] para aprender a instalar y configurar el operador de copia de seguridad de Rancher.
+
+
+== Haz una copia de seguridad de {elemental-product-name} con el operador rancher-backup
+
+Crea un `backup object` (adaptado a tus necesidades) para hacer una copia de seguridad de Rancher que se ejecute en un clúster de Kubernetes.
+
+[,yaml]
+----
+apiVersion: resources.cattle.io/v1
+kind: Backup
+metadata:
+  name: rancher-backup
+spec:
+  resourceSetName: rancher-resource-set
+  schedule: "10 3 * * *"
+  retentionCount: 10
+----
+
+El operador rancher-backup ofrece varias opciones para programación, cifrado y clases de almacenamiento.
+Puedes explorar todas las opciones leyendo la https://documentation.suse.com/cloudnative/rancher-manager/latest/en/rancher-admin/back-up-restore-and-disaster-recovery/configuration/backup.html[documentación oficial].
+
+Revisa los registros del operador rancher-backup.
+
+[,shell]
+----
+kubectl logs -n cattle-resources-system -l app.kubernetes.io/name=rancher-backup -f
+----
+
+Verifica si se creó el archivo de copia de seguridad en el Volumen Persistente.
+
+[,shell]
+----
+...
+INFO[2022/10/17 07:45:04] Finding files starting with /var/lib/backups/rancher-backup-430169aa-edde-4a61-85e8-858f625a755b*.tar.gz
+INFO[2022/10/17 07:45:04] File rancher-backup-430169aa-edde-4a61-85e8-858f625a755b-2022-10-17T05-15-00Z.tar.gz was created at 2022-10-17 0
+...
+----

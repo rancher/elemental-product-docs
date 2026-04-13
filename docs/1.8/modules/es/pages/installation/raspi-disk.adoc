@@ -1,0 +1,56 @@
+= Instrucciones para construir imágenes de disco en bruto para Raspberry Pi
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2024-09-24
+:page-revdate: {revdate}
+
+Esta guía mostrará cómo podemos construir una imagen de disco en bruto que se puede escribir en una tarjeta SD y arrancar sin ningún otro medio de instalación.
+
+[CAUTION]
+====
+Cualquier dato en la tarjeta SD será borrado, por favor, utiliza solo una tarjeta SD sin nada importante en ella.
+
+La tarjeta SD debe ser razonablemente grande (32 GB o más) y *rápida* (!!).
+====
+
+.Recurso SeedImage
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: SeedImage
+metadata:
+  name: fire-img
+  namespace: fleet-default
+spec:
+  type: raw
+  baseImage: registry.opensuse.org/isv/rancher/elemental/staging/containers/suse/sl-micro/6.0/baremetal-os-container:latest
+  targetPlatform: linux/arm64
+  registrationRef:
+    apiVersion: elemental.cattle.io/v1beta1
+    kind: MachineRegistration
+    name: fire-nodes
+    namespace: fleet-default
+----
+
+Revisa los registros del pod de construcción usando:
+
+[,shell]
+----
+kubectl logs -n fleet-default fire-img -f -c build
+----
+
+Cuando la construcción haya terminado, podemos descargar el archivo de imagen usando wget:
+
+[,shell]
+----
+wget --no-check-certificate $(kubectl get seedimage -n fleet-default fire-img -o jsonpath="{.status.downloadURL}") -O sle-micro.arm64.raw
+----
+
+Ahora podemos escribir la `.raw` imagen en la tarjeta SD. Esto se puede hacer con `dd` en la línea de comandos de Linux si te sientes cómodo con este comando.
+https://www.opensuse.org[openSUSE] tiene buenas instrucciones sobre cómo escribir una imagen en un medio de almacenamiento para https://en.opensuse.org/SDB:Live_USB_stick[Linux],
+https://en.opensuse.org/SDB:Create_a_Live_USB_stick_using_Windows[Windows], y https://en.opensuse.org/SDB:Create_a_Live_USB_stick_using_macOS[OS X].
+
+== Iniciando la máquina
+
+La imagen de disco en bruto solo incluirá la partición EFI, la partición OEM y la partición de recuperación. En el primer arranque, el sistema arrancará en el sistema de recuperación para expandir y añadir particiones faltantes. Después de la expansión, se registrará en rancher y se reiniciará.
+
+Si ocurre un error durante la fase de registro, el diario se puede encontrar usando `journalctl -u elemental-register-reset`.

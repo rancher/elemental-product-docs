@@ -1,0 +1,89 @@
+= Ciclo de vida do upgrade
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 06-11-2025
+:page-revdate: {revdate}
+
+image::upgrade-lifecycle.png[Fluxo de upgrade]
+
+== Componentes
+
+* https://documentation.suse.com/cloudnative/os-manager/[{elemental-product-name} Operador]
+
+O {elemental-product-name} Operador suporta várias maneiras de configurar a versão do SO em nível de Cluster. +
+Sempre que um novo `ManagedOSIMage` é definido, um Fleet relacionado `Bundle` também é gerado pelo {elemental-product-name} Operador.
+
+* https://documentation.suse.com/cloudnative/continuous-delivery/[Fleet]
+
+Neste contexto, Fleet é usado para aplicar um `upgrade.cattle.io/v1` `Plan` em cada Cluster alvo do `ManagedOSImage`. +
+O `Plan` é então executado pelo `System Upgrade Controller` que roda no cluster downstream {elemental-product-name}.
+
+* https://github.com/rancher/system-upgrade-controller[Controlador de fazer upgrade do sistema]
+
+O Controlador de fazer upgrade do sistema é uma ferramenta de fazer upgrade utilizada por clusters https://documentation.suse.com/cloudnative/k3s/latest/en/upgrades/automated.html[K3s] e https://documentation.suse.com/cloudnative/rke2/latest/en/upgrade/automated_upgrade.html[RKE2]. Deve sempre ser instalado automaticamente em cada cluster {elemental-product-name} provisionado. Neste contexto, o Controlador de fazer upgrade do sistema orquestra a aplicação de `upgrade.cattle.io/v1` `Plan` nos nós {elemental-product-name}.
+
+== Versionamento e ciclo de vida de componentes
+
+As versões do https://documentation.suse.com/cloudnative/continuous-delivery/[Fleet] e do https://github.com/rancher/system-upgrade-controller[Controlador de fazer upgrade do sistema] são controladas pelo Rancher.
+
+No cluster Rancher, você pode executar:
+
+[,bash]
+----
+kubectl get settings fleet-version system-upgrade-controller-chart-version
+----
+
+Para mais informações sobre versões de chart, você pode visitar o https://github.com/rancher/charts[repositório] ou ler a https://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-admin/helm-charts-in-rancher/helm-charts-in-rancher.html[documentação].
+
+A versão dos charts é determinada pelo Rancher. +
+Dependendo de como o Rancher é instalado, as seguintes variáveis de ambiente podem ser definidas, por exemplo, ao instalar o https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/references/helm-chart-options.html#_setting_extra_environment_variables[Helm chart do Rancher]:
+
+[,bash]
+----
+CATTLE_SYSTEM_UPGRADE_CONTROLLER_CHART_VERSION
+CATTLE_FLEET_VERSION
+----
+
+Atualizar as versões manualmente geralmente não é recomendado. +
+Além disso, esteja ciente de que um novo `CATTLE_SYSTEM_UPGRADE_CONTROLLER_CHART_VERSION` acionará uma atualização de chart `system-upgrade-controller` em todos os clusters downstream provisionados.
+
+== Verificando upgrades bem-sucedidos
+
+Verificar a execução correta dos jobs de fazer upgrade é fundamental para garantir que o processo de upgrade {elemental-product-name} esteja completo.
+
+Para solucionar problemas em cada etapa do processo de upgrade, consulte o xref:troubleshooting/troubleshooting-upgrade.adoc[documento relacionado]. +
+Esta seção descreve apenas a última etapa necessária para verificar a aplicação correta do Plano de upgrade em um cluster específico.
+
+* Versões superiores ou iguais a *v0.13.4* do `system-upgrade-controller`:
++
+[,shell]
+----
+kubectl -n cattle-system describe plan os-upgrader-my-upgrade
+----
++
+Uma vez que o Plano é aplicado a todos os nós, ele terá uma condição de status `Complete`.
+
+* Versões mais antigas:
++
+Cada Plano tem um valor de status `latestHash` que deve corresponder ao rótulo do Plano em cada nó. +
+Um script simples pode ser usado para listar todos os nós onde o plano ainda não foi aplicado:
++
+[,shell]
+----
+#!/bin/bash
+
+# This script prints a list of all nodes where an upgrade plan was not applied.
+# To further determine the cause of failures, you can analyze the Plan status and the related jobs.
+# For ex: kubectl -n cattle-system get plans,jobs
+
+# Edit this variable according to your ManagedOSImage name.
+MANAGED_OS_IMAGE_NAME=my-upgrade
+
+PLAN_NAME=os-upgrader-$MANAGED_OS_IMAGE_NAME
+LATEST_HASH=$(kubectl -n cattle-system get plan $PLAN_NAME -o=jsonpath='{.status.latestHash}')
+
+printf "Plan '$PLAN_NAME' latest hash is: '$LATEST_HASH'\n"
+
+PLAN_LABEL=plan.upgrade.cattle.io/$PLAN_NAME
+printf "Listing all nodes with mismatching or missing label '$PLAN_LABEL':\n"
+kubectl get nodes -l $PLAN_LABEL!=$LATEST_HASH
+----

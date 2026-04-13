@@ -1,0 +1,14 @@
+= ランタイムテンプレート変数
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+ランタイムテンプレート変数は、システム設定に関する情報を収集します。
+
+|===
+| [可変] | 説明 | from
+
+| `${Runtime/Hostname}`
+| システムホスト名
+| 1.7.0
+|===

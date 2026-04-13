@@ -1,0 +1,44 @@
+= Configurar las direcciones IP internas y externas de K3s y RKE2
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+K3s y RKE2 permiten especificar las direcciones IP internas y externas de un nodo a través de los parámetros `--node-ip` y `--node-external-ip`.
+
+La provisión de Rancher permite rellenar esos parámetros recogiendo la dirección IP de cada interfaz de red del nodo.
+
+De todos modos, los métodos para recoger esas opciones de IP para los Clusters de Rancher _Personalizados_ y _Elementales_ difieren.
+
+== Configuración de las direcciones IP internas y externas de K3s y RKE2 en la provisión del Cluster de Rancher
+
+La provisión de Rancher permite especificar en la sección del Agente de Rancher las interfaces de red que deben estar vinculadas a las direcciones IP internas y externas de cada nodo provisionado.
+
+Esto se realiza añadiendo los nombres de las interfaces de red de las cuales se deben extraer las direcciones IP en las Variables de Entorno del Agente `CATTLE_INTERNAL_ADDRESS` y `CATTLE_ADDRESS` (https://ranchermanager.docs.rancher.com/reference-guides/cluster-configuration/rancher-server-configuration/use-existing-nodes/rancher-agent-options#ip-address-options[ver la documentación de Rancher]).
+
+[NOTE]
+====
+Las Variables de Entorno del Agente `CATTLE_INTERNAL_ADDRESS` y `CATTLE_ADDRESS` pueden ser rellenadas directamente con las direcciones IP deseadas. De todos modos, dado que las direcciones IP internas y externas son _por nodo_, esto no funcionaría más que para clusters de un solo nodo.
+====
+
+
+[CAUTION]
+====
+Mientras que durante la creación de un Cluster Elemental es posible añadir Variables de Entorno del Agente, las de `CATTLE_ADDRESS` y `CATTLE_INTERNAL_ADDRESS` son ignoradas y no resultarían en la configuración de las direcciones IP internas y externas de los nodos provisionados.
+====
+
+
+== Configurar las direcciones IP internas y externas de K3s y RKE2 en Clusters Elementales
+
+Elemental permite configurar las direcciones IP internas y externas de los Nodos del Cluster adjuntando las etiquetas `elemental.cattle.io/InternalIP` y `elemental.cattle.io/ExternalIP` a los recursos xref:references/machineinventory-reference.adoc[Inventario de Máquinas] que rastrean los nodos objetivo.
+
+Estas etiquetas, cuando se adjuntan a un recurso xref:references/machineinventory-reference.adoc[Inventario de Máquinas], se utilizan para rellenar las direcciones IP internas y externas de los nodos asociados.
+
+Las etiquetas pueden añadirse a los campos xref:references/machineregistration-reference.adoc[Registro de Máquinas] `machineInventoryLabels`, utilizando las variables de dirección IP de la plantilla de etiqueta xref:label-templates/label-templates-network.adoc[Red] como valores, para permitir recoger las direcciones IP de cada nodo.
+
+Ejemplo: xref:references/machineregistration-reference.adoc[Registro de Máquinas] donde los nodos tendrán la dirección IP interna configurada desde la interfaz eth0 y la dirección IP externa desde eth1.
+
+.registration.yaml
+[,yaml]
+----
+include::example$labeltemplates/registration.yaml[]
+----

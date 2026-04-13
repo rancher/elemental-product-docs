@@ -1,0 +1,26 @@
+= 故障排除 Rancher 升级
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-07-03
+:page-revdate: {revdate}
+
+[WARNING]
+====
+如果定义了 {elemental-product-name} 集群，升级到 Rancher v2.7.2 将会失败。Rancher pod 会陷入崩溃循环（见 https://github.com/rancher/rancher/issues/41145).）
+====
+
+请注意，只有在定义了至少一个 {elemental-product-name} 集群的情况下，问题才会出现。
+
+为了解决此问题，请创建一个名为 `machineinventoryselectortemplate` 的空 `dynamicschemas.management.cattle.io` 资源：
+
+[,shell]
+----
+kubectl apply -f - <<EOF
+kind: DynamicSchema
+apiVersion: management.cattle.io/v3
+metadata:
+  name: machineinventoryselectortemplate
+EOF
+
+----
+
+崩溃循环将停止，Rancher 升级将成功完成。

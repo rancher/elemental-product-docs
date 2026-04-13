@@ -5,6 +5,12 @@ display_version: '1.8'
 start_page: en:index.adoc
 nav:
 - modules/en/nav.adoc
+- modules/de/nav.adoc
+- modules/es/nav.adoc
+- modules/fr/nav.adoc
+- modules/ja/nav.adoc
+- modules/pt/nav.adoc
+- modules/zh/nav.adoc
 asciidoc:
   attributes:
     # Product Names
@@ -38,4 +44,3 @@ asciidoc:
     elemental_register_name: '{elemental-product-name} Register client'
     ranchersystemagent_name: Rancher System Agent
     ranchersystemagent_url: https://github.com/rancher/system-agent
-    

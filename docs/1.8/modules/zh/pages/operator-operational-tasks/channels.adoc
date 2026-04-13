@@ -1,0 +1,151 @@
+= 通道
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-30
+:page-revdate: {revdate}
+
+{elemental_operator_name} 允许订阅一个或多个 xref:references/managedosversionchannel-reference.adoc[ManagedOSVersionChannels]，以自动填充准备使用 xref:references/managedosversion-reference.adoc[ManagedOSVersions] 构建新 .iso 映像的列表，或使用 xref:references/managedosimage-reference.adoc[ManagedOSImage] 将现有 {elemental-product-name} 节点升级到新操作系统版本。
+
+通道通常以 OCI 容器镜像的形式分发，但也可以直接引用包含 `ManagedOSVersion` 列表的 JSON 文件的 URI。请注意，最佳实践是使用镜像分发通道，以便分发与 {elemental_operator_name} 所需的所有其他镜像保持一致。例如，在隔离环境中部署时，这可能是有益的。
+
+[tabs]
+======
+Json 同步器::
++
+====
+此同步器将从 URL 获取 JSON 并将其解析为有效的 `ManagedOSVersion` 资源。
+
+.managed-os-version-channel-json.yaml
+[,yaml]
+----
+include::example$upgrade/managed-os-version-channel-json.yaml[]
+----
+====
+
+自定义同步器::
++
+====
+自定义同步器允许通过自定义命令和自定义镜像来收集 `ManagedOSVersion`，提供更多灵活性。这种类型的同步器允许在自定义镜像中运行给定命令及其参数和环境变量，并将输出 JSON 文件到 `/data/output`。生成的数据随后由同步器自动挂载并解析，以便创建适当的版本。{elemental-product-name} 项目提供通道以列出作为自定义同步器发布的所有 `ManagedOSVersions`。请参见下面的通道资源定义：
+
+.managed-os-version-channel-custom.yaml
+[,yaml]
+----
+include::example$upgrade/managed-os-version-channel-custom.yaml[]
+----
+====
+======
+
+== 可用通道
+
+{elemental-product-name} 维护一个可以开箱即用的通道列表。
+
+|===
+| 基础操作系统 | BaseOS Version | 风味 | 通道 URI
+
+| SL Micro
+| 6.1
+| 基础
+| registry.suse.com/rancher/elemental-channel/sl-micro:6.0-base
+
+| SL Micro
+| 6.1
+| 裸机
+| registry.suse.com/rancher/elemental-channel/sl-micro:6.0-baremetal
+
+| SL Micro
+| 6.1
+| KVM
+| registry.suse.com/rancher/elemental-channel/sl-micro:6.0-kvm
+
+| SL Micro
+| 6.1
+| RT
+| registry.suse.com/rancher/elemental-channel/sl-micro:6.0-rt
+|===
+
+== 查找 {elemental-product-name} 通道
+
+起重机可用于查找维护的通道。例如：
+
+[,shell]
+----
+$ crane ls -O registry.suse.com/rancher/elemental-channel/sl-micro
+6.0-baremetal
+6.0-base
+6.0-kvm
+6.0-rt
+6.1-baremetal
+6.1-base
+6.1-kvm
+6.1-rt
+<snip>
+----
+
+== 风味
+
+{elemental-product-name} 分发不同的操作系统风味，以更好地适应特定的使用案例。
+
+|===
+| 风味 | 说明 | 参考手册
+
+| 基础
+| 一个可以用作构建自定义镜像的基础的最小镜像。
+| https://github.com/rancher/elemental/blob/v2.1.x/.obs/dockerfile/micro-base-os/Dockerfile[源]
+
+| 裸机
+| 包含裸机和可用性软件包。可用于任何通用工作负载。
+| https://github.com/rancher/elemental/blob/v2.1.x/.obs/dockerfile/micro-baremetal-os/Dockerfile[源]
+
+| KVM
+| 准备与 KVM 一起使用。默认情况下包含 QEMU 来宾代理。
+| https://github.com/rancher/elemental/blob/v2.1.x/.obs/dockerfile/micro-kvm-os/Dockerfile[源]
+
+| RT
+| 类似于裸机镜像，但包括实时内核。
+| https://github.com/rancher/elemental/blob/v2.1.x/.obs/dockerfile/micro-rt-os/Dockerfile[源]
+|===
+
+== 通道生命周期和最佳实践
+
+一旦创建新的 `ManagedOSVersionChannel`，{elemental_operator_name} 将定期同步提供的 JSON 列表，并将其转换为新的 `ManagedOSVersions`。 +
+所有已同步的 `ManagedOSVersions` 都将归 `ManagedOSVersionChannel` 所有。删除 `ManagedOSVersionChannel` 将导致所有 `ManagedOSVersions` 的级联删除。
+
+请注意，当启用 `ManagedOSVersionChannel.spec.deleteNoLongerInSyncVersions` 选项时，`ManagedOSVersionChannel` 支持自动清理不再同步的 `ManagedOSVersions`。
+
+当 `ManagedOSVersion` 被安排删除时，一个终结器将确保在任何 `ManagedOSImage` 上都没有活动引用。
+
+如果 `ManagedOSVersion` 无法删除，您可以找出它被哪些资源引用：
+
+[,shell]
+----
+kubectl -n fleet-default get managedosimages -l elemental.cattle.io/managed-os-version-name=my-deleted-os-version
+----
+
+使用多个通道时，保持适当的命名策略非常重要，以确保对所拥有的 `ManagedOSVersions` 始终能快速获得清晰易读的引用。 +
+建议将任何通道命名为：`{BaseOS}-{BaseOSVersion}-{Flavor}`。
+
+这应该允许用户将 `ManagedOSVersion` 名称用作镜像的特定 {elemental-product-name} 构建版本，同时保留对父通道的基础操作系统和基础操作系统版本的引用。 +
+在 Rancher UI 上，这看起来像下面的图像：
+
+image:channel-naming.png[通道命名]
+
+== 创建您自己的通道
+
+创建自定义同步器的唯一要求是将其输出为 JSON 文件到 `/data/output` 并保持正确的 JSON 结构。
+
+该文件是一个包含 .iso 映像和容器条目的 JSON 数组。
+数组中的每个条目与 xref:references/managedosversion-reference.adoc[ManagedOSVersion] 对象一一对应。
+
+`"type": "iso"` 条目必须包含可引导的 {elemental-product-name} .iso 映像，并由 xref:references/seedimage-reference.adoc[SeedImages] 使用，而 `"type": "container"` 条目则由 xref:references/managedosimage-reference.adoc[ManagedOSImage] 用于 {elemental-product-name} 升级。
+
+如果有疑问，可以使用 https://github.com/rancher-sandbox/elemental-channels[elemental-channels] 项目作为参考实现，以了解如何构建和维护您自己的通道。
+
+在创建新条目时，请注意您选择的命名策略，以避免与其他通道发生冲突，因为它们可能会最终同步不同的 `ManagedOSVersion`，但名称相同。
+最佳实践是使用以下约定：`\{Flavor}-\{Version}-\{Type}`
+
+JSON 格式的示例如下：
+
+.versions.json
+[,json]
+----
+include::example$upgrade/versions.json[]
+----

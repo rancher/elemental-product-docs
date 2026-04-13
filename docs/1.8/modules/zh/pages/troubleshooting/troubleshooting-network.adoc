@@ -1,0 +1,196 @@
+= 故障排除声明式网络
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+给定以下示例注册：
+
+.使用声明式网络的示例机器注册
+[,yaml]
+----
+include::example$network/machineregistration.yaml[]
+----
+
+我们可以预期每个元素机器将使用定义的 `nm-configurator` `_all.yaml` 模板进行配置。
+
+在第一次启动时，`elemental-register` 将尝试联系 Rancher API 以注册一个新的 `MachineInventory`。
+
+在此阶段，机器的网络尚未配置，将默认为DHCP。在此设置中，机器必须能够联系 Rancher API，否则注册将无法完成。
+
+一旦 `MachineInventory` 首次注册，`elemental-operator` 将为网络配置中定义的每个 `IPPool` 引用声明一个 `IPAddress`。
+
+在 `MachineInventory` 上，这将看起来如下：
+
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: MachineInventory
+metadata:
+  finalizers:
+  - machineinventory.elemental.cattle.io
+  name: m-e5331e3b-1e1b-4ce7-b080-235ed9a6d07c
+  namespace: fleet-default
+spec:
+  ipAddressClaims:
+    inventory-ip:
+      apiVersion: ipam.cluster.x-k8s.io/v1beta1
+      kind: IPAddressClaim
+      name: m-e5331e3b-1e1b-4ce7-b080-235ed9a6d07c-inventory-ip
+      namespace: fleet-default
+      uid: 78f2d07a-7b6d-4b58-b615-c4108b7964b9
+  ipAddressPools:
+    inventory-ip:
+      apiGroup: ipam.cluster.x-k8s.io
+      kind: InClusterIPPool
+      name: elemental-inventory-pool
+  network:
+    config:
+      dns-resolver:
+        config:
+          search: []
+          server:
+          - 192.168.122.1
+      interfaces:
+      - description: Main-NIC
+        ipv4:
+          address:
+          - ip: "{inventory-ip}"
+            prefix-length: 24
+          dhcp: false
+          enabled: true
+        ipv6:
+          enabled: false
+        name: eth0
+        state: up
+        type: ethernet
+      routes:
+        config:
+        - destination: 0.0.0.0/0
+          metric: 150
+          next-hop-address: 192.168.122.1
+          next-hop-interface: eth0
+          table-id: 254
+    ipAddresses:
+      inventory-ip: 192.168.122.150
+status:
+  conditions:
+  - lastTransitionTime: "2024-07-30T11:50:47Z"
+    message: NetworkConfig is ready
+    reason: ReconcilingNetworkConfig
+    status: "True"
+    type: NetworkConfigReady
+----
+
+您会注意到 `MachineInventory` 携带与 `network.config` 相同的 `MachineRegistration`，但是现在我们有一个真实 IP 地址的映射，而不是引用 IPAddressPools：
+
+[,yaml]
+----
+    ipAddresses:
+      inventory-ip: 192.168.122.150
+----
+
+每当定义了 `{inventory-ip}` 时，这个 `inventory-ip` 将在 `nm-configurator` 的配置中被替换。
+
+还请注意，`MachineInventory` 引用并拥有与之相关的每个 `IPAddressClaim`。每个声明遵循可预测的 `$MachineInventoryName-$IPPoolRefKey` 命名约定：`m-e5331e3b-1e1b-4ce7-b080-235ed9a6d07c-inventory-ip`。
+
+这些声明将遵循 `MachineInventory` 对象的生命周期，并在级联删除时删除，例如在 xref:node-operational-tasks/reset.adoc[重置工作流] 期间。
+
+如果 `IPAddresses` 无法被声明，`NetworkConfigReady` 条件将为 `False`，阻止机器完成安装。如果 `IPPool` 没有更多可用的 `IPAddresses`，则可能会出现这种情况。
+
+== 在机器端
+
+在安装阶段，运行在机器上的 `elemental-register` 进程将接收 `nm-configurator` `_all.yaml` 配置模板和声明的 IP 地址及其密钥的列表。这些信息将被处理为适用的 `nm-configurator` 配置：
+
+[,yaml]
+----
+config:
+  dns-resolver:
+    config:
+      search: []
+      server:
+      - 192.168.122.1
+  interfaces:
+  - description: Main-NIC
+    ipv4:
+      address:
+      - ip: "192.168.122.150"
+        prefix-length: 24
+      dhcp: false
+      enabled: true
+    ipv6:
+      enabled: false
+    name: eth0
+    state: up
+    type: ethernet
+  routes:
+    config:
+    - destination: 0.0.0.0/0
+      metric: 150
+      next-hop-address: 192.168.122.1
+      next-hop-interface: eth0
+      table-id: 254
+----
+
+然后 `elemental-register` 将调用 `nmc generate` 和 `nmc apply` 将此配置应用到运行系统中。
+
+从此刻起，直到重置，机器将始终使用应用的配置。
+
+还请注意，在安装和重置之外，`nm-configurator` 不再使用，因为 `elemental-register` 将保留由 `/etc/NetworkManager/system-connection/*.nmconnection` 生成的 `nmc` 文件，而不是 `nmc` 配置本身。
+
+例如，在任何运行的系统上，您会找到一个 https://github.com/rancher/yip[yip] 配置文件（`/oem/elemental-network.yaml`）来应用所需的 `nmconnections`，例如：
+
+[,yaml]
+----
+name: Apply network config
+stages:
+    initramfs:
+        - files:
+            - path: /etc/NetworkManager/system-connections/Wired connection 1.nmconnection
+              permissions: 384
+              owner: 0
+              group: 0
+              content: |
+                [connection]
+                id=Wired connection 1
+                uuid=d26b4ae4-d525-3cbf-a557-33feb60343c0
+                type=ethernet
+                autoconnect-priority=-999
+                interface-name=eth0
+                timestamp=1722340245
+
+                [ethernet]
+
+                [ipv4]
+                address1=192.168.122.150/24
+                dhcp-timeout=2147483647
+                dns=192.168.122.1;
+                dns-options=
+                dns-priority=40
+                method=manual
+                route1=0.0.0.0/0,192.168.122.1,150
+                route1_options=table=254
+
+                [ipv6]
+                addr-gen-mode=eui64
+                dhcp-timeout=2147483647
+                method=disabled
+
+                [proxy]
+
+                [user]
+                nm-configurator.interface.description=Main-NIC
+              encoding: ""
+              ownerstring: ""
+----
+
+=== 在重置期间
+
+每当触发 xref:node-operational-tasks/reset.adoc[reset] 时，机器上运行的 `elemental-register` 将清除任何 `/etc/NetworkManager/system-connection/*.nmconnection` 文件并重启网络栈。然后机器应恢复为 DHCP，并随后向管理端的 `elemental-operator` 确认重置已成功。
+
+请注意，这仅在 `MachineInventory.spec.network.configurator` 值与 `none` 不同的情况下适用。否则，在机器重置阶段不会采取任何行动来重置网络。
+
+在网络重置后，机器应重启进入恢复模式，执行实际重置并接收新的网络配置以应用。这可能与之前相同（如果 `MachineRegistration` 没有被更新），或者可能有不同的 IP，因为之前的 IP 可能已被其他机器占用。
+
+如果恢复到 DHCP 失败，或者机器以任何方式无法联系 Rancher API 以确认，您会注意到 `MachineInventory` 将不会被删除，尽管有删除时间戳。由于机器现在存在网络问题，无法远程修复。
+
+您可以选择物理接触机器或以任何方式修复 DHCP 驱动的网络配置，或者您可以从 `MachineInventory` 中去除 `machineinventory.elemental.cattle.io` 最终器，以允许删除，如果您打算退役该机器。

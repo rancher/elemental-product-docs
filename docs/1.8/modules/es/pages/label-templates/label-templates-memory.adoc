@@ -1,0 +1,26 @@
+= Variables de plantilla de memoria
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+La información recopilada en las variables de plantilla de memoria define los atributos de la memoria (volátil) disponible en el sistema.
+
+|===
+| Variable | Descripción | desde
+
+| `${Memory/Modules}`
+| Módulos de memoria
+| 1.7.0
+
+| `${Memory/SupportedPageSizes}`
+| Tamaños de página de memoria permitidos
+| 1.7.0
+
+| `${Memory/TotalPhysicalBytes}`
+| Memoria total
+| 1.7.0
+
+| `${Memory/TotalUsableBytes}`
+| Memoria total disponible
+| 1.7.0
+|===

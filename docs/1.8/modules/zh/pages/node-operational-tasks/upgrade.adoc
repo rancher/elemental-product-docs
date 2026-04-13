@@ -1,0 +1,152 @@
+= 升级
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+{elemental-product-name}中的所有组件均使用Kubernetes进行管理。以下是如何使用Kubernetes方法来升级组件。
+
+== {elemental-product-name}节点升级
+
+{elemental-product-name}节点使用{elemental_operator_name}进行升级。请参考xref:references/operatorchart-reference.adoc[{elemental_operator_name}]文档以获取完整信息。
+
+升级可以通过CLI或UI实现：
+
+* <<_upgrade_via_command_line_interface,命令行界面>>
+* <<_upgrade_via_user_interface,用户界面>>
+
+== 通过命令行界面进行升级
+
+有两种选择节点进行升级的方法。通过集群目标，可以匹配与我们选择器相符的集群中的所有节点；或者通过节点选择器，根据节点标签匹配节点。节点选择器使我们能够更有针对性地进行升级，而集群选择器则仅选择匹配集群中的所有节点。
+
+更新现有的`ManagedOSImage`将触发新的升级周期，以使配置的镜像（或镜像版本）与所有目标节点保持一致。
+
+[tabs]
+======
+使用'clusterTarget'::
++
+====
+您可以通过在`clusterTarget`中设置为要升级的集群名称，从而针对节点进行升级。与该名称匹配的集群中的所有节点将匹配并被升级。
+
+.upgrade-cluster-target.yaml
+[,yaml]
+----
+include::example$upgrade/upgrade-cluster-target.yaml[]
+----
+====
+
+使用nodeSelector::
++
+====
+您可以通过在`nodeSelector`中设置为要匹配的标签和值，从而针对节点进行升级。任何包含该键及其值的节点将匹配并被升级。
+
+.upgrade-node-selector.yaml
+[,yaml]
+----
+include::example$upgrade/upgrade-node-selector.yaml[]
+----
+====
+
+使用FORCE标志::
++
+====
+当升级至较旧版本或与当前运行版本相同时，将跳过升级程序。可以通过设置FORCE环境变量来强制升级到旧版本，如下所示。
+
+.upgrade-force.yaml
+[,yaml]
+----
+include::example$upgrade/upgrade-force.yaml[]
+----
+====
+
+使用UPGRADE_RECOVERY标志::
++
+====
+您可以在升级系统时选择是否升级恢复分区，或者仅对恢复分区进行升级。
+
+.upgrade-recovery.yaml
+[,yaml]
+----
+include::example$upgrade/upgrade-recovery.yaml[]
+----
+====
+======
+
+=== 选择升级源
+
+[tabs]
+======
+Via 'osImage'::
++
+====
+只需在`osImage`字段中指定一个OCI镜像。 
+
+.upgrade-cluster-target.yaml
+[,yaml]
+----
+include::example$upgrade/upgrade-cluster-target.yaml[]
+----
+====
+
+Tab Via 'ManagedOSVersion'::
++
+====
+在这种情况下，我们使用自动填充的`ManagedOSVersion`资源来设置所需的`managedOSVersionName`字段。请参阅[管理可用版本](#managing-available-versions)部分以了解`ManagedOSVersion`是如何管理的。
+
+.upgrade-managedos-version.yaml
+[,yaml]
+----
+include::example$upgrade/upgrade-managedos-version.yaml[]
+----
+====
+======
+
+[WARNING]
+====
+如果在同一个`ManagedOSImage`中定义了`osImage`和`ManagedOSVersion`，请注意`osImage`具有优先权。
+====
+
+
+=== 管理可用版本
+
+可以直接创建xref:references/managedosversion-reference.adoc[ManagedOSVersions]，或订阅xref:references/managedosversionchannel-reference.adoc[ManagedOSVersionChannels]以自动从中同步`ManagedOSVersions`。
+
+有关更多详细信息和可用频道的列表，或甚至创建您自己的频道，请阅读xref:operator-operational-tasks/channels.adoc[文档]。
+
+== 通过用户界面进行升级
+
+要通过UI进行升级，您必须进入{elemental-product-name}高级菜单，然后单击`Update Groups`。
+
+选择一个名称，选择目标集群，并在两种升级方式之间进行选择：
+
+image::upgrade-ui-menu.png[{elemental-product-name}升级菜单]
+
+[tabs]
+======
+通过管理操作系统版本::
++
+====
+在这种情况下，使用`OS Version Channels`来自动填充`OS Versions`资源。
+
+下面的通道由我们提供，但您也可以使用自有通道。
+
+请参阅第 <<_managing_available_versions,管理可用版本>> 节以了解 `ManagedOSVersion` 的管理方式。
+
+image:upgrade-ui-version-channel.png[创建操作系统版本通道]
+
+经过短暂的同步时间后，您将看到您的 `OS Versions` 出现在 `OS Versions` 菜单中。
+
+image:upgrade-ui-os-version.png[{elemental-product-name} 操作系统版本菜单]
+
+最后，您可以根据以下截图在创建 `OS Versions` 时选择 `Upgrade Group`：
+
+image:upgrade-ui-upgrade-group-channel.png[在升级组中选择操作系统版本]
+====
+
+通过注册表的镜像选项卡::
++
+====
+只需在 `Image path` 字段中指定一个 OCI 镜像以升级到：image:upgrade-ui-image-registry.png[通过镜像注册表升级]
+====
+======
+
+单击 `Create` 按钮以开始升级过程；如果您有多个节点，则升级将依次逐个进行。

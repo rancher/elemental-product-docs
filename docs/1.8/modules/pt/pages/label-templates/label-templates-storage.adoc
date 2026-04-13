@@ -1,0 +1,122 @@
+= Variáveis do Modelo de Armazenamento
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+As informações coletadas nas variáveis do modelo de armazenamento definem atributos dos discos disponíveis no sistema.
+
+Os discos são rastreados tanto por número (0, 1, 2, ...) quanto pelo nome do dispositivo (_sda_, _vda_, _nvme0n1_, ...).
+
+Por exemplo, se `${Storage/Disks/2/Name}` for igual a `sda`, o modelo do disco pode ser recuperado por meio das variáveis `${Storage/Disks/2/Model}` e `${Storage/Disks/sda/Model}`.
+
+[NOTE]
+====
+Os discos rastreados incluem também unidades de disco óptico e dispositivos removíveis (por exemplo, pen drives).
+====
+
+|===
+| Variável | Descrição | from
+
+| `${Storage/Disks/_<Number>_/DriveType}`
+| Tipo de disco
+| 1.7.0
+
+| `${Storage/Disks/_<Number>_/Model}`
+| Modelo do disco
+| 1.7.0
+
+| `${Storage/Disks/_<Number>_/Name}`
+| Nome do dispositivo
+| 1.7.0
+
+| `${Storage/Disks/_<Number>_/Removable}`
+| é mídia removível?
+| 1.7.0
+
+| `${Storage/Disks/_<Number>_/Size}`
+| Tamanho (bytes)
+| 1.7.0
+
+| `${Storage/Disks/_<Number>_/StorageController}`
+| Tipo de controlador
+| 1.7.0
+
+| `${Storage/Disks/_<DeviceName>_/DriveType}`
+| Tipo de disco
+| 1.7.0
+
+| `${Storage/Disks/_<DeviceName>_/Model}`
+| Modelo do disco
+| 1.7.0
+
+| `${Storage/Disks/_<DeviceName>_/Name}`
+| Nome do dispositivo
+| 1.7.0
+
+| `${Storage/Disks/_<DeviceName>_/Removable}`
+| é mídia removível?
+| 1.7.0
+
+| `${Storage/Disks/_<DeviceName>_/Size}`
+| Tamanho (bytes)
+| 1.7.0
+
+| `${Storage/Disks/_<DeviceName>_/StorageController}`
+| Tipo de controlador
+| 1.7.0
+
+| `${Storage/TotalDisks}`
+| Número de discos presentes no sistema
+| 1.7.0
+|===
+
+== Tipos de Unidade dos Discos
+
+|===
+| Tipo | Descrição
+
+| HDD
+| Disco rígido
+
+| FDD
+| Unidade de Disco Flexível
+
+| ODD
+| Unidade de Disco Óptico
+
+| SSD
+| Unidade de Estado Sólido
+
+| virtual
+| unidade virtual, ou seja, dispositivos de loop
+
+| Desconhecido
+| tipo de unidade desconhecido
+|===
+
+== Tipos de Controladores de Armazenamento de Discos
+
+|===
+| Tipo | Descrição
+
+| IDE
+| Eletrônica de Discos Integrada
+
+| SCSI
+| Small Computer System Interface
+
+| NVMe
+| Non-Volatile Memory Express
+
+| MMC
+| Controlador multimídia (usado para dispositivos de armazenamento de telefones móveis)
+
+| virtio
+| Controlador/driver de armazenamento virtualizado
+
+| loop
+| dispositivo de loop
+
+| Desconhecido
+| tipo de controlador desconhecido
+|===

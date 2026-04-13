@@ -1,0 +1,154 @@
+= Présentation des modèles d'étiquettes
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+Elemental permet de spécifier _modèles d'étiquettes_ dans les sections `spec.machineInventoryLabels` et `spec.machineInventoryAnnotations` des ressources xref:references/machineregistration-reference.adoc[EnregistrementMachine].
+
+Leur format est le `key`:``value` canonique utilisé dans les étiquettes et annotations Kubernetes.
+
+Ces modèles d'étiquettes sont convertis en étiquettes et annotations réelles attachées à chaque ressource xref:references/machineinventory-reference.adoc[InventaireMachine] créée lors de la phase xref:rancher-os-management/architecture/services/architecture-machineonboarding.adoc[d'intégration].
+
+Les étiquettes et annotations résultantes ont le même `key` que le modèle d'étiquette.
+
+Le `value` associé est généré :
+
+* *rendu le <<_label_templates_variables,`label template variables`>>* (si présent)
+* *`sanitizing`* la valeur résultante (dans le cas des étiquettes uniquement)
+
+[IMPORTANT]
+====
+La fonctionnalité de modélisation d'Elemental couvre également le champ xref:references/machineregistration-reference.adoc[EnregistrementMachine] `spec.machineName`, qui définit le nom d'hôte résultant de la machine en cours d'enregistrement et le `name` de la ressource xref:references/machineinventory-reference.adoc[InventaireMachine] associée.
+
+Voir la section <<_custom_machine_names,Nom de la machine>> pour plus de détails.
+====
+
+
+== Variables des modèles d'étiquettes
+
+La modélisation d'étiquettes d'Elemental inclut un ensemble de variables prédéfinies qui peuvent être utilisées à l'intérieur du `value` des _modèles d'étiquettes_ spécifiés dans le xref:references/machineregistration-reference.adoc[EnregistrementMachine].
+
+La syntaxe utilisée pour spécifier les variables des modèles d'étiquettes est :
+
+`${ _VARFAMILY_ \/ _VARPATH_ }`
+
+où _VARFAMILY_ définit un groupe (famille) de variables prises en charge et _VARPATH_ définit le nom de la variable réelle à l'intérieur du groupe de famille correspondant.
+
+Elemental prend actuellement en charge les _familles de variables de modèle_ suivantes :
+
+* xref:label-templates/label-templates-bios.adoc[*BIOS*] : *${ BIOS \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-baseboard.adoc[*BaseBoard*] : *${ BaseBoard \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-cpu.adoc[*UC*]: *${ UC \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-chassis.adoc[*Châssis*] : *${ Châssis \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-gpu.adoc[*GPU*]: *${ GPU \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-memory.adoc[*Mémoire*]: *${ Mémoire \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-network.adoc[*Réseau*]: *${ Réseau \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-product.adoc[*Produit*]: *${ Produit \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-runtime.adoc[*Composant d'exécution*]: *${ Composant d'exécution \/* _VARPATH_ *}*
+* xref:label-templates/label-templates-storage.adoc[*Stockage*]: *${ Stockage \/* _VARPATH_ *}*
+
+[CAUTION]
+====
+Toutes les _familles de variables de modèle_ (mais _`Random`_) sont activées uniquement si le champ xref:references/machineregistration-reference.adoc[MachineRegistration] est défini sur `false` (par défaut).
+
+Lorsque le champ `elemental.registration.no-smbios` est défini sur `true`, les machines enregistrées n'envoient aucune donnée requise pour le rendu des variables de modèle, donc aucune variable ne sera disponible, sauf les variables *Aléatoires*, qui sont la seule exception notable.
+
+Les variables *Aléatoires* sont toujours disponibles car elles sont intégrées du côté de l'opérateur. Elles sont également spéciales car elles ne sont calculées qu'une seule fois : voir la section xref:label-templates/label-templates-random.adoc[Variables de modèle aléatoires] pour plus de détails.
+====
+
+
+Les variables de modèle peuvent être mélangées avec du texte statique pour former les étiquettes réelles assignées à (xref:references/machineinventory-reference.adoc[Inventaires de machines]).
+
+[NOTE]
+.Exemples de rendu
+====
+
+* Étiquette de modèle suivant le nombre de cœurs d'UC de l'hôte enregistrant (supposons que l'hôte ait 4 cœurs) :
+ ** étiquette originale : *uc: ${CPU\/TotalCores}-cœurs*
+ ** étiquette rendue : *uc: 4-cœurs*
+* Étiquette de modèle suivant l'UUID SMBIOS de l'hôte en cours d'enregistrement :
+ ** étiquette originale : *sbios-UUID: ${Product\/UUID}*
+ ** étiquette rendue : *sbios-UUID: fd95324a-c26b-4e28-8727-1dcec293a0ec*
+====
+
+
+== Sanitization
+
+Une fois que la valeur du modèle d'étiquette a été rendue conformément aux <<_label_templates_variables,variables de modèle d'étiquette>> incluses, la valeur résultante est `sanitized` avant d'être assignée à l'étiquette résultante.
+
+*Le `sanitization` impose que la valeur de l'étiquette ne contienne que des lettres (majuscules ou non), des chiffres et les caractères tiret (`-`), point (`.`) et souligné (`_`)* :
+
+Tous les caractères non inclus sont remplacés par un tiret.
+
+Tout caractère au début et à la fin de la valeur de l'étiquette doit être une lettre ou un chiffre. S'il ne l'est pas, il est supprimé.
+
+Deux tirets consécutifs sont remplacés par un seul.
+
+[NOTE]
+.Exemple de rendu
+====
+
+* Modèle d'étiquette avec assainissement des caractères interdits :
+ ** étiquette originale : *assainie : ceci : a besoin--d'assainissement !*
+ ** étiquette rendue : *assainie : ceci-a-besoin-d'assainissement*
+====
+
+
+== Utilisation des modèles d'étiquette
+
+Les modèles d'étiquette permettent d'attacher et de mettre à jour automatiquement des étiquettes et des annotations à chaque xref:references/machineinventory-reference.adoc[InventaireMachine] lors de chaque enregistrement d'un hôte auprès de l'Opérateur Élémentaire.
+
+[IMPORTANT]
+====
+L'enregistrement se produit non seulement pendant la xref:rancher-os-management/architecture/services/architecture-machineonboarding.adoc[phase d'intégration] : chaque hôte se réenregistre toutes les 30 minutes (et chaque fois qu'il redémarre). Lors de la réinscription, les modèles d'étiquette dans le xref:references/machineregistration-reference.adoc[MachineRegistration] associé sont réévalués et ajoutés/mis à jour dans le xref:references/machineinventory-reference.adoc[InventaireMachine].
+====
+
+
+Il existe essentiellement trois cas principaux où les modèles d'étiquette peuvent être utiles :
+
+* pour attacher des données matérielles au catalogue Élémentaire.
+* pour ajouter des sélecteurs afin de choisir des hôtes pour le Provisionnement de Cluster.
+* pour définir un modèle personnalisé pour les Noms de Machines.
+
+=== Données matérielles pour le catalogue Élémentaire
+
+Les variables des modèles d'étiquette peuvent être utilisées pour attacher des données matérielles à chaque ressource xref:references/machineinventory-reference.adoc[InventaireMachine] (qui forme le catalogue Élémentaire).
+
+Dans ce cas, les annotations peuvent être un meilleur choix car leurs valeurs ne sont pas assainies.
+
+=== Sélecteurs pour le Provisionnement de Cluster
+
+Le `Label Templates` peut être utilisé pour générer des étiquettes utilisées pour identifier et sélectionner des machines avec des propriétés matérielles spéciales afin de former de nouveaux Clusters Kubernetes.
+
+Les étiquettes attachées à chaque xref:references/machineinventory-reference.adoc[InventaireMachine] sont éligibles au _selector_ pour la ressource xref:references/machineinventoryselectortemplate-reference.adoc[MachineInventorySelectorTemplate] (voir la section xref:rancher-os-management/architecture/services/architecture-clusterdeployment.adoc[Kubernetes Cluster provisioning] pour plus de détails).
+
+=== Noms de Machine Personnalisés
+
+Le nom d'hôte de la machine d'intégration peut être spécifié en utilisant le champ xref:references/machineregistration-reference.adoc[MachineRegistration] `spec.machineName`.
+
+La valeur `spec.machineName` subit les mêmes processus de `Label Templates' variables` et `sanitization` réservés au champ `spec.machineInventoryLabels`.
+
+[CAUTION]
+====
+Il y a une différence notable entre les champs xref:references/machineregistration-reference.adoc[MachineRegistration] `spec.machineName` et `spec.machineInventorylabels` : pendant le processus de <<_sanitization,assainissement>>, le trait de soulignement (`_`) est substitué comme les autres caractères interdits (c'est-à-dire qu'il est remplacé par un tiret : `-`). Ceci est requis car le trait de soulignement n'est pas autorisé dans les noms d'hôtes Linux.
+====
+
+
+Pour plus d'informations sur la façon de définir le nom d'hôte pour les hôtes Elemental, voir la section xref:installation/hostname.adoc[Procédure/Customize hostname].
+
+[NOTE]
+.Exemple de rendu
+====
+* Définir un modèle de nom d'hôte comme `SLE-Micro-[random string of 6 hexadecimal values]` :
+ ** Spécification de MachineRegistration : *machineName : SLE-Micro-${Random\/Hex\/6}*
+ ** Nom d'InventaireMachine : *SLE-Micro-32ad41*
+====
+
+
+== Exemple de Modèles d'Étiquettes
+
+.exemple d'enregistrement avec des variables de modèles d'étiquettes
+[,yaml]
+----
+include::example$quickstart/registration-hardware-dhcphostname.yaml[]
+----

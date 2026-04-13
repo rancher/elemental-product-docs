@@ -1,0 +1,283 @@
+= {elemental-product-name}をエアギャップ環境にインストールする
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-11-06
+:page-revdate: {revdate}
+
+== 前提
+
+Rancherのエアギャップインストールは、https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/other-installation-methods/air-gapped/air-gapped.html[公式Rancherドキュメント]に従って既に構成されている必要があります。
+特に、プライベートレジストリがエアギャップインフラストラクチャ内で利用可能である必要があります。
+
+== 概要
+
+エアギャップ環境で{elemental-product-name}を実行するためには、以下のアーティファクトが必要です：
+
+* {elemental-product-name}オペレーターのチャート
+* チャートで参照されるコンテナイメージ（_elemental-operator_および_seedimage-builder_イメージ）
+* コンテナ化OSイメージ
+
+さらに、利用可能なコンテナ化OSイメージを参照する_チャネルイメージ_を作成することが便利です。
+公式のチャネルイメージ（_elemental-channel_）は、公式のsuseレジストリ上のOSイメージの絶対URLを参照しているため、エアギャップシナリオでそのまま使用することはできません。
+
+== {elemental-product-name}エアギャップインストール
+
+必要なすべての手順は、インターネットアクセスのあるホストからhttps://raw.githubusercontent.com/rancher/elemental-operator/main/scripts/elemental-airgap.sh[`elemental-airgap.sh`スクリプト]を実行することで達成できます。
+
+{elemental-product-name}チャートはスクリプトに必要なパラメータであり、ダウンロードしたアーカイブ、URL、または`stable`、`staging`、`dev`のキーワードのいずれかとして提供することができ、スクリプトが正しいチャートバージョンを取得できるようにします。
+
+`elemental-airgap.sh`は{elemental-product-name}オペレーターのチャートを検査し、必要なすべてのコンテナイメージを特定し、それらを単一のdockerアーカイブにダウンロードして保存します。
+また、引数として渡されたプライベートレジストリを指すOSイメージのURLを持つ新しいOSチャネルイメージを構築します（これは必須の引数でもあります）。
+
+elementalスクリプトの最新バージョンは、公式のgithubリポジトリから簡単にダウンロードできます：
+
+[,shell]
+----
+wget https://raw.githubusercontent.com/rancher/elemental-operator/main/scripts/elemental-airgap.sh
+chmod 755 elemental-airgap.sh
+----
+
+では、最新の安定版{elemental-product-name}からすべてのアーティファクトをダウンロードし、カスタムチャネルを構築しましょう：
+
+[tabs]
+====
+Dockerアーカイブを作成する::
++
+======
+[,shell]
+----
+./elemental-airgap.sh stable -r <REGISTRY.YOURDOMAIN.COM:PORT>
+----
+
+完了すると（スクリプトには時間がかかる場合があります）、現在のディレクトリに以下のファイルが利用可能になります：
+
+* `elemental-operator-crds-chart-<*VERSION*>.tgz`
+* `elemental-operator-chart-<*VERSION*>.tgz`
+* `elemental-images.txt`
+* `elemental-images.tar.gz`
+======
+
+Haulerアーカイブを作成する::
++
+======
+[,shell]
+----
+./elemental-airgap.sh -ha stable -r <REGISTRY.YOURDOMAIN.COM:PORT>
+----
+
+完了すると（スクリプトには時間がかかる場合があります）、チャートとコンテナイメージの両方が`elemental-haul.tar.zst`という名前のHaulerアーカイブにパックされます。
+======
+====
+
+=== {elemental-product-name}のインストール 
+
+スクリプトによって作成されたファイルとアーカイブは、次の条件を満たすホストにコピーする必要があります：
+
+* プライベートレジストリにアクセスできること。
+* kubectlバイナリがインストールされ、エアギャップRancherクラスターにアクセスできるように設定されていること。
+* helmバイナリがインストールされていること。
+
+[tabs]
+========
+Dockerアーカイブからインストールする::
++
+======
+プライベートレジストリが認証を必要とする場合、dockerでログインする必要があります：
+
+[,shell]
+----
+docker login <REGISTRY.YOURDOMAIN.COM:PORT>
+----
+
+{elemental-product-name}のインストールを実行するには、2つのステップが必要です：
+
+* プライベートレジストリに必要なすべてのコンテナイメージを含むアーカイブをロードします：これは、Rancherリリースに付属して配布され、すでにRancherのエアギャップデプロイメントに使用された`rancher-load-images.sh`スクリプトを使用して行うことができます：
+
+[,shell]
+----
+rancher-load-images.sh \ 
+    --image-list elemental-images.txt \ 
+    --images elemental-images.tar.gz \ 
+    --registry <REGISTRY.YOURDOMAIN.COM:PORT>
+----
+
+* ダウンロードしたエレメンタルチャートをインストールし、ローカルレジストリと新しく作成されたチャネルを設定します：
+
+[,shell]
+----
+helm upgrade --create-namespace -n cattle-elemental-system \ 
+    --install elemental-operator-crds elemental-operator-crds-chart-<VERSION>.tgz 
+
+helm upgrade --create-namespace -n cattle-elemental-system \ 
+    --install elemental-operator elemental-operator-chart-<VERSION>.tgz \ 
+    --set registryUrl=<REGISTRY.YOURDOMAIN.COM:PORT>\ 
+    --set channel.repository=rancher/elemental-channel-<REGISTRY.YOURDOMAIN.COM>
+----
+======
+
+Haulerアーカイブからインストールする::
++
+======
+https://rancherfederal.github.io/hauler-docs/[Hauler]アーカイブからインストールするには（`-ha`の`elemental-airgap.sh`オプション）、インストールを実行するホストにHaulerのインストールも必要です。
+
+プライベートレジストリが認証を必要とする場合、Haulerでログインする必要があります：
+
+[,shell]
+----
+hauler login <REGISTRY.YOURDOMAIN.COM:PORT>-u $USERNAME -p $PASSWORD
+----
+
+{elemental-product-name}のインストールを実行するには、3つのステップが必要です：
+
+
+* エアギャップインフラストラクチャ内のHaulerインスタンスに'elemental-haul.tar.zst' Haulアーカイブをロードします：
+
+[,shell]
+----
+hauler store load 'elemental-haul.tar.zst' 
+----
+
+* エアギャップ環境内のローカルレジストリにHaulアーカイブをロードします：
+
+[,shell]
+----
+hauler store copy registry://<REGISTRY.YOURDOMAIN.COM:PORT>
+----
+
+[NOTE]
+.Haulerはレジストリとしても機能できます
+====
+エアギャップ(された)のローカルレジストリがHaulerインスタンスによって提供されている場合は、Haulアーカイブを直接そこにロードし（ステップ（1）に示されているように）、ステップ（2）をスキップします。
+====
+
+* Haulerストアからエレメンタルチャートを抽出し、インストールします：
+
+[,shell]
+----
+hauler store extract elemental-operator-crds-chart-<ELEMENTAL-VERSION>.tgz 
+hauler store extract elemental-operator-chart-<ELEMENTAL-VERSION>.tgz 
+
+helm upgrade --create-namespace -n cattle-elemental-system \ 
+    --install elemental-operator-crds elemental-operator-crds-chart-<ELEMENTAL-VERSION>.tgz 
+helm upgrade --create-namespace -n cattle-elemental-system \ 
+    --install elemental-operator elemental-operator-chart-<ELEMENTAL-VERSION>.tgz \ 
+    --set registryUrl=<REGISTRY.YOURDOMAIN.COM:PORT>\ -
+    --set channel.repository=rancher/elemental-channel-<REGISTRY.YOURDOMAIN.COM:PORT>
+----
+======
+========
+
+[NOTE]
+.エレメンタルエアギャップスクリプトは、必要なコマンドを出力します 
+====
+`elemental-airgap.sh`スクリプトは、上記に示された必要なコマンドを実際のチャートバージョンと提供されたレジストリURLを使用して出力し、正確なコマンドを簡単にコピー＆ペーストできるようにします。
+====
+
+== {elemental-product-name}エアギャップ(された)インストール（Rancher Marketplaceから） 
+
+Rancherのエアギャップインストールには、{elemental-product-name}オペレーターのチャートとオペレーターおよびシードイメージのコンテナイメージも含まれます。
+
+不足しているOSイメージを収集し、プライベートレジストリ用のOSチャネルイメージを構築するには、インターネットアクセスのあるホストからhttps://raw.githubusercontent.com/rancher/elemental-operator/main/scripts/elemental-airgap.sh[`elemental-airgap.sh`スクリプト]を実行し、`-co`オプションを使用します。
+
+例として、{elemental-product-name}の最新の安定版リリースから`elemental-channel`イメージをターゲットにしましょう。スクリプトは、{elemental-product-name}オペレーターのチャートをダウンロード（必要な場合）し、OSチャネルイメージのURLを抽出し、それをダウンロードし、参照されているすべてのOSイメージを検査し、それらをすべてダウンロードし、エアギャップシナリオのプライベートレジストリへのリンクを持つ新しいOSチャネルを作成します。
+
+[tabs]
+========
+Dockerアーカイブを作成する::
++
+======
+[,shell]
+----
+wget https://raw.githubusercontent.com/rancher/elemental-operator/main/scripts/elemental-airgap.sh 
+chmod 755 elemental-airgap.sh 
+./elemental-airgap.sh stable -co -r <REGISTRY.YOURDOMAIN.COM:PORT>
+----
+
+完了すると（スクリプトには時間がかかる場合があります）、現在のディレクトリに以下のファイルが利用可能になります：
+
+- `elemental-operator-crds-chart-<*VERSION*>.tgz` 
+- `elemental-operator-chart-<*VERSION*>.tgz` 
+- `elemental-images.txt` 
+- `elemental-images.tar.gz`
+======
+
+Haulerアーカイブを作成する::
++
+======
+[,shell]
+----
+./elemental-airgap.sh -ha -co stable -r <REGISTRY.YOURDOMAIN.COM:PORT>
+----
+
+完了すると（スクリプトには時間がかかる場合があります）、コンテナイメージは`elemental-haul.tar.zst`という名前のHaulerアーカイブにパックされます。
+======
+========
+
+=== {elemental-product-name}のインストール 
+
+生成されたアーカイブは、エアギャッププライベートレジストリにロードされるべきです。
+
+[tabs]
+========
+Dockerアーカイブからインストールする::
++
+======
+プライベートレジストリが認証を必要とする場合、dockerでログインする必要があります：
+[,shell]
+----
+docker login <REGISTRY.YOURDOMAIN.COM:PORT>
+----
+
+スクリプトは、Rancherの`rancher-load-images.sh`ツールを介してイメージをロードするために必要なコマンドを出力します。これはRancherのエアギャップインストールに使用されます。それは次のようなものであるべきです：
+
+[,shell]
+----
+NEXT STEPS: 
+
+1) Load the 'elemental-images.tar.gz' to the local registry (<REGISTRY.YOURDOMAIN.COM:PORT>) available in the airgapped infrastructure: 
+
+./rancher-load-images.sh \ 
+    --image-list elemental-images.txt \ 
+    --images elemental-images.tar.gz \ 
+    --registry <REGISTRY.YOURDOMAIN.COM:PORT>
+----
+
+OSおよびチャネルイメージがロードされたら、スクリプト出力のポイント（2）をスキップし（ダウンロードしたアーカイブから{elemental-product-name}チャートをインストールします）、代わりにRancher UIから{elemental-product-name}オペレーターのインストールを行うべきです。
+======
+
+Haulerアーカイブからインストールする::
++
+======
+プライベートレジストリが認証を必要とする場合、Haulerでログインする必要があります：
+[,shell]
+----
+hauler login <REGISTRY.YOURDOMAIN.COM:PORT>-u $USERNAME -p $PASSWORD 
+----
+
+スクリプトは、イメージをロードするために必要なコマンドを出力します。それは次のようなものであるべきです：
+
+[,shell]
+----
+NEXT STEPS: 
+
+* Load the 'elemental-haul.tar.zst' Haul archive in the Hauler instance in the airgapped infrastructure: 
+
+hauler store load 'elemental-haul.tar.zst' 
+
+* If the local registry in the air-gapped environment is not server by Hauler, load the Haul archive in the local registry: 
+
+hauler store copy registry://<REGISTRY.YOURDOMAIN.COM:PORT>
+----
+
+OSおよびチャネルイメージがロードされたら、スクリプト出力のポイント（3）をスキップし（ダウンロードしたアーカイブから{elemental-product-name}チャートをインストールします）、代わりにRancher UIから{elemental-product-name}オペレーターのインストールを行うべきです。
+======
+========
+
+要求された場合、プライベートレジストリにアップロードしたOSチャネルイメージのフルパスを入力してください：
+
+image:airgap-os-channel-image.png[]
+
+== {elemental-product-name} UI拡張機能 
+
+Rancher 2.7.xはエアギャップ環境でのUI拡張プラグインをサポートしていないため、{elemental-product-name} UIはRancher 2.7.xでは利用できません。
+
+{elemental-product-name} UIプラグインは、Rancher 2.8.0の利用可能なUI拡張機能に表示されます。

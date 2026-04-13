@@ -1,0 +1,58 @@
+= Comment inclure des fichiers cloud-config à partir de dispositifs amovibles
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+{elemental-product-name} les nœuds prennent en charge le chargement des fichiers xref:references/cloud-config-reference.adoc[cloud-config] à partir de dispositifs de bloc spécifiques.
+En particulier, il prend en charge le chargement des fichiers cloud-config à partir d'un ISO ayant `CIDATA` comme identifiant de volume ou de tout dispositif formaté vFAT étiqueté avec `CIDATA`. Si un dispositif correspondant à ce critère est trouvé au démarrage précoce, le {elemental-product-name} client le lira et recherchera un `user-data` fichier à sa racine.
+
+À titre d'exemple, un ISO incluant un fichier cloud-config peut être créé sur un hôte Linux avec la procédure ci-dessous.
+
+Créez un `user-data` fichier avec les données cloud-config à l'intérieur. Dans l'exemple ci-dessous, nous définissons simplement un proxy :
+
+.données-utilisateur
+[,yaml]
+----
+#cloud-config
+write_files:
+
+* path: /etc/sysconfig/proxy
+append: true
+content: |
+  PROXY_ENABLED="yes"
+  HTTP_PROXY=http://some.domain.org:8080
+  HTTPS_PROXY=https://some.domain.org:8080
+  NO_PROXY="localhost, 127.0.0.1"
+----
+
+Une fois que le fichier `user-data` existe, créez un ISO incluant uniquement ce fichier en utilisant l'utilitaire Linux `mkisofs` :
+
+[,bash]
+----
+mkisof -o cidata.iso -V CIDATA -J -r user-data
+----
+
+Le résultat est un ISO étiqueté avec `CIDATA` incluant le `user-data` fichier.
+
+Au démarrage, le `user-data` fichier sera copié tel quel vers `/oem/user-data` et, s'il contient des données cloud-config, une copie supplémentaire sera ajoutée sous le `/oem/user-data.yaml` nom. Le fichier `/oem/user-data.yaml` sera analysé lors de toute étape ultérieure de cloud-init.
+
+Puisque les données sont copiées vers `/oem`, elles seront persistantes, donc lors des redémarrages suivants, le dispositif amovible n'est plus requis. S'il est toujours présent lors des redémarrages suivants, il écrasera simplement toutes les données déjà existantes.
+
+== Inclure des données non cloud-config
+
+Si le `user-data` ne contient pas de données cloud-config, le {elemental-product-name} client le copiera tel quel vers `/oem/user-data`. Seuls les `*.yaml` fichiers sont analysés lors de l'exécution des étapes de cloud-init, donc dans ce cas, le fichier sera ignoré par les services cloud-init.
+
+Si le `user-data` contient un script, le {elemental-product-name} client essaiera, en plus, de l'exécuter. La façon dont le {elemental-product-name} client détermine si `user-data` est un script ou non est par la présence d'un _Shebang_ dans la première ligne. Par exemple, le fichier précédent `user-data` pourrait être réécrit comme suit :
+
+.données-utilisateur
+[,bash]
+----
+#!/bin/bash
+
+cat <<EOF >> /etc/sysconfig/proxy
+PROXY_ENABLED="yes"
+HTTP_PROXY=http://some.domain.org:8080
+HTTPS_PROXY=https://some.domain.org:8080
+NO_PROXY="localhost, 127.0.0.1"
+EOF
+----

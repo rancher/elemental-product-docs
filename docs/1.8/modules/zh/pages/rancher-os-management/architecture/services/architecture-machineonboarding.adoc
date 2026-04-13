@@ -1,0 +1,15 @@
+= 机器接入
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-11-06
+:page-revdate: {revdate}
+
+机器接入服务的目标是将新机器注册到{elemental-product-name}操作员目录中（xref:references/machineinventory-reference.adoc[机器库存]资源），并为主机提供操作系统，应用所需的配置。
+
+机器接入包括以下步骤：
+
+* 用户创建一个xref:references/machineregistration-reference.adoc[机器注册]资源：机器注册包含操作系统安装所需的配置。
+一旦机器注册被创建，{elemental-product-name}操作员会暴露一个HTTP _注册端点_：这是入驻主机注册到操作员所需的入口点。
+* 用户通过xref:references/seedimage-reference.adoc[种子镜像]资源请求一个自安装镜像：它只需要引用一个机器注册资源和一个与{elemental-product-name}工具包兼容的操作系统容器镜像。
+一旦种子镜像被创建，{elemental-product-name}操作员会触发自安装image: once completed, the URL is exposed in the `status.downloadURL` field of the xref:references/seedimage-reference.adoc[种子镜像]资源的构建过程。
+* 用户下载自安装镜像并使用它来启动一台未经配置的主机：该主机向_注册端点_（由{elemental-product-name}操作员提供）进行身份验证，获取存储在机器注册中的完整配置，并在本地存储设备上安装操作系统。一旦主机完成注册过程，{elemental-product-name}操作员会创建一个唯一的xref:references/machineinventory-reference.adoc[机器库存]资源来跟踪该主机。
+自安装镜像可以用于接入任意数量的主机。

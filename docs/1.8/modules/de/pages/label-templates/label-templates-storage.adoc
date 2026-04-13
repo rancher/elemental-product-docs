@@ -1,0 +1,122 @@
+= Speicher-Template-Variablen
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+Die in den Speicher-Template-Variablen gesammelten Informationen definieren die Attribute der im System verfügbaren Festplatten.
+
+Die Festplatten werden sowohl nach Nummer (0, 1, 2, ...) als auch nach Gerätename (_sda_, _vda_, _nvme0n1_, ...) verfolgt.
+
+Wenn `${Storage/Disks/2/Name}` beispielsweise gleich `sda` ist, kann das Festplattenmodell sowohl über die `${Storage/Disks/2/Model}` als auch über die `${Storage/Disks/sda/Model}` Variablen abgerufen werden.
+
+[NOTE]
+====
+Die verfolgten Festplatten umfassen auch optische Laufwerke und wechselbare Geräte (z. B. USB-Sticks).
+====
+
+|===
+| Variable | Beschreibung | Von
+
+| `${Storage/Disks/_<Number>_/DriveType}`
+| Festplattentyp
+| 1.7.0
+
+| `${Storage/Disks/_<Number>_/Model}`
+| Festplattenmodell
+| 1.7.0
+
+| `${Storage/Disks/_<Number>_/Name}`
+| Gerätename
+| 1.7.0
+
+| `${Storage/Disks/_<Number>_/Removable}`
+| ist es ein Wechseldatenträger?
+| 1.7.0
+
+| `${Storage/Disks/_<Number>_/Size}`
+| Größe (Bytes)
+| 1.7.0
+
+| `${Storage/Disks/_<Number>_/StorageController}`
+| Controller-Typ
+| 1.7.0
+
+| `${Storage/Disks/_<DeviceName>_/DriveType}`
+| Festplattentyp
+| 1.7.0
+
+| `${Storage/Disks/_<DeviceName>_/Model}`
+| Festplattenmodell
+| 1.7.0
+
+| `${Storage/Disks/_<DeviceName>_/Name}`
+| Gerätename
+| 1.7.0
+
+| `${Storage/Disks/_<DeviceName>_/Removable}`
+| ist es ein Wechseldatenträger?
+| 1.7.0
+
+| `${Storage/Disks/_<DeviceName>_/Size}`
+| Größe (Bytes)
+| 1.7.0
+
+| `${Storage/Disks/_<DeviceName>_/StorageController}`
+| Controller-Typ
+| 1.7.0
+
+| `${Storage/TotalDisks}`
+| Anzahl der im System vorhandenen Festplatten
+| 1.7.0
+|===
+
+== Festplattentypen
+
+|===
+| Typ | Beschreibung
+
+| HDD
+| Festplattenlaufwerk
+
+| FDD
+| Diskettenlaufwerk
+
+| ODD
+| Optisches Laufwerk
+
+| SSD
+| Solid State Drive
+
+| virtual
+| virtuelles Laufwerk, d. h. Loop-Geräte
+
+| Unbekannt
+| unbekannter Laufwerkstyp
+|===
+
+== Speicherkontroller-Typen von Festplatten
+
+|===
+| Typ | Beschreibung
+
+| IDE
+| Integrierte Laufwerkselektronik
+
+| SCSI
+| Small Computer System Interface
+
+| NVMe
+| Nichtflüchtiger Speicher-Express
+
+| MMC
+| Multimedia-Controller (verwendet für Speichergeräte von Mobiltelefonen)
+
+| virtio
+| Virtualisierter Speicherkontroller/-treiber
+
+| loop
+| Loop-Gerät
+
+| Unbekannt
+| unbekannter Kontroller-Typ
+|===

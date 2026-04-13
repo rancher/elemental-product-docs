@@ -1,0 +1,36 @@
+= カスタム証明書の追加方法
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2024-09-24
+:page-revdate: {revdate}
+
+前提条件:`.pem`形式の証明書
+
+目標:カスタム証明書をシステム全体で利用可能にする
+
+[NOTE]
+.これはシステムレベルのサービスで使用される証明書のためのものです。
+====
+Kubernetesのワークロードは、代わりにコンテナイメージ内に証明書を持ち込むべきです。
+====
+
+カスタム証明書をインストールするには、
+
+* `.pem`ファイルを`/etc/pki/trust/anchors/`にコピーする必要があります。
+* `update-ca-certificates`を実行します。
+
+それぞれの`cloud-config`スニペットは次のようになります:
+
+[,yaml]
+----
+write_files:
+  - path: /etc/pki/trust/anchors/my-custom-certificate.pem
+    permission: 0444
+    content: |-
+      -----BEGIN CERTIFICATE-----
+      ...
+      -----END CERTIFICATE-----
+runcmd:
+  - update-ca-certificates
+----
+
+(実際の証明書の内容は、説明の簡潔さを保つため省略されています)

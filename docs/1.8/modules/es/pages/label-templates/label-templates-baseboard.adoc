@@ -1,0 +1,34 @@
+= Variables de plantilla de BaseBoard
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+La información recopilada en las variables de BaseBoard define los atributos de la BaseBoard del sistema (por ejemplo, una placa base, planar, blade de servidor u otro módulo de sistema estándar).
+
+Subconjunto de datos de información del BaseBoard SMBIOS (o módulo) (tipo 2).
+
+Para más información sobre SMBIOS, consulta la https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.7.1.pdf[especificación de SMSBIOS].
+
+|===
+| Variable | Descripción | desde
+
+| `${BaseBoard/AssetTag}`
+| Etiqueta de activo de la placa base
+| 1.7.0
+
+| `${BaseBoard/Product}`
+| Nombre del producto de la placa base
+| 1.7.0
+
+| `${BaseBoard/SerialNumber}`
+| Número de serie de la placa base
+| 1.7.0
+
+| `${BaseBoard/Vendor}`
+| Proveedor de la placa base
+| 1.7.0
+
+| `${BaseBoard/Version}`
+| Revisión de la placa base
+| 1.7.0
+|===

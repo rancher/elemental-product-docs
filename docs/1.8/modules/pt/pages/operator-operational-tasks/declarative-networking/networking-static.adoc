@@ -1,0 +1,137 @@
+= Rede Estática com nm-configurator
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+[CAUTION]
+.aviso
+====
+A Rede Declarativa está em fase de *preview de tecnologia*, com suporte limitado. Portanto, não é recomendado para ambientes de produção.
+====
+
+A `nm-configurator` https://github.com/suse-edge/nm-configurator?tab=readme-ov-file#per-node-configurations[configuração por nó] pode ser usada para atribuir estaticamente endereços IP a máquinas individuais, com base nos endereços MAC das NICs.
+
+Esta solução não requer um provedor IPAM remoto, mas exige que o usuário mantenha o mapeamento entre endereços MAC conhecidos e endereços IP.
+
+Neste exemplo, vamos personalizar uma imagem Elemental e incluir uma xref:references/cloud-config-reference.adoc#_configuration_syntax[configuração yip] que aplicará a configuração de rede estática logo no início da inicialização.
+
+A configuração a seguir cobre 2 nós com uma configuração de rede muito básica.
+
+.99_static_network_config.yaml
+[,yaml]
+----
+include::example$network/yip-nmc-static-config.yaml[]
+----
+
+== Inclua a configuração de rede estática em uma imagem de SO personalizada
+
+Podemos estender uma imagem Elemental para incluir a configuração de rede estática em `/system/oem`. Qualquer SO alimentado por Elemental, onde o https://github.com/rancher/elemental-toolkit[Elemental Toolkit] está em execução, avaliará qualquer configuração neste diretório ao executar qualquer estágio.  Além disso, vamos personalizar a imagem para instalar o binário `nmc` necessário.
+
+[,shell]
+----
+# The version of Elemental to modify
+FROM registry.suse.com/suse/sl-micro/6.0/baremetal-os-container:latest
+
+# Install the static network config
+COPY 99_static_network_config.yaml /system/oem/99_static_network_config.yaml
+
+# Install nmc
+RUN curl -LO https://github.com/suse-edge/nm-configurator/releases/download/v0.3.1/nmc-linux-x86_64 && \
+    install -o root -g root -m 0755 nmc-linux-x86_64 /usr/sbin/nmc
+
+# IMPORTANT: /etc/os-release is used for versioning/upgrade.
+ARG IMAGE_REPO=norepo
+ARG IMAGE_TAG=latest
+RUN \
+    sed -i -e "s|^IMAGE_REPO=.*|IMAGE_REPO=\"${IMAGE_REPO}\"|g" /etc/os-release && \
+    sed -i -e "s|^IMAGE_TAG=.*|IMAGE_TAG=\"${IMAGE_TAG}\"|g" /etc/os-release && \
+    sed -i -e "s|^IMAGE=.*|IMAGE=\"${IMAGE_REPO}:${IMAGE_TAG}\"|g" /etc/os-release
+
+# IMPORTANT: it is good practice to recreate the initrd and re-apply `elemental-init`
+RUN elemental init --force elemental-rootfs,grub-config,dracut-config,cloud-config-essentials,elemental-setup
+----
+
+O contêiner do SO agora pode ser construído e enviado para seu registro:
+
+[,shell]
+----
+docker build --build-arg IMAGE_REPO=myrepo/static-network-os \
+             --build-arg IMAGE_TAG=v1.1.1 \
+             -t myrepo/static-network-os:v1.1.1 .
+docker push myrepo/static-network-os:v1.1.1
+----
+
+Observe que, como a configuração de rede estática está incluída na imagem, isso exige que você construa e mantenha diferentes imagens com diferentes configurações, provavelmente uma por pool de nós ou uma por cluster, por exemplo. Imagens de SO personalizadas precisam ser mantidas para criar a imagem ISO inicial inicializável (via um xref:references/seedimage-reference.adoc[SeedImage]), mas também ao xref:node-operational-tasks/upgrade.adoc[fazer upgrade] das máquinas. A configuração de rede estática desejada **deve** estar presente nas imagens de SO usadas com a xref:references/managedosimage-reference.adoc[Imagem de SO Gerenciada], caso contrário, a configuração estará ausente ao inicializar a partir do sistema atualizado.
+
+A imagem de SO personalizada também pode ser usada como está para construir uma imagem de disco bruto inicializável:
+
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: SeedImage
+metadata:
+  name: my-raw-image
+  namespace: fleet-default
+spec:
+  type: raw
+  baseImage: myrepo/static-network-os:v1.1.1
+  registrationRef:
+    apiVersion: elemental.cattle.io/v1beta1
+    kind: MachineRegistration
+    name: my-registration
+    namespace: fleet-default
+----
+
+== Crie uma ISO inicializável
+
+Você pode agora xref:operator-operational-tasks/custom-images.adoc#_create_a_custom_bootable_installation_iso[construir um contêiner ISO] a partir desta imagem de contêiner de SO. Para mais informações sobre como personalizar imagens Elemental, consulte a xref:operator-operational-tasks/custom-images.adoc[documentação].
+
+[,dockerfile]
+----
+FROM myrepo/static-network-os:v1.1.1 AS os
+FROM myrepo/static-network-os:v1.1.1 AS builder
+
+WORKDIR /iso
+COPY --from=os / rootfs
+
+# work around buildah issue: https://github.com/containers/buildah/issues/4242
+RUN rm -f rootfs/etc/resolv.conf
+
+RUN elemental build-iso \
+        dir:rootfs \
+        --bootloader-in-rootfs \
+        --squash-no-compression \
+        -o /output -n "elemental"
+
+FROM busybox
+COPY --from=builder /output /elemental-iso
+
+ENTRYPOINT ["busybox", "sh", "-c"]
+----
+
+[,shell]
+----
+docker build -t myrepo/static-network-iso:v1.1.1 .
+docker push myrepo/static-network-iso:v1.1.1
+----
+
+Uma vez que o contêiner ISO é publicado em seu registro, você pode referenciá-lo no xref:references/seedimage-reference.adoc[SeedImage] como qualquer outra imagem ISO distribuída Elemental.
+
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: SeedImage
+metadata:
+  name: my-iso
+  namespace: fleet-default
+spec:
+  type: iso
+  baseImage: myrepo/static-network-iso:v1.1.1
+  registrationRef:
+    apiVersion: elemental.cattle.io/v1beta1
+    kind: MachineRegistration
+    name: my-registration
+    namespace: fleet-default
+----
+
+Observe que a configuração de rede estática agora será avaliada quando a mídia de instalação inicializar, e então será instalada no sistema como parte da imagem base.

@@ -1,0 +1,71 @@
+= Variables de plantilla aleatorias
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+Las variables de plantilla aleatorias están integradas en el Operador Elemental.
+
+Permiten incluir valores aleatorios `Int`, `Hex` o `UUID` en xref:label-templates/label-templates.adoc[plantillas de etiquetas personalizadas].
+
+Los valores se calculan sobre la marcha durante el `label template variables` renderizado.
+
+[IMPORTANT]
+.Las plantillas de etiquetas aleatorias se renderizan solo una vez
+====
+
+Una plantilla de etiqueta que contiene una variable aleatoria se renderiza solo si el xref:references/machineinventory-reference.adoc[InventarioDeMáquinas] del host registrador aún no tiene un valor para esa etiqueta (falta una etiqueta con la misma clave o su valor está vacío).
+
+Por lo tanto, los tres casos en los que se renderiza una plantilla de etiqueta con una variable aleatoria son:
+
+. el host se está registrando por primera vez y el xref:references/machineinventory-reference.adoc[InventarioDeMáquinas] se crea de nuevo.
+. la plantilla de etiqueta se ha añadido al RegistroDeMáquinas después de que el host se (re)registró la última vez.
+. la etiqueta xref:references/machineinventory-reference.adoc[InventarioDeMáquinas] que coincide con la plantilla de etiqueta (misma clave de etiqueta) ha sido eliminada manualmente o su valor ha sido borrado.
+====
+
+
+|===
+| Variable | Descripción | desde
+
+| `${Random/UUID}`
+| UUID aleatorio (por ejemplo, fd95324a-c26b-4e28-8727-1dcec293a0ec)
+| 1.7.0
+
+| `${Random/Hex/[1-32]}`
+| cadena hexadecimal aleatoria de la longitud especificada (mínimo 1, máximo 32)
+| 1.7.0
+
+| `${Random/Int/[MAXINT]`
+| entero aleatorio (mínimo 0, máximo MAXINT-1)
+| 1.7.0
+|===
+
+[NOTE]
+.Ejemplos de renderizado
+====
+|===
+| valor de plantilla | ejemplo de valor renderizado
+
+| `${Random/UUID}`
+| fd95324a-c26b-4e28-8727-1dcec293a0ec
+
+| `${Random/Hex/12}`
+| acd231f222b8
+
+| `${Random/Int/10000}` 
+| 9432
+
+|===
+====
+
+
+Las variables de plantilla aleatorias pueden ser útiles para generar nombres de host personalizados que se asignarán al host registrador.
+
+Dado que el nombre de host debe ser único y se asigna a través del campo xref:references/machineregistration-reference.adoc[RegistroDeMáquinas] `spec.machineName`, se pueden utilizar variables aleatorias para garantizar la unicidad de un grupo de hosts que comparten el mismo prefijo y/o sufijo personalizados.
+
+Consulta la sección xref:installation/hostname.adoc[Cómo personalizar el nombre de host] para más información.
+
+.Ejemplo de registro: variables de plantilla aleatorias
+[,yaml]
+----
+include::example$quickstart/registration-random-hostname.yaml[]
+----

@@ -1,0 +1,74 @@
+= Variables de modèle d'UC
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+Les informations collectées dans les variables de modèle d'UC définissent les attributs des processeurs installés sur le système.
+
+Les données sont exposées par numéro de processeur (0, 1, 2, ...).
+
+Pour référencer le premier processeur, le numéro de processeur (_`<Number>`_) peut être omis (par exemple, la variable `${CPU/Processor/Model}` est la même que `${CPU/Processor/0/Model}`).
+
+|===
+| Variable | Description | from
+
+| `${CPU/Processor/Capabilities}`
+| Liste des capacités des processeurs séparées par des virgules
+| 1.7.0
+
+| `${CPU/Processor/ID}`
+| ID du processeur
+| 1.7.0
+
+| `${CPU/Processor/Model}`
+| Modèle de processeur
+| 1.7.0
+
+| `${CPU/Processor/NumCores}`
+| Nombre de coeurs
+| 1.7.0
+
+| `${CPU/Processor/NumThreads}`
+| Nombre de threads
+| 1.7.0
+
+| `${CPU/Processor/Vendor}`
+| Fournisseur de processeur
+| 1.7.0
+
+| `${CPU/Processor/_<Number>_/Capabilities}`
+| Liste des _numéros_ de processeurs séparés par des virgules
+| 1.7.0
+
+| `${CPU/Processor/_<Number>_/ID}`
+| ID du processeur _numéro_
+| 1.7.0
+
+| `${CPU/Processor/_<Number>_/Model}`
+| Modèle du processeur _numéro_
+| 1.7.0
+
+| `${CPU/Processor/_<Number>_/NumCores}`
+| Nombre de noyaux du processeur _numéro_
+| 1.7.0
+
+| `${CPU/Processor/_<Number>_/NumThreads}`
+| Nombre de threads du processeur _numéro_
+| 1.7.0
+
+| `${CPU/Processor/_<Number>_/Vendor}`
+| Fournisseur du processeur _numéro_
+| 1.7.0
+
+| `${CPU/TotalCores}`
+| Nombre total de noyaux dans le système
+| 1.7.0
+
+| `${CPU/TotalProcessors}`
+| Nombre de processeurs dans le système
+| 1.7.0
+
+| `${CPU/TotalThreads}`
+| Nombre total de threads dans le système
+| 1.7.0
+|===

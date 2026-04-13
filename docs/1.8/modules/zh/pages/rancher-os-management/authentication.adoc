@@ -1,0 +1,84 @@
+= 身份验证
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+身份验证发生在机器入驻期间，当机器向{elemental_operator_name}_注册_时。
+
+{elemental-product-name} 默认通过 _受信任的平台模块_ (TPM) 进行主机身份验证：机器通过 _证明_ 进行身份验证，即机器通过其 TPM 设备证明其身份。
+
+为了使 _证明_ 工作，每台入驻机器 *必须具备 TPM 2.0 设备*，否则将无法使用安全的 TPM 身份验证进行注册。
+
+== TPM 替代方案
+
+*唯一官方支持的注册方法基于 TPM 证明，并要求设备启用 TPM 2.0。*
+
+如果您想在不具备 TPM 2.0 芯片的情况下注册设备以绕过安全身份验证，有多种方法可以唯一 _识别_ 这些机器并允许注册：
+
+* 通过简单的软件实现模拟 TPM 设备
+* 通过其网络 MAC 地址进行自我识别
+* 通过其 SMBIOS UUID 进行自我识别
+
+身份验证/识别方法可以在机器注册资源的 xref:references/machineregistration-reference.adoc#_config_elemental_registration[config:elemental:registration:auth 字段] 中指定。
+
+[CAUTION]
+====
+在 {elemental-product-name} 中唯一安全且官方支持的 *身份验证* 方法是基于 TPM 证明的默认方法。
+TPM 替代方案可用于演示目的或本地部署，但不建议用于生产使用，因为入驻机器的身份未得到安全验证。
+====
+
+=== TPM 模拟
+
+TPM 模拟使用模拟 TPM 行为的软件进行身份验证，该软件嵌入在 {elemental_register_name} 中。
+模拟的 TPM 设备的密钥都是通过单个种子以确定性方式生成的：相同的种子产生相同的 TPM 密钥，因此在每个注册主机中应选择不同的种子。
+
+通过配置 `emulate-tpm` 和 `emulated-tpm-seed` 字段在 `MachineRegistration` 配置中启用 TPM 模拟（有关更多详细信息，请参见机器注册参考中的 xref:references/machineregistration-reference.adoc#_config_elemental_registration[config:elemental:registration 部分]）。
+
+.使用 TPM 模拟的示例机器注册
+[,yaml]
+----
+include::example$authentication/registration-emulate-tpm.yaml[]
+----
+
+TPM 模拟配置详见 xref:operator-operational-tasks/tpm.adoc#_add_tpm_emulation_to_bare_metal_machine[TPM 模拟配置部分]。
+
+=== MAC 地址识别
+
+使用 MAC 地址识别时，主机使用其网络接口卡 (NIC) 的 MAC 地址作为标识符注册到 {elemental_operator_name}。
+如果机器有多个网络接口，MAC 地址将按字典顺序排序，并选择第一个地址。
+
+要用 MAC 地址识别替换 TPM 身份验证，只需将 `mac` 的值设置到 `auth` 字段中，并在 xref:references/machineregistration-reference.adoc#_config_elemental_registration[config:elemental:registration 部分的 MachineRegistration 参考中进行配置。
+
+.示例 MachineRegistration 使用 MAC 地址作为机器标识符
+[,yaml]
+----
+include::example$authentication/registration-mac.yaml[]
+----
+
+[CAUTION]
+====
+MAC 地址被 {elemental_operator_name} 视为唯一。
+这对于物理设备是正确的，而如果使用来自不同超级管理程序和不同网络段的虚拟机，则由管理员确保注册的虚拟机具有唯一的 MAC 地址。
+====
+
+
+=== SMBIOS UUID 识别
+
+系统管理 BIOS（SMBIOS）规范定义了可以用来读取主机 BIOS 生成的管理信息的数据结构。
+
+当使用 `sys-uuid` 值作为 `auth` 字段在 xref:references/machineregistration-reference.adoc#_config_elemental_registration[config:elemental:registration 部分的 MachineRegistration] 中时，主机使用来自主机 SMBIOS 数据的 `UUID` 表中的 `System Information` 值注册到 {elemental_operator_name}。
+
+.示例 MachineRegistration，使用来自 SMBIOS 系统信息表的 UUID 作为机器标识符。
+[,yaml]
+----
+include::example$authentication/registration-sys-uuid.yaml[]
+----
+
+[CAUTION]
+====
+SMBIOS `System information/UUID` 值应由硬件供应商填写，作为主机的唯一 UUID。
+
+SMBIOS 数据并不总是可靠。这取决于制造商。您可能会遇到 UUID 缺失，或者同一 UUID 被应用于同一批次中的多个设备。
+
+由管理员确保机器具有唯一的 `System information/UUID` SMBIOS 值（`dmidecode` 工具可能会有所帮助），否则机器将不断覆盖相同的 `MachineInventory` 资源，{elemental-product-name} 预配将失败。
+====

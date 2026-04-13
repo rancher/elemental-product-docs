@@ -1,0 +1,137 @@
+= Statisches Netzwerk mit nm-configurator
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+[CAUTION]
+.warning
+====
+Die deklarative Netzwerktechnologie befindet sich im *Technologie-Vorschau*-Zustand und wird nur eingeschränkt unterstützt. Daher wird es nicht empfohlen, dies in Produktionsumgebungen zu verwenden.
+====
+
+Die `nm-configurator` https://github.com/suse-edge/nm-configurator?tab=readme-ov-file#per-node-configurations[Pro-Knoten-Konfiguration] kann verwendet werden, um IP-Adressen statisch einzelnen Maschinen zuzuweisen, basierend auf den MAC-Adressen der NIC.
+
+Diese Lösung erfordert keinen Remote-IPAM-Anbieter, verlangt jedoch vom Benutzer, die Zuordnung zwischen bekannten MAC-Adressen und IP-Adressen zu pflegen.
+
+In diesem Beispiel werden wir ein Elemental-Image anpassen und eine xref:references/cloud-config-reference.adoc#_configuration_syntax[YIP-Konfiguration] einfügen, die die statische Netzwerkkonfiguration früh beim Booten anwendet.
+
+Die folgende Konfiguration umfasst 2 Knoten mit einem sehr einfachen Netzwerk-Setup.
+
+.99_static_network_config.yaml
+[,yaml]
+----
+include::example$network/yip-nmc-static-config.yaml[]
+----
+
+== Fügen Sie die statische Netzwerkkonfiguration in ein benutzerdefiniertes Betriebssystem-Image ein
+
+Wir können ein Elemental-Image erweitern, um die statische Netzwerkkonfiguration in `/system/oem` einzuschließen. Jedes von Elemental betriebene Betriebssystem, auf dem das https://github.com/rancher/elemental-toolkit[Elemental Toolkit] läuft, wird jede Konfiguration in diesem Verzeichnis bei der Ausführung einer beliebigen Phase auswerten.  Zusätzlich werden wir das Image anpassen, um das erforderliche `nmc` Binärprogramm zu installieren.
+
+[,shell]
+----
+# The version of Elemental to modify
+FROM registry.suse.com/suse/sl-micro/6.0/baremetal-os-container:latest
+
+# Install the static network config
+COPY 99_static_network_config.yaml /system/oem/99_static_network_config.yaml
+
+# Install nmc
+RUN curl -LO https://github.com/suse-edge/nm-configurator/releases/download/v0.3.1/nmc-linux-x86_64 && \
+    install -o root -g root -m 0755 nmc-linux-x86_64 /usr/sbin/nmc
+
+# IMPORTANT: /etc/os-release is used for versioning/upgrade.
+ARG IMAGE_REPO=norepo
+ARG IMAGE_TAG=latest
+RUN \
+    sed -i -e "s|^IMAGE_REPO=.*|IMAGE_REPO=\"${IMAGE_REPO}\"|g" /etc/os-release && \
+    sed -i -e "s|^IMAGE_TAG=.*|IMAGE_TAG=\"${IMAGE_TAG}\"|g" /etc/os-release && \
+    sed -i -e "s|^IMAGE=.*|IMAGE=\"${IMAGE_REPO}:${IMAGE_TAG}\"|g" /etc/os-release
+
+# IMPORTANT: it is good practice to recreate the initrd and re-apply `elemental-init`
+RUN elemental init --force elemental-rootfs,grub-config,dracut-config,cloud-config-essentials,elemental-setup
+----
+
+Der Betriebssystem-Container kann jetzt erstellt und in Ihre Registry hochgeladen werden:
+
+[,shell]
+----
+docker build --build-arg IMAGE_REPO=myrepo/static-network-os \
+             --build-arg IMAGE_TAG=v1.1.1 \
+             -t myrepo/static-network-os:v1.1.1 .
+docker push myrepo/static-network-os:v1.1.1
+----
+
+Beachten Sie, dass, da die statische Netzwerkkonfiguration im Image enthalten ist, dies erfordert, dass Sie verschiedene Images mit unterschiedlichen Konfigurationen erstellen und pflegen, höchstwahrscheinlich eines pro Knotenpool oder eines pro Cluster. Benutzerdefinierte Betriebssystem-Images müssen gepflegt werden, um das ursprüngliche ISO-bootfähige Image zu erstellen (über ein xref:references/seedimage-reference.adoc[SeedImage]), aber auch beim xref:node-operational-tasks/upgrade.adoc[Upgrade] der Maschinen. Die gewünschte statische Netzwerkkonfiguration **muss** auf den Betriebssystem-Images vorhanden sein, die mit dem xref:references/managedosimage-reference.adoc[ManagedOSImage] verwendet werden, andernfalls wird die Konfiguration beim Booten vom aktualisierten System fehlen.
+
+Das benutzerdefinierte Betriebssystem-Image kann auch so verwendet werden, um ein bootfähiges Rohdisk-Image zu erstellen:
+
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: SeedImage
+metadata:
+  name: my-raw-image
+  namespace: fleet-default
+spec:
+  type: raw
+  baseImage: myrepo/static-network-os:v1.1.1
+  registrationRef:
+    apiVersion: elemental.cattle.io/v1beta1
+    kind: MachineRegistration
+    name: my-registration
+    namespace: fleet-default
+----
+
+== Erstellen Sie ein bootfähiges ISO-Image
+
+Sie können jetzt xref:operator-operational-tasks/custom-images.adoc#_create_a_custom_bootable_installation_iso[einen ISO-Container] aus diesem Betriebssystem-Container-Image erstellen. Für weitere Informationen zur Anpassung von Elemental-Images konsultieren Sie bitte die xref:operator-operational-tasks/custom-images.adoc[Dokumentation].
+
+[,dockerfile]
+----
+FROM myrepo/static-network-os:v1.1.1 AS os
+FROM myrepo/static-network-os:v1.1.1 AS builder
+
+WORKDIR /iso
+COPY --from=os / rootfs
+
+# work around buildah issue: https://github.com/containers/buildah/issues/4242
+RUN rm -f rootfs/etc/resolv.conf
+
+RUN elemental build-iso \
+        dir:rootfs \
+        --bootloader-in-rootfs \
+        --squash-no-compression \
+        -o /output -n "elemental"
+
+FROM busybox
+COPY --from=builder /output /elemental-iso
+
+ENTRYPOINT ["busybox", "sh", "-c"]
+----
+
+[,shell]
+----
+docker build -t myrepo/static-network-iso:v1.1.1 .
+docker push myrepo/static-network-iso:v1.1.1
+----
+
+Sobald der ISO-Container in Ihrer Registry veröffentlicht ist, können Sie ihn im xref:references/seedimage-reference.adoc[SeedImage] wie jedes andere von Elemental verteilte ISO-Image verwenden.
+
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: SeedImage
+metadata:
+  name: my-iso
+  namespace: fleet-default
+spec:
+  type: iso
+  baseImage: myrepo/static-network-iso:v1.1.1
+  registrationRef:
+    apiVersion: elemental.cattle.io/v1beta1
+    kind: MachineRegistration
+    name: my-registration
+    namespace: fleet-default
+----
+
+Beachten Sie, dass die statische Netzwerkkonfiguration nun ausgewertet wird, wenn das Installationsmedium bootet, und dann als Teil des Basis-Images auf dem System installiert wird.

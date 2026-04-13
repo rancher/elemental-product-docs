@@ -1,0 +1,49 @@
+= 信頼できるプラットフォームモジュール 2.0 (TPM)
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2024-09-24
+:page-revdate: {revdate}
+
+信頼できるプラットフォームモジュール (TPM、ISO/IEC 11889としても知られる) は、統合された暗号鍵を通じてハードウェアを保護するために設計された専用マイクロコントローラである安全な暗号プロセッサの国際標準です。この用語は、標準に準拠したチップを指すこともあります。
+
+== TPMモジュールを仮想マシンに追加する
+
+TPMを仮想マシンに追加する簡単な方法は、LibvirtとVirt-managerを使用することです。
+
+=== 仮想\'83\'7dシンの作成
+
+virt-managerを起動した後、新しい仮想マシンを作成します。
+
+image::tpm1.png[新しいVMを作成]
+
+=== ハードウェアモジュールリストを確認して編集する
+
+ハードウェア構成画面で、モジュールのリストを確認し、*_ハードウェアを追加_*ボタンをクリックします。
+
+image::tpm2.png[デバイスリスト]
+
+=== VMにTPMモジュールを追加する
+
+エミュレートされたデバイスのリストからTPMモジュールを選択し、VMに追加します。
+
+image::tpm3.png[TPMモジュールを追加]
+
+=== VMの構成を完了する
+
+最後の画面で、TPMモジュールが正しく追加されたか再度確認します。
+
+image::tpm4.png[TPMを確認]
+
+== ベアメタルマシンにTPMエミュレーションを追加する
+
+`#!yaml MachineRegistration`を適用する際に、yamlに次のキーを追加します `config:elemental:registration:emulate-tpm: true`
+
+[IMPORTANT]
+====
+TPMエミュレーションを使用して1台以上のマシンをデプロイする予定がある場合は、`config:elemental:registration:emulated-tpm-seed: -1`を設定して、TPMエミュレーションに使用されるシードがマシンごとにランダム化されるようにしてください。そうしないと、すべてのデプロイされたマシンに対して同じTPMハッシュが得られ、最後に登録されたものだけが有効になります。
+====
+
+.registration-tpm.yaml
+[,yaml]
+----
+include::example$quickstart/registration-tpm.yaml[]
+----

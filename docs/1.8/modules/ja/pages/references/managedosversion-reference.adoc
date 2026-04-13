@@ -1,0 +1,127 @@
+= ManagedOSVersion リファレンス
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+`ManagedOSVersion` リソースは、`SeedImage` または `ManagedOSImage` リソースと共に使用できる OS イメージのバージョンを定義する責任があります。
+
+`ManagedOSVersion` リソース仕様の下に構成できるいくつかのキーがあります。
+
+.managedosversion-example.yaml
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: ManagedOSVersion
+metadata:
+  labels:
+    elemental.cattle.io/channel: elemental-channel
+  name: v2.0.2
+  namespace: fleet-default
+spec:
+  metadata:
+    displayName: SLE Micro
+    upgradeImage: registry.suse.com/suse/sle-micro/5.5:2.0.2
+  type: container
+  version: v2.0.2
+----
+
+== `ManagedOSVersionSpec` リファレンス
+
+|===
+| キー | タイプ | ［デフォルト値］ | 説明
+
+| metadata
+| object
+| null
+| これは OS イメージに関するデータを定義します。[リファレンス](#metadata)を参照してください。
+
+| minVersion
+| 文字列
+| null
+| 未使用
+
+| type
+| 文字列
+| empty
+| OS イメージタイプを定義します。`container` または `iso` である可能性があります。
+
+| バージョン
+| 文字列
+| empty
+| OS イメージバージョン
+
+| upgradeContainer
+| object
+| null
+| 定義できるアップグレード用コンテナ。[リファレンス](#upgradecontainer)を参照してください。
+|===
+
+.詳しくは、ここをクリックしてください。
+[%collapsible]
+====
+.ISO イメージの例
+[,yaml]
+----
+metadata:
+  displayName: SLE Micro ISO x86_64
+  uri: registry.suse.com/suse/sl-micro/6.0/baremetal-iso-image:2.2.0
+type: iso
+version: v2.2.0
+----
+====
+
+.詳しくは、ここをクリックしてください。
+[%collapsible]
+====
+.コンテナイメージの例
+[,yaml]
+----
+metadata:
+  displayName: SLE Micro upgrade
+  upgradeImage: registry.suse.com/suse/sl-micro/6.0/baremetal-os-container:2.2.0
+type: container
+version: v2.2.0
+----
+====
+
+== metadata
+
+これは {elemental-product-name} で OS イメージを定義するために必要な情報を説明します。
+
+`type` が `container` に設定されている場合：
+
+|===
+| キー | タイプ | ［デフォルト値］ | 説明
+
+| displayName
+| 文字列
+| empty
+| Rancher UI で表示される OS イメージ名
+
+| upgradeImage
+| 文字列
+| empty
+| 完全修飾されたコンテナイメージ (OCI リファレンスまたは HTTP URI)
+|===
+
+`type` が `iso` に設定されている場合：
+
+|===
+| キー | タイプ | ［デフォルト値］ | 説明
+
+| displayName
+| 文字列
+| empty
+| Rancher UI で表示される OS イメージ名
+
+| uri
+| 文字列
+| empty
+| 完全修飾された ISO イメージ
+|===
+
+== `upgradeContainer`
+
+これにより、この ManagedOSVersion に基づいて、System Upgrade Controller プランのデフォルト `upgrade` フィールドを上書きすることができます（xref:rancher-os-management/upgrade-lifecycle.adoc#_components[アップグレードコンポーネント] を参照してください）。
+これらのキーは、System Upgrade Controller によって Kubernetes https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#Container[コンテナ] 仕様に翻訳されます。
+これは、OS アップグレードを実行する責任を持つコンテナです。

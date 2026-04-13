@@ -1,0 +1,137 @@
+= 使用 nm-configurator 配置的静态网络
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+[CAUTION]
+.warning
+====
+声明式网络处于 *技术预览* 状态，支持有限。因此，不建议在生产环境中使用。
+====
+
+可以使用 `nm-configurator` https://github.com/suse-edge/nm-configurator?tab=readme-ov-file#per-node-configurations[每节点配置]，根据 NIC 的 MAC 地址静态为各个机器分配 IP 地址。
+
+此解决方案不需要远程 IPAM 提供商，但需要用户维护已知 MAC 地址与 IP 地址之间的映射。
+
+在此示例中，我们将自定义一个 Elemental 镜像，并包含一个 xref:references/cloud-config-reference.adoc#_configuration_syntax[yip 配置]，该配置会在启动初期应用静态网络配置。
+
+以下配置涵盖了 2 个节点，具有非常基本的网络配置。
+
+.99_static_network_config.yaml
+[,yaml]
+----
+include::example$network/yip-nmc-static-config.yaml[]
+----
+
+== 在自定义操作系统镜像中包含静态网络配置
+
+我们可以扩展一个 Elemental 镜像，以在 `/system/oem` 中包含静态网络配置。任何基于 Elemental 的操作系统，只要运行 https://github.com/rancher/elemental-toolkit[Elemental 工具包]，在执行任一阶段时，都将评估该目录中的配置。 此外，我们将自定义镜像以安装所需的 `nmc` 二进制文件。
+
+[,shell]
+----
+# The version of Elemental to modify
+FROM registry.suse.com/suse/sl-micro/6.0/baremetal-os-container:latest
+
+# Install the static network config
+COPY 99_static_network_config.yaml /system/oem/99_static_network_config.yaml
+
+# Install nmc
+RUN curl -LO https://github.com/suse-edge/nm-configurator/releases/download/v0.3.1/nmc-linux-x86_64 && \
+    install -o root -g root -m 0755 nmc-linux-x86_64 /usr/sbin/nmc
+
+# IMPORTANT: /etc/os-release is used for versioning/upgrade.
+ARG IMAGE_REPO=norepo
+ARG IMAGE_TAG=latest
+RUN \
+    sed -i -e "s|^IMAGE_REPO=.*|IMAGE_REPO=\"${IMAGE_REPO}\"|g" /etc/os-release && \
+    sed -i -e "s|^IMAGE_TAG=.*|IMAGE_TAG=\"${IMAGE_TAG}\"|g" /etc/os-release && \
+    sed -i -e "s|^IMAGE=.*|IMAGE=\"${IMAGE_REPO}:${IMAGE_TAG}\"|g" /etc/os-release
+
+# IMPORTANT: it is good practice to recreate the initrd and re-apply `elemental-init`
+RUN elemental init --force elemental-rootfs,grub-config,dracut-config,cloud-config-essentials,elemental-setup
+----
+
+操作系统容器现在可以构建并推送到您的注册表：
+
+[,shell]
+----
+docker build --build-arg IMAGE_REPO=myrepo/static-network-os \
+             --build-arg IMAGE_TAG=v1.1.1 \
+             -t myrepo/static-network-os:v1.1.1 .
+docker push myrepo/static-network-os:v1.1.1
+----
+
+请注意，由于静态网络配置包含在镜像中，您需要为不同配置构建和维护不同的镜像，例如每个节点池或每个集群一个。自定义操作系统镜像需要维护，不仅用于创建初始 ISO 可引导镜像（通过 xref:references/seedimage-reference.adoc[SeedImage]），而且在 xref:node-operational-tasks/upgrade.adoc[升级]机器时也需要更新。所需的静态网络配置 **必须**存在于与 xref:references/managedosimage-reference.adoc[ManagedOSImage] 一起使用的操作系统镜像中，否则在从升级后的系统启动时，该配置将缺失。
+
+自定义操作系统镜像也可以直接用于构建可引导的原始磁盘镜像：
+
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: SeedImage
+metadata:
+  name: my-raw-image
+  namespace: fleet-default
+spec:
+  type: raw
+  baseImage: myrepo/static-network-os:v1.1.1
+  registrationRef:
+    apiVersion: elemental.cattle.io/v1beta1
+    kind: MachineRegistration
+    name: my-registration
+    namespace: fleet-default
+----
+
+== 创建可引导的 ISO
+
+您现在可以从此操作系统容器镜像 xref:operator-operational-tasks/custom-images.adoc#_create_a_custom_bootable_installation_iso[构建 ISO 容器]。有关如何自定义 Elemental 镜像的更多信息，请参阅 xref:operator-operational-tasks/custom-images.adoc[文档]。
+
+[,dockerfile]
+----
+FROM myrepo/static-network-os:v1.1.1 AS os
+FROM myrepo/static-network-os:v1.1.1 AS builder
+
+WORKDIR /iso
+COPY --from=os / rootfs
+
+# work around buildah issue: https://github.com/containers/buildah/issues/4242
+RUN rm -f rootfs/etc/resolv.conf
+
+RUN elemental build-iso \
+        dir:rootfs \
+        --bootloader-in-rootfs \
+        --squash-no-compression \
+        -o /output -n "elemental"
+
+FROM busybox
+COPY --from=builder /output /elemental-iso
+
+ENTRYPOINT ["busybox", "sh", "-c"]
+----
+
+[,shell]
+----
+docker build -t myrepo/static-network-iso:v1.1.1 .
+docker push myrepo/static-network-iso:v1.1.1
+----
+
+一旦 ISO 容器在您的注册表中发布，您可以像其他 Elemental 分发的 ISO 镜像一样在 xref:references/seedimage-reference.adoc[SeedImage] 中引用它。
+
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: SeedImage
+metadata:
+  name: my-iso
+  namespace: fleet-default
+spec:
+  type: iso
+  baseImage: myrepo/static-network-iso:v1.1.1
+  registrationRef:
+    apiVersion: elemental.cattle.io/v1beta1
+    kind: MachineRegistration
+    name: my-registration
+    namespace: fleet-default
+----
+
+请注意，静态网络配置将在安装媒体启动时进行评估，然后作为基础镜像的一部分安装到系统中。

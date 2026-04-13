@@ -1,0 +1,90 @@
+= MachineInventorySelectorTemplate reference
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+MachineInventorySelectorTemplateは、必要なxref:references/machineinventoryselector-reference.adoc[MachineInventorySelectors]を作成するための設計図として使用されるユーザー定義リソースです。
+
+これは、登録済みの機械とクラスターリソースをペアリングするためのマッチング基準を定義する責任を負うリソースです。
+
+関連するキーは、ラベルセレクター式を含む`selector`です。
+
+.MachineInventorySelectorTemplate
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: MachineInventorySelectorTemplate
+metadata:
+  name: my-machine-selector
+  namespace: fleet-default
+spec:
+  template:
+    spec:
+      selector:
+        ...
+----
+
+`template.spec.selector`には、`matchLabels`キーおよび`matchExpressions`キー、またはその両方を含めることができます。
+
+== `template.spec.selector.matchLabels`
+
+これは、`{key,value}`と`(map[string]string)`のペアからなるマップです。複数のラベルが提供される場合、すべてのラベルが一致する必要があります。
+
+.詳しくはここをクリックしてください。
+[%collapsible]
+====
+[yaml]
+----
+...
+spec:
+  template:
+    spec:
+      selector:
+        matchLabels:
+          element: fire
+          manufacturer: somevalue
+----
+====
+
+上記のセレクターで定義されたクラスターは、これらの2つのラベルを含む登録済みのノードのみをプロビジョニングしようとします。
+
+== `template.spec.selector.matchExpressions`
+
+これはラベルセレクターのリストであり、各ラベルセレクターは次のように定義できます：
+
+|===
+| キー | タイプ | 説明
+
+| key
+| 文字列
+| これは、セレクターが適用されるラベルキーです。
+
+| operator
+| 文字列
+| キーと値のセットとの関係を表します。有効な演算子は「In」、「NotIn」、「Exists」、「DoesNotExist」です。
+
+| 値
+| []string
+| 値は文字列値の配列です。演算子が「In」または「NotIn」の場合、値の配列は空であってはなりません。演算子が「Exists」または「DoesNotExist」の場合、値の配列は空でなければなりません。
+|===
+
+.詳しくはここをクリックしてください。
+[%collapsible]
+====
+[,yaml]
+----
+...
+spec:
+  template:
+    spec:
+      selector:
+        matchExpressions:
+        - key: element
+          operator: In
+          values: [ 'fire' ]
+        - key: manufacturer
+          operator: Exists
+----
+====
+
+上記のセレクターで定義されたクラスターは、`element=fire`ラベルを持ち、任意の値で定義された`manufacturer`ラベルを含む登録済みノードのみをプロビジョニングしようとします。

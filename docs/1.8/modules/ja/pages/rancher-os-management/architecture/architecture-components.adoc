@@ -1,0 +1,48 @@
+= アーキテクチャコンポーネント
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+xref:rancher-os-management/architecture/services/architecture-services.adoc[{elemental-product-name}サービス]を提供するために必要なコンポーネントは次のとおりです：
+
+* <<_elemental_command_line_tool,`elemental`>>コマンドラインツール
+* <<_elemental_operator_daemon,`elemental-operator`>>デーモン
+* <<_elemental_register_command_line_tool,`elemental-register`>>コマンドラインツール
+* <<_elemental_system_agent_daemon,`elemental-system-agent`>>デーモン
+* 1つ以上の<<_suse_rancher_prime_os_manager_os_container_image,{elemental-product-name} OSコンテナイメージ>>
+
+== `elemental`コマンドラインツール
+
+`elemental`ツールは、link:{elemental_toolkit_url}[{elemental_toolkit_name}]プロジェクトの一部です。
+ホスト上で実際のOSインストールおよびアップグレード操作を実行し、xref:rancher-os-management/architecture/custom-resources.adoc[{elemental-product-name} CRD]に追加されたxref:references/cloud-config-reference.adoc[cloud-config]指示を実行するために使用されます。
+
+`elemental`バイナリは、{elemental-product-name}と共に配布されるすべてのベースOSイメージに含まれています。
+
+== `elemental-operator`デーモン
+
+*elemental-operator*デーモンは、2つの主なタスクを実行します：
+
+. すべてのxref:rancher-os-management/architecture/custom-resources.adoc[{elemental-product-name} CRD]を管理するために{elemental-product-name} Kubernetesコントローラーを埋め込みます。
+. ホストがOSインストール構成を登録およびダウンロードできるようにするために、_registration endpoints_を公開します。
+
+`elemental-operator`デーモンは、`Deployment`としてRancherクラスターにデプロイされ、xref:references/operatorchart-reference.adoc[{elemental-product-name} Operator Helm Chart]を介して実行されます。
+
+== `elemental-register`コマンドラインツール
+
+*elemental-register*バイナリは、<<_elemental_operator_daemon,elemental-operator>>によって公開された_registration endpoints_に対してホストを登録するために使用されるクライアントです。ホストデータを収集して転送し、<<_elemental_operator_daemon,elemental-operator>>がSMBIOSおよびハードウェアラベルテンプレートを埋めることを可能にします。
+
+登録フェーズが成功裏に実行されると、*elemental-register*は*elemental-operator*からxref:references/machineregistration-reference.adoc[MachineRegistration]に保存された完全な設定を取得します。
+最後のステップとして、*elemental-register*クライアントは、取得した構成を渡してOSインストールを開始するために<<_elemental_command_line_tool,elemental>>バイナリを呼び出します。
+
+== `elemental-system-agent`デーモン
+
+`elemental-system-agent`は、https://github.com/rancher/system-agent[Rancher System Agentプロジェクト]から構築され、{elemental-product-name}がホストプロビジョニングを支援するために_プラン_をデプロイできるようにします。
+特に、`rancher-system-agent`のインストールおよび構成は、xref:rancher-os-management/architecture/services/architecture-clusterdeployment.adoc[Kubernetesクラスターのプロビジョニングサービス]に必要であり、`elemental-system-agent` _プラン_を通じて実行されます。
+
+== {elemental-product-name} OSコンテナイメージ
+
+link:{elemental_toolkit_url}[{elemental_toolkit_name}] OSイメージは、ターゲットホストのOSを構成するすべてのファイルを含むOCIコンテナイメージです。それは、すべてのバイナリとライブラリだけでなく、Linuxシステムに必要なカーネルとブートファイルも含んでいます。
+
+{elemental-product-name} OSイメージは、link:{elemental_toolkit_url}[{elemental_toolkit_name}] OSイメージであり、https://www.suse.com/products/micro/[SLE Micro]をベースに、特定の{elemental-product-name}設定およびバイナリ（<<_elemental_command_line_tool,elemental>>および<<_elemental_register_command_line_tool,elemental-register>>）を含む、独自の設計思想に基づいたOSイメージです。
+
+{elemental-product-name} OSイメージは、xref:references/managedosversion-reference.adoc[ManagedOSVersions]リソースで追跡されます。xref:references/managedosversion-reference.adoc[ManagedOSVersions]リソースは、xref:references/managedosversionchannel-reference.adoc[ManagedOSVersionChannel]リソースから動的に作成されます。デフォルトの`ManagedOSVersionChannel`リソースは、各{elemental-product-name}オペレーターのインストール時に展開されます。

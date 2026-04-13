@@ -1,0 +1,196 @@
+= Solução de Problemas de Rede Declarativa
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+Dado o seguinte registro de exemplo:
+
+.exemplo de Registro de Máquina usando Rede Declarativa
+[,yaml]
+----
+include::example$network/machineregistration.yaml[]
+----
+
+Podemos esperar que cada Máquina Elementar seja configurada usando o template definido `nm-configurator` `_all.yaml`.
+
+No primeiro boot, o `elemental-register` tentará contatar a API do Rancher para registrar um novo `MachineInventory`.
+
+Neste estágio, a rede da máquina não está configurada e irá usar DHCP por padrão. É um requisito que a máquina consiga contatar a API do Rancher nesta configuração, caso contrário, o registro não poderá ser realizado.
+
+Uma vez que o `MachineInventory` tenha sido registrado, o `elemental-operator` irá reivindicar um `IPAddress` para cada referência `IPPool` definida na configuração da rede.
+
+No `MachineInventory`, isso parecerá o seguinte:
+
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: MachineInventory
+metadata:
+  finalizers:
+  - machineinventory.elemental.cattle.io
+  name: m-e5331e3b-1e1b-4ce7-b080-235ed9a6d07c
+  namespace: fleet-default
+spec:
+  ipAddressClaims:
+    inventory-ip:
+      apiVersion: ipam.cluster.x-k8s.io/v1beta1
+      kind: IPAddressClaim
+      name: m-e5331e3b-1e1b-4ce7-b080-235ed9a6d07c-inventory-ip
+      namespace: fleet-default
+      uid: 78f2d07a-7b6d-4b58-b615-c4108b7964b9
+  ipAddressPools:
+    inventory-ip:
+      apiGroup: ipam.cluster.x-k8s.io
+      kind: InClusterIPPool
+      name: elemental-inventory-pool
+  network:
+    config:
+      dns-resolver:
+        config:
+          search: []
+          server:
+          - 192.168.122.1
+      interfaces:
+      - description: Main-NIC
+        ipv4:
+          address:
+          - ip: "{inventory-ip}"
+            prefix-length: 24
+          dhcp: false
+          enabled: true
+        ipv6:
+          enabled: false
+        name: eth0
+        state: up
+        type: ethernet
+      routes:
+        config:
+        - destination: 0.0.0.0/0
+          metric: 150
+          next-hop-address: 192.168.122.1
+          next-hop-interface: eth0
+          table-id: 254
+    ipAddresses:
+      inventory-ip: 192.168.122.150
+status:
+  conditions:
+  - lastTransitionTime: "2024-07-30T11:50:47Z"
+    message: NetworkConfig is ready
+    reason: ReconcilingNetworkConfig
+    status: "True"
+    type: NetworkConfigReady
+----
+
+Você notará que o `MachineInventory` carrega o mesmo `network.config` que o `MachineRegistration`, no entanto, em vez de referenciar Pools de Endereços IP, agora temos um mapa de Endereços IP reais:
+
+[,yaml]
+----
+    ipAddresses:
+      inventory-ip: 192.168.122.150
+----
+
+Este `inventory-ip` será então substituído na configuração do `nm-configurator` sempre que `{inventory-ip}` tiver sido definido.
+
+Observe também que o `MachineInventory` referencia e possui cada `IPAddressClaim` associado a ele. Cada reivindicação segue a previsível convenção de nomenclatura `$MachineInventoryName-$IPPoolRefKey`: `m-e5331e3b-1e1b-4ce7-b080-235ed9a6d07c-inventory-ip`.
+
+Essas reivindicações seguirão o ciclo de vida do objeto `MachineInventory` e serão deletadas em cascata, por exemplo, durante o fluxo de trabalho xref:node-operational-tasks/reset.adoc[reset workflow].
+
+Se o `IPAddresses` não puder ser reivindicado, a condição do `NetworkConfigReady` será `False`, impedindo que a máquina complete a instalação. Isso pode ocorrer se o `IPPool` não tiver mais `IPAddresses` disponíveis.
+
+== Do lado da máquina
+
+Durante a fase de instalação, o processo `elemental-register` em execução na máquina receberá o template de configuração `nm-configurator` `_all.yaml` e a lista de Endereços IP reivindicados com suas chaves. Essas informações serão processadas para uma configuração `nm-configurator` aplicável:
+
+[,yaml]
+----
+config:
+  dns-resolver:
+    config:
+      search: []
+      server:
+      - 192.168.122.1
+  interfaces:
+  - description: Main-NIC
+    ipv4:
+      address:
+      - ip: "192.168.122.150"
+        prefix-length: 24
+      dhcp: false
+      enabled: true
+    ipv6:
+      enabled: false
+    name: eth0
+    state: up
+    type: ethernet
+  routes:
+    config:
+    - destination: 0.0.0.0/0
+      metric: 150
+      next-hop-address: 192.168.122.1
+      next-hop-interface: eth0
+      table-id: 254
+----
+
+O `elemental-register` então invocará `nmc generate` e `nmc apply` para aplicar essa configuração no sistema em execução.
+
+A partir deste momento até a reinicialização, a máquina sempre usará a configuração aplicada.
+
+Observe também que fora da instalação e da reinicialização, `nm-configurator` não é mais utilizado, uma vez que o `elemental-register` persistirá os arquivos `/etc/NetworkManager/system-connection/*.nmconnection` gerados por `nmc` em vez da própria configuração `nmc`.
+
+Por exemplo, em qualquer sistema em execução, você encontrará um arquivo de configuração https://github.com/rancher/yip[yip] (`/oem/elemental-network.yaml`) para aplicar o `nmconnections` desejado, por exemplo:
+
+[,yaml]
+----
+name: Apply network config
+stages:
+    initramfs:
+        - files:
+            - path: /etc/NetworkManager/system-connections/Wired connection 1.nmconnection
+              permissions: 384
+              owner: 0
+              group: 0
+              content: |
+                [connection]
+                id=Wired connection 1
+                uuid=d26b4ae4-d525-3cbf-a557-33feb60343c0
+                type=ethernet
+                autoconnect-priority=-999
+                interface-name=eth0
+                timestamp=1722340245
+
+                [ethernet]
+
+                [ipv4]
+                address1=192.168.122.150/24
+                dhcp-timeout=2147483647
+                dns=192.168.122.1;
+                dns-options=
+                dns-priority=40
+                method=manual
+                route1=0.0.0.0/0,192.168.122.1,150
+                route1_options=table=254
+
+                [ipv6]
+                addr-gen-mode=eui64
+                dhcp-timeout=2147483647
+                method=disabled
+
+                [proxy]
+
+                [user]
+                nm-configurator.interface.description=Main-NIC
+              encoding: ""
+              ownerstring: ""
+----
+
+=== Durante a reinicialização
+
+Sempre que xref:node-operational-tasks/reset.adoc[reset] for acionado, o `elemental-register` em execução na máquina limpará qualquer arquivo `/etc/NetworkManager/system-connection/*.nmconnection` e reiniciará a pilha de rede. A máquina deve então reverter para DHCP e, após isso, confirmar ao `elemental-operator` do lado da gestão que a reinicialização foi bem-sucedida.
+
+Observe que isso se aplica apenas quando o valor `MachineInventory.spec.network.configurator` é diferente de `none`. Caso contrário, nenhuma ação será tomada para reiniciar a rede durante a fase de reinicialização da máquina.
+
+Após a reinicialização da rede, a máquina deve reiniciar em modo de recuperação, realizar a reinicialização real e receber uma nova configuração de rede a ser aplicada. Potencialmente, isso será o mesmo que antes (se o `MachineRegistration` não tiver sido atualizado), ou pode ter IPs diferentes, uma vez que os anteriores podem ter sido reivindicados por outras máquinas nesse meio tempo.
+
+Se a reversão para DHCP falhar ou a máquina de alguma forma não conseguir contatar a API do Rancher para confirmação, você notará que o `MachineInventory` não será excluído, apesar de ter um carimbo de data/hora de exclusão. Como a máquina agora tem problemas de rede, não será possível corrigi-la remotamente.
+
+Você tem a opção de acessar fisicamente a máquina ou, por qualquer meio, corrigir a configuração baseada em DHCP, ou alternativamente, pode remover o finalizador `machineinventory.elemental.cattle.io` do `MachineInventory`, para permitir a exclusão, se você pretende desativar a máquina.

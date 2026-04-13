@@ -1,0 +1,152 @@
+= Mise à niveau
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+Tous les composants dans {elemental-product-name} sont gérés à l'aide de Kubernetes. Voici la procédure pour utiliser les approches Kubernetes afin de mettre à niveau les composants.
+
+== {elemental-product-name} Mise à niveau du nœud
+
+Les nœuds {elemental-product-name} sont mis à niveau avec le {elemental_operator_name}. Reportez-vous à la xref:references/operatorchart-reference.adoc[{elemental_operator_name}] documentation pour des informations complètes.
+
+La mise à niveau peut être réalisée soit avec l’interface de ligne de commande, soit avec l’interface utilisateur :
+
+* <<_upgrade_via_command_line_interface,Interface de ligne de commande>>
+* <<_upgrade_via_user_interface,Interface utilisateur>>
+
+== Mise à niveau via l'interface de ligne de commande
+
+Il existe deux façons de sélectionner des nœuds pour la mise à niveau. Via une cible de cluster, qui correspondra à TOUS les nœuds dans un cluster qui correspond à notre sélecteur, ou via un sélecteur de nœuds, qui correspondra aux nœuds en fonction des étiquettes de nœud. Le sélecteur de nœuds nous permet d'être plus ciblés avec la mise à niveau, tandis que le sélecteur de cluster sélectionne simplement tous les nœuds dans un cluster correspondant.
+
+La mise à jour d'un `ManagedOSImage` existant déclenchera un nouveau cycle de mise à niveau, pour réconcilier l'image configurée (ou la version de l'image) avec tous les nœuds ciblés.
+
+[tabs]
+======
+Avec 'clusterTarget'::
++
+====
+Vous pouvez cibler des nœuds pour une mise à niveau via un `clusterTarget` en le définissant sur le nom du cluster que vous souhaitez mettre à niveau. Tous les nœuds dans un cluster qui correspond à ce nom seront sélectionnés et mis à niveau. 
+
+.upgrade-cluster-target.yaml
+[,yaml]
+----
+include::example$upgrade/upgrade-cluster-target.yaml[]
+----
+====
+
+Avec nodeSelector::
++
+====
+Vous pouvez cibler des nœuds pour une mise à niveau via un `nodeSelector` en le définissant sur l'étiquette et la valeur que vous souhaitez faire correspondre. Tous les nœuds contenant cette clé avec la valeur correspondante seront sélectionnés et mis à niveau. 
+
+.upgrade-node-selector.yaml
+[,yaml]
+----
+include::example$upgrade/upgrade-node-selector.yaml[]
+----
+====
+
+Avec le drapeau FORCE::
++
+====
+Lors de la mise à niveau vers une version antérieure ou la même version déjà en cours d'exécution, la procédure de mise à niveau sera ignorée. Il est possible de forcer les mises à niveau vers des versions antérieures en définissant la variable d'environnement FORCE comme indiqué ci-dessous. 
+
+.upgrade-force.yaml
+[,yaml]
+----
+include::example$upgrade/upgrade-force.yaml[]
+----
+====
+
+Avec le drapeau UPGRADE_RECOVERY::
++
+====
+Vous pouvez décider de mettre à niveau la partition de récupération lors de la mise à niveau du système, ou alternativement de mettre à niveau uniquement la partition de récupération.
+
+.upgrade-recovery.yaml
+[,yaml]
+----
+include::example$upgrade/upgrade-recovery.yaml[]
+----
+====
+======
+
+=== Sélectionner la source pour la mise à niveau
+
+[tabs]
+======
+Via 'osImage'::
++
+====
+Il suffit de spécifier une image OCI dans le champ `osImage` 
+
+.upgrade-cluster-target.yaml
+[,yaml]
+----
+include::example$upgrade/upgrade-cluster-target.yaml[]
+----
+====
+
+Onglet Via 'ManagedOSVersion'::
++
+====
+Dans ce cas, nous utilisons les ressources `ManagedOSVersion` auto-remplies pour définir le champ `managedOSVersionName` souhaité. Voir la section [Gestion des versions disponibles](#managing-available-versions) pour comprendre comment les `ManagedOSVersion` sont gérées. 
+
+.upgrade-managedos-version.yaml
+[,yaml]
+----
+include::example$upgrade/upgrade-managedos-version.yaml[]
+----
+====
+======
+
+[WARNING]
+====
+Si `osImage` et `ManagedOSVersion` sont définis dans le même `ManagedOSImage`, sachez que `osImage` a la priorité.
+====
+
+
+=== Gestion des versions disponibles
+
+Il est possible de créer xref:references/managedosversion-reference.adoc[ManagedOSVersions] directement, ou de s'abonner à xref:references/managedosversionchannel-reference.adoc[ManagedOSVersionChannels] pour synchroniser automatiquement `ManagedOSVersions` à partir d'eux.
+
+Pour plus de détails et une liste des canaux disponibles, ou même pour créer le vôtre, veuillez lire la xref:operator-operational-tasks/channels.adoc[documentation].
+
+== Mettre à niveau via l'interface utilisateur
+
+Pour mettre à niveau via l'interface utilisateur, vous devez aller dans le menu avancé {elemental-product-name}, puis cliquer sur `Update Groups`.
+
+Choisissez un nom, sélectionnez les clusters à cibler et choisissez entre les deux façons de mettre à niveau :
+
+image::upgrade-ui-menu.png[{elemental-product-name} Menu de mise à niveau]
+
+[tabs]
+======
+Via la version gérée de l'OS::
++
+====
+Dans ce cas, un `OS Version Channels` est utilisé pour remplir automatiquement les ressources `OS Versions`. 
+
+Le canal ci-dessous est fourni par nos soins, mais vous pouvez également utiliser votre propre canal. 
+
+Voir la section <<_managing_available_versions,Gestion des versions disponibles>> pour comprendre comment les `ManagedOSVersion` sont gérés. 
+
+image:upgrade-ui-version-channel.png[Créer un canal de version de l'OS] 
+
+Après un court temps de synchronisation, vous verrez votre `OS Versions` apparaître dans le menu `OS Versions`. 
+
+image:upgrade-ui-os-version.png[{elemental-product-name} menu de version de l'OS] 
+
+Enfin, vous pouvez sélectionner le `OS Versions` lorsque vous créez votre `Upgrade Group` selon la capture d'écran suivante : 
+
+image:upgrade-ui-upgrade-group-channel.png[Sélectionner la version de l'OS dans le groupe de mise à niveau]
+====
+
+Onglet Via Image du registre::
++
+====
+Il suffit de spécifier une image OCI dans le champ `Image path` pour mettre à niveau vers : image:upgrade-ui-image-registry.png[Mettre à niveau via le registre d'images]
+====
+======
+
+Cliquez sur le bouton `Create` pour commencer le processus de mise à niveau. Si vous avez plusieurs nœuds, la mise à niveau se fera séquentiellement, nœud par nœud.

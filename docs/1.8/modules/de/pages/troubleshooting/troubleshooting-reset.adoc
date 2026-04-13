@@ -1,0 +1,146 @@
+= Fehlerbehebung zurücksetzen
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-07-03
+:page-revdate: {revdate}
+
+Jede `MachineInventory` mit der `elemental.cattle.io/resettable: "true"` Annotation wird die Ausführung eines Rücksetzplans auslösen, sobald sie gelöscht wird. +
+Der `machineinventory.elemental.cattle.io` Finalizer wird erst entfernt, nachdem der Plan vom `elemental-system-agent`, der auf der Maschine läuft, erfolgreich ausgeführt wurde.
+
+Sie können untersuchen, warum ein `MachineInventory` noch nicht gelöscht wurde, indem Sie ihn überprüfen:
+
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: MachineInventory
+metadata:
+  # deletionTimestamp has been set. This object has been marked for deletion.
+  deletionTimestamp: "2023-08-04T08:41:25Z"
+  annotations:
+    # `resettable` annotation is enabled.
+    # This means the machine has to go through reset, before deletion of this object.
+    elemental.cattle.io/resettable: "true"
+  # `machineinventory.elemental.cattle.io` finalizer is set.
+  #  The `elemental-operator` is going to create a reset plan for the machine to execute.
+  #  After successful execution of the reset plan, the finalizer is removed and the object will be deleted.
+  finalizers:
+  - machineinventory.elemental.cattle.io
+status:
+  conditions:
+  # Most recent condition shows that the MachineInventory is waiting for a plan to be applied.
+  - lastTransitionTime: "2023-08-04T08:41:25Z"
+    message: waiting for plan to be applied
+    reason: WaitingForPlan
+    status: "False"
+    type: Ready
+  # The plan to be executed is referenced.
+  # Normally it has the same name of the MachineInventory and lives within the same namespace.
+  plan:
+    checksum: 5aba8b6b3161bc52d8953b2428e54ecda3b59e8e0043b49d761d1e79174eded6
+    secretRef:
+      name: m-bf1008a1-61d6-4355-b5f5-f7d1c527affe
+      namespace: fleet-default
+----
+
+Sie können auch den referenzierten Plan `Secret` überprüfen. +
+Beachten Sie, dass der `elemental-system-agent`, der auf der Maschine läuft, dieses Geheimnis überwacht und den Plan ausführen sollte. +
+Sie können auch den Fortschritt in den Maschinenprotokollen überwachen: `journalctl -u elemental-system-agent -f`.
+
+[,yaml]
+----
+apiVersion: v1
+kind: Secret
+# This is a `elemental.cattle.io/plan` secret plan.
+type: elemental.cattle.io/plan
+metadata:
+  annotations:
+    # This is a `reset` plan type.
+    elemental.cattle.io/plan.type: reset
+  labels:
+    elemental.cattle.io/managed: "true"
+  name: m-bf1008a1-61d6-4355-b5f5-f7d1c527affe
+  namespace: fleet-default
+  # It is owned by the `MachineInventory` waiting for deletion.
+  ownerReferences:
+  - apiVersion: elemental.cattle.io/v1beta1
+    controller: true
+    kind: MachineInventory
+    name: m-bf1008a1-61d6-4355-b5f5-f7d1c527affe
+    uid: 5aa3863c-63a5-4cb9-91fd-7a45191d4842
+data:
+  # The plan has not been applied yet.
+  applied-checksum: ""
+  # It also hasn't failed.
+  failed-checksum: ""
+  # The actual plan to be executed, base64 encoded.
+  plan: eyJmaWxlcyI6W3siY29udGVudCI6ImJtRnRaVG9nUld4bGJXVnVkR0ZzSUZKbGMyVjBDbk4wWVdkbGN6b0tJQ0FnSUc1bGRIZHZjbXN1WVdaMFpYSTZDaUFnSUNBZ0lDQWdMU0JqYjIxdFlXNWtjem9LSUNBZ0lDQWdJQ0FnSUNBZ0xTQmxiR1Z0Wlc1MFlXd3RjbVZuYVhOMFpYSWdMUzFrWldKMVp5QXRMWEpsYzJWMENpQWdJQ0FnSUNBZ0lDQnBaam9nSjFzZ0xXWWdMM0oxYmk5amIzTXZjbVZqYjNabGNubGZiVzlrWlNCZEp3b2dJQ0FnSUNBZ0lDQWdibUZ0WlRvZ1VuVnVjeUJsYkdWdFpXNTBZV3dnY21WelpYUUsiLCJwYXRoIjoiL29lbS9yZXNldC1jbG91ZC1jb25maWcueWFtbCIsInBlcm1pc3Npb25zIjoiMDYwMCJ9XSwiaW5zdHJ1Y3Rpb25zIjpbeyJuYW1lIjoiY29uZmlndXJlIG5leHQgYm9vdCB0byByZWNvdmVyeSBtb2RlIiwiYXJncyI6WyIvb2VtL2dydWJlbnYiLCJzZXQiLCJuZXh0X2VudHJ5PXJlY292ZXJ5Il0sImNvbW1hbmQiOiJncnViMi1lZGl0ZW52In0seyJuYW1lIjoic2NoZWR1bGUgcmVib290IiwiYXJncyI6WyItciIsIisxIl0sImNvbW1hbmQiOiJzaHV0ZG93biJ9XX0K
+----
+
+Der vom `elemental-operator` erstellte Plan sollte die folgenden Anweisungen enthalten:
+
+[,json]
+----
+{
+  "files": [
+    // A cloud-init config file is created on the default /oem directory.
+    // This config will be executed once in recovery mode.
+    {
+      "content": "bmFtZTogRWxlbWVudGFsIFJlc2V0CnN0YWdlczoKICAgIG5ldHdvcmsuYWZ0ZXI6CiAgICAgICAgLSBjb21tYW5kczoKICAgICAgICAgICAgLSBlbGVtZW50YWwtcmVnaXN0ZXIgLS1kZWJ1ZyAtLXJlc2V0CiAgICAgICAgICBpZjogJ1sgLWYgL3J1bi9jb3MvcmVjb3ZlcnlfbW9kZSBdJwogICAgICAgICAgbmFtZTogUnVucyBlbGVtZW50YWwgcmVzZXQK",
+      "path": "/oem/reset-cloud-config.yaml",
+      "permissions": "0600"
+    }
+  ],
+  "instructions": [
+    {
+      "name": "configure next boot to recovery mode",
+      "args": [
+        "/oem/grubenv",
+        "set",
+        "next_entry=recovery"
+      ],
+      "command": "grub2-editenv"
+    },
+    {
+      "name": "schedule reboot",
+      "args": [
+        "-r",
+        "+1"
+      ],
+      "command": "shutdown"
+    }
+  ]
+}
+----
+
+Wenn der `elemental-system-agent` den Plan erfolgreich ausgeführt hat, wird der `machineinventory.elemental.cattle.io` Finalizer auf dem `MachineInventory` entfernt und der `MachineInventory` wird gelöscht. +
+Beachten Sie, dass dies kein Hinweis darauf ist, dass die Maschine bereits vollständig zurückgesetzt wurde. +
+Dies ist eine Einschränkung der aktuellen Implementierung und wird sich schließlich verbessern, sodass es möglich sein wird, den Rücksetzstatus vollständig zu verfolgen.
+
+Wir erwarten jedoch, dass der Host neu startet und dabei in den Wiederherstellungsmodus bootet. +
+Sobald der `cos-setup-network` im Wiederherstellungsmodus ist, sollte er die cloud-init-Konfiguration ausführen, die auf `/oem/reset-cloud-config.yaml` geschrieben wurde. +
+Sie können den Status mit `journalctl -u cos-setup-network -f` überwachen.
+
+Die cloud-init-Anweisungen sollten wie folgt aussehen:
+
+[,yaml]
+----
+name: {elemental-product-name} Reset
+stages:
+    network.after:
+        - if: '[ -f /run/cos/recovery_mode ]'
+          name: Runs elemental reset
+          commands:
+            - systemctl start elemental-register-reset
+----
+
+Die `elemental-register` Kommandozeilenschnittstelle wird sich beim `elemental-operator` als neue Maschine registrieren. Dies wird zur Erstellung eines neuen `MachineInventory` Objekts führen. +
+Die entfernte `MachineRegistration` Konfiguration wird ebenfalls abgerufen, um die Rücksetzoptionen anzuwenden, zum Beispiel `reset-persistent`, `reset-oem` oder die Energieeinstellungen, entweder `reboot` oder `power-off`. +
+Nach dem Zurücksetzen sollte die Maschine, abhängig von den Einstellungen, entweder heruntergefahren oder neu gestartet werden und bereit sein, in einen neuen Cluster übernommen zu werden.
+
+== Zwanghaftes Löschen eines MachineInventory, das sich im Zurücksetzungsprozess befindet
+
+Wenn die Maschine die Zurücksetzungsanweisungen nicht ausführen kann und das zugehörige `MachineInventory` nicht gelöscht wird, gibt es zwei gleichwertige Möglichkeiten, wie Sie das Problem manuell beheben können.
+
+* Entfernen Sie die `elemental.cattle.io/resettable: "true"` Annotation von der `MachineInventory`.
+* Entfernen Sie den `machineinventory.elemental.cattle.io` Finalizer von der `MachineInventory`.
+
+Denken Sie daran, sich auch um die Maschine selbst zu kümmern, indem Sie sie vollständig neu bereitstellen oder im Wiederherstellungsmodus neu starten und den `elemental reset` Befehl direkt verwenden.

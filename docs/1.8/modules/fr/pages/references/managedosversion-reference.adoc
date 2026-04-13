@@ -1,0 +1,127 @@
+= Référence ManagedOSVersion
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+La ressource `ManagedOSVersion` est responsable de la définition d'une version d'image de système d'exploitation qui peut être utilisée avec les ressources `SeedImage` ou `ManagedOSImage`.
+
+Il existe plusieurs clés qui peuvent être configurées sous une spécification de ressource `ManagedOSVersion`.
+
+.managedosversion-example.yaml
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: ManagedOSVersion
+metadata:
+  labels:
+    elemental.cattle.io/channel: elemental-channel
+  name: v2.0.2
+  namespace: fleet-default
+spec:
+  metadata:
+    displayName: SLE Micro
+    upgradeImage: registry.suse.com/suse/sle-micro/5.5:2.0.2
+  type: container
+  version: v2.0.2
+----
+
+== `ManagedOSVersionSpec` Référence
+
+|===
+| Clé | Type | Default value (Valeur par défaut) | Description
+
+| metadata
+| objet
+| null
+| Cela définit certaines données concernant l'image du système d'exploitation. Voir [référence](#metadata)
+
+| minVersion
+| chaîne
+| null
+| Inutilisé
+
+| type
+| chaîne
+| vidage
+| Définit le type d'image du système d'exploitation, cela pourrait être `container` ou `iso`
+
+| version
+| chaîne
+| vidage
+| Version de l'image du système d'exploitation
+
+| upgradeContainer
+| objet
+| null
+| Un conteneur de mise à niveau qui peut être défini. Voir [référence](#upgradecontainer)
+|===
+
+.Cliquez ici pour plus de détails
+[%collapsible]
+====
+.Exemple d'image ISO
+[,yaml]
+----
+metadata:
+  displayName: SLE Micro ISO x86_64
+  uri: registry.suse.com/suse/sl-micro/6.0/baremetal-iso-image:2.2.0
+type: iso
+version: v2.2.0
+----
+====
+
+.Cliquez ici pour plus de détails
+[%collapsible]
+====
+.Exemple d'image de conteneur
+[,yaml]
+----
+metadata:
+  displayName: SLE Micro upgrade
+  upgradeImage: registry.suse.com/suse/sl-micro/6.0/baremetal-os-container:2.2.0
+type: container
+version: v2.2.0
+----
+====
+
+== metadata
+
+Cela décrit les informations nécessaires pour définir une image de système d'exploitation dans {elemental-product-name}.
+
+Si `type` est défini sur `container` :
+
+|===
+| Clé | Type | Default value (Valeur par défaut) | Description
+
+| displayName
+| chaîne
+| vidage
+| Nom de l'image du système d'exploitation tel qu'il apparaît dans l'interface utilisateur de Rancher
+
+| upgradeImage
+| chaîne
+| vidage
+| Image de conteneur entièrement qualifiée (référence OCI ou URI HTTP)
+|===
+
+Si `type` est défini sur `iso` :
+
+|===
+| Clé | Type | Default value (Valeur par défaut) | Description
+
+| displayName
+| chaîne
+| vidage
+| Nom de l'image du système d'exploitation tel qu'il apparaît dans l'interface utilisateur de Rancher
+
+| uri
+| chaîne
+| vidage
+| Image ISO entièrement qualifiée
+|===
+
+== `upgradeContainer`
+
+Cela permet de remplacer le champ par défaut `upgrade` des plans du System Upgrade Controller (voir xref:rancher-os-management/upgrade-lifecycle.adoc#_components[upgrade components]) en fonction de cette ManagedOSVersion.
+Ces clés sont traduites par le System Upgrade Controller en une spécification Kubernetes de https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#Container[conteneur].
+Ceci est le conteneur responsable de l'exécution d'une mise à niveau du système d'exploitation.

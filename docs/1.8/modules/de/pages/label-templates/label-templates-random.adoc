@@ -1,0 +1,71 @@
+= Zufällige Vorlagenvariablen
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+Zufällige Vorlagenvariablen sind im Elemental Operator integriert.
+
+Sie ermöglichen es, zufällige `Int`, `Hex` oder `UUID` Werte in benutzerdefinierte xref:label-templates/label-templates.adoc[Vorlagen-Labels] einzufügen.
+
+Die Werte werden während des `label template variables` Renderings dynamisch berechnet.
+
+[IMPORTANT]
+.Zufällige Vorlagen-Labels werden nur einmal gerendert.
+====
+
+Ein Vorlagen-Label, das eine zufällige Variable enthält, wird nur gerendert, wenn das xref:references/machineinventory-reference.adoc[MachineInventory] des registrierenden Hosts noch keinen Wert für dieses Label hat (ein Label mit dem gleichen Schlüssel fehlt oder sein Wert ist leer).
+
+Die drei Fälle, in denen ein Vorlagen-Label mit einer zufälligen Variable gerendert wird, sind:
+
+. Der Host wird zum ersten Mal registriert und das xref:references/machineinventory-reference.adoc[MachineInventory] wird neu erstellt.
+. Das Vorlagen-Label wurde nach der letzten (Re-)Registrierung des Hosts zur MachineRegistration hinzugefügt.
+. Das xref:references/machineinventory-reference.adoc[MachineInventory] Label, das dem Vorlagen-Label entspricht (gleicher Label-Schlüssel), wurde manuell entfernt oder sein Wert wurde gelöscht.
+====
+
+
+|===
+| Variable | Beschreibung | Von
+
+| `${Random/UUID}`
+| zufällige UUID (z. B. fd95324a-c26b-4e28-8727-1dcec293a0ec)
+| 1.7.0
+
+| `${Random/Hex/[1-32]}`
+| zufälliger hexadezimaler String der angegebenen Länge (min 1, max 32)
+| 1.7.0
+
+| `${Random/Int/[MAXINT]`
+| zufällige Ganzzahl (min 0, max MAXINT-1)
+| 1.7.0
+|===
+
+[NOTE]
+.Rendering-Beispiele
+====
+|===
+| Vorlagenwert | Beispiel für gerenderten Wert
+
+| `${Random/UUID}`
+| fd95324a-c26b-4e28-8727-1dcec293a0ec
+
+| `${Random/Hex/12}`
+| acd231f222b8
+
+| `${Random/Int/10000}` 
+| 9432
+
+|===
+====
+
+
+Zufällige Vorlagenvariablen können nützlich sein, um benutzerdefinierte Hostnamen zu generieren, die dem registrierenden Host zugewiesen werden.
+
+Da der Hostname eindeutig sein muss und über das xref:references/machineregistration-reference.adoc[MachineRegistration] `spec.machineName` Feld zugewiesen wird, können Zufallsvariablen verwendet werden, um die Eindeutigkeit einer Gruppe von Hosts sicherzustellen, die dasselbe benutzerdefinierte Präfix und/oder Suffix teilen.
+
+Weitere Informationen finden Sie im Abschnitt xref:installation/hostname.adoc[HowTo/Customize hostname].
+
+.Registrierungsbeispiel Zufällige Vorlagenvariablen
+[,yaml]
+----
+include::example$quickstart/registration-random-hostname.yaml[]
+----

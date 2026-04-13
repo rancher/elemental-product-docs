@@ -1,0 +1,79 @@
+= Comment ajouter des disques supplémentaires au groupe de volumes LVM lors de l'installation
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+Cet exemple couvre la configuration d'un hôte avec plusieurs disques, dont certains sont utilisés dans le cadre d'une configuration LVM.
+
+Par exemple, nous avons un hôte avec trois disques (`/dev/sda`, `/dev/sdb` et `/dev/sdc`). 
+
+Le premier disque est utilisé pour une installation Elemental classique et les deux autres sont utilisés dans le cadre d'un groupe LVM où des volumes logiques arbitraires sont créés, formatés et montés au démarrage via un fichier `fstab` étendu.
+
+Pour cet exemple, des étapes de cloud-config sont nécessaires à deux étapes différentes. Tout d'abord, quelques xref:references/cloud-config-reference.adoc#_elemental_client_cloud_config_hooks[crochets d'installation] sont nécessaires pour préparer et gérer les volumes LVM pendant l'installation. Deuxièmement, un cloud-config est requis au démarrage pour s'assurer que les volumes LVM créés sont inclus dans `/etc/fstab` et donc montés.
+
+Des crochets d'installation peuvent être inclus dans la section `SeedImage.spec.cloud-config` avec quelque chose comme :
+
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: SeedImage
+metadata:
+  name: custom-seed
+  namespace: fleet-default
+spec:
+  ...
+  cloud-config:
+    name: "Create LVM logic volumes over some physical disks"
+    stages:
+      post-install:
+      - name: "Create physical volume, volume group and logical volumes"
+        if: '[ -e "/dev/sdb" ] && [ -e "/dev/sdc" ]'
+        commands:
+        - | 
+          # Create the physical volume, volume group and logical volumes
+          pvcreate /dev/sdb /dev/sdc
+          vgcreate elementalLVM /dev/sdb /dev/sdc
+          lvcreate -L 8G -n elementalVol1 elementalLVM
+          lvcreate -l 100%FREE -n elementalVol2 elementalLVM
+          # Trigger udev detection
+          if [ ! -e "/dev/elementalLVM/elementalVol1" ] || [ ! -e "/dev/elementalLVM/elementalVol2" ]; then
+            sleep 10
+            udevadm settle
+          fi
+          # Ensure devices are already available
+          [ -e "/dev/elementalLVM/elementalVol1" ] || exit 1
+          [ -e "/dev/elementalLVM/elementalVol2" ] || exit 1
+          # Format logical volumes with a known label for later use in fstab
+          mkfs.xfs -L eVol1 /dev/elementalLVM/elementalVol1
+          mkfs.xfs -L eVol2 /dev/elementalLVM/elementalVol2
+----
+
+Les dispositifs LVM sont créés et formatés comme souhaité. C'est un bon exemple d'un crochet d'installation, car cette configuration n'est nécessaire qu'une seule fois, au moment de l'installation. En alternative, la même action pourrait être effectuée au premier démarrage, cependant, cela nécessiterait une logique plus sophistiquée pour s'assurer qu'elle n'est appliquée qu'une seule fois au premier démarrage. Enfin, les données de cloud-config au moment du démarrage contiennent les paramètres de point de montage pour déclencher les montages. Le fichier Elemental OS `fstab` est éphémère et il est créé dynamiquement au moment du démarrage. C'est pourquoi il n'existe pas pendant l'installation et ne peut pas être utilisé dans un crochet d'installation.
+
+Consid rez l'exemple suivant pour personnaliser le fichier `/etc/fstab` en utilisant la section `cloud-config` d'une ressource MachineRegistration :
+
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: MachineRegistration
+metadata:
+  name: my-nodes
+  namespace: fleet-default
+spec:
+  ...
+  config:
+    ...
+    cloud-config:
+      stages:
+        initramfs:
+        - name: "Extend fstab to mount LVM logical volumes at boot"
+          commands:
+          - |
+            echo "LABEL=eVol1 /run/elemental/eVol1  xfs defaults  0 0" >> /etc/fstab
+            echo "LABEL=eVol2 /run/elemental/eVol2  xfs defaults  0 0" >> /etc/fstab
+----
+
+[NOTE]
+====
+Le `initramfs` xref:references/cloud-config-reference.adoc[étape] est la dernière étape avant de passer à l'arborescence racine réelle. À ce stade, le fichier `/etc/fstab` existe déjà et peut être adapté avant de changer de racine. Une fois en cours d'exécution dans l'arborescence racine finale, SystemD s'occupera du reste de l'initialisation et l'appliquera.
+====

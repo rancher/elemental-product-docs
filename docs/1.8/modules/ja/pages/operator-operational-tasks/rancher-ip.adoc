@@ -1,0 +1,44 @@
+= K3sとRKE2の内部および外部IPアドレスを設定します。
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+K3sとRKE2は、`--node-ip`および`--node-external-ip`パラメータを介してノードの内部および外部IPアドレスを指定することを許可します。
+
+Rancherプロビジョニングは、各ノードのネットワークインタフェースからIPアドレスを収集することで、これらのパラメータを埋めることを可能にします。
+
+いずれにせよ、_カスタム_ Rancherクラスターと_エレメンタル_ RancherクラスターのためのIPオプションを収集する方法は異なります。
+
+== RancherクラスターのプロビジョニングにおけるK3sとRKE2の内部および外部IPアドレスの設定
+
+Rancherプロビジョニングは、各プロビジョニングされたノードの内部および外部IPアドレスにバインドされるべきネットワークインタフェースをRancherエージェントセクションで指定することを許可します。
+
+これは、IPアドレスを抽出するためのネットワークインタフェース名を`CATTLE_INTERNAL_ADDRESS`および`CATTLE_ADDRESS`エージェント環境変数に追加することによって実行されます（https://ranchermanager.docs.rancher.com/reference-guides/cluster-configuration/rancher-server-configuration/use-existing-nodes/rancher-agent-options#ip-address-options[Rancherドキュメントを参照]）。
+
+[NOTE]
+====
+`CATTLE_INTERNAL_ADDRESS`および`CATTLE_ADDRESS`エージェント環境変数には、希望するIPアドレスを直接入力することができます。いずれにせよ、内部および外部IPアドレスは_ノードごと_であるため、これは単一ノードクラスターにしか機能しません。
+====
+
+
+[CAUTION]
+====
+エレメンタルクラスターの作成中にエージェント環境変数を追加することは可能ですが、`CATTLE_ADDRESS`および`CATTLE_INTERNAL_ADDRESS`のものは無視され、プロビジョニングされたノードの内部および外部IPアドレスの設定には反映されません。
+====
+
+
+== エレメンタルクラスターにおけるK3sとRKE2の内部および外部IPアドレスを設定します。
+
+エレメンタルは、ターゲットノードを追跡するためにxref:references/machineinventory-reference.adoc[マシンインベントリ]リソースに`elemental.cattle.io/InternalIP`および`elemental.cattle.io/ExternalIP`ラベルを付けることで、クラスターのノードの内部および外部IPアドレスを設定することを許可します。
+
+これらのラベルは、xref:references/machineinventory-reference.adoc[マシンインベントリ]リソースに付けられると、関連するノードの内部および外部IPアドレスを埋めるために使用されます。
+
+ラベルは、各ノードのIPアドレスを収集できるように、xref:references/machineregistration-reference.adoc[マシン登録] `machineInventoryLabels`フィールドに追加でき、xref:label-templates/label-templates-network.adoc[ネットワークラベルテンプレート]のIPアドレス変数を値として使用します。
+
+例:xref:references/machineregistration-reference.adoc[マシン登録]では、ノードがeth0インターフェースから内部IPアドレスを設定し、eth1から外部IPアドレスを設定します。
+
+.registration.yaml
+[,yaml]
+----
+include::example$labeltemplates/registration.yaml[]
+----

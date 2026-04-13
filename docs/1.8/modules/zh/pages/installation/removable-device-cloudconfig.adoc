@@ -1,0 +1,58 @@
+= 如何从可移动设备加载 cloud-config 文件
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+{elemental-product-name} 节点支持从特定块设备加载 xref:references/cloud-config-reference.adoc[cloud-config] 文件。
+特别支持从具有 `CIDATA` 作为卷 ID 的 .iso 映像或任何标记为 `CIDATA` 的 vFAT 格式设备加载 cloud-config 文件。如果在早期启动时找到匹配此条件的设备，{elemental-product-name} 客户端将读取它并在其根目录中查找 `user-data` 文件。
+
+例如，可以在 Linux 主机上使用以下过程创建一个包含 cloud-config 文件的 ISO。
+
+创建一个包含 cloud-config 数据的 `user-data` 文件。在下面的示例中，我们只设置一个代理：
+
+.user-data
+[,yaml]
+----
+#cloud-config
+write_files:
+
+* path: /etc/sysconfig/proxy
+append: true
+content: |
+  PROXY_ENABLED="yes"
+  HTTP_PROXY=http://some.domain.org:8080
+  HTTPS_PROXY=https://some.domain.org:8080
+  NO_PROXY="localhost, 127.0.0.1"
+----
+
+一旦 `user-data` 文件存在，使用 `mkisofs` Linux 工具创建一个仅包含此文件的 ISO：
+
+[,bash]
+----
+mkisof -o cidata.iso -V CIDATA -J -r user-data
+----
+
+结果是一个标记为 `CIDATA` 的 ISO，包含 `user-data` 文件。
+
+在启动时，`user-data` 文件将原样复制到 `/oem/user-data`，如果它包含 cloud-config 数据，将额外添加一份作为 `/oem/user-data.yaml`。文件 `/oem/user-data.yaml` 将在任何后续的 cloud-init 阶段中解析。
+
+由于数据被复制到 `/oem`，它将是持久的，因此在后续重启时不再需要可移动设备。如果在后续重启时仍然存在，它将覆盖任何已存在的数据。
+
+== 包含非 cloud-config 数据
+
+如果 `user-data` 不包含 cloud-config 数据，{elemental-product-name} 客户端将原样复制它到 `/oem/user-data`。仅在执行 cloud-init 阶段时解析 `*.yaml` 文件，因此在这种情况下，cloud-init 服务将忽略该文件。
+
+如果 `user-data` 包含脚本，{elemental-product-name} 客户端还将尝试执行它。{elemental-product-name} 客户端判断 `user-data` 是否为脚本的方式是通过第一行中是否存在 _Shebang_。例如，之前的 `user-data` 文件可以重写为：
+
+.user-data
+[,bash]
+----
+#!/bin/bash
+
+cat <<EOF >> /etc/sysconfig/proxy
+PROXY_ENABLED="yes"
+HTTP_PROXY=http://some.domain.org:8080
+HTTPS_PROXY=https://some.domain.org:8080
+NO_PROXY="localhost, 127.0.0.1"
+EOF
+----

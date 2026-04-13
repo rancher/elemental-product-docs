@@ -1,0 +1,42 @@
+= Variáveis de template da GPU
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+As informações coletadas nas variáveis de template da GPU definem os atributos das GPUs instaladas no sistema.
+
+Os dados são expostos pelo número da GPU (0, 1, 2, ...)
+
+Para referenciar a primeira GPU, o número da GPU (_`<Number>`_) pode ser omitido (por exemplo, a variável `${GPU/GraphicsCards/Driver}` é a mesma que `${GPU/GraphicsCards/0/Driver}`).
+
+|===
+| Variável | Descrição | from
+
+| `${GPU/GraphicsCards/Driver}`
+| Driver da GPU
+| 1.7.0
+
+| `${GPU/GraphicsCards/ProductName}`
+| Modelo da GPU
+| 1.7.0
+
+| `${GPU/GraphicsCards/VendorName}`
+| Fornecedor da GPU
+| 1.7.0
+
+| `${GPU/GraphicsCards/_<Number>_/Driver}`
+| Driver da GPU _número_
+| 1.7.0
+
+| `${GPU/GraphicsCards/_<Number>_/ProductName}`
+| Modelo da GPU _número_
+| 1.7.0
+
+| `${GPU/GraphicsCards/_<Number>_/VendorName}`
+| Fornecedor da GPU _número_
+| 1.7.0
+
+| `${GPU/TotalCards}`
+| Número de GPUs no sistema
+| 1.7.0
+|===

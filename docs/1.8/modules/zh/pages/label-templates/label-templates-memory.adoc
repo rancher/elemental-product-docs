@@ -1,0 +1,26 @@
+= 内存模板变量
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+在内存模板变量中收集的信息定义了系统上可用的（易失性）内存的属性。
+
+|===
+| 变量 | 说明 | from
+
+| `${Memory/Modules}`
+| 内存模块
+| 1.7.0
+
+| `${Memory/SupportedPageSizes}`
+| 允许的内存页面大小
+| 1.7.0
+
+| `${Memory/TotalPhysicalBytes}`
+| 总内存
+| 1.7.0
+
+| `${Memory/TotalUsableBytes}`
+| 可用总内存
+| 1.7.0
+|===

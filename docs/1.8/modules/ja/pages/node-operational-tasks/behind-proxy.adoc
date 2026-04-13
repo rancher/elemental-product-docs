@@ -1,0 +1,98 @@
+= プロキシの背後
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-11-06
+:page-revdate: {revdate}
+
+:tabs-sync-option:
+
+多くの企業環境では、オンプレミスで実行されているサーバーやVMは直接インターネットにアクセスできません。代わりに、外部サービスへの接続はセキュリティ上の理由からHTTP(S)プロキシを通じて行われます。このチュートリアルでは、そのような環境での{elemental-product-name}デプロイメントの設定方法を示します。
+
+[IMPORTANT]
+====
+このガイドでは、プロキシの背後にあるRancherのインストールについては説明しません。これは異なるユースケースであり、詳細なドキュメントはhttps://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/other-installation-methods/http-proxy/http-proxy.html[HTTPプロキシの背後にあるSUSE Rancher Primeのインストール]ページで見つけることができます。
+====
+
+
+[NOTE]
+====
+このドキュメントでは、SUSEファミリーのシステム（SLE Microなど）を使用していると仮定しているため、プロキシ設定は`/etc/sysconfig/proxy`に記述する必要があります。
+====
+
+
+プロキシ設定は以下の場所に構成する必要があります：
+
+* マシン登録エンドポイント
+* SeedImageリソース
+* {elemental-product-name}クラスター設定
+
+`elemental-system-agent`はRancher Managerに到達するためにプロキシ設定が必要です。
+それを実現するためには、マシン登録エンドポイントのcloud-initセクションを記入する必要があります。
+
+それはxref:quickstarts/quickstart-ui.adoc#_add_a_machine_registration_endpoint[UI]またはxref:quickstarts/quickstart-cli.adoc#_prepare_your_kubernetes_resources[CLI]のいずれかで行うことができます。
+
+[tabs]
+======
+CLI::
++
+====
+[,yaml]
+----
+include::example$proxy/registration-proxy.yaml[]
+----
+====
+
+UI::
++
+====
+image:proxy-settings-machine-registration-ui.png[マシン登録にプロキシ設定を追加]
+====
+======
+
+== {elemental-product-name}-登録
+
+xref:rancher-os-management/architecture/architecture-components.adoc#_elemental_register_command_line_tool[{elemental-product-name}-登録]は新しいホストとRancher Managerの間の最初の通信エンドポイントであり、ここがプロキシ設定を設定する最初の場所です。
+
+[CAUTION]
+====
+執筆時点では、CLIを使用してISOのプロキシ設定を構成することのみが可能です。プロキシ設定はUIには実装されていません。
+====
+
+このプロセスは、{elemental-product-name} ISOを初めてブートする際に発生し、プロキシ設定を構成するにはISOに`cloud-init`定義を含める必要があります。
+それを行うには、xref:references/seedimage-reference.adoc[SeedImage]定義を作成する必要があります。
+
+[,yaml]
+----
+include::example$proxy/seedimage-proxy.yaml[]
+----
+
+YAMLを`kubectl`に適用し、その後、SeedImage定義を表示してダウンロード用のURLを取得してください。
+
+[,bash]
+----
+kubectl apply -f <my_seedimage_yaml_file>
+kubectl get seedimage <seed_image_name> -n <namespace> -o yaml
+----
+
+ISOを起動すると、新しいシステムがxref:references/machineinventory-reference.adoc[Machine inventory]に表示されるはずです。
+
+== {elemental-product-name}クラスターを作成
+
+このステップでは、UIまたはCLIのいずれかを使用できます。
+
+[tabs]
+======
+CLI::
++
+====
+[,yaml]
+----
+include::example$proxy/cluster-proxy.yaml[]
+----
+====
+
+UI::
++
+====
+image:proxy-settings-cluster-ui.png[プロキシ設定を {elemental-product-name} クラスター向けに追加]
+====
+======

@@ -1,0 +1,42 @@
+= Variables du modèle de produit
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+L'information de ces variables se réfère aux attributs du système global.
+
+Sous-ensemble des données d'information du système SMBIOS (type 1).
+
+Pour plus d'informations sur SMBIOS, voir le https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.7.1.pdf[SMSBIOS specification].
+
+|===
+| Variable | Description | from
+
+| `${Product/Family}`
+| Famille du système
+| 1.7.0
+
+| `${Product/Name}`
+| Nom du produit
+| 1.7.0
+
+| `${Product/SKU}`
+| Numéro SKU du système
+| 1.7.0
+
+| `${Product/SerialNumber}`
+| Numéro de série du système
+| 1.7.0
+
+| `${Product/UUID}`
+| UUID du système
+| 1.7.0
+
+| `${Product/Vendor}`
+| Fournisseur du système
+| 1.7.0
+
+| `${Product/Version}`
+| Version du système
+| 1.7.0
+|===

@@ -1,0 +1,152 @@
+= Actualización
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+Todos los componentes en {elemental-product-name} se gestionan utilizando Kubernetes. A continuación se muestran las instrucciones sobre cómo utilizar los enfoques de Kubernetes para actualizar los componentes.
+
+== {elemental-product-name} Actualización de la versión del nodo
+
+{elemental-product-name} Los nodos se actualizan con el {elemental_operator_name}. Consulta la documentación xref:references/operatorchart-reference.adoc[{elemental_operator_name}] para obtener información completa.
+
+La actualización se puede realizar tanto con CLI como con UI:
+
+* <<_upgrade_via_command_line_interface,Interfaz de Línea de Comandos>>
+* <<_upgrade_via_user_interface,Interfaz de usuario>>
+
+== Actualizar a través de la interfaz de línea de comandos
+
+Hay dos formas de seleccionar los nodos a actualizar. A través de un objetivo de clúster, que coincidirá con TODOS los nodos en un clúster que coincida con nuestro selector o a través del selector de nodos, que coincidirá con los nodos según las etiquetas de nodo. El selector de nodos nos permite ser más específicos en la actualización, mientras que el selector de clúster simplemente selecciona todos los nodos en un clúster coincidente.
+
+Actualizar un `ManagedOSImage` existente desencadenará un nuevo ciclo de actualización, para reconciliar la imagen configurada (o versión de imagen) con todos los nodos objetivo.
+
+[tabs]
+======
+Con 'clusterTarget'::
++
+====
+Puedes seleccionar los nodos para la actualización mediante un `clusterTarget` configurándolo con el nombre del clúster que deseas actualizar. Todos los nodos en un clúster que coincida con ese nombre serán seleccionados y actualizados. 
+
+.upgrade-cluster-target.yaml
+[,yaml]
+----
+include::example$upgrade/upgrade-cluster-target.yaml[]
+----
+====
+
+Con nodeSelector::
++
+====
+Puedes seleccionar los nodos para la actualización mediante un `nodeSelector` configurándolo con la etiqueta y el valor que deseas que coincidan. Cualquier nodo que contenga esa clave con el valor coincidirá y será actualizado. 
+
+.upgrade-node-selector.yaml
+[,yaml]
+----
+include::example$upgrade/upgrade-node-selector.yaml[]
+----
+====
+
+Con la bandera FORCE::
++
+====
+Al actualizar a una versión anterior o a la misma versión que ya se está ejecutando, se omitirá el procedimiento de actualización. Es posible forzar actualizaciones a versiones anteriores configurando la variable de entorno FORCE como se muestra a continuación. 
+
+.upgrade-force.yaml
+[,yaml]
+----
+include::example$upgrade/upgrade-force.yaml[]
+----
+====
+
+Con la bandera UPGRADE_RECOVERY::
++
+====
+Puedes decidir actualizar la partición de recuperación al actualizar el sistema, o alternativamente, actualizar solo la partición de recuperación.
+
+.upgrade-recovery.yaml
+[,yaml]
+----
+include::example$upgrade/upgrade-recovery.yaml[]
+----
+====
+======
+
+=== Seleccionando la fuente para la actualización
+
+[tabs]
+======
+A través de 'osImage'::
++
+====
+Solo especifica una imagen OCI en el campo `osImage` 
+
+.upgrade-cluster-target.yaml
+[,yaml]
+----
+include::example$upgrade/upgrade-cluster-target.yaml[]
+----
+====
+
+Pestaña a través de 'ManagedOSVersion'::
++
+====
+En este caso, utilizamos los recursos `ManagedOSVersion` autocompletados para establecer el campo `managedOSVersionName` deseado. Consulta la sección [Gestionando versiones disponibles](#managing-available-versions) para entender cómo se gestionan los `ManagedOSVersion`. 
+
+.upgrade-managedos-version.yaml
+[,yaml]
+----
+include::example$upgrade/upgrade-managedos-version.yaml[]
+----
+====
+======
+
+[WARNING]
+====
+Si tanto `osImage` como `ManagedOSVersion` están definidos en el mismo `ManagedOSImage`, ten en cuenta que `osImage` tiene prioridad.
+====
+
+
+=== Gestionando versiones disponibles
+
+Es posible crear xref:references/managedosversion-reference.adoc[ManagedOSVersions] directamente, o suscribirse a xref:references/managedosversionchannel-reference.adoc[ManagedOSVersionChannels] para sincronizar automáticamente `ManagedOSVersions` desde ellos.
+
+Para más detalles y una lista de canales disponibles, o incluso para crear el tuyo propio, por favor lee la xref:operator-operational-tasks/channels.adoc[documentación].
+
+== Actualizar a través de la interfaz de usuario
+
+Para actualizar a través de la UI, debes acceder al {elemental-product-name} menú avanzado y luego hacer clic en `Update Groups`.
+
+Elige un nombre, selecciona los clústeres a los que dirigirte y elige entre las dos formas de actualización:
+
+image::upgrade-ui-menu.png[{elemental-product-name} Menú de actualización]
+
+[tabs]
+======
+A través de la Versión del SO Gestionado::
++
+====
+En este caso, se utiliza un `OS Version Channels` para autocompletar los recursos `OS Versions`. 
+
+El canal que se muestra a continuación es proporcionado por nosotros, pero también puedes utilizar tu propio canal. 
+
+Consulta la sección <<_managing_available_versions,Gestionando versiones disponibles>> para entender cómo se gestionan los `ManagedOSVersion`. 
+
+image:upgrade-ui-version-channel.png[Crear canal de versión del sistema operativo] 
+
+Después de un breve tiempo de sincronización, verás que tu `OS Versions` aparece en el menú `OS Versions`. 
+
+image:upgrade-ui-os-version.png[{elemental-product-name} Menú de versión del sistema operativo] 
+
+Finalmente, puedes seleccionar el `OS Versions` cuando crees tu `Upgrade Group` según la siguiente captura de pantalla: 
+
+image:upgrade-ui-upgrade-group-channel.png[Seleccionar versión del sistema operativo en el grupo de actualización]
+====
+
+Pestaña a través de la imagen del registro::
++
+====
+Solo especifica una imagen OCI en el campo `Image path` para actualizar a: image:upgrade-ui-image-registry.png[Actualizar a través del registro de imágenes]
+====
+======
+
+Haz clic en el botón `Create` para iniciar el proceso de actualización; si tienes múltiples nodos, la actualización se realizará de forma secuencial, nodo por nodo.

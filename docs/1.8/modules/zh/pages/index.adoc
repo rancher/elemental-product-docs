@@ -1,0 +1,46 @@
+= Rancher 的操作系统管理
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2026-01-16
+:page-revdate: {revdate}
+
+{elemental-product-name} 是一套软件栈，支持通过 Kubernetes 实现集中式、完全云原生的操作系统管理。
+
+xref:release-notes.adoc[**最新版本：v1.8.0**]
+
+{elemental-product-name} 堆栈由一小部分软件包组成，基于 SLE Micro：
+
+* *elemental-toolkit* - 包含一组操作系统工具，以通过容器实现操作系统管理。包括 dracut 模块、引导加载程序配置、cloud-init 风格的配置服务等。
+* *elemental-operator* - 连接到 Rancher Manager，处理 MachineRegistration 和 MachineInventory CRD。
+* *elemental-register* - 通过 machineRegistrations 注册机器，并通过 elemental-cli 安装它们。
+* *elemental-cli* - 安装任何基于 elemental-toolkit 的衍生版本。基本上是基于我们的 A/B 安装和升级系统的安装程序。
+* *rancher-system-agent* - 在已安装的系统上运行，并从 Rancher Manager 获取指令（"计划"），以决定在系统上安装和运行什么。
+
+集群节点操作系统通过 {elemental_cli_name} 的容器镜像构建和维护，可以使用 {elemental_ui_url}[{elemental_ui_name}] 在新主机上安装 https://www.rancher.com/products/rancher[Rancher Manager] 或 {elemental_cli_url}[{elemental_cli_name}]。
+
+{elemental_operator_url}[{elemental_operator_name}] 和 {ranchersystemagent_url}[{ranchersystemagent_name}] 使 Rancher Manager 能够全面控制 {elemental-product-name} 集群，从节点上的操作系统的安装和管理到以集中方式提供新的 K3s 或 RKE2 集群。
+
+== {elemental-product-name} 在 x86-64 硬件上的
+
+{elemental-product-name} 从 Rancher v2.7.0 开始，在 x86-64 平台上可用于生产用途并获得全面支持。
+
+== {elemental-product-name} 在 Arm 硬件上的
+
+Arm (aarch64) 处于开发阶段，功能正常。Arm 目前仅在 Raspberry Pi 4 Model B 上测试，使用 k3s 1.24.8（或更高版本）。欢迎反馈。
+
+== {elemental-product-name} 在其他硬件上的
+
+{elemental-product-name} 目前针对“边缘”场景，因此不支持其他硬件。随着市场的发展，我们将重新评估这一点。
+
+== 准备好尝试一下吗？
+
+使用您首选的方法启动并运行 {elemental-product-name} 集群
+
+* 使用 Rancher Manager xref:quickstarts/quickstart-ui.adoc[{elemental-product-name} 插件]
+* 使用 xref:quickstarts/quickstart-cli.adoc[{elemental-product-name} CLI]
+
+[NOTE]
+.后续操作
+====
+想要更多细节吗？查看 xref:rancher-os-management/architecture/architecture.adoc[架构] 部分或联系 {elemental_slack_url}[{elemental_slack_name}]。
+====
+

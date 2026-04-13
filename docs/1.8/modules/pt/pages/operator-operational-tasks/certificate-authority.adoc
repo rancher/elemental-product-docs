@@ -1,0 +1,105 @@
+= Verificação da CA
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+O `elemental-register` e `elemental-system-agent` dependem da configuração da https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/resources/update-rancher-certificate.html[CA do Rancher] para verificar a URL do xref:references/machineregistration-reference.adoc#_config_elemental_registration[Registro da Máquina] e para monitorar planos remotamente.
+
+Dependendo se a CA é privada ou pública, você pode querer instruir o agente a impor `strict` a verificação da CA ou usar o armazenamento de confiança do sistema em vez disso.
+
+A partir do Rancher `2.9`, a configuração global https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/references/tls-settings.html#_agent_tls_enforcement[modo-tls-do-agente] também se aplicará à instalação de agentes Elementais. Observe que, se a configuração `agent-tls-mode` mudar, as máquinas Elementais precisarão ser xref:node-operational-tasks/reset.adoc[reiniciadas] para que a configuração seja aplicada.
+
+== Ciclo de vida do certificado CA privado
+
+Ao usar uma CA privada, a recomendação é sempre garantir que a mesma CA também seja usada para o Rancher. O Elemental fará uso do `cacerts` ao incluir o certificado CA para ser reconhecido como confiável pelos agentes. Este é o mesmo valor que aparece na URL `https://my.rancher.example/cacerts`.
+
+Observe, no entanto, que não será possível atualizar este valor após uma máquina Elemental ter sido instalada. Substituir o certificado CA no Rancher pode levar a máquinas Elementais não conseguirem se reconectar ao Rancher e operar normalmente, quando o `agent-tls-mode` está definido como `strict`.
+
+Por essa razão, a recomendação é usar a configuração `agent-tls-mode: system-store` em vez disso e gerenciar o ciclo de vida dos certificados CA nas máquinas Elementais diretamente, quando uma CA privada estiver em uso.
+
+O certificado CA pode ser instalado em xref:operator-operational-tasks/custom-images.adoc[imagens de SO personalizadas] diretamente, ou passado como uma configuração de cloud-init nos recursos Elementais. Por exemplo, o certificado CA inicial pode ser incluído no xref:references/machineregistration-reference.adoc#_config_cloud_config[Registro da Máquina] `cloud-config`:
+
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: MachineRegistration
+metadata:
+  name: fire-nodes
+  namespace: fleet-default
+spec:
+  config:
+    cloud-config:
+      write_files:
+        - path: /etc/pki/trust/anchors/rancher-ca.pem
+          permission: 0444
+          content: |-
+            -----BEGIN CERTIFICATE-----
+            MIIDETCCAfmgAwIBAgIRAK0J3NrgPllXUiGYrA9sTlUwDQYJKoZIhvcNAQELBQAw
+            IjEgMB4GA1UEAxMXZWxlbWVudGFsLXNlbGZzaWduZWQtY2EwHhcNMjQxMDA3MTEw
+            ODM5WhcNMzUwODAxMTEwODM5WjAiMSAwHgYDVQQDExdlbGVtZW50YWwtc2VsZnNp
+            Z25lZC1jYTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAJm2esaQL82b
+            rWMpnurmyiutruWvdWUT0Dci2+I7vI1CRs7Gqq93in3+HOoEuaJhS4eZQT9AFyaq
+            msijMa3cTYUDhTbOAvPs27E/mSBeQyKd/hJuQ0B8vl47Z1ixOpUHdMOBsZDI0XF5
+            yjVTj4nTZXW5n0zZpnmEs4DhLJLJc6icjQLdHDsSj/LeTy8alyTtkOaWcPjFppNI
+            6M5a1BWJPhNKGlFpezqfjtJogxbOEAohpN4DUKvqebRWnC+4MjhqUcEW5sXatFTH
+            F7MGbVSqQk/f7lzIuke4nvWd0FGPyk/sD31rXT2/2eHkcTJEanRq3bwWQNXQynQ1
+            wdqIH1TtfMUCAwEAAaNCMEAwDgYDVR0PAQH/BAQDAgKkMA8GA1UdEwEB/wQFMAMB
+            Af8wHQYDVR0OBBYEFIv2OZVFAhh8HzoEwjlf5GivNf6IMA0GCSqGSIb3DQEBCwUA
+            A4IBAQAfNUNQKZ02oTo9q+/nbS8kIuhwzSTtNzKflQU5oibpDSAxYlx2gsYqppb/
+            w7voj+GiONQR22PrCFh+Kr7aGr/GZh6oXg47dK4Es2dVeE8qdqW3WtZ8oj/OJxmP
+            7TqWZdGf7TAxfgNzIpGjWFw/coJ7dcYbDrcZFWG5oQpTbLHK/ECMPWytGVRjrqE6
+            baLJ85AVqF9rcCb0giXzvzS6/IpyAe7+Q4WvdzY1uaLQSwkBtpt9OM/O35GmeFUR
+            OUkPxQ15e+3tUnDLUDnkTk3xMVRvJehnk/I75auqlUra55KLqfd6SUEbGP3MU9ZI
+            12xVJHQTSN8XWh0++9jNG0eSMe75
+            -----END CERTIFICATE-----
+      runcmd:
+        - update-ca-certificates
+----
+
+Antes que o certificado CA seja substituído no Rancher, o novo certificado CA pode ser incluído nas máquinas Elementais ao atualizá-las. O *novo* certificado CA pode ser configurado na xref:references/managedosimage-reference.adoc#_cloudconfig[Imagem OS Gerenciada] `cloudConfig`:
+
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: ManagedOSImage
+metadata:
+  name: ca-cert-upgrade
+  namespace: fleet-default
+spec:
+  # The cloudConfig will be applied after node reboot
+  cloudConfig:
+    write_files:
+      - path: /etc/pki/trust/anchors/rancher-ca-new.pem
+        permission: 0444
+        content: |-
+          -----BEGIN CERTIFICATE-----
+          MIIDEDCCAfigAwIBAgIQVgcMnY4HFB5+bZ9yhLaFkTANBgkqhkiG9w0BAQsFADAi
+          MSAwHgYDVQQDExdlbGVtZW50YWwtc2VsZnNpZ25lZC1jYTAeFw0yNDEwMDcxMjUx
+          MzZaFw0zNTA4MDExMjUxMzZaMCIxIDAeBgNVBAMTF2VsZW1lbnRhbC1zZWxmc2ln
+          bmVkLWNhMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvwokj48hQFF3
+          +v/ObqPOOyYszL/Nyv8/BomPgBia/GXGe8mkQHEWUXFS4P6KdMGQQU3X6Pm071qG
+          QEWEIy95szy1H/q1DgZQCM5fjYPcfFJMopQ28vJEk58/9PePr/GZRWAeAhmMKZeg
+          HP/wpuUMEdEh7vGYjKjVuIJiFgT2lVDKqrtRIon+L1iIP3IRmVa49UzmdW2wM79W
+          a1nv52+EZaw3UDSLPonvs29AZG8M+NuENlefHWEwYVpDEwF9lXinfL3wMw36gIo4
+          X4LmStP9WU4mvglrR8Zwj1M9COMrYbBYQ86jUGM0L0eNG52Uflsn+0ttLRhgkpba
+          wAl8jAZWdQIDAQABo0IwQDAOBgNVHQ8BAf8EBAMCAqQwDwYDVR0TAQH/BAUwAwEB
+          /zAdBgNVHQ4EFgQUmOGv0AwumUlwQDdULL2dLik/6FUwDQYJKoZIhvcNAQELBQAD
+          ggEBACMmDLbKOgz5Zo1pSLTYc08Nb5sRTK/bW24IZ67cfdPstvTQBDAH5+obAjus
+          N2Linl/IAsN8K2cnoBq1gM3sST+YDVOBdItZXwe8jybk3IoJPdzE63l//ReTyTSg
+          OamwUR6qHcLZ9XNwS4z8WYNy3mDLO6dgq7udb2DHm/0mvyi3Q0oRvsrI+9JCCrgz
+          YTFWEWhbpfUzH+dheISMYJx3l/iIFJajaASWKtGBMnp9G+RC2HhDcDwBnW/4JT1h
+          wqvat7kdRIxcWHtW482JKRyfa58QidqA7nIBblZJuWqpo4etAVZTCV/caFKbn/Ek
+          FrT88MNiy5xsimgQSdt9vptOvJc=
+          -----END CERTIFICATE-----
+    runcmd:
+      - update-ca-certificates
+  osImage: "registry.suse.com/suse/sl-micro/6.0/baremetal-os-container:2.1.2-3.59"
+  clusterTargets:
+    - clusterName: volcano
+  upgradeContainer:
+    envs:
+      # Use FORCE to force an upgrade.
+      # This is convenient when the `osImage` is the same, and only the `cloudConfig` changed.
+      - name: FORCE
+        value: "false"
+----

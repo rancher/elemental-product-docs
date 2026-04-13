@@ -1,0 +1,36 @@
+= Como adicionar um certificado personalizado
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2024-09-24
+:page-revdate: {revdate}
+
+Pré-requisitos: Um certificado no formato `.pem`
+
+Meta: Tornar um certificado personalizado disponível em todo o sistema
+
+[NOTE]
+.Isso é para certificados usados por serviços de nível de sistema.
+====
+As cargas de trabalho do Kubernetes devem trazer seus certificados dentro da imagem do contêiner.
+====
+
+Para instalar um certificado personalizado, precisamos
+
+* copiar o arquivo `.pem` para `/etc/pki/trust/anchors/`
+* executar `update-ca-certificates`
+
+O respectivo trecho `cloud-config` se parece com isto:
+
+[,yaml]
+----
+write_files:
+  - path: /etc/pki/trust/anchors/my-custom-certificate.pem
+    permission: 0444
+    content: |-
+      -----BEGIN CERTIFICATE-----
+      ...
+      -----END CERTIFICATE-----
+runcmd:
+  - update-ca-certificates
+----
+
+(conteúdo real do certificado omitido por razões de brevidade)

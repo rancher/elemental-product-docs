@@ -1,0 +1,42 @@
+= 产品模板变量
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+这些变量中的信息指的是整体系统的属性。
+
+SMBIOS系统信息数据的子集（类型1）。
+
+有关SMBIOS的更多信息，请参见https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.7.1.pdf[SMSBIOS规范]。
+
+|===
+| 变量 | 说明 | from
+
+| `${Product/Family}`
+| 系统系列
+| 1.7.0
+
+| `${Product/Name}`
+| 产品名称
+| 1.7.0
+
+| `${Product/SKU}`
+| 系统SKU编号
+| 1.7.0
+
+| `${Product/SerialNumber}`
+| 系统序列号
+| 1.7.0
+
+| `${Product/UUID}`
+| 系统UUID
+| 1.7.0
+
+| `${Product/Vendor}`
+| 系统供应商
+| 1.7.0
+
+| `${Product/Version}`
+| 系统版本
+| 1.7.0
+|===

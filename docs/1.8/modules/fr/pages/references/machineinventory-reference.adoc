@@ -1,0 +1,12 @@
+= Inventaire des machines
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-07-03
+:page-revdate: {revdate}
+
+Lorsqu'un nouvel hôte s'enregistre avec succès, le {elemental_operator_name} crée une ressource Inventaire des machines représentant cet hôte particulier.
+L'Inventaire des machines stocke le hachage TPM de l'hôte suivi, récupéré lors du processus d'enregistrement, et permet d'exécuter des commandes arbitraires (plans) sur la machine.
+
+Un Inventaire des machines a deux conditions :
+
+* `AdoptionReady`, qui indique que la machine a été adoptée par un sélecteur pour faire partie d'un cluster.
+* `Ready`, qui indique que la machine a été enregistrée et provisionnée avec un {elemental-product-name} système d'exploitation.

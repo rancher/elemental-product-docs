@@ -1,0 +1,122 @@
+= 存储模板变量
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+在存储模板变量中收集的信息定义了系统中可用磁盘的属性。
+
+磁盘通过编号（0，1，2，...）和设备名称（_sda_，_vda_，_nvme0n1_，...）进行跟踪。
+
+例如，如果 `${Storage/Disks/2/Name}` 等于 `sda`，则可以通过 `${Storage/Disks/2/Model}` 和 `${Storage/Disks/sda/Model}` 变量检索磁盘型号。
+
+[NOTE]
+====
+跟踪的磁盘还包括光盘驱动器和可移动设备（例如，USB闪存驱动器）。
+====
+
+|===
+| 变量 | 说明 | from
+
+| `${Storage/Disks/_<Number>_/DriveType}`
+| 磁盘类型
+| 1.7.0
+
+| `${Storage/Disks/_<Number>_/Model}`
+| 磁盘型号
+| 1.7.0
+
+| `${Storage/Disks/_<Number>_/Name}`
+| 设备名
+| 1.7.0
+
+| `${Storage/Disks/_<Number>_/Removable}`
+| 是可移动媒体吗？
+| 1.7.0
+
+| `${Storage/Disks/_<Number>_/Size}`
+| 大小（字节）
+| 1.7.0
+
+| `${Storage/Disks/_<Number>_/StorageController}`
+| 控制器类型
+| 1.7.0
+
+| `${Storage/Disks/_<DeviceName>_/DriveType}`
+| 磁盘类型
+| 1.7.0
+
+| `${Storage/Disks/_<DeviceName>_/Model}`
+| 磁盘型号
+| 1.7.0
+
+| `${Storage/Disks/_<DeviceName>_/Name}`
+| 设备名
+| 1.7.0
+
+| `${Storage/Disks/_<DeviceName>_/Removable}`
+| 是可移动媒体吗？
+| 1.7.0
+
+| `${Storage/Disks/_<DeviceName>_/Size}`
+| 大小（字节）
+| 1.7.0
+
+| `${Storage/Disks/_<DeviceName>_/StorageController}`
+| 控制器类型
+| 1.7.0
+
+| `${Storage/TotalDisks}`
+| 系统中存在的磁盘数量
+| 1.7.0
+|===
+
+== 磁盘的驱动类型
+
+|===
+| 类型 | 说明
+
+| HDD
+| 硬盘
+
+| FDD
+| 软盘驱动器
+
+| ODD
+| 光盘驱动器
+
+| SSD
+| 固态硬盘
+
+| 虚拟域
+| 虚拟驱动器，即循环设备
+
+| 未知
+| 未知驱动类型
+|===
+
+== 磁盘的存储控制器类型
+
+|===
+| 类型 | 说明
+
+| IDE
+| 集成驱动电子设备
+
+| SCSI
+| 小型计算机系统接口
+
+| NVMe
+| 非易失性内存快线
+
+| MMC
+| 多媒体控制器（用于手机存储设备）
+
+| virtio
+| 虚拟化存储控制器/驱动程序
+
+| loop
+| 循环设备
+
+| 未知
+| 未知控制器类型
+|===

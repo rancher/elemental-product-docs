@@ -1,0 +1,229 @@
+= Cloud-config リファレンス
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-10-21
+:page-revdate: {revdate}
+
+https://github.com/elemental-toolkit[{elemental-product-name}ツールキット]を使用して構築されたノード OS イメージは、https://github.com/rancher/yip[yip]を使用して初期化および構成されることが期待されています。Yip は、yaml ファイルで記述されたシステムに一連のアクションと構成を適用するための小さなユーティリティです。Yip は、エレメンタルクライアントバイナリ内でライブラリとして統合され、使用されます（`elemental run-stage --help`を参照）。Yip は、任意の _ステージ_ に適用する構成とアクションをグループ化します。たとえば、`elemental run-stage network` コマンド呼び出しは、`network` という名前のステージに対して定義されたアクションと構成のみを適用します。Yip の観点から、ステージは任意の名前の下に一連のアクションをグループ化するだけなので、いつでも実行できます。
+
+{elemental-product-name} ツールキットは、OS ブートプロセスに 5 つの事前定義されたステージを統合します。
+
+. *`pre-rootfs`*:このステージは、ルートデバイスをマウントする直前に、init ram ディスク内の早期ブートで実行されます（通常は `/sysroot` で）。このステージは、ルートデバイスをマウントする前に必要なファーストブート手順を定義するために使用できます。良い例は、ルートデバイスパーティションを拡張することです。`initrd-root-device.target` の一部として実行されます。
+. *`rootfs`*:このステージは、ルートデバイスをマウントした直後に、init ram ディスク内の早期ブートで実行されます（通常は `/sysroot` で）。このステージは、新しいパーティションを作成するなどのファーストブート手順を定義するために使用できます。一時的および永続的なパスは、通常このステージで定義されます。`initrd-root-fs.target` の一部として実行されます。
+. *`initramfs`*:このステージも init ram ディスク内で実行されますが、ルート切り替え直前に実行される、後半のステージです。このステージは、実際のルートデバイスに対して chroot 環境で実行されます。このステージは、ルートを切り替えた後に systemd に関連する可能性のあるいくつかのシステムパラメータを設定するのに便利です。たとえば、実際のルートから systemd が実行される前に、追加の systemd ユニットファイルをここに追加できます。`initrd.target` の一部として実行されます。
+. *`fs`*:このステージは、ルートを切り替えた後に実行される最初のものであり、すべてのローカルファイルシステムと fstab で定義されたマウントポイントがマウントされ、準備が整った後に一度実行される `sysinit.target` の一部として実行されます。
+. *`network`*:このステージは、`multi-user.target`の一部として、`network-online.target`に到達した後に実行されます。このステージは、ネットワーク接続を必要とするアクションや設定を実行するために使用できます。例えば、このステージはライブ ISO からの最初のノード登録とインストールを実行するために使用されます。
+. *`boot`*:このステージは、multi-user.targetの一部として、getty.targetの前に実行されます。これは、サポートされているcloud-init構文を使用して提供されたcloud-configデータを実行するためのデフォルトのステージです。xref:references/cloud-config-reference.adoc#_compatibility_with_cloud_init_format[cloud-initの互換性]セクションを参照してください。
+
+デフォルトでは、`elemental`は次のパスからyaml設定ファイルを順番に読み取ります：`/system/oem`、`/oem`、および`/usr/local/cloud-config`。
+
+{elemental-product-name}オペレーターでは、すべてのkubernetesリソースは、`cloud-config`フィールドを含め、<<_configuration_syntax,yip>>または<<_compatibility_with_cloud_init_format,cloud-init互換>>構文のいずれかで表現できます。これには、`MachineRegistration`、`SeedImage`、および`ManagedOSImage`などのリソースが含まれます。
+
+[NOTE]
+====
+_Cloud Init_のような類似プロジェクトとは対照的に、Yipは実行されたステージやステップの記録やキャッシュを保持せず、すべてのステージとその関連する設定は、毎回のブート時に実行されます。
+====
+
+== Elementalクライアントのcloud-configフック
+
+前のセクションで説明したブート時に定義されたcloud-configステージに加えて、Elementalクライアントは、これらのサブコマンドの動作をカスタマイズするために、フックとして参照される特定のステージも尊重します：`install`、`upgrade`、`reset`、および`build-disk`。これらのサブコマンドのそれぞれには、特定のサブコマンドの実行のアナログフェーズで実行される4つの異なるcloud-configステージの独自のセットがあります。
+
+フックは、本質的にOCIコンテナの一部として簡単に表現できない、または`elemental`クライアントの設定オプションで簡単に達成できないシステムへの永続的な変更を提供する方法です。良い例としては、Raspberry PiデバイスのEFIパーティションでのファームウェアの取り扱いが挙げられます。
+
+[WARNING]
+====
+ほとんどのフックは、特権を持つホスト環境で実行されるため、潜在的に破壊的な操作です。ほとんどの場合、ブート時の通常のcloud-config操作は、システムを設定するのに十分です。また、イメージに追加のソフトウェアを含めるための推奨オプションは、xref:operator-operational-tasks/custom-images.adoc[派生イメージ]を構築することであり、追加のソフトウェアをインストールするためにフックを乱用しないことです。
+====
+
+=== フックのステージ
+
+前のステージ：before-install、before-upgrade、before-reset、before-disk これらのステージは、作業ディレクトリと環境が準備された後、実際のアクションを開始する前に実行されます。インストール、アップグレード、リセットのステップでは、関連するすべてのパーティションが作成され、マウントされた後、どのイメージのデプロイメントも開始される前にこれが発生します。
+
+chroot後のステージ：after-install-chroot、after-upgrade-chroot、after-reset-chroot、after-disk-chroot これらのステージは、ターゲットシステムを作業エリアにデプロイし、実際にデプロイされたイメージをルートとするchroot環境に配置した後に実行されます。これはchroot環境で発生するため、エレメンタルクライアントはホストではなく、デプロイされたイメージに存在するフックを分析します。/oemのみがホストと共有されます（利用可能な場合）。
+
+後のステージ：after-install、after-upgrade、after-reset、after-disk これらのステージは、ホスト環境から作業エリアにターゲットシステムをデプロイした後に実行されます。このステージでは、すべてのパーティションがまだマウントされており、RWモードで利用可能です。この特定のステージセットは、ホストに存在するフックと、デプロイされたイメージをルートとするchroot環境内の同等のパスに存在するフックを分析します。ただし、フックはchroot環境では実行されません。これは、デプロイされたイメージ内で`after-*`フックを提供するのに役立ちます。
+
+ポストステージ：post-install、post-upgrade、post-reset、post-disk これらのステージは、コマンド終了直前、クリーンアッププロセスの実行前に実行されます。このステージでは、イメージはすでにデプロイされており、読み取り専用のサブボリュームまたはファイルシステムにロックされています。このステージでは、パーティションはまだマウントされています。
+
+[NOTE]
+====
+インストールフックは、xref:references/machineregistration-reference.adoc#_config_cloud_config[`MachineRegistration.config.cloud-config`]の一部として適用されないことに注意してください。インストールフックを提供するためには、xref:[`SeedImage.cloud-config`]の一部として含める必要があります。これは、インストールメディアに存在する必要があります。
+====
+
+== 設定の構文
+
+Yipには独自の構文があり、基本的には_stages_を定義し、各ステージのステップのリストを必要とします。ステップは順番に実行され、各ステップは異なるアクションタイプの組み合わせ（例：コマンドの実行、ファイルの作成、ホスト名の設定など）であることができます。
+
+次に例を示します。
+
+[,yaml]
+----
+stages:
+  initramfs:
+  - name: "Setup users"
+    ensure_entities:
+    - path: /etc/shadow
+      entity: |
+          kind: "shadow"
+          username: "root"
+          password: "root"
+  boot:
+  - files:
+    - path: /tmp/script.sh
+      content: |
+        #!/bin/sh
+        echo "test"
+      permissions: 0777
+      owner: 1000
+      group: 100
+  - commands:
+    - /tmp/script.sh
+----
+
+上記の例では、2つのステージがあります：`initramfs`と`boot`。`initramfs`ステージはサンプルユーザーを初期化します。`boot`ステージには2つのステップがあり、1つは実行可能なスクリプトファイルを作成するステップ、もう1つは実際にそのスクリプトを実行するステップです。
+
+Yipは、任意のステージに対して`*.before`および`*.after`のサフィックス修飾子もサポートしています。例えば、`network`ステージを実行すると、最初に設定ファイルに見つかった`network.before`ステージが実行され、その後`network`、最後に`network.after`が実行されます。
+
+適用可能なキーの完全なリファレンスは、https://github.com/rancher/yip?tab=readme-ov-file#configuration-reference[yipプロジェクト]自体の文書に記載されています。
+
+以下は、MachineRegistrationリソースに埋め込まれた上記の設定の例です。
+
+.詳しくは、ここをクリックしてください。
+[%collapsible]
+====
+.MachineRegistrationの例
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: MachineRegistration
+metadata:
+  name: my-nodes
+  namespace: fleet-default
+spec:
+  config:
+    cloud-config:
+      name: "A registration driven config"
+      stages:
+        after-install-chroot:
+        - name: "Set serial console"
+          commands:
+          - grub2-editenv /oem/grubenv set extra_cmdline="console=ttyS0"
+        initramfs:
+        - name: "Setup users"
+          ensure_entities:
+          - path: /etc/shadow
+            entity: |
+                kind: "shadow"
+                username: "root"
+                password: "root"
+        boot:
+        - files:
+          - path: /tmp/script.sh
+            content: |
+              #!/bin/sh
+              echo "test"
+            permissions: 0777
+            owner: 1000
+            group: 100
+        - commands:
+          - /tmp/script.sh
+    elemental:
+      install:
+        reboot: true
+        device: /dev/sda
+        debug: true
+  machineName: my-machine
+  machineInventoryLabels:
+    element: fire
+----
+====
+
+== 同期
+
+ステージの実行中に、すべてのファイルが読み込まれ、グラフが計算され、その後実行されます。これは、同じステージ内のステップがファイル名に関係なく、任意の順序で実行されることが期待できることを意味します。
+
+実行を同期させるために、ユーザーはポスト/プレーステージを使用するか、`after`キーワードをhttps://github.com/rancher/yip/blob/ee4051d9ec2782989344f813bc6a0975bbd8f3fe/pkg/executor/default_test.go#L222[yip構文]で参照することができます。
+
+== Cloud Init形式との互換性
+
+公式のhttp://cloudinit.readthedocs.org/en/latest/topics/format.html#cloud-config-data[cloud-config仕様]のサブセットがyipによって実装されています。より具体的には、サポートされているcloud-initキーは、`users`、`ssh_authorized_keys`、`runcmd`、`hostname`、および`write_files`が実装されています。
+
+yamlファイルが`#cloud-config`で始まる場合、それは標準のcloud-initとして解析され、yipの`boot`ステージに関連付けられます。
+
+次に例を示します。
+
+[,yaml]
+----
+#cloud-config
+# Note groups are delivered as list, not as comma separated values
+users:
+- name: "bar"
+  passwd: "foo"
+  groups:
+  - "users"
+  homedir: "/home/foo"
+  shell: "/bin/bash"
+  ssh_authorized_keys:
+  - faaapploo
+# Assigns these keys to the first user in users or root if there
+# is none
+ssh_authorized_keys:
+- asddadfafefa
+# Run these commands once the system has fully booted
+# Each command is expressed as a sinlge string, no nested lists
+runcmd:
+- echo hello world
+# Hostname
+hostname: myserver
+# Write arbitrary files
+write_files:
+- encoding: b64
+  content: CiMgVGhpcyBmaWxlIGNvbnRyb2xzIHRoZSBzdGF0ZSBvZiBTRUxpbnV4
+  path: /foo/bar
+  permissions: "0644"
+  owner: "bar"
+----
+
+以下は、MachineRegistrationリソースに埋め込まれた上記の設定の例です。
+
+.詳しくは、ここをクリックしてください。
+[%collapsible]
+====
+.MachineRegistrationの例
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: MachineRegistration
+metadata:
+  name: my-nodes
+  namespace: fleet-default
+spec:
+  config:
+    cloud-config:
+      users:
+      - name: "bar"
+        passwd: "foo"
+        groups: "users"
+        homedir: "/home/foo"
+        shell: "/bin/bash"
+        ssh_authorized_keys:
+        - faaapploo
+      ssh_authorized_keys:
+      - asdd
+      runcmd:
+      - foo
+      write_files:
+      - encoding: b64
+        content: CiMgVGhpcyBmaWxlIGNvbnRyb2xzIHRoZSBzdGF0ZSBvZiBTRUxpbnV4
+        path: /foo/bar
+        permissions: "0644"
+        owner: "bar"
+    elemental:
+      install:
+        reboot: true
+        device: /dev/sda
+        debug: true
+  machineName: my-machine
+  machineInventoryLabels:
+    element: fire
+----
+====

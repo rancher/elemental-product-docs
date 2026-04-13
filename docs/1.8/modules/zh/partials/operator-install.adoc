@@ -1,0 +1,78 @@
+== 安装 {elemental-product-name} Operator
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+`elemental-operator` 是管理端点，运行管理集群并负责创建库存、机器注册等更多功能。
+
+我们将使用 Helm 包管理器将 elemental-operator 图表安装到我们的集群中。
+
+[,console]
+----
+helm upgrade --create-namespace -n cattle-elemental-system --install elemental-operator-crds oci://registry.suse.com/rancher/elemental-operator-crds-chart
+
+helm upgrade --create-namespace -n cattle-elemental-system --install elemental-operator oci://registry.suse.com/rancher/elemental-operator-chart
+----
+
+现在，几秒钟后，您应该会看到 Operator pod 出现在 `cattle-elemental-system` 名称空间中：
+
+[,console]
+----
+kubectl get pods -n cattle-elemental-system
+
+NAME                                  READY   STATUS    RESTARTS   AGE
+elemental-operator-64f88fc695-b8qhn   1/1     Running   0          16s
+----
+
+[IMPORTANT]
+.需要 Helm v3.8.0 及以上版本
+----
+{elemental-product-name} operator 图表通过 OCI 注册表分发：从 v3.8.0 版本开始，Helm 正确支持基于 OCI 的注册表。
+----
+
+
+[CAUTION]
+.在从 elemental-operator 版本 < 1.2.4 升级时，交换图表安装顺序。
+----
+当从嵌入 {elemental-product-name} CRD（版本 < 1.2.4）的 elemental-operator 版本升级时，elemental-operator-crds 图表安装将失败。
+您需要先升级 elemental-operator 图表，然后再安装 elemental-operator-crds 图表。
+----
+
+=== 非稳定安装
+
+除了上述列出的 Helm 图表外，还有两个其他 `non-stable` 版本可用。
+
+* *暂存:* 指的是来自 Github 的最新标记版本。这在 xref:quickstarts/quickstart-ui.adoc[下一步] 页面中有文档记录。
+* *开发:* 指的是 Github 上 'HEAD' 指向的最新代码。这是正在进行的开发版本，并且不断变化。
+
+[tabs]
+=====
+暂存版本 (x86-64, ARM64 (树莓派 4))::
++
+--
+[,console]
+----
+helm upgrade --create-namespace -n cattle-elemental-system --install elemental-operator-crds oci://registry.opensuse.org/isv/rancher/elemental/staging/charts/rancher/elemental-operator-crds-chart 
+helm upgrade --create-namespace -n cattle-elemental-system --install elemental-operator oci://registry.opensuse.org/isv/rancher/elemental/staging/charts/rancher/elemental-operator-chart
+----
+--
+
+开发版本 (x86-64, ARM64 (树莓派 4))::
++
+--
+[WARNING]
+.提醒
+====
+不建议在生产环境中使用开发版本。我们欢迎通过 Slack 或 Github 问题提供反馈，但它可能不稳定并包含可能会在没有通知的情况下删除的实验性功能。
+====
+
+[,console]
+----
+helm upgrade --create-namespace -n cattle-elemental-system --install elemental-operator-crds oci://registry.opensuse.org/isv/rancher/elemental/dev/charts/rancher/elemental-operator-crds-chart
+helm upgrade --create-namespace -n cattle-elemental-system --install --set image.imagePullPolicy=Always elemental-operator oci://registry.opensuse.org/isv/rancher/elemental/dev/charts/rancher/elemental-operator-chart
+----
+--
+=====
+
+=== 安装选项
+
+图表安装中可以设置一些选项，但这超出了本文件的范围。您可以在图表 https://github.com/rancher/elemental-operator/blob/main/.obs/chartfile/elemental-operator-helm/values.yaml[values.yaml] 中查看所有值。

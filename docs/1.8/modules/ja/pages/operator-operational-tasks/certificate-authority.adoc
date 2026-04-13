@@ -1,0 +1,105 @@
+= CAの検証
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+`elemental-register`と`elemental-system-agent`は、https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/resources/update-rancher-certificate.html[RancherのCA設定]に依存して、xref:references/machineregistration-reference.adoc#_config_elemental_registration[MachineRegistration]のURLを検証し、リモートでプランを監視します。
+
+CAがプライベートかパブリックかに応じて、エージェントに`strict` CA検証を強制するよう指示するか、代わりにシステムの信頼ストアを使用するよう指示することができます。
+
+Rancher `2.9`から、https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/references/tls-settings.html#_agent_tls_enforcement[エージェントTLSモード]のグローバル設定は、エレメンタルエージェントのインストールにも適用されます。`agent-tls-mode`の設定が変更された場合、エレメンタルマシンは設定を適用するためにxref:node-operational-tasks/reset.adoc[リセット]する必要があります。
+
+== プライベートCA証明書のライフサイクル
+
+プライベートCAを使用する場合、常に同じCAがRancherにも使用されることを確認することをお勧めします。エレメンタルは、エージェントによって信頼されるCA証明書を含める際に`cacerts`を使用します。これは`https://my.rancher.example/cacerts`のURLに表示されるのと同じ値です。
+
+ただし、エレメンタルマシンがインストールされた後にこの値を更新することはできません。RancherでCA証明書を置き換えると、`agent-tls-mode`が`strict`に設定されている場合、エレメンタルマシンがRancherに再接続できず、正常に動作しなくなる可能性があります。
+
+このため、プライベートCAが使用されている場合は、代わりに`agent-tls-mode: system-store`の設定を使用し、エレメンタルマシン上でCA証明書のライフサイクルを直接管理することをお勧めします。
+
+CA証明書は、xref:operator-operational-tasks/custom-images.adoc[カスタムOSイメージ]に直接インストールするか、エレメンタルリソースにおいてcloud-init設定として渡すことができます。例えば、初期CA証明書はxref:references/machineregistration-reference.adoc#_config_cloud_config[マシン登録]の`cloud-config`に含めることができます：
+
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: MachineRegistration
+metadata:
+  name: fire-nodes
+  namespace: fleet-default
+spec:
+  config:
+    cloud-config:
+      write_files:
+        - path: /etc/pki/trust/anchors/rancher-ca.pem
+          permission: 0444
+          content: |-
+            -----BEGIN CERTIFICATE-----
+            MIIDETCCAfmgAwIBAgIRAK0J3NrgPllXUiGYrA9sTlUwDQYJKoZIhvcNAQELBQAw
+            IjEgMB4GA1UEAxMXZWxlbWVudGFsLXNlbGZzaWduZWQtY2EwHhcNMjQxMDA3MTEw
+            ODM5WhcNMzUwODAxMTEwODM5WjAiMSAwHgYDVQQDExdlbGVtZW50YWwtc2VsZnNp
+            Z25lZC1jYTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAJm2esaQL82b
+            rWMpnurmyiutruWvdWUT0Dci2+I7vI1CRs7Gqq93in3+HOoEuaJhS4eZQT9AFyaq
+            msijMa3cTYUDhTbOAvPs27E/mSBeQyKd/hJuQ0B8vl47Z1ixOpUHdMOBsZDI0XF5
+            yjVTj4nTZXW5n0zZpnmEs4DhLJLJc6icjQLdHDsSj/LeTy8alyTtkOaWcPjFppNI
+            6M5a1BWJPhNKGlFpezqfjtJogxbOEAohpN4DUKvqebRWnC+4MjhqUcEW5sXatFTH
+            F7MGbVSqQk/f7lzIuke4nvWd0FGPyk/sD31rXT2/2eHkcTJEanRq3bwWQNXQynQ1
+            wdqIH1TtfMUCAwEAAaNCMEAwDgYDVR0PAQH/BAQDAgKkMA8GA1UdEwEB/wQFMAMB
+            Af8wHQYDVR0OBBYEFIv2OZVFAhh8HzoEwjlf5GivNf6IMA0GCSqGSIb3DQEBCwUA
+            A4IBAQAfNUNQKZ02oTo9q+/nbS8kIuhwzSTtNzKflQU5oibpDSAxYlx2gsYqppb/
+            w7voj+GiONQR22PrCFh+Kr7aGr/GZh6oXg47dK4Es2dVeE8qdqW3WtZ8oj/OJxmP
+            7TqWZdGf7TAxfgNzIpGjWFw/coJ7dcYbDrcZFWG5oQpTbLHK/ECMPWytGVRjrqE6
+            baLJ85AVqF9rcCb0giXzvzS6/IpyAe7+Q4WvdzY1uaLQSwkBtpt9OM/O35GmeFUR
+            OUkPxQ15e+3tUnDLUDnkTk3xMVRvJehnk/I75auqlUra55KLqfd6SUEbGP3MU9ZI
+            12xVJHQTSN8XWh0++9jNG0eSMe75
+            -----END CERTIFICATE-----
+      runcmd:
+        - update-ca-certificates
+----
+
+CA証明書がRancherで置き換えられる前に、新しいCA証明書はエレメンタルマシンをアップグレードすることで含めることができます。*新しい*CA証明書は、xref:references/managedosimage-reference.adoc#_cloudconfig[管理されたOSイメージ]の`cloudConfig`に設定できます：
+
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: ManagedOSImage
+metadata:
+  name: ca-cert-upgrade
+  namespace: fleet-default
+spec:
+  # The cloudConfig will be applied after node reboot
+  cloudConfig:
+    write_files:
+      - path: /etc/pki/trust/anchors/rancher-ca-new.pem
+        permission: 0444
+        content: |-
+          -----BEGIN CERTIFICATE-----
+          MIIDEDCCAfigAwIBAgIQVgcMnY4HFB5+bZ9yhLaFkTANBgkqhkiG9w0BAQsFADAi
+          MSAwHgYDVQQDExdlbGVtZW50YWwtc2VsZnNpZ25lZC1jYTAeFw0yNDEwMDcxMjUx
+          MzZaFw0zNTA4MDExMjUxMzZaMCIxIDAeBgNVBAMTF2VsZW1lbnRhbC1zZWxmc2ln
+          bmVkLWNhMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvwokj48hQFF3
+          +v/ObqPOOyYszL/Nyv8/BomPgBia/GXGe8mkQHEWUXFS4P6KdMGQQU3X6Pm071qG
+          QEWEIy95szy1H/q1DgZQCM5fjYPcfFJMopQ28vJEk58/9PePr/GZRWAeAhmMKZeg
+          HP/wpuUMEdEh7vGYjKjVuIJiFgT2lVDKqrtRIon+L1iIP3IRmVa49UzmdW2wM79W
+          a1nv52+EZaw3UDSLPonvs29AZG8M+NuENlefHWEwYVpDEwF9lXinfL3wMw36gIo4
+          X4LmStP9WU4mvglrR8Zwj1M9COMrYbBYQ86jUGM0L0eNG52Uflsn+0ttLRhgkpba
+          wAl8jAZWdQIDAQABo0IwQDAOBgNVHQ8BAf8EBAMCAqQwDwYDVR0TAQH/BAUwAwEB
+          /zAdBgNVHQ4EFgQUmOGv0AwumUlwQDdULL2dLik/6FUwDQYJKoZIhvcNAQELBQAD
+          ggEBACMmDLbKOgz5Zo1pSLTYc08Nb5sRTK/bW24IZ67cfdPstvTQBDAH5+obAjus
+          N2Linl/IAsN8K2cnoBq1gM3sST+YDVOBdItZXwe8jybk3IoJPdzE63l//ReTyTSg
+          OamwUR6qHcLZ9XNwS4z8WYNy3mDLO6dgq7udb2DHm/0mvyi3Q0oRvsrI+9JCCrgz
+          YTFWEWhbpfUzH+dheISMYJx3l/iIFJajaASWKtGBMnp9G+RC2HhDcDwBnW/4JT1h
+          wqvat7kdRIxcWHtW482JKRyfa58QidqA7nIBblZJuWqpo4etAVZTCV/caFKbn/Ek
+          FrT88MNiy5xsimgQSdt9vptOvJc=
+          -----END CERTIFICATE-----
+    runcmd:
+      - update-ca-certificates
+  osImage: "registry.suse.com/suse/sl-micro/6.0/baremetal-os-container:2.1.2-3.59"
+  clusterTargets:
+    - clusterName: volcano
+  upgradeContainer:
+    envs:
+      # Use FORCE to force an upgrade.
+      # This is convenient when the `osImage` is the same, and only the `cloudConfig` changed.
+      - name: FORCE
+        value: "false"
+----

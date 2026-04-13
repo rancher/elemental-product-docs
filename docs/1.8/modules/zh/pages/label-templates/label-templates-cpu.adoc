@@ -1,0 +1,74 @@
+= 处理器模板变量
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+在处理器模板变量中收集的信息定义了安装在系统上的处理器的属性。
+
+数据通过处理器编号（0，1，2，...）公开。
+
+要引用第一个处理器，可以省略处理器编号（_`<Number>`_）（例如，变量`${CPU/Processor/Model}`与`${CPU/Processor/0/Model}`相同）。
+
+|===
+| 变量 | 说明 | from
+
+| `${CPU/Processor/Capabilities}`
+| 以逗号分隔的处理器能力列表
+| 1.7.0
+
+| `${CPU/Processor/ID}`
+| 处理器ID
+| 1.7.0
+
+| `${CPU/Processor/Model}`
+| 处理器型号
+| 1.7.0
+
+| `${CPU/Processor/NumCores}`
+| 内核数量
+| 1.7.0
+
+| `${CPU/Processor/NumThreads}`
+| 线程数量
+| 1.7.0
+
+| `${CPU/Processor/Vendor}`
+| 处理器供应商
+| 1.7.0
+
+| `${CPU/Processor/_<Number>_/Capabilities}`
+| 以逗号分隔的处理器_编号_列表
+| 1.7.0
+
+| `${CPU/Processor/_<Number>_/ID}`
+| 处理器_编号_ ID
+| 1.7.0
+
+| `${CPU/Processor/_<Number>_/Model}`
+| 处理器_编号_型号
+| 1.7.0
+
+| `${CPU/Processor/_<Number>_/NumCores}`
+| 处理器_编号_的内核数量
+| 1.7.0
+
+| `${CPU/Processor/_<Number>_/NumThreads}`
+| 处理器_编号_的线程数量
+| 1.7.0
+
+| `${CPU/Processor/_<Number>_/Vendor}`
+| 处理器_编号_供应商
+| 1.7.0
+
+| `${CPU/TotalCores}`
+| 系统中的内核总数
+| 1.7.0
+
+| `${CPU/TotalProcessors}`
+| 系统中的处理器数量
+| 1.7.0
+
+| `${CPU/TotalThreads}`
+| 系统中的线程总数
+| 1.7.0
+|===

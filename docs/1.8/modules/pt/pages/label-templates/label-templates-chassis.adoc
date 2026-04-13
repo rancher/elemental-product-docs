@@ -1,0 +1,39 @@
+= Variáveis de template de chassi
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+As informações nas variáveis de Chassi definem atributos do(s) invólucro(s) mecânico(s) do sistema.
+
+Subconjunto de invólucro ou chassi SMBIOS (tipo 3).
+
+Para mais informações sobre SMBIOS, consulte a
+https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.7.1.pdf[SMSBIOS specification].
+
+|===
+| Variável | Descrição | from
+
+| `${Chassis/AssetTag}`
+| Etiqueta de ativo do chassi
+| 1.7.0
+
+| `${Chassis/SerialNumber}`
+| Número de série do chassi
+| 1.7.0
+
+| `${Chassis/TypeDescription}`
+| Tipo de chassi (descrição)
+| 1.7.0
+
+| `${Chassis/Type}`
+| Tipo de chassi (número/código)
+| 1.7.0
+
+| `${Chassis/Vendor}`
+| Fornecedor do chassi
+| 1.7.0
+
+| `${Chassis/Version}`
+| Versão do chassi
+| 1.7.0
+|===

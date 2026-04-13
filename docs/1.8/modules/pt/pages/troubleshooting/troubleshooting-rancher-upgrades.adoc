@@ -1,0 +1,26 @@
+= Solução de problemas ao fazer upgrade do Rancher
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-07-03
+:page-revdate: {revdate}
+
+[WARNING]
+====
+Fazer upgrade para o Rancher v2.7.2 falhará se {elemental-product-name} clusters estiverem definidos. O pod do Rancher fica preso em um loop de falhas (veja https://github.com/rancher/rancher/issues/41145).)
+====
+
+Observe que o problema está presente apenas se pelo menos um {elemental-product-name} cluster estiver definido.
+
+Para contornar o problema, crie um recurso `dynamicschemas.management.cattle.io` vazio chamado `machineinventoryselectortemplate`:
+
+[,shell]
+----
+kubectl apply -f - <<EOF
+kind: DynamicSchema
+apiVersion: management.cattle.io/v3
+metadata:
+  name: machineinventoryselectortemplate
+EOF
+
+----
+
+O loop de falhas será interrompido e o processo de fazer upgrade do Rancher será concluído com sucesso.

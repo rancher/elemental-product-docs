@@ -1,0 +1,75 @@
+= マシンリセット
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+台のマシンを元の状態にリセットする{elemental-product-name}、または廃止する方法は2つあります。
+
+. クラスターを削除すると、関連するすべてのマシンがリセットされます
++
+image::reset-cluster-deletion.png[クラスターを削除してすべてのマシンをリセットする]
+
+. クラスターを管理する際は、リセットが必要なノードを単純に削除してください
++
+image::reset-single-node-deletion.png[単一のノードを削除してリセットする]
+
+== リセットワークフロー
+
+関連する`MachineInventory`が削除のためにフラグ付けされると、マシン上で実行されている`elemental-system-agent`によってリセットプランが実行されます。
+
+マシンがまだ稼働中の場合、このプランは:
+
+. マシンをリカバリモードで再起動します。
+. `systemctl start elemental-register-reset`を実行します。 +
+これにより、リモートの`MachineRegistration`が取得され、マシンをリセットするための`spec.config.elemental.reset`オプションが適用されます。 +
+新しい`MachineInventory`が作成され、`spec.config.cloud-config`で定義された`MachineRegistration`が再度適用されます。
+
+`MachineRegistration`の参照は*変更されません*ので、マシンは*再インストールされません*。リセットが`enabled`の場合、`COS_PERSISTENT`と`COS_OEM`のパーティションはデフォルトでクリアされます。詳細については、xref:installation/installation.adoc#_deployed_partition_table[パーティションテーブル]を参照してください。
+
+リセットワークフロー中に`cloud-config`が再適用されるため、マシンをリセットして`MachineRegistration`定義からの更新を適用できます。例えば、`users`の資格情報や認証キーをローテーションするためです。以前に構成されたクラウド設定との競合を避けるために、`reset-oem`オプションを有効にすることを強くお勧めします。
+
+マシンを異なる`MachineRegistration`にバインドし、新しい完全インストールをトリガーする必要がある場合は、新しいイメージを使用して再プロビジョニングする必要があります。
+
+== マシンリセットを有効にする
+
+マシンが自動的にリセットされるようにするには、`spec.config.elemental.reset.enabled`の`MachineRegistration`フラグを切り替える必要があります。 +
+これはデフォルトでオフになっていますが、一度有効にされると、新しく作成された`MachineInventory`はこの設定を自動的に継承します。 +
+次に例を示します。
+
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: MachineRegistration
+metadata:
+  name: fire-nodes
+  namespace: fleet-default
+spec:
+  config:
+    elemental:
+      reset:
+        enabled: true
+        reset-persistent: true
+        reset-oem: true
+        # These cloud-init configs will be created during reset and will persist on the system after
+        config-urls:
+          - "https://my.cloud.init/reset-plan-1.yaml"
+          - "https://my.cloud.init/reset-plan-2.yaml"
+        # You can select a different image to run the reset.
+        # Note that this image will not be installed on the system.
+        system-uri: "my.oci.registry/reset-image:latest"
+        power-off: false
+        reboot: true
+----
+
+物理的なマシンが自動リセットの恩恵を受けるシナリオや、単に破棄して再プロビジョニングできる仮想的なマシンがある場合など、`MachineInventory`レベルでリセットを有効にすることも可能です。 +
+リセットを許可する単一の`MachineInventory`をフラグ付けするには、`elemental.cattle.io/resettable: true`注釈を使用できます。 +
+次に例を示します。
+
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: MachineInventory
+metadata:
+  annotations:
+    elemental.cattle.io/resettable: "true"
+----

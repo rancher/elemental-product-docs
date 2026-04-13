@@ -1,0 +1,65 @@
+= ManagedOSVersionChannel reference
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+La ressource `ManagedOSVersionChannel` est responsable de la définition du canal d'image du système d'exploitation.
+
+Il existe plusieurs clés qui peuvent être configurées dans la spécification de la ressource `ManagedOSVersionChannel`.
+
+.managedosversionchannel-example.yaml
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: ManagedOSVersionChannel
+metadata:
+  name: elemental-channel
+  namespace: fleet-default
+spec:
+  options:
+    image: registry.suse.com/rancher/elemental-channel:1.4.2
+  syncInterval: 1h
+  type: custom
+----
+
+== `ManagedOSVersionChannelSpec` référence
+
+|===
+| Clé | Type | Default value (Valeur par défaut) | Description
+
+| options
+| objet
+| null
+| Définit les informations optionnelles qui peuvent être ajoutées dans un canal OS
+
+| syncInterval
+| chaîne
+| 1h
+| Définit quand synchroniser le canal OS
+
+| type
+| chaîne
+| vidage
+| Définit le type de canal, seul `custom` est actuellement pris en charge
+
+| upgradeContainer
+| objet
+| null
+| Un conteneur de mise à niveau qui peut être défini. Voir <<_upgradecontainer,référence>>
+
+| deleteNoLongerInSyncVersions
+| bool
+| false
+| Supprime automatiquement les versions de système d'exploitation dont la prise en charge a cessé et qui ne sont plus incluses dans le canal
+
+| activé
+| bool
+| true
+| Active ce canal. Permet la synchronisation des versions de système d'exploitation.
+|===
+
+== `upgradeContainer`
+
+Cela permet de remplacer le champ par défaut `upgrade` des plans du System Upgrade Controller (voir xref:rancher-os-management/upgrade-lifecycle.adoc#_components[upgrade components]) en fonction de cette ManagedOSVersion.
+Ces clés sont traduites par le System Upgrade Controller en une spécification Kubernetes de https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#Container[conteneur].
+Ceci est le conteneur responsable de l'exécution d'une mise à niveau du système d'exploitation.

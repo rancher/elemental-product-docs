@@ -1,0 +1,184 @@
+= {elemental-product-name}視覚的な方法。
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-11-06
+:page-revdate: {revdate}
+
+[NOTE]
+====
+次の手順には、少なくともRancher 2.9.xが必要です。
+====
+
+このクイックスタートでは、既存のRancher Managerインスタンスに{elemental-product-name}プラグインとオペレーターをデプロイする方法を示します。
+
+インストールが完了すると、RKE2またはK3sに基づいた新しい{elemental-product-name}クラスターをプロビジョニングできるようになります。
+
+ただし、ステージングまたは開発オペレーターをインストールしたい場合は、xref:quickstarts/quickstart-cli.adoc#_non_stable_installations[CLIモード]でのみ行うことができます。
+
+== 公式Rancher拡張リポジトリを追加する
+
+Elemental拡張機能が利用できない場合は、`Official Rancher Extensions Repository`を追加する必要があります。
+
+image::quickstart-ui-extension-repository.png[Rancher Manager拡張リポジトリを追加]。
+
+このリポジトリが拡張UI設定を通じて追加できない場合は、https://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-admin/helm-charts-in-rancher/helm-charts-in-rancher.html#_manage_repositories[リポジトリを追加] `https://github.com/rancher/ui-plugin-charts` `git`するか、次のリソースを適用することで手動で管理できます。
+
+[source,yaml]
+----
+apiVersion: catalog.cattle.io/v1
+kind: ClusterRepo
+metadata:
+  name: rancher-ui-charts
+spec:
+  gitBranch: main
+  gitRepo: https://github.com/rancher/ui-plugin-charts
+----
+
+== Elementalプラグインをインストールする。
+
+Rancher Manager拡張サポートが有効になった後、次のように`elemental`プラグインをインストールできます。
+
+* `Available`タブの下に`elemental`プラグインが利用可能であることが表示されます。
+
+image::quickstart-ui-extensions-available.png[Rancher Manager利用可能なプラグイン]。
+
+[NOTE]
+====
+`Available`タブにエントリが表示されない場合は、ページを更新してください。その後、`elemental`プラグインが表示されます。
+====
+
+* `Install`ボタンをクリックするとポップアップが表示され、続行するには再度`Install`をクリックしてください。
+
+image::quickstart-ui-elemental-plugin-install.png[{elemental-product-name}プラグインインストール]。
+
+* `Installed`タブに、`elemental`プラグインが現在リストされています。
+
+[NOTE]
+====
+`elemental`プラグインがリストされていて、ステータスが`Installing...`のままの場合は、ページを更新してください。`elemental`プラグインは正しく表示されます。
+====
+
+`elemental`プラグインがインストールされると、Rancher Managerメニューに`OS Management`オプションが表示されます。表示されない場合は、ページを更新してください。
+
+image::quickstart-ui-elemental-plugin-menu.png[Rancher Manager OS管理メニュー]。
+
+== エレメンタルオペレーターをインストールします。
+
+[NOTE]
+====
+以下のガイドでは、{elemental-product-name} UIを通じてオペレーターをインストールする方法を示します。しかし、マーケットプレイスから直接インストールすることもできます。
+====
+
+ナビゲーションメニューのOS管理ボタンをクリックします。
+
+オペレーターがまだインストールされていない場合、エレメンタルUIは`Install {elemental-product-name} Operator`ボタンをクリックすることでデプロイできるようにします。
+
+image::quickstart-ui-extension-operator-button.png[エレメンタルオペレーターをデプロイするボタン]。
+
+オペレーターをインストールするためにRancherマーケットプレイスにリダイレクトされます。
+
+`Next`ボタンをクリックします。
+
+image::quickstart-ui-extension-operator-install-1.png[インストール{elemental-product-name}オペレーターのスクリーンショット1]
+
+この画面では、カスタマイズするかデフォルト値を使用できます。続行するには`Install`をクリックしてください。
+
+image::quickstart-ui-extension-operator-install-2.png[インストール{elemental-product-name}オペレーターのスクリーンショット2]
+
+``elemental-operator-crds``と`elemental-operator`が`cattle-elemental-system`ネームスペースにデプロイされているのが表示されるはずです。
+
+image::quickstart-ui-extension-operator-install-3.png[インストール{elemental-product-name}オペレーターのスクリーンショット3]
+
+[CAUTION]
+====
+それらが表示されない場合は、ページの上部で正しいネームスペースを選択していることを確認してください。
+====
+
+== マシン登録エンドポイントを追加します。
+
+OS管理ダッシュボードで、`Create Registration Endpoint`ボタンをクリックします。
+
+image::quickstart-ui-registration-endpoint-create.png[OS管理登録エンドポイント]
+
+ここでは、各詳細をそれぞれの場所に入力するか、YAMLとして編集して一度にエンドポイントを作成することができます。ここではすべてのフィールドを編集します。
+
+image::quickstart-ui-registration-endpoint-create-details.png[UIを使用して登録エンドポイントを作成する]
+
+[IMPORTANT]
+.主なオプション
+====
+`name: elemental-cluster1`: 必要に応じてこれを変更してください
+
+`device-selector`:xref:references/machineregistration-reference.adoc#_config_elemental_install_device_selector[デバイスセレクター]フィールドは、インストール中にデバイスを動的に選択するために使用できます。このフィールドには、選択したいデバイスを選択するためのルールのリストが含まれています。
+
+`snapshotter`:OSイメージ内のスナップショットを管理するために使用されるデバイスタイプ。
+====
+
+マシン登録エンドポイントを作成すると、それはアクティブとして表示されるはずです。
+
+image::quickstart-ui-registration-endpoint-complete.png[登録エンドポイントに登録されたマシン]
+
+== インストール（シード）イメージの準備
+
+これが最後のステップです。初期登録設定を含むシードイメージを準備する必要があります。そうすれば、自動登録、インストール、クラスターの一部として完全に展開されることができます。ファイルの内容は、ノードが登録するために必要な登録URLと、セキュアに接続するための適切なサーバー証明書に過ぎません。
+
+このシードイメージは、無限の数のマシンをプロビジョニングするために使用できます。
+
+シードイメージは、上記のKubernetesリソースとして作成され、`Build Media`ボタンを使用して構築できますが、最初にISOまたはRAWイメージを選択する必要があります。
+
+ISOとは異なり、ISOでは2つのデバイス（ISOを持つデバイスと{elemental-product-name}をインストールするための別のディスク）が必要ですが、RAWイメージは単一のデバイスからブートし、直接オペレーティングシステムをデバイスにインストールすることを可能にします。
+RAWイメージにはブートパーティションとリカバリーパーティションのみが含まれており、最初にリカバリーモードでブートして{elemental-product-name}をインストールします（情報として、このプロセスはxref:node-operational-tasks/reset.adoc#_reset_workflow[リセット]のものに似ています）。
+
+image::quickstart-ui-registration-endpoint-build-media.png[登録エンドポイントでメディアを構築する]
+
+ビルドが完了すると、`Download Media`ボタンを使用してメディアをダウンロードできます：
+
+image::quickstart-ui-registration-endpoint-download-media.png[登録エンドポイントでメディアをダウンロードする]
+
+このイメージでノードをブートできるようになり、ノードは次のようになります：
+
+* 登録URLを使用して登録し、マシンごとの`MachineInventory`を作成します。
+* 指定されたデバイスにSLE Microをインストールします。
+* 再起動
+
+== マシンインベントリ
+
+ノードが初めて起動する際、Rancher Managerに接続し、各ノードのためにxref:references/machineinventory-reference.adoc[`Machine Inventory`]が作成されます。
+
+image::quickstart-ui-machine-inventory-menu.png[マシンインベントリメニュー]
+
+カスタム列は`Machine Inventory Labels`に基づいており、`Machine Registration Endpoint`を作成する際に追加できます：
+
+image::quickstart-ui-registration-endpoint-hardware-labels.png[マシン登録エンドポイントハードウェアラベル]
+
+次のスクリーンショットでは、`Hardware Labels`がカスタム列として使用されています：
+
+縦3点リーダメニューをクリックすることで、カスタム列を追加することもできます。
+
+image::quickstart-ui-machine-inventory-custom-columns.png[マシンインベントリカスタム列]
+
+最後に、これらのラベルを使用して`Machine Inventory`をフィルタリングすることもできます。
+
+例えば、AMDマシンのみを表示したい場合は、以下のように`CPUModel`でフィルタリングできます：
+
+image::quickstart-ui-machine-inventory-filtering.png[マシンインベントリフィルタリング]
+
+== 最初の{elemental-product-name}クラスターを作成します。
+
+では、`Machine Inventory`を使用して`Create {elemental-product-name} Cluster`をクリックしてクラスターを作成しましょう：
+
+image::quickstart-ui-create-cluster-button.png[クラスター作成{elemental-product-name}ボタン]
+
+{elemental-product-name}クラスターには、K3sまたはRKE2のいずれかをKubernetes用に選択できます。
+
+image::quickstart-ui-create-cluster-standard-screen-.png[{elemental-product-name}クラスター作成画面]
+
+ほとんどのオプションはRancherから来ているため、すべての可能性を詳細に説明することはありません。
+詳細を知りたい場合は、https://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-deployment/configuration/k3s.html[Rancher Manager K3s配布構成ドキュメント]またはhttps://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-deployment/configuration/rke2.html[Rancher Manager RKE2配布構成ドキュメント]を確認してください。
+
+しかし、`Inventory of Machines Selector Template`セクションを強調することが重要です。
+
+それにより、以前に定義された`Machine Inventory Labels`を使用して、どの`Machine Inventory`を使用して{elemental-product-name}クラスターを作成するかを選択できます。
+
+image::quickstart-ui-create-cluster-machine-selector-template.png[マシンインベントリセレクターテンプレートを使用]
+
+私たちの3つのマシンインベントリには、キー`AuthenticAMD`を持つラベル`CPUVendor`が含まれているため、3台のマシンが{elemental-product-name}クラスターを作成するために使用されます。

@@ -1,5 +1,6 @@
 = Release Notes
-:revdate: 2026-03-27
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2026-04-01
 :page-revdate: {revdate}
 
 The {elemental-product-name} project stack is made of various components such as the `Operator` and `UI` for example.

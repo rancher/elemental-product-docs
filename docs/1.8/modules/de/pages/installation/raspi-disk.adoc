@@ -1,0 +1,56 @@
+= So erstellen Sie rohe Festplattenabbilder für Raspberry Pi
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2024-09-24
+:page-revdate: {revdate}
+
+Diese Anleitung zeigt, wie wir ein rohes Festplattenabbild erstellen können, das auf eine SD-Karte geschrieben und ohne andere Installationsmedien gestartet werden kann.
+
+[CAUTION]
+====
+Alle Daten auf der SD-Karte werden gelöscht, bitte verwenden Sie nur eine SD-Karte, auf der sich nichts Wichtiges befindet.
+
+Die SD-Karte muss ausreichend groß (32 GB oder mehr) und *schnell* (!!) sein.
+====
+
+.SeedImage-Ressource
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: SeedImage
+metadata:
+  name: fire-img
+  namespace: fleet-default
+spec:
+  type: raw
+  baseImage: registry.opensuse.org/isv/rancher/elemental/staging/containers/suse/sl-micro/6.0/baremetal-os-container:latest
+  targetPlatform: linux/arm64
+  registrationRef:
+    apiVersion: elemental.cattle.io/v1beta1
+    kind: MachineRegistration
+    name: fire-nodes
+    namespace: fleet-default
+----
+
+Überprüfen Sie die Protokolle für den Build-Pod mit:
+
+[,shell]
+----
+kubectl logs -n fleet-default fire-img -f -c build
+----
+
+Wenn der Build abgeschlossen ist, können wir die Abbilddatei mit wget herunterladen:
+
+[,shell]
+----
+wget --no-check-certificate $(kubectl get seedimage -n fleet-default fire-img -o jsonpath="{.status.downloadURL}") -O sle-micro.arm64.raw
+----
+
+Jetzt können wir das `.raw` Abbild auf die SD-Karte schreiben. Dies kann mit `dd` in der Linux-Befehlszeile erfolgen, wenn Sie mit diesem Befehl vertraut sind.
+https://www.opensuse.org[openSUSE] hat schöne Anleitungen, wie man ein Abbild auf ein Speichermedium für https://en.opensuse.org/SDB:Live_USB_stick[Linux],
+https://en.opensuse.org/SDB:Create_a_Live_USB_stick_using_Windows[Windows] und https://en.opensuse.org/SDB:Create_a_Live_USB_stick_using_macOS[OS X] schreibt.
+
+== Starten des Rechners
+
+Das rohe Festplattenabbild wird nur die EFI-Partition, die OEM-Partition und die Wiederherstellungspartition enthalten. Beim ersten Booten wird das System in das Wiederherstellungssystem booten, um die Partitionen zu erweitern und fehlende Partitionen hinzuzufügen. Nach der Erweiterung wird es sich bei rancher registrieren und neu starten.
+
+Wenn während der Registrierungsphase ein Fehler auftritt, kann das Journal mit `journalctl -u elemental-register-reset` gefunden werden.

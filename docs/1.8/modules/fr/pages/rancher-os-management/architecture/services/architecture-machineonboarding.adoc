@@ -1,0 +1,15 @@
+= Intégration de machines
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-11-06
+:page-revdate: {revdate}
+
+L'objectif du service d'Intégration de machines est d'enregistrer une nouvelle machine dans le catalogue de l'opérateur {elemental-product-name} (xref:references/machineinventory-reference.adoc[MachineInventory] ressources) et de provisionner l'hôte avec le système d'exploitation, en appliquant la configuration souhaitée.
+
+L'Intégration de machines implique les étapes suivantes :
+
+* L'utilisateur crée une ressource xref:references/machineregistration-reference.adoc[MachineRegistration] : la MachineRegistration inclut la configuration requise pour l'installation du système d'exploitation.
+Dès que la MachineRegistration est créée, l'Opérateur {elemental-product-name} expose un point de terminaison HTTP _d'enregistrement_ : c'est le point d'entrée requis par les hôtes en cours d'intégration pour s'enregistrer auprès de l'opérateur.
+* L'utilisateur demande une image auto-installante via une ressource xref:references/seedimage-reference.adoc[SeedImage] : elle nécessite uniquement une référence à une ressource MachineRegistration et à une image de conteneur OS compatible avec le Toolkit {elemental-product-name}.
+Dès que la SeedImage est créée, l'Opérateur {elemental-product-name} déclenche le processus de construction de la ressource auto-installante image: once completed, the URL is exposed in the `status.downloadURL` field of the xref:references/seedimage-reference.adoc[SeedImage].
+* L'utilisateur télécharge l'image auto-installante et l'utilise pour démarrer un hôte non provisionné : l'hôte https://documentation.suse.com/cloudnative/os-manager/latest/en/rancher-os-management/authentication.html[s'authentifie] au _point de terminaison d'enregistrement_ de l'Opérateur {elemental-product-name}, obtient la configuration complète stockée dans la MachineRegistration et installe le système d'exploitation sur le dispositif de stockage local. Dès que l'hôte a terminé le processus d'enregistrement, l'Opérateur {elemental-product-name} crée une ressource unique xref:references/machineinventory-reference.adoc[MachineInventory] pour suivre l'hôte.
+L'image auto-installante peut être utilisée pour intégrer un nombre quelconque d'hôtes.

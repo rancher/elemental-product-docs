@@ -1,0 +1,469 @@
+= 机器注册参考
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+机器注册资源允许：
+
+* 配置注册过程
+* 提供操作系统安装参数
+* 定义为注册机器启用的 xref:rancher-os-management/architecture/services/architecture-services.adoc[{elemental-product-name} 服务。一旦创建，它会生成注册 URL，供节点注册并启动 xref:rancher-os-management/architecture/services/architecture-machineonboarding.adoc[机器入驻] 过程。
+
+机器注册有一个 `Ready` 条件，当 {elemental_operator_name} 成功生成注册 URL 和相关 `ServiceAccount` 时，该条件变为真。从此时起，目标主机可以连接到注册 URL，启动配置过程。
+
+对注册 URL 的 HTTP GET 请求返回 _注册文件_：一个 .yaml 文件，包含注册数据（即刚创建的机器注册中的 _spec:config:elemental:registration_ 部分）。
+注册文件包含所有必需的数据，以允许目标主机执行自我注册并启动 {elemental-product-name} 配置过程。
+
+可以在 `MachineRegistration` 资源规范下配置多个键。
+
+.计算机注册
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: MachineRegistration
+metadata:
+  name: my-nodes
+  namespace: fleet-default
+spec:
+  machineName: name
+  machineInventoryLabels:
+    label: value
+  machineInventoryAnnotations:
+    annotation: value
+  config:
+    cloud-config:
+        ...
+    elemental:
+        registration:
+            ...
+        install:
+            ...
+----
+
+== `config.cloud-config`
+
+包含要注入节点的云配置。
+支持 yip 和 cloud-init 语法。有关完整信息，请参见 xref:references/cloud-config-reference.adoc[云配置参考]。
+
+== `config.network`
+
+包含支持与 https://github.com/kubernetes-sigs/cluster-api/blob/main/docs/proposals/20220125-ipam-integration.md#ipam-provider[CAPI IPAM 提供者] 集成的声明式网络配置。 +
+有关完整信息，请参见 xref:operator-operational-tasks/declarative-networking/networking.adoc[声明式网络参考]。
+
+|===
+| 键 | 类型 | 默认值 | 说明
+
+| 配置程序
+| 字符串
+| nmc
+| 要使用的网络配置程序（`nmc`、`nmstate` 或 `nmconnections`）
+
+| ipAddresses
+| objRefMap
+| 空
+| `IPPool` 引用的映射。映射键可用于网络配置模板中的 IP 地址替换。
+
+| config
+| obj
+| 空
+| 网络配置模板。语法因使用的 `configurator` 而异。
+|===
+
+== `config.elemental.registration`
+
+包含用于连接和初始注册到 {elemental_operator_name} 的配置。
+
+支持以下值：
+
+|===
+| 键 | 类型 | 默认值 | 说明
+
+| url
+| 字符串
+| 空
+| 连接到 {elemental_operator_name} 的 URL
+
+| ca-cert
+| 字符串
+| 空
+| 用于验证服务器在 'url' 提供的证书的 CA（如果证书未由公共 CA 签名，则必需）
+
+| no-smbios
+| 布尔
+| false
+| 是否应将 SMBIOS 数据发送到 {elemental_operator_name}
+
+| no-toolkit
+| 布尔
+| false
+| 禁用 {elemental_toolkit_url}[{elemental_toolkit_name"}] 支持，并允许注册 xref:operator-operational-tasks/unmanaged-os.adoc[未管理的操作系统]
+|===
+
+[CAUTION]
+====
+以下值仅用于开发目的。
+====
+
+|===
+| 键 | 类型 | 默认值 | 说明
+
+| 鉴定
+| 字符串
+| tpm
+| 注册时使用的身份验证方法，可以是 `tpm`、`mac` 或 `sys-uuid` 之一。有关更多信息，请参见 xref:rancher-os-management/authentication.adoc[身份验证] 
+
+| emulate-tpm
+| 布尔
+| false
+| 这将使用 TPM 的软件仿真（对于没有 TPM 硬件的主机是必需的）
+
+| emulated-tpm-seed
+| int64
+| 1 
+| 固定种子以用于 'emulate-tpm'。设置为 -1 以获取随机种子。有关更多信息，请参见 xref:operator-operational-tasks/tpm.adoc[TPM]。
+|===
+
+== `config.elemental.install`
+
+包含当从 .iso 映像启动时，通过 `elemental-register --install` 应用的安装配置，并传递给 https://github.com/rancher/elemental-toolkit/blob/main/docs/elemental_install.md[`elemental install`]。
+
+支持以下值：
+
+|===
+| 键 | 类型 | 默认值 | 说明
+
+| 固件
+| 字符串
+| efi
+| 要安装的固件（'efi' 或 'bios'）
+
+| device
+| 字符串
+| 空
+| 要安装系统的设备
+
+| 设备选择器
+| 字符串
+| 空
+| 选择要安装系统的设备的规则
+
+| 不格式化
+| 布尔
+| false
+| 不格式化磁盘。假定 COS_STATE、COS_RECOVERY、COS_PERSISTENT、COS_OEM 分区已存在于目标磁盘上。
+
+| config-urls
+| list
+| 空
+| Cloud-init 配置文件位置
+
+| iso
+| 字符串
+| 空
+| 从 .iso 映像 URL 执行安装，而不是运行中的 .iso 映像。
+
+| system-uri
+| 字符串
+| 空
+| 设置系统映像源及其类型（例如 'docker:registry.org/image:tag'），而不是使用运行中的 .iso 映像。
+
+| debug
+| 布尔
+| false
+| 启用调试输出
+
+| tty
+| 字符串
+| 空
+| 将命名的 tty 添加到 grub。
+
+| 关机
+| 布尔
+| false
+| 安装后关闭系统
+
+| reboot
+| 布尔
+| false
+| 安装后重启系统
+
+| snapshotter
+| obj
+| 空
+| 快照工具配置。请参见<<#_config_elemental_install_snapshotter,`config.elemental.install.snapshotter`参考>>。
+
+| 弹出 CD
+| 布尔
+| false
+| 尝试在重启时弹出 CD
+|===
+
+[CAUTION]
+====
+如果同时使用 `iso` 和 `system-uri`，则 `iso` 的值优先。
+====
+
+只需指定 `device` 或 `device-selector` 字段之一即可成功安装，其余参数均为可选。
+
+如果同时指定了 `device` 和 `device-selector`，则使用 `device` 的值，忽略 `device-selector`。
+
+.点击这里查看详细信息
+[%collapsible]
+====
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: MachineRegistration
+metadata:
+  name: my-nodes
+  namespace: fleet-default
+spec:
+  config:
+    elemental:
+      install:
+        device: /dev/sda
+        debug: true
+        reboot: true
+        eject-cd: true
+        system-uri: registry.suse.com/rancher/sle-micro/5.5:latest
+----
+====
+
+== `config.elemental.install.device-selector`
+
+`device-selector` 字段可用于在安装过程中动态选择设备。该字段包含如下规则的列表：
+
+.点击这里查看详细信息
+[%collapsible]
+====
+.基于设备名称的示例设备选择器
+[,yaml]
+----
+device-selector:
+  - key: Name
+    operator: In
+    values:
+      - /dev/sda
+      - /dev/vda
+      - /dev/nvme0
+----
+====
+
+.点击这里查看详细信息
+[%collapsible]
+====
+.基于设备大小的示例设备选择器
+[,yaml]
+----
+device-selector:
+  - key: Size
+    operator: Lt
+    values:
+      - 100Gi
+  - key: Size
+    operator: Gt
+    values:
+      - 30Gi
+----
+====
+
+当前支持的操作符有：
+
+|===
+| 运算符 | 说明
+
+| 的
+| 键与提供的值之一匹配
+
+| NotIn
+| 键与提供的值都不匹配
+
+| Gt
+| 该键大于提供的单个值
+
+| Lt
+| 该键小于提供的单个值
+|===
+
+当前支持的键有：
+
+|===
+| 键 | 说明
+
+| 名称
+| 设备名称（例如 /dev/sda）
+
+| 大小
+| 设备大小（值可以使用 Kubernetes 资源指定，例如 100Gi）
+|===
+
+规则是通过 AND 连接在一起的，这意味着所有规则必须匹配目标设备。
+
+== `config.elemental.install.snapshotter`
+
+您可以配置 Elemental 如何管理已安装机器上的快照。例如，当 xref:node-operational-tasks/upgrade.adoc[升级] 机器时，会为新的操作系统映像创建快照。
+
+loopdevice 快照器将在 ext4 文件系统上解压新镜像，而 btrfs 快照器将利用底层 https://archive.kernel.org/oldwiki/btrfs.wiki.kernel.org/index.php/SysadminGuide.html#Snapshots[`btrfs` 快照] 功能，大大减少存储多个快照所需的磁盘空间。
+
+|===
+| 键 | 类型 | 默认值 | 说明
+
+| type
+| 字符串
+| loopdevice
+| 用于管理操作系统镜像中快照的设备类型（'loopdevice' 或 'btrfs'）。
+
+|===
+
+== `config.elemental.reset`
+
+包含通过 `elemental-register --reset` 应用的重置配置，当从恢复分区启动并传递给 https://github.com/rancher/elemental-toolkit/blob/main/docs/elemental_reset.md[`elemental reset`] 时。
+
+支持以下值：
+
+|===
+| 键 | 类型 | 默认值 | 说明
+
+| 已启用
+| 布尔
+| false
+| 从此机器注册创建的 MachineInventories 将启用重置功能
+
+| reset-persistent
+| 布尔
+| true
+| 格式化 COS_PERSISTENT 分区
+
+| reset-oem
+| 布尔
+| true
+| 格式化 COS_OEM 分区
+
+| config-urls
+| list
+| 空
+| Cloud-init 配置文件
+
+| system-uri
+| 字符串
+| 空
+| 设置系统映像源及其类型（例如 'docker:registry.org/image:tag'），而不是使用运行中的 .iso 映像。
+
+| debug
+| 布尔
+| false
+| 启用调试输出
+
+| 关机
+| 布尔
+| false
+| 在重置后关闭系统
+
+| reboot
+| 布尔
+| true
+| 在重置后重启系统
+|===
+
+.点击这里查看详细信息
+[%collapsible]
+====
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: MachineRegistration
+metadata:
+  name: my-nodes
+  namespace: fleet-default
+spec:
+  config:
+    elemental:
+      reset:
+        enabled: true
+        reset-persistent: true
+        reset-oem: true
+        reboot: true
+        system-uri: registry.suse.com/rancher/sle-micro/5.5:latest
+----
+====
+
+== `machineName`
+
+这指的是将设置为节点的名称，以及需要主机名的 Kubernetes 资源（例如，RKE2 部署的 Pod，它们会将节点主机名作为 Pod 名称的一部分）的 `String` 类型。
+
+[NOTE]
+====
+当`elemental:registration:no-smbios`被设置为`false`（默认值）时，machineName会与https://www.dmtf.org/standards/smbios[SMBIOS]数据进行插值，这允许您存储硬件信息。
+
+如果未指定`machineName`，将设置一个默认值，形式为`m-$UUID`。
+如果可用，将从SMBIOS数据中检索UUID，否则将生成一个随机UUID。
+====
+
+.点击这里查看详细信息
+[%collapsible]
+====
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: MachineRegistration
+metadata:
+  name: my-nodes
+  namespace: fleet-default
+spec:
+  machineName: hostname-test-4
+----
+====
+
+== `machineInventoryLabels`
+
+将设置为从此 `MachineRegistration` 创建的 `MachineInventory` 的标签，`Key: value` 类型。这些标签将用于在xref:references/machineinventoryselectortemplate-reference.adoc[MachineInventorySelectorTemplate]中建立选择标准。
+
+{elemental-product-name}节点将每24小时运行一次`elemental-register`。 +
+可以更新`machineInventoryLabels`，以便所有注册的节点将在下次成功注册更新时应用新标签。
+
+[IMPORTANT]
+====
+当`elemental:registration:no-smbios`被设置为`false`（默认值）时，标签会与https://www.dmtf.org/standards/smbios[SMBIOS]数据进行插值。这允许在自定义标签中存储硬件信息。
+====
+
+.点击这里查看详细信息
+[%collapsible]
+====
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: MachineRegistration
+metadata:
+  name: my-nodes
+  namespace: fleet-default
+spec:
+  machineInventoryLabels:
+    my.prefix.io/element: fire
+    my.prefix.io/cpus: 32
+    my.prefix.io/manufacturer: "${System Information/Manufacturer}"
+    my.prefix.io/productName: "${System Information/Product Name}"
+    my.prefix.io/serialNumber: "${System Information/Serial Number}"
+    my.prefix.io/machineUUID: "${System Information/UUID}"
+----
+====
+
+== `machineInventoryAnnotations`
+
+将设置为从此 `MachineRegistration` 创建的 `MachineInventory` 的注释，`Key: value` 类型。
+
+.点击这里查看详细信息
+[%collapsible]
+====
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: MachineRegistration
+metadata:
+  name: my-nodes
+  namespace: fleet-default
+spec:
+  machineInventoryAnnotations:
+    owner: bob
+    version: 1.0.0
+----
+====

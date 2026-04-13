@@ -1,0 +1,330 @@
+= {elemental-product-name} コマンドライン方式
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-11-06
+:page-revdate: {revdate}
+
+このガイドに従って、RKE2/k3s を使って自動デプロイされたクラスターを Rancher で管理します。必要なのは {elemental-product-name} ISO だけです。
+
+include::partial$quickstart-prereqs.adoc[]
+
+include::partial$operator-install.adoc[]
+
+== Kubernetesリソースを準備します
+
+ノードのデプロイメントは、`MachineRegistration`同じ設定（ディスクドライブ、ネットワークなど）を共有する一連のマシンを特定するから始まります。
+
+`MachineRegistration`は、ターゲットホストに{elemental-product-name} OSをデプロイするために必要です。起動時に、各ホストは{elemental-product-name}オペレーターに登録され、新しいホストを`MachineInventory`リソースで追跡します。
+
+次に、クラスターリソースを持ち、どのマシンがそのクラスターに属するかを知るために`MachineInventorySelectorTemplate`を使用します。
+
+このセレクターは、`MachineInventory`に設定されたラベルに基づくシンプルなマッチャーです。セレクターがラベル`cluster-id`の値`cluster-id-val`にマッチし、`MachineInventory`が同じ`cluster-id`:``cluster-id-val`ラベルを持っている場合、それはマッチし、クラスターの一部として起動します。
+
+このクイックスタートでは、_volcano_という名前のクラスターをプロビジョニングするためのリソースをデプロイします。このクラスターは、ラベル_element_:__fire__を持つ``MachineInventory``にマッチします。
+
+[tabs]
+==========
+リソースYAMLを手動で作成する::
++
+========
+次のファイルを作成する必要があります：
+
+.selector.yaml
+[,yaml]
+----
+include::example$quickstart/selector.yaml[]
+----
+
+ご覧の通り、これはキー`element`、値`fire`のラベルが設定された`MachineInventory`を探す非常にシンプルなセレクターです。
+
+.cluster.yaml
+[,yaml]
+----
+include::example$quickstart/cluster.yaml[]
+----
+
+ご覧の通り、`machineConfigRef`は種類`MachineInventorySelectorTemplate`で名前`fire-machine-selector`です：それは私たちが作成したセレクターにマッチします。https://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-deployment/configuration/rke2.html#_machineglobalconfig[`machineGlobalConfig`]やhttps://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-deployment/configuration/rke2.html#_machineselectorconfig[`machineSelectorConfig`]のようなクラスターオプションに関する詳細情報は、https://documentation.suse.com/cloudnative/rancher-manager/latest/en/about-rancher/what-is-rancher.html[Rancher Managerのドキュメント]で直接取得できます。
+
+[tabs]
+======
+登録::
++
+====
+.register.yaml
+[,yaml]
+----
+include::example$quickstart/registration.yaml[]
+----
+====
+
+Raspberry Piの登録::
++
+====
+.rpi-registration.yaml
+[,yaml]
+----
+include::example$quickstart/rpi-registration.yaml[]
+----
+
+Raspberry Piにデプロイするには、エミュレートされたTPMを有効にする必要があります（Raspberry Pi用のハードウェアTPMを持っている場合を除く）。また、`disable-boot-entry: true`を介してEFIストアへの書き込みを無効にする必要があります（Raspberry Piにはそれがないため）。
+====
+======
+
+`MachineRegistration`は、登録およびインストールの構成を定義します。作成されると、{elemental-product-name}オペレーターは、管理クラスターにアクセスし、インストール中にマシンを登録するために`elemental-register`バイナリと共に使用されるユニークなURLを公開します。登録が成功すると、オペレーターはマシンを追跡する`MachineInventory`を作成し、これを使用してマシンをクラスターのノードとしてプロビジョニングできます。ここで、セレクターに一致するラベルを定義しますが、作成された`MachineInventory`に後で追加することもできます。
+
+[WARNING]
+====
+上記のregistration.yamlを修正して、ノード構成に基づいて有効なデバイスを指す適切なインストールデバイスを設定してください（例：/dev/sda、/dev/vda、/dev/nvme0など）。
+
+Raspberry PiのSDカードは通常`/dev/mmcblk0`です。
+====
+
+[tabs]
+======
+シードイメージ（x86_64）::
++
+====
+.seedimage.yaml
+[,yaml]
+----
+include::example$quickstart/seedimage.yaml[]
+----
+
+`SeedImage`は、ターゲットマシンで{elemental-product-name}によるプロビジョニングを起動するための、ブート可能なISO（いわゆる*シードイメージ*）を生成するために必要です。
+
+すべての設定ファイルを定義したので、これらを適用してKubernetesに適切なリソースを作成しましょう：
+
+[,console]
+----
+kubectl apply -f selector.yaml
+kubectl apply -f cluster.yaml
+kubectl apply -f registration.yaml
+kubectl apply -f seedimage.yaml
+----
+====
+
+Raspberry Pi用シードイメージ::
++
+====
+`SeedImage`リソースは、*シードイメージ*（ブート可能なイメージ）を自動的に作成するもので、Raspberry PiのISOはまだサポートしていません（生のディスクイメージを作成するためのガイドは[こちら](raspi-disk.md)をクリックしてください）。
+
+次のセクションで手動で*シードイメージ*を生成します。
+
+すべての設定ファイルを定義したので、これらを適用してKubernetesに適切なリソースを作成しましょう：
+
+[,console]
+----
+kubectl apply -f selector.yaml
+kubectl apply -f cluster.yaml
+kubectl apply -f registration.yaml
+----
+====
+======
+========
+
+{elemental-product-name}ドキュメントリポジトリからのクイックスタートファイルを直接使用::
++
+========
+[{elemental-product-name}ドキュメントリポジトリ](https://github.com/rancher/elemental-docs)からクイックスタートの例リソースファイルを直接適用できます。
+
+[WARNING]
+====
+クイックスタートの例リソースファイルは、ターゲットホストのデフォルトストレージが`/dev/sda`にマッピングされていると仮定しています。ホストストレージデバイスファイルが異なる場合は、適用する前にregistration.yamlファイルを変更し、`config.elemental.install.device`をそれに応じて変更する必要があります。
+====
+
+[,console]
+----
+kubectl apply -f https://raw.githubusercontent.com/rancher/elemental-docs/main/examples/quickstart/selector.yaml
+kubectl apply -f https://raw.githubusercontent.com/rancher/elemental-docs/main/examples/quickstart/cluster.yaml
+kubectl apply -f https://raw.githubusercontent.com/rancher/elemental-docs/main/examples/quickstart/registration.yaml
+kubectl apply -f https://raw.githubusercontent.com/rancher/elemental-docs/main/examples/quickstart/seedimage.yaml
+----
+
+[NOTE]
+====
+現在、`seedimage.yaml`はaarch64をサポートしていません。
+====
+========
+==========
+
+== インストール（シード）イメージの準備
+
+これが最後のステップです：初期登録構成を含む{elemental-product-name}シードイメージが必要です。これにより、自動登録、インストール、およびクラスターの一部として完全に展開されることができます。
+
+[NOTE]
+.メモ
+====
+初期登録構成ファイルは、`Machine Registration`を作成するときに生成されます。
+
+次のようにダウンロードできます：
+
+[,shell]
+----
+wget --no-check-certificate `kubectl get machineregistration -n fleet-default fire-nodes -o jsonpath="{.status.registrationURL}"` -O initial-registration.yaml
+----
+====
+
+登録設定ファイルの内容は、ノードが登録するために必要な登録URL、適切なサーバー証明書、および登録プロセスのためのいくつかのオプションに過ぎません。
+
+生成されたシードイメージは、任意の数のマシンをプロビジョニングするために使用できます。
+
+[tabs]
+========
+クイックスタート.isoのダウンロード::
++
+======
+上記の`SeedImage`リソースによって作成されたシードイメージは、次のスクリプトを介してISOとしてダウンロードできます：
+
+[,shell]
+----
+kubectl wait --for=condition=ready pod -n fleet-default fire-img 
+wget --no-check-certificate `kubectl get seedimage -n fleet-default fire-img -o jsonpath="{.status.downloadURL}"` -O elemental.x86_64.iso 
+----
+
+最初のコマンドはISOが構築されて準備が整うのを待ち、2番目のコマンドはそれを現在のディレクトリに`elemental-x86_64.iso`という名前でダウンロードします。
+======
+
+シードイメージ（aarch64）を手動で準備する::
++
+======
+{elemental-product-name}のRaspberry Piへのサポートは、現時点では主にデモ目的のためのものです。したがって、インストールプロセスはx86-64に似たモデルになっています。シードイメージ（この場合はUSBスティック）からブートし、ストレージメディア（Raspberry Pi用のSDカード）にインストールします。
+
+*事前構築されたシードイメージを取得中*
+
+[,shell]
+----
+wget -q https://download.opensuse.org/repositories/isv:/Rancher:/SUSE® Rancher Prime OS Manager:/Stable/containers/rpi.raw
+----
+
+_ダウンロードの確認中_
+
+ダウンロードしたアーティファクトの整合性を確認するために、チェックサムの確認を行う必要があります：
+
+[,shell]
+----
+wget -q https://download.opensuse.org/repositories/isv:/Rancher:/SUSE® Rancher Prime OS Manager:/Stable/containers/rpi.raw.sha256 sha256sum -c rpi.raw.sha256
+----
+
+これにより、`rpi.raw: OK`が出力として表示されるはずです。
+
+*登録情報の注入中*
+
+`initial-registration.yaml`の追加はまだスクリプト化されていません。これはまだ手動の処理です：
+
+書き込まれたUSBスティックには2つのパーティションがあります。`RPI_BOOT`にはブートローダーファイルが含まれ、`COS_LIVE`には{elemental-product-name}ファイルが含まれています。`COS_LIVE`パーティションをマウントし、`initial-registration.yaml`を`livecd-cloud-config.yaml`としてこのパーティションに書き込みます。
+
+ファイルマネージャーでUSBスティックをマウントしている場合、このコマンドは登録情報をコピーするために機能するはずです：
+
+[,shell]
+----
+sudo cp initial-registration.yaml /run/media/$USER/COS_LIVE/livecd-cloud-config.yaml
+----
+
+CLIツールを使用することを好む場合：
+
+[,shell]
+----
+IMAGE=rpi.raw 
+DEST=$(mktemp -d) 
+
+SECTORSIZE=$(sfdisk -J $\{IMAGE} | jq '.partitiontable.sectorsize') 
+DATAPARTITIONSTART=$(sfdisk -J $\{IMAGE} | jq '.partitiontable.partitions[1].start') 
+sudo mount -o rw,loop,offset=$(($\{SECTORSIZE}*$\{DATAPARTITIONSTART})) $\{IMAGE} $\{DEST} 
+sudo cp initial-registration.yaml $\{DEST}/livecd-cloud-config.yaml 
+sudo umount $\{DEST} 
+rmdir $\{DEST}
+----
+
+*USBメモリにシードイメージを書き込む*
+
+`.raw`イメージは、USBメモリに書き込んでブートするために必要です。これは、Linuxコマンドラインで`dd`を使用して行うことができます。このコマンドに慣れている場合は、[openSUSE](https://www.opensuse.org)には、[Linux](https://en.opensuse.org/SDB:Live_USB_stick)、[Windows](https://en.opensuse.org/SDB:Create_a_Live_USB_stick_using_Windows)、および[OS X](https://en.opensuse.org/SDB:Create_a_Live_USB_stick_using_macOS)のストレージメディアにイメージを書き込む方法に関する良い指示があります。
+
+*ラズベリーパイを起動する*
+
+USBメモリをアンマウントし、ラズベリーパイに接続してください。
+
+大きな（32GB以上の）**高速** (!!) マイクロSDカードを対応するスロットに挿入してください。
+
+システムをイーサネットに接続します。
+
+電源のサイクルを行うと、Piが再起動します。他のすべてはx86-64と同じです。
+
+[CAUTION]
+====
+マイクロSDカードがパーティションが作成されていない状態であることを確認してください。そうしないと、Piのブートローダーがそれから起動しようとして失敗します。
+====
+
+このイメージでノードを起動できるようになり、ノードは次のことを行います：
+
+* 指定されたregistrationURLで登録し、マシンごとの`MachineInventory`を作成します。
+* 指定されたデバイスにSLE Microをインストールします。
+* 再起動
+======
+========
+
+=== クラスターに参加するための適切なマシンを選択します。
+
+`MachineInventorySelectorTemplate`は、_element:fire_ラベルを持つ``MachineInventory``からクラスターをプロビジョニングするために必要なマシンを選択します。
+`MachineRegistration` `machineInventoryLabels`マップに_element_:__fire__ラベルを追加したので、すべての``MachineInventory``はすでにそのラベルを持っています。
+`MachineRegistration`からラベルをスキップし、後で追加することもできます：
+
+[,shell]
+----
+kubectl -n fleet-default label machineinventory $(kubectl get machineinventory -n fleet-default --no-headers -o custom-columns=":metadata.name") element=fire
+----
+
+``MachineInventory``が_element_:__fire__を持っていると、対応するマシンは選択したプロバイダー（k3s/rke）を介してクラスターを自動的にデプロイします。
+
+数分後、新しいクラスターが完全にプロビジョニングされます！！
+
+== クラスターのためにKubernetesのバージョンとデプロイヤーをどのように選択できますか？
+
+あなたのcluster.yamlファイルには、`Spec`というキーがあり、`kubernetesVersion`と呼ばれています。それは、クラスターに使用されるバージョンとデプロイヤーを設定します。例えば、rke2の場合はKubernetes``v1.24.8``が`v1.24.8+rke2r1`となり、k3sの場合は`v1.24.8+k3s1`です。
+
+すべての互換性のあるバージョンを確認するには、rke/rke2/k3sのバージョンとそのコンポーネントについてのhttps://www.suse.com/suse-rancher/support-matrix/all-supported-versions/[Rancher Support Matrix] PDFを確認してください。
+
+これらのバージョンを取得する方法を知るために、私たちのxref:references/kubernetesversions.adoc[Version doc]を確認することもできます。
+
+`Cluster`リソースに関する詳細情報については、私たちのxref:references/cluster-reference.adoc[Cluster Spec]ページを確認してください。
+
+== 裏で何が起こっているかをどのように追跡できますか？
+
+機械が何をしているかを次の方法で追跡できるはずです：
+
+* ISOブート中：
+ ** マシンにsshで接続します（ユーザー/パス：root/ros）：
+  *** `journalctl -f -t elemental`を実行すると、登録の進行状況（_elemental-register_）と{elemental-product-name}のインストール（_elemental install_）が表示されます。
+* システムがインストールされたら：
+ ** Rancher UIの\-> `Cluster Management`では、新しいクラスターとクラスターの詳細にある`Provisioning Log`を見ることができます。
+ ** マシンにsshで接続します（ユーザー/パス：registration.yamlの`Spec.config.cloud-config.users`の下で設定した内容に応じて）：
+  *** `journalctl -f -u elemental-system-agent`を実行すると、初期のelemental設定と`rancher-system-agent`のインストールの出力が表示されます。
+  *** `journalctl -f -u rancher-system-agent`を実行すると、k3sなどのクラスタコンポーネントの起動の出力が表示されます。
+  *** `journalctl -f -u k3s`を実行すると、k3sデプロイメントのログが表示されます。
+
+== オプション:CLIを介してElemental UI拡張機能をインストールします。
+
+公式のRancher Extensionsリポジトリを追加するために、新しいClusterRepoを作成して適用します。
+
+[source,yaml]
+----
+apiVersion: catalog.cattle.io/v1
+kind: ClusterRepo
+metadata:
+  name: rancher-ui-charts
+spec:
+  gitBranch: main
+  gitRepo: https://github.com/rancher/ui-plugin-charts
+----
+
+Rancher UI拡張チャートのためのhelmリポジトリを追加してください。
+
+[source,shell]
+----
+helm repo add rancher-ui-plugins https://raw.githubusercontent.com/rancher/ui-plugin-charts/main/
+----
+
+Elemental UI拡張機能をインストールしてください。
+
+[source,shell]
+----
+helm install elemental rancher-ui-plugins/elemental -n cattle-ui-plugin-system
+----

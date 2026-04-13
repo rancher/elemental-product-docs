@@ -1,0 +1,79 @@
+= インストール中にLVMボリュームグループディスクを追加する方法
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+この例では、複数のディスクを持つホストをセットアップし、そのうちの一部をLVMセットアップとして使用する様子を説明しています。
+
+例として、私たちは三つのディスク（`/dev/sda`、`/dev/sdb`、`/dev/sdc`）を持つホストを考えます。
+
+最初のディスクは通常のElementalインストールに使用され、残りの二つはLVMグループの一部として使用され、任意の論理ボリュームが作成され、フォーマットされ、ブート時に拡張`fstab`ファイルを介してマウントされます。
+
+この例では、二つの異なる段階でcloud-configステップが必要です。まず、インストール中にLVMボリュームを準備し処理するために、いくつかのxref:references/cloud-config-reference.adoc#_elemental_client_cloud_config_hooks[インストールフック]が必要です。次に、作成されたLVMボリュームが`/etc/fstab`に含まれ、結果としてマウントされることを保証するために、ブート時にcloud-configが必要です。
+
+インストールフックは、次のように`SeedImage.spec.cloud-config`セクションに含めることができます：
+
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: SeedImage
+metadata:
+  name: custom-seed
+  namespace: fleet-default
+spec:
+  ...
+  cloud-config:
+    name: "Create LVM logic volumes over some physical disks"
+    stages:
+      post-install:
+      - name: "Create physical volume, volume group and logical volumes"
+        if: '[ -e "/dev/sdb" ] && [ -e "/dev/sdc" ]'
+        commands:
+        - | 
+          # Create the physical volume, volume group and logical volumes
+          pvcreate /dev/sdb /dev/sdc
+          vgcreate elementalLVM /dev/sdb /dev/sdc
+          lvcreate -L 8G -n elementalVol1 elementalLVM
+          lvcreate -l 100%FREE -n elementalVol2 elementalLVM
+          # Trigger udev detection
+          if [ ! -e "/dev/elementalLVM/elementalVol1" ] || [ ! -e "/dev/elementalLVM/elementalVol2" ]; then
+            sleep 10
+            udevadm settle
+          fi
+          # Ensure devices are already available
+          [ -e "/dev/elementalLVM/elementalVol1" ] || exit 1
+          [ -e "/dev/elementalLVM/elementalVol2" ] || exit 1
+          # Format logical volumes with a known label for later use in fstab
+          mkfs.xfs -L eVol1 /dev/elementalLVM/elementalVol1
+          mkfs.xfs -L eVol2 /dev/elementalLVM/elementalVol2
+----
+
+LVMデバイスは、希望通りに作成され、フォーマットされます。これはインストールフックの良い例です。このセットアップはインストール時に一度だけ必要です。代替として、同じアクションは初回ブート時に行うこともできますが、それは初回ブート時に一度だけ適用されることを保証するために、より洗練されたロジックが必要です。最後に、ブート時のcloud-configデータには、マウントポイント設定が含まれており、マウントをトリガーします。Elemental OSの`fstab`ファイルは一時的であり、ブート時に動的に作成されます。そのため、インストール中には存在せず、インストールフックで使用することはできません。
+
+次の例を考えて、MachineRegistrationリソースの`cloud-config`セクションを使用して`/etc/fstab`ファイルをカスタマイズします：
+
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: MachineRegistration
+metadata:
+  name: my-nodes
+  namespace: fleet-default
+spec:
+  ...
+  config:
+    ...
+    cloud-config:
+      stages:
+        initramfs:
+        - name: "Extend fstab to mount LVM logical volumes at boot"
+          commands:
+          - |
+            echo "LABEL=eVol1 /run/elemental/eVol1  xfs defaults  0 0" >> /etc/fstab
+            echo "LABEL=eVol2 /run/elemental/eVol2  xfs defaults  0 0" >> /etc/fstab
+----
+
+[NOTE]
+====
+`initramfs` xref:references/cloud-config-reference.adoc[ステージ]は、実際のルートツリーに切り替える前の最後のステージです。この段階では、`/etc/fstab`ファイルはすでに存在し、ルートを切り替える前に適応させることができます。最終ルートツリーで動作しているときは、SystemDが残りの初期化を処理し、適用されます。
+====

@@ -1,0 +1,46 @@
+= RancherのためのOS管理
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2026-01-16
+:page-revdate: {revdate}
+
+{elemental-product-name}は、Kubernetesによる完全なクラウドネイティブOSの一元管理を可能にするソフトウェアスタックです。
+
+xref:release-notes.adoc[**最新リリース: v1.8.0**]
+
+{elemental-product-name}スタックは、SLE Microの上にいくつかのパッケージで構成されています:
+
+* *elemental-toolkit* - コンテナを介したOS管理を可能にするOSユーティリティのセットを含みます。dracutモジュール、ブートローダー設定、cloud-initスタイルの設定サービスなどを含みます。
+* *elemental-operator* - Rancher Managerに接続し、MachineRegistrationおよびMachineInventory CRDを処理します。
+* *elemental-register* - machineRegistrationsを介してマシンを登録し、elemental-cliを介してインストールします。
+* *elemental-cli* - elemental-toolkitに基づく派生物をインストールします。基本的には、私たちのA/Bインストールおよびアップグレードシステムに基づくインストーラーです。
+* *rancher-system-agent* - インストールされたシステム上で実行され、Rancher Managerからシステム上でインストールおよび実行するための指示（"プラン"）を受け取ります。
+
+クラスターのノードOSは、{elemental_cli_name}を通じてコンテナイメージで構築および維持され、新しいホストには、{elemental_ui_url}[{elemental_ui_name}]（https://www.rancher.com/products/rancher[Rancher Manager]用）または{elemental_cli_url}[{elemental_cli_name}]を使用してインストールできます。
+
+{elemental_operator_url}[{elemental_operator_name}]および{ranchersystemagent_url}[{ranchersystemagent_name}]により、Rancher Managerは、ノード上のOSのインストールと管理から、新しいK3sやRKE2クラスターの一元的なプロビジョニングまで、{elemental-product-name}クラスターを完全に制御できます。
+
+== {elemental-product-name}x86-64ハードウェア上の
+
+{elemental-product-name}は、Rancher v2.7.0からx86-64で運用準備完了となり、完全にサポートされています。
+
+== {elemental-product-name}ARMハードウェア上の
+
+ARM（aarch64）は、開発段階で機能しています。ARMは現在、k3s 1.24.8（またはそれ以降）を使用してRaspberry Pi 4 Model Bでのみテストされています。フィードバックは歓迎です。
+
+== {elemental-product-name}他のハードウェア上の
+
+{elemental-product-name}は現在「エッジ」シナリオを対象としており、他のハードウェアはサポートしていません。市場の進展に応じて再評価します。
+
+== 試してみる準備はできていますか？
+
+お好みの方法で{elemental-product-name}クラスターを立ち上げてください。
+
+* Rancher Managerxref:quickstarts/quickstart-ui.adoc[{elemental-product-name}プラグイン]を使用して
+* xref:quickstarts/quickstart-cli.adoc[{elemental-product-name}CLI]を使用して
+
+[NOTE]
+.次の手順
+====
+詳細を知りたいですか？xref:rancher-os-management/architecture/architecture.adoc[アーキテクチャ]セクションをご覧いただくか、{elemental_slack_url}[{elemental_slack_name}]にお問い合わせください。
+====
+

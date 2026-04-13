@@ -1,0 +1,189 @@
+= インストール
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+== 概要
+
+{elemental-product-name}スタックは、OCIコンテナとKubernetesを使用してOS管理を提供します。{elemental-product-name}スタックのインストールは、管理クラスターへの{elemental_operator_name}のインストールと、クラスター ノードにOSを提供するためのインストールメディアの作成と使用を含みます。コンポーネントの相互作用については、xref:rancher-os-management/architecture/architecture.adoc[アーキテクチャ]セクションを参照してください。
+
+インストール構成は、主に登録プロセスの一部として適用され、設定されます。
+登録プロセスは、Rancher管理クラスターにノードを登録し、インストール構成を取得する責任を持つ`elemental-register`（{elemental_operator_name}クライアント部分）によって行われます。
+
+簡単なステップバイステップのデプロイメント手順については、xref:quickstarts/quickstart-cli.adoc[クイックスタート]ガイドを参照してください。
+
+== {elemental-product-name}オペレーターのインストール
+
+{elemental_operator_name}は、{elemental-product-name}のバージョンを管理し、エッジまたはベアメタルインストールを支援するためのマシンインベントリを維持する責任があります。{elemental_operator_name}は、Rancher Managerを含むクラスターを必要とし、ヘルムチャートでインストールできます。
+
+インストール、アンインストール、アップグレード、および構成の詳細については、{elemental_operator_name} xref:references/operatorchart-reference.adoc[ヘルムチャートリファレンス]を参照してください。
+
+== Kubernetesリソースを準備する
+
+{elemental_operator_name}が管理クラスター内で稼働している場合、{elemental-product-name}ベースのクラスターのデプロイメントを準備するために、いくつかのKubernetesリソースが必要です。
+
+* xref:references/machineinventoryselectortemplate-reference.adoc[MachineInventorySelectorTemplate]:
+このリソースは、登録されたボックス（マシンインベントリの一部としてリストされている）を利用可能なRancher 2.6クラスターと照合するための基準を特定します。一致があると、選択されたKubernetesクラスターが登録されたボックスの所有権を取得します。
+* xref:references/machineregistration-reference.adoc[マシン登録]:
+このリソースは、登録を試みる任意のマシンのOSデプロイメントの詳細を定義します。マシン登録は、TPMに基づく認証、OSデプロイメント、およびマシンインベントリへのノードの追加を処理するため、{elemental-product-name}ノードの入口です。これにより、マシンインベントリセレクターテンプレートに基づいて一致がある場合にクラスターに追加できます。MachineRegistrationオブジェクトには、ノードがそれに対して登録するために使用するマシン登録URLが含まれています。
+
+{elemental-product-name}をデプロイするにはRancherクラスターリソースも必要で、xref:quickstarts/quickstart-cli.adoc[クイックスタート]ガイドに示されているように手動で作成するか、Rancher 2.6 UIから作成できます。
+
+== インストールメディアを準備します。
+
+インストールメディアは、OSデプロイメントを開始するために使用されるメディアです。現在、サポートされているメディアはライブ.isoです。ライブISOには登録設定のyamlが含まれている必要があるため、MachineRegistrationが作成された後に作成される必要があります。インストールメディアは、xref:references/seedimage-reference.adoc[シードイメージ]リソースを作成することによって生成されます（xref:quickstarts/quickstart-cli.adoc#_preparing_the_installation_seed_image[クイックスタート]およびxref:operator-operational-tasks/custom-images.adoc#_create_a_custom_bootable_installation_iso[カスタムイメージ]を参照）。
+
+ライブISOは、https://documentation.suse.com/suma/4.3/en/suse-manager/client-configuration/autoinst-distributions.html#based-on-iso-image[SUSEマネージャー]との直接統合のためにPXEブートをサポートしています。
+
+MachineRegistration内では、OSインストールパラメータのサブセットのみが構成可能であり、利用可能なすべてのパラメータはxref:references/machineregistration-reference.adoc[MachineRegistration]のリファレンスページにリストされています。
+
+一般的なオプションを超えてインストールを構成するためには、xref:references/machineregistration-reference.adoc#_config_elemental_install[`elemental.install`]セクションに`config.yaml`設定ファイルをISOに含めることができます（xref:installation/customize-installation/custom-install.adoc#_custom_suse_rancher_prime_os_manager_client_configuration_file[カスタムイメージ]を参照）。
+MachineRegistrationの`elemental.install`セクションの一部として適用された設定は、任意のカスタム`config.yaml`ファイルに含まれる設定の上に適用されます。
+
+おそらくcloud-init設定は、ブート時にデプロイされたノードを構成して設定するのに十分ですが、何らかの理由でfirstbootアクションやスクリプトが必要な場合は、インストールメディアにRancher System Agentプランを含めることも可能です。詳細およびいくつかの例のプランについては、xref:rancher-os-management/plans.adoc[プラン]セクションを参照してください。プランは、`/var/lib/elemental/agent/plans`フォルダの圧縮されたrootfsに含めることができ、最初のブート時にシステムエージェントによって認識されます。
+
+== インストールプロセスを開始します。
+
+インストールは、ノードでインストールメディアをブートすることから始まります。インストールメディアがブートされると、管理クラスターに連絡を試み、`elemental-register`コマンドを呼び出して登録します。
+登録yaml設定はすでにISOに含まれているため、`elemental-register`は登録URLおよび登録に必要な他のデータを知っています。
+
+登録が成功すると、インストールメディアは、メディアにすでに含まれている設定とMachineRegistrationパラメータに基づいてホストへのインストールを開始します。インストールが完了すると、ノードは再起動の準備が整います。デプロイされたOSには、選択されたKubernetesバージョンをインストールするための通常のRancherプロビジョニングプロセスを開始するシステムエージェントプランが含まれており、ブート後数分でノードのインストールが完了し、ノードはクラスターに含まれ、Rancher UIを通じて表示されます。
+
+== デプロイされたパーティションテーブル
+
+オペレーティングシステムがインストールされると、OSパーティションテーブルはデフォルト値に従って次のようになります。
+
+|===
+| ラベル | デフォルトサイズ | 内容
+
+| COS_GRUB
+| 64 MiB
+| UEFIブートパーティション
+
+| COS_STATE
+| 8 GiB
+| OCIイメージから構築されたA/Bブート可能なファイルシステムイメージ
+
+| COS_OEM
+| 64 MiB
+| OEMクラウド設定ファイルおよびその他のデータ
+
+| COS_RECOVERY
+| 4 GiB
+| COS_STATEが破損した場合のリカバリーファイルシステムイメージ
+
+| COS_PERSISTENT
+| 残りのスペース
+| 永続フォルダーのすべての内容
+|===
+
+これは{elemental_toolkit_url}[{elemental_toolkit_name}]によって構築されたOSの基本構造であることに注意してください。
+
+== {elemental-product-name}不変ルート
+
+{elemental-product-name} OSの特徴の一つは、不変のルートファイルシステムのセットアップであり、一部の一時的または永続的な場所がその上に適用されます。デフォルトのフォルダー構造は、以下のマトリックスに示されています。
+
+[cols=",^,^,^"]
+|===
+| パス | 読み込み専用 | 一時的 | Persistent
+
+| /
+| x
+|
+|
+
+| /etc
+|
+| x
+|
+
+| /etc/cni
+|
+|
+| x
+
+| /etc/iscsi
+|
+|
+| x
+
+| /etc/rancher
+|
+|
+| x
+
+| /etc/ssh
+|
+|
+| x
+
+| /etc/systemd
+|
+|
+| x
+
+| /srv
+|
+| x
+|
+
+| /home
+|
+|
+| x
+
+| /opt
+|
+|
+| x
+
+| /root
+|
+|
+| x
+
+| /var
+|
+| x
+|
+
+| /usr/libexec
+|
+|
+| x
+
+| /var/lib/cni
+|
+|
+| x
+
+| /var/lib/kubelet
+|
+|
+| x
+
+| /var/lib/rancher
+|
+|
+| x
+
+| /var/lib/elemental
+|
+|
+| x
+
+| /var/lib/NetworkManager
+|
+|
+| x
+
+| /var/lib/calico
+|
+|
+| x
+
+| /var/log
+|
+|
+| x
+|===

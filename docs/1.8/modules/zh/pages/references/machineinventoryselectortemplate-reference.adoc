@@ -1,0 +1,90 @@
+= MachineInventorySelectorTemplate 参考
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+MachineInventorySelectorTemplate 是一个用户定义的资源，将作为创建所需 xref:references/machineinventoryselector-reference.adoc[MachineInventorySelectors] 的蓝图。
+
+它是负责定义匹配标准的资源，用以将已盘点的机器与集群资源配对。
+
+相关的键是 `selector`，它包含标签选择器表达式。
+
+.MachineInventorySelectorTemplate
+[,yaml]
+----
+apiVersion: elemental.cattle.io/v1beta1
+kind: MachineInventorySelectorTemplate
+metadata:
+  name: my-machine-selector
+  namespace: fleet-default
+spec:
+  template:
+    spec:
+      selector:
+        ...
+----
+
+`template.spec.selector` 可以包括 `matchLabels` 和/或 `matchExpressions` 键。
+
+== `template.spec.selector.matchLabels`
+
+它是 `{key,value}` 对 `(map[string]string)` 的映射。当提供多个标签时，所有标签必须匹配。
+
+.点击这里查看详细信息
+[%collapsible]
+====
+[yaml]
+----
+...
+spec:
+  template:
+    spec:
+      selector:
+        matchLabels:
+          element: fire
+          manufacturer: somevalue
+----
+====
+
+使用上述选择器定义的集群将只会尝试为包含这两个标签的已盘点节点进行配置。
+
+== `template.spec.selector.matchExpressions`
+
+这是标签选择器的列表，每个标签选择器可以定义为：
+
+|===
+| 键 | 类型 | 说明
+
+| key
+| 字符串
+| 这是选择器应用于的标签键
+
+| operator
+| 字符串
+| 表示键与一组值的关系。有效的操作符有 'In'、'NotIn'、'Exists' 和 'DoesNotExist'。
+
+| values
+| []string
+| 值是一个字符串值的数组。如果操作符是 'In' 或 'NotIn'，则值数组必须非空。如果操作符是 'Exists' 或 'DoesNotExist'，则值数组必须为空。
+|===
+
+.点击这里查看详细信息
+[%collapsible]
+====
+[,yaml]
+----
+...
+spec:
+  template:
+    spec:
+      selector:
+        matchExpressions:
+        - key: element
+          operator: In
+          values: [ 'fire' ]
+        - key: manufacturer
+          operator: Exists
+----
+====
+
+使用上述选择器定义的集群将只会尝试为带有 `element=fire` 标签并包含任意值的 `manufacturer` 标签的已盘点节点进行配置。

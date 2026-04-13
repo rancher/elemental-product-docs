@@ -1,0 +1,14 @@
+= Variables de modèle de composant d'exécution
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+Les variables de modèle de composant d'exécution collectent des informations sur la configuration du système.
+
+|===
+| Variable | Description | from
+
+| `${Runtime/Hostname}`
+| Nom d'hôte du système
+| 1.7.0
+|===

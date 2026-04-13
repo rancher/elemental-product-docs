@@ -1,0 +1,152 @@
+= アップグレード
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+{elemental-product-name}内のすべてのコンポーネントはKubernetesを使用して管理されます。以下は、Kubernetesのアプローチを用いてコンポーネントをアップグレードする方法です。
+
+== {elemental-product-name}ノードのアップグレード
+
+{elemental-product-name}ノードは{elemental_operator_name}でアップグレードされます。完全な情報については、xref:references/operatorchart-reference.adoc[{elemental_operator_name}]ドキュメントを参照してください。
+
+アップグレードはCLIまたはUIのいずれかで実行できます。
+
+* <<_upgrade_via_command_line_interface,コマンドラインインタフェース>>
+* <<_upgrade_via_user_interface,ユーザインタフェース>>
+
+== コマンドラインインタフェースを介してアップグレード
+
+アップグレードのためにノードを選択する方法は2つあります。クラスターターゲットの場合は、私たちのセレクターに一致するクラスター内のすべてのノードが対象となり、一方、ノードセレクターの場合は、ノードラベルに基づいてノードが選択されます。ノードセレクターを使用すると、アップグレードの対象をより絞り込むことができますが、クラスターセレクターは一致するクラスター内のすべてのノードを選択します。
+
+既存の`ManagedOSImage`を更新すると、構成されているイメージ（またはイメージバージョン）がすべての対象ノードに反映されるため、新しいアップグレードサイクルが開始されます。
+
+[tabs]
+======
+「clusterTarget」を使用して::
++
+====
+アップグレード対象のクラスター名を設定することで、`clusterTarget`経由でノードを指定できます。その名前と一致するクラスター内のすべてのノードが対象となり、アップグレードされます。
+
+.upgrade-cluster-target.yaml
+[,yaml]
+----
+include::example$upgrade/upgrade-cluster-target.yaml[]
+----
+====
+
+nodeSelectorを使用して::
++
+====
+一致させたいラベルと値を設定することで、`nodeSelector`経由でノードを対象にできます。そのキーと値を持つノードはすべて対象となり、アップグレードされます。
+
+.upgrade-node-selector.yaml
+[,yaml]
+----
+include::example$upgrade/upgrade-node-selector.yaml[]
+----
+====
+
+FORCEフラグを使用して::
++
+====
+古いバージョンまたはすでに実行中の同じバージョンにアップグレードする場合、アップグレード手順はスキップされます。古いバージョンへのアップグレードを強制するには、以下に示すようにFORCE環境変数を設定することが可能です。
+
+.upgrade-force.yaml
+[,yaml]
+----
+include::example$upgrade/upgrade-force.yaml[]
+----
+====
+
+UPGRADE_RECOVERYフラグを使用して::
++
+====
+システムをアップグレードする際にリカバリパーティションをアップグレードするか、またはリカバリパーティションのみをアップグレードするかを決定できます。
+
+.upgrade-recovery.yaml
+[,yaml]
+----
+include::example$upgrade/upgrade-recovery.yaml[]
+----
+====
+======
+
+=== アップグレードのためのソースを選択する
+
+[tabs]
+======
+Via 'osImage'::
++
+====
+`osImage`フィールドにOCIイメージを指定するだけです。 
+
+.upgrade-cluster-target.yaml
+[,yaml]
+----
+include::example$upgrade/upgrade-cluster-target.yaml[]
+----
+====
+
+Tab Via 'ManagedOSVersion'::
++
+====
+この場合、目的の`managedOSVersionName`フィールドを設定するために、自動入力された`ManagedOSVersion`リソースを使用します。`ManagedOSVersion`がどのように管理されているかを理解するには、[利用可能なバージョンの管理](#managing-available-versions)セクションを参照してください。
+
+.upgrade-managedos-version.yaml
+[,yaml]
+----
+include::example$upgrade/upgrade-managedos-version.yaml[]
+----
+====
+======
+
+[WARNING]
+====
+同じ`ManagedOSImage`内で`osImage`と`ManagedOSVersion`の両方が定義されている場合、`osImage`が優先されることに注意してください。
+====
+
+
+=== 利用可能なバージョンの管理
+
+xref:references/managedosversion-reference.adoc[ManagedOSVersions]を直接作成することも、xref:references/managedosversionchannel-reference.adoc[ManagedOSVersionChannels]に登録してそれらから`ManagedOSVersions`を自動的に同期することも可能です。
+
+詳細情報や利用可能なチャネルのリスト、または独自のチャネルを作成する場合は、xref:operator-operational-tasks/channels.adoc[ドキュメント]をお読みください。
+
+== ユーザーインターフェースを介してアップグレードする
+
+ユーザーインターフェースを介してアップグレードするには、{elemental-product-name}の詳細メニューに移動し、次に`Update Groups`をクリックする必要があります。
+
+名前を選択し、対象のクラスターを選び、2つのアップグレード方法のいずれかを選択してください：
+
+image::upgrade-ui-menu.png[{elemental-product-name} アップグレードメニュー]
+
+[tabs]
+======
+Managed OS Version経由で::
++
+====
+この場合、`OS Version Channels`を用いて自動入力された`OS Versions`リソースを利用します。
+
+下記のチャネルは弊社が提供していますが、独自のチャネルを使用することも可能です。
+
+<<_managing_available_versions,利用可能なバージョンの管理>>セクションを参照して、`ManagedOSVersion`がどのように管理されているかを理解してください。
+
+image:upgrade-ui-version-channel.png[OSバージョンチャネルを作成]
+
+短い同期時間の後、`OS Versions`が`OS Versions`メニューに表示されます。
+
+image:upgrade-ui-os-version.png[{elemental-product-name} OSバージョンメニュー]
+
+最後に、以下のスクリーンショットに従って、`OS Versions`作成時に`Upgrade Group`を選択できます。
+
+image:upgrade-ui-upgrade-group-channel.png[アップグレードグループでOSバージョンを選択]
+====
+
+レジストリ経由のイメージタブ::
++
+====
+アップグレードするには、`Image path`フィールドにOCIイメージを指定してください: image:upgrade-ui-image-registry.png[イメージレジストリ経由でアップグレード]
+====
+======
+
+アップグレードプロセスを開始するには`Create`ボタンをクリックしてください。複数のノードがある場合、アップグレードはノードごとに順次行われます。

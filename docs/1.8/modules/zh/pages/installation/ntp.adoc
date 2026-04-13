@@ -1,0 +1,103 @@
+= 使用 {elemental-product-name} 的 NTP 配置
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-07-03
+:page-revdate: {revdate}
+
+== 概述
+
+与 {elemental-product-name} 一起提供的默认操作系统通道通过 `systemd-timesyncd` 提供 NTP 支持。
+
+本页面涵盖使用提供的 SLE Micro 镜像配置 `systemd-timesyncd`，该镜像预配置了一些默认（后备）NTP 服务器：（_[0-3].suse.pool.ntp.org_）。
+
+配置特定 NTP 服务器的最简单方法是将配置文件放入 `/etc/systemd/timesyncd.conf.d` 目录中。
+该目录和配置文件应可由 `systemd-timesync` 用户访问。
+
+== 配置静态 NTP 服务器
+
+NTP 配置可以通过将 cloud-config 片段添加到 MachineRegistration 配置中来提供。
+
+我们需要：
+
+* 确保 `timesyncd.conf.d` 目录可以被 `systemd-timesync` 用户读取
+* 在 `timesyncd.conf.d` 目录中写入自定义配置文件
+* 重启 `systemd-timesyncd` 服务以使用新配置
+
+作为示例，让我们看看如何将 `ntp.ripe.net` 配置为主要 NTP 服务器（第 6-14 行）：
+
+[,yaml]
+----
+config:
+  cloud-config:
+    users:
+      - name: root
+        passwd: root
+    write_files:
+      - content: |
+          [Time]
+          NTP=ntp.ripe.net
+        path: /etc/systemd/timesyncd.conf.d/custom-ntp.conf
+        permissions: 644
+    runcmd:
+      - chmod 755 /etc/systemd/timesyncd.conf.d
+      - systemctl restart systemd-timesyncd
+  elemental:
+    install:
+      device: /dev/vda
+      reboot: true
+machineInventoryLabels:
+  element: fire
+----
+
+== 通过 DHCP 配置 NTP
+
+为了通过 NTP DHCP 选项从网络获取 NTP 服务器，我们需要一个 NetworkManager 调度程序脚本，以便在需要时动态重新配置 `systemd-timesync` 服务。
+
+我们需要同时： +
+* 提供创建和删除 systemd-timesyncd 配置文件的调度程序脚本 +
+* 启用 NetworkManager-dispatcher 服务
+
+请参见以下 MachineRegistration 配置示例中的第 6-34 行：
+
+[,yaml]
+----
+config:
+  cloud-config:
+    users:
+      - name: root
+        passwd: root
+    write_files:
+      - content: |
+          #! /usr/bin/bash
+
+          [ -n "$CONNECTION_UUID" ] || exit
+
+          INTERFACE=$1
+          ACTION=$2
+
+          case $ACTION in
+              up | dhcp4-change | dhcp6-change)
+                  [ -n "$DHCP4_NTP_SERVERS" ] || exit
+                  mkdir -p /etc/systemd/timesyncd.conf.d/
+                  cat<<EOF > /etc/systemd/timesyncd.conf.d/$CONNECTION_UUID.conf
+          [Time]
+          NTP=$DHCP4_NTP_SERVERS
+          RootDistanceMaxSec=15
+          EOF
+                  systemctl restart systemd-timesyncd
+                  ;;
+              down)
+                  rm -f /etc/systemd/timesyncd.conf.d/$CONNECTION_UUID.conf
+                  systemctl restart systemd-timesyncd
+                  ;;
+          esac
+        path: /etc/NetworkManager/dispatcher.d/10-update-timesyncd
+        permissions: 700
+    runcmd:
+      - systemctl enable NetworkManager-dispatcher
+  elemental:
+    install:
+      device: /dev/vda
+      reboot: true
+machineInventoryLabels:
+  element: fire
+----

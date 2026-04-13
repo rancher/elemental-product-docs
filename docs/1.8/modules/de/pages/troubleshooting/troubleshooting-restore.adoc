@@ -1,0 +1,37 @@
+= Fehlerbehebung bei der Wiederherstellung
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-07-03
+:page-revdate: {revdate}
+
+[WARNING]
+====
+Wenn eine Wiederherstellung durchgeführt wird, starten Sie den `rancher-system-agent` auf den Elementarknoten nicht neu, da dies zu einem veralteten Zustand führen und mit dem folgenden Fehler enden kann:
+
+`panic: error while connecting to Kubernetes cluster: the server has asked for the client to provide credentials`
+
+Wenn Sie auf dieses Problem stoßen, folgen Sie bitte dem untenstehenden Verfahren.
+====
+
+
+Bevor Sie eine Wiederherstellung einleiten, müssen Sie `/var/lib/rancher/agent/rancher2_connection_info.json` vom Elementarknoten an einen Ort kopieren, auf den Sie mit der Rancher UI zugreifen können.
+
+Sobald die Datei kopiert ist, laden Sie das `rancher-agent-token-update.sh` Skript aus dem https://github.com/rancher/elemental[{elemental-product-name} Repository] herunter:
+
+[,shell]
+----
+wget -q https://raw.githubusercontent.com/rancher/elemental/main/scripts/rancher-agent-token-update && chmod +x rancher-agent-token-update
+----
+
+Führen Sie das Skript ohne zusätzliche Optionen aus:
+
+[,shell]
+----
+./rancher-agent-token-update
+----
+
+Nachdem die Wiederherstellung erfolgreich abgeschlossen wurde, kopieren Sie `rancher2_connection_info.json` zurück auf den Elementarknoten in den Pfad `/var/lib/rancher/agent/rancher2_connection_info.json`. Starten Sie schließlich den `rancher-system-agent` Dienst neu:
+
+[,shell]
+----
+systemctl restart rancher-system-agent
+----

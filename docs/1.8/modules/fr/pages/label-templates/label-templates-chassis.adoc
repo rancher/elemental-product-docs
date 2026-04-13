@@ -1,0 +1,39 @@
+= Variables de gabarit de châssis
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+Les informations des variables de châssis définissent les attributs des enveloppes mécaniques du système.
+
+Sous-ensemble du boîtier système SMBIOS ou du châssis (type 3).
+
+Pour plus d'informations sur SMBIOS, voir la
+https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.7.1.pdf[SMSBIOS specification].
+
+|===
+| Variable | Description | from
+
+| `${Chassis/AssetTag}`
+| Étiquette d’inventaire du châssis
+| 1.7.0
+
+| `${Chassis/SerialNumber}`
+| Numéro de série du châssis
+| 1.7.0
+
+| `${Chassis/TypeDescription}`
+| Type de châssis (description)
+| 1.7.0
+
+| `${Chassis/Type}`
+| Type de châssis (numéro/code)
+| 1.7.0
+
+| `${Chassis/Vendor}`
+| Fournisseur de châssis
+| 1.7.0
+
+| `${Chassis/Version}`
+| Version du châssis
+| 1.7.0
+|===

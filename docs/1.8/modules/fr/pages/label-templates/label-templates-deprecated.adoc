@@ -1,0 +1,202 @@
+= Variables dont la prise en charge a cessé dans les modèles d'étiquettes
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+Les familles de variables *SMBIOS* et *Matériel* ont cessé d'être prises en charge dans l'Opérateur Élémentaire v1.7.0.
+
+Bien que ces familles de variables soient encore correctement rendues dans les versions actuelles de l'Opérateur Élémentaire, leur prise en charge sera supprimée dans les futures versions de l'Opérateur Élémentaire.
+
+Si vous utilisez encore ces anciennes familles de variables des modèles d'étiquettes, veuillez passer à xref:label-templates/label-templates.adoc#_label_templates_variables[les nouvelles disponibles] si possible.
+
+Pour simplifier l'adoption des nouvelles variables, consultez les tableaux qui font correspondre les variables dont la prise en charge a cessé aux nouvelles prises en charge :
+
+* <<_hardware_labels_to_new_label_templates_variables_table,Étiquettes Matériel aux nouvelles variables des modèles d'étiquettes>>
+* <<_smbios_labels_to_new_label_templates_variable_table,Étiquettes SMBIOS aux nouvelles variables des modèles d'étiquettes>>
+
+== Tableau des étiquettes Matériel aux nouvelles variables des modèles d'étiquettes
+
+|===
+| Variable dont la prise en charge a cessé | Variable nouvelle équivalente
+
+| `${System Data/Block Devices/Number Devices}`
+| `${Storage/TotalDisks}`
+
+| `${Données Système/Dispositifs de Bloc/_<DeviceName>_/Type de Disque} `
+| `${Storage/Disks/_<DeviceName>_/DriveType}`
+
+| `${Données Système/Dispositifs de Bloc/_<DeviceName>_/Nom} `
+| `${Storage/Disks/_<DeviceName>_/Name}`
+
+| `${Données Système/Dispositifs de Bloc/_<DeviceName>_/Amovible} `
+| `${Storage/Disks/_<DeviceName>_/Removable}`
+
+| `${Données Système/Dispositifs de Bloc/_<DeviceName>_/Taille} `
+| `${Storage/Disks/_<DeviceName>_/Size}`
+
+| `${Données Système/Dispositifs de Bloc/_<DeviceName>_/Contrôleur de Stockage} `
+| `${Storage/Disks/_<DeviceName>_/StorageController}`
+
+| `${System Data/CPU/Model}`
+| `${CPU/Model}`
+
+| `${System Data/CPU/Total Cores}`
+| `${CPU/TotalCores}`
+
+| `${System Data/CPU/Total Threads}`
+| `${CPU/TotalThreads}`
+
+| `${System Data/CPU/Vendor}`
+| `${CPU/Processor/Vendor}`
+
+| `${System Data/GPU/Model}`
+| `${GPU/GraphicsCard/ProductName}`
+
+| `${System Data/GPU/Vendor}`
+| `${GPU/GraphicsCard/VendorName}`
+
+| `${System Data/Memory/Total Physical Bytes}`
+| `${Memory/TotalPhysicalBytes}`
+
+| `${System Data/Memory/Total Usable Bytes}`
+| `${Memory/TotalUsableBytes}`
+
+| `${System Data/Network/Number Interfaces}`
+| `${Network/TotalNICs}`
+
+| `${System Data/Network/_<IfaceName>_/IsVirtual}`
+| `${Network/NICs/_<IfaceName>_/IsVirtual}`
+
+| `${System Data/Network/_<IfaceName>_/MacAddress}`
+| `${Network/NICs/_<IfaceName>_/MacAddress}`
+
+| `${System Data/Network/_<IfaceName>_/Name}`
+| `${Network/NICs/_<IfaceName>_/Name}`
+
+| `${System Data/Runtime/Hostname}`
+| `${Runtime/Hostname}`
+|===
+
+== Tableau des étiquettes SMBIOS aux nouvelles variables des modèles d'étiquettes
+
+|===
+| Variable dont la prise en charge a cessé | Variable nouvelle équivalente
+
+| `${BIOS Information/Address}`
+| _pas disponible_
+
+| `${BIOS Information/BIOS Revision}`
+| _pas disponible_
+
+| `${BIOS Information/ROM Size}`
+| _pas disponible_ 
+
+| `${BIOS Information/Release Date}`
+| `${BIOS/Date}`
+
+| `${BIOS Information/Runtime Size}`
+| _pas disponible_
+
+| `${BIOS Information/Vendor}`
+| `${BIOS/Vendor}`
+
+| `${BIOS Information/Version}
+| `${BIOS/Version}`
+
+| `${Base Board Information/Asset Tag}`
+| `${BaseBoard/AssetTag}`
+
+| `${Base Board Information/Chassis Handle}`
+| _pas disponible_
+
+| `${Base Board Information/Contained Object Handles}`
+| _pas disponible_
+
+| `${Base Board Information/Location In Chassis}`
+| _pas disponible_
+
+| `${Base Board Information/Manufacturer}`
+| `${BaseBoard/Vendor}`
+
+| `${Base Board Information/Product Name}`
+| `${BaseBoard/Product}`
+
+| `${Base Board Information/Serial Number}`
+| `${BaseBoard/SerialNumber}`
+
+| `${Base Board Information/Type}`
+| _pas disponible_
+
+| `${Base Board Information/Version}`
+| `${BaseBoard/Version}`
+
+| `${Chassis Information/Asset Tag}`
+| `${Chassis/AssetTag}`
+
+| `${Chassis Information/Boot-up State}`
+| _pas disponible_
+
+| `${Chassis Information/Contained Elements}`
+| _pas disponible_
+
+| `${Chassis Information/Height}`
+| _pas disponible_
+
+| `${Chassis Information/Lock}`
+| _pas disponible_
+
+| `${Chassis Information/Manufacturer}`
+| `${Chassis/Vendor}`
+
+| `${Chassis Information/Number Of Power Cords}`
+| _pas disponible_
+
+| `${Chassis Information/OEM Information}`
+| _pas disponible_
+
+| `${Chassis Information/Power Supply State}`
+| _pas disponible_
+
+| `${Chassis Information/SKU Number}`
+| _pas disponible_
+
+| `${Chassis Information/Security Status}`
+| _pas disponible_
+
+| `${Chassis Information/Serial Number}`
+| `${Chassis/SerialNumber}`
+
+| `${Chassis Information/Thermal State}`
+| _pas disponible_
+
+| `${Chassis Information/Type}`
+| `${Chassis/TypeDescription}`
+
+| `${Chassis Information/Version}`
+| `${Chassis/Version}`
+
+| `${System Information/Family}`
+| `${Product/Family}`
+
+| `${System Information/Manufacturer}`
+| `${Product/Vendor}`
+
+| `${System Information/Product Name}`
+| `${Product/Name}`
+
+| `${System Information/SKU Number}`
+| `${Product/SKU}`
+
+| `${System Information/Serial Number}`
+| `${Product/SerialNumber}`
+
+| `${System Information/UUID}`
+| `${Product/UUID}`
+
+| `${System Information/Version}`
+| `${Product/Version}`
+
+| `${System Information/Wake-up Type}`
+| _pas disponible_
+
+|===

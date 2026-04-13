@@ -1,0 +1,83 @@
+= Como adicionar RPMs de terceiros no momento da instalação
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+Este exemplo cobre o caso em que RPMs extras (por exemplo, drivers de hardware específicos) são incluídos na imagem ISO e, durante a instalação, são instalados sobre a imagem do sistema operacional.
+
+Para esse caso de uso, os seguintes arquivos são necessários:
+
+* RPMs adicionais a serem instalados
+* arquivo de cloud-config adicional definindo ganchos para copiar e instalar binários como ganchos de instalação
+
+Podemos lidar com tudo em uma única seção `SeedImage.spec.cloud-config`, assumindo que o RPM adicional está disponível para download de um servidor remoto no momento da instalação.
+
+Considere os seguintes dados de cloud-config que poderiam ser usados como o conteúdo da seção `cloud-config` em um recurso xref:references/seedimage-reference.adoc#_seedimagespec_reference[SeedImage].
+
+[,yaml]
+----
+name: "Install extra drivers"
+stages:
+  before-install:
+  # Preload data to the persistent storage
+  # During installation persistent partition is mounted at /run/elemental/persistent
+  - downloads:
+    - path: /tmp/some_package.rpm
+      url: "<REMOTE_PACKAGE_URL>"
+      permissions: 0777
+  - commands:
+    - mkdir -o /run/elemental/persistent/extra-pkgs
+    - cp -p /tmp/some_package.rpm /run/elemental/persistent/extra-pkgs
+
+  after-install-chroot:
+  # Install the package at install time
+  - commands:
+    - rpm -iv /run/elemental/extra-pkgs/some_package.rpm
+
+  # Include to the install system analog upgrade and reset hooks
+  - files:
+    - path: /oem/extra-pkg.yaml
+      permissions: 0664
+      content: |
+        name: "Install extra drivers"
+        stages:
+          after-upgrade-chroot:
+          # Install the package after upgrading to a new image
+          - commands:
+            - rpm -iv /run/elemental/extra-pkgs/some_package.rpm
+          after-reset-chroot:
+          # Install the package on reset
+          - commands:
+            - rpm -iv /run/elemental/extra-pkgs/some_package.rpm
+----
+
+Observe que os ganchos de instalação cobrem apenas os procedimentos de instalação, de modo que dados adicionais de cloud-config também devem fazer parte do sistema instalado para continuar instalando o pacote como parte dos processos de fazer upgrade ou redefinição.
+
+== Reempacotando uma imagem ISO gerada com arquivos extras
+
+Alternativamente, se ter o download dinâmico de conteúdo no momento da instalação não é um comportamento desejado e uma imagem ISO já incluindo todos os binários extras é o objetivo real, isso também é possível, mas requer reempacotar manualmente a imagem ISO. Usando `xorriso`, a utilidade do Linux para criar ISOs, isso se torna um processo relativamente fácil.
+
+Vamos criar um diretório `overlay` para criar a árvore de diretórios que precisa ser adicionada à raiz da imagem ISO. Nesse caso, o diretório `overlay` poderia conter:
+
+[,yaml]
+----
+overlay/
+  data/
+    extra-pkgs/
+      some_package.rpm
+  iso-config/
+    install_hooks.yaml
+----
+
+Estamos assumindo que `install_hooks.yaml` é o conteúdo do cloud-config real exposto na seção anterior, que é incluído manualmente na imagem em vez de ser incorporado em um recurso SeedImage. A pasta `data` está eventualmente incluindo os binários que queremos adicionar à imagem ISO.
+
+Assumindo que já baixamos uma imagem ISO Elemental vinculada a um MachineRegistration específico com a seguinte chamada `xorriso`, todo o conteúdo da pasta `overlay` seria incluído em uma nova imagem ISO:
+
+[,bash]
+----
+xorriso -indev elemental.x86_64.iso -outdev elemental.custom.x86_64.iso -map overlay / -boot_image any replay
+----
+
+Requer `xorriso` igual ou superior à versão 1.5.
+
+O conteúdo de `install_hooks.yaml` poderia eventualmente ser o mesmo da seção anterior, mas omitindo o download do pacote RPM e também adaptando o caminho do RPM para `/run/initramfs/live/data/extra-pkgs/some_package.rpm`, já que a pasta raiz da imagem ISO está montada em `/run/initramfs/live`.

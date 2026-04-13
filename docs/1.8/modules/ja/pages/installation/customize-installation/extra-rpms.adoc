@@ -1,0 +1,83 @@
+= インストール時にサードパーティのRPMを追加する方法
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+この例は、追加のRPM（特定のハードウェアドライバーなど）がISOに含まれ、インストール中にOSイメージにインストールされるケースをカバーしています。
+
+その使用ケースには、以下のファイルが必要です：
+
+* インストールする追加のRPM
+* バイナリをコピーしてインストールするためのフックを定義する追加のcloud-configファイル
+
+追加のRPMがインストール時にリモートサーバーからダウンロード可能であると仮定して、すべてを単一の`SeedImage.spec.cloud-config`セクションにまとめることができます。
+
+以下のcloud-configデータは、xref:references/seedimage-reference.adoc#_seedimagespec_reference[SeedImageリソース]の`cloud-config`セクションの内容として使用できるものです。
+
+[,yaml]
+----
+name: "Install extra drivers"
+stages:
+  before-install:
+  # Preload data to the persistent storage
+  # During installation persistent partition is mounted at /run/elemental/persistent
+  - downloads:
+    - path: /tmp/some_package.rpm
+      url: "<REMOTE_PACKAGE_URL>"
+      permissions: 0777
+  - commands:
+    - mkdir -o /run/elemental/persistent/extra-pkgs
+    - cp -p /tmp/some_package.rpm /run/elemental/persistent/extra-pkgs
+
+  after-install-chroot:
+  # Install the package at install time
+  - commands:
+    - rpm -iv /run/elemental/extra-pkgs/some_package.rpm
+
+  # Include to the install system analog upgrade and reset hooks
+  - files:
+    - path: /oem/extra-pkg.yaml
+      permissions: 0664
+      content: |
+        name: "Install extra drivers"
+        stages:
+          after-upgrade-chroot:
+          # Install the package after upgrading to a new image
+          - commands:
+            - rpm -iv /run/elemental/extra-pkgs/some_package.rpm
+          after-reset-chroot:
+          # Install the package on reset
+          - commands:
+            - rpm -iv /run/elemental/extra-pkgs/some_package.rpm
+----
+
+インストールフックはインストール手順のみをカバーしているため、追加のcloud-configデータもアップグレードやリセットプロセスの一部としてパッケージをインストールし続けるために、インストールされたシステムの一部である必要があります。
+
+== 追加ファイルを含む生成されたISOイメージの再パック
+
+また、インストール時にコンテンツを動的にダウンロードする動作が望まれない場合、かつすでにすべての追加バイナリを含むISOを作成することが実際の目的である場合には、手動でISOを再パックすることも可能です。ISOsを作成するためのLinuxユーティリティである`xorriso`を使用すると、これは比較的簡単なプロセスになります。
+
+ISOルートに追加する必要があるディレクトリツリーを作成するために、`overlay`ディレクトリを作成しましょう。その場合、`overlay`ディレクトリには以下が含まれる可能性があります：
+
+[,yaml]
+----
+overlay/
+  data/
+    extra-pkgs/
+      some_package.rpm
+  iso-config/
+    install_hooks.yaml
+----
+
+`install_hooks.yaml`は、前のセクションで実際に公開されたcloud-configの内容であり、SeedImageリソースに埋め込まれるのではなく、手動でイメージに含まれると仮定しています。`data`フォルダーには、ISOに追加したいバイナリが最終的に含まれています。
+
+特定のMachineRegistrationに結びついたElemental ISOをすでにダウンロードしたと仮定すると、次の`xorriso`呼び出しですべての`overlay`フォルダーの内容が新しいISOに含まれます：
+
+[,bash]
+----
+xorriso -indev elemental.x86_64.iso -outdev elemental.custom.x86_64.iso -map overlay / -boot_image any replay
+----
+
+バージョン1.5以上の`xorriso`が必要です。
+
+`install_hooks.yaml`の内容は、前のセクションと同じである可能性がありますが、RPMパッケージのダウンロードを省略し、ISOルートフォルダーが`/run/initramfs/live`にマウントされているため、RPMパスを`/run/initramfs/live/data/extra-pkgs/some_package.rpm`に適応させる必要があります。

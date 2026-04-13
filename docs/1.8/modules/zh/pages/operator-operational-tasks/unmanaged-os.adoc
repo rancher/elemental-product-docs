@@ -1,0 +1,41 @@
+= 注册一个非托管操作系统
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+通常，{elemental_operator_url}[{elemental_operator_name}] 管理由 {elemental_toolkit_url}[{elemental_toolkit_name}] 安装和配置的操作系统。 +
+例如，为了自动化操作系统的安装、升级和重置，`elemental-register` 依赖于 `elemental` CLI 来执行这些操作。
+
+然而，也可以注册和配置 {elemental-product-name} "无工具包" 系统。
+
+在这种情况下，xref:rancher-os-management/architecture/architecture-components.adoc#_elemental_register_command_line_tool[elemental-register] 需要安装在系统上。 +
+可选地，可以安装 xref:rancher-os-management/architecture/architecture-components.adoc#_elemental_system_agent_daemon[elemental-system-agent]。请注意，如果没有 `elemental-system-agent`，{elemental_operator_name} 将无法在机器上配置任何 k8s 集群。在这种情况下，{elemental_operator_name} 只能用于操作系统清单目的。
+
+最后，在管理集群上，`MachineRegistration` 必须启用 `spec.config.elemental.registration.no-toolkit` 标志。
+
+一旦在 `no-toolkit` 上启用 `MachineRegistration`，并且在系统上使用 `elemental-register --install` 进行新的注册，将在管理集群上创建一个新的 `MachineInventory`：
+
+[,bash]
+----
+kubectl -n fleet-default describe machineinventory my-unmanaged-os-machine
+----
+
+`MachineInventory` 会被打上 `elemental.cattle.io/os.unmanaged: "true"` 标记，以表明该机器未被管理且功能有限。
+
+在系统上，成功注册后，`/etc/rancher/elemental/agent/config.yaml` 和 `/var/lib/elemental/agent/elemental_connection.json` 文件会自动创建以配置 `elemental-system-agent`。
+`elemental-system-agent` 组件是 K8s 配置和重置触发器所需的。
+
+当触发 xref:node-operational-tasks/reset.adoc[machine reset] 时，例如通过直接删除 `MachineInventory`，`elemental-system-agent` 将执行一个简单的重置计划，该计划将创建 `/var/lib/elemental/.unmanaged_reset` 哨兵文件。 +
+该文件的存在表明机器需要重置。这可能涉及停止服务、卸载软件包、格式化设备等，具体取决于机器的自定义管理方式。
+
+== 支持的功能
+
+* 注册一个 `MachineInventory`
+* K8s 配置（当 xref:rancher-os-management/architecture/architecture-components.adoc#_elemental_system_agent_daemon[elemental-system-agent] 安装并在机器上运行时）
+* 重置触发器（当 xref:rancher-os-management/architecture/architecture-components.adoc#_elemental_system_agent_daemon[elemental-system-agent] 安装并在机器上运行时）
+
+== 不支持的功能
+
+* 云初始化驱动的 xref:references/cloud-config-reference.adoc[配置]
+* 操作系统 xref:node-operational-tasks/upgrade.adoc[升级]
+* 操作系统 xref:node-operational-tasks/reset.adoc[重置]

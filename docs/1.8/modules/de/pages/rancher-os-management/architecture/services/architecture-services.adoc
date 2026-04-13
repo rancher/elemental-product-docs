@@ -1,0 +1,9 @@
+= Services
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-09-08
+:page-revdate: {revdate}
+
+{elemental-product-name} Die Funktionalität wird durch die folgende Liste von Diensten bereitgestellt:
+
+* xref:rancher-os-management/architecture/services/architecture-machineonboarding.adoc[Machine Onboarding]: ermöglicht es Hosts, im {elemental-product-name} Operator-Katalog mit einem Betriebssystem bereitgestellt und registriert zu werden.
+* xref:rancher-os-management/architecture/services/architecture-clusterdeployment.adoc[Kubernetes Cluster Implementierung]: löst die Erstellung eines Kubernetes-Clusters auf dem verfügbaren Host aus, der im {elemental-product-name} Operator-Katalog registriert ist.

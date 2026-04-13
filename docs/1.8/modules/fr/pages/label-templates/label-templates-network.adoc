@@ -1,0 +1,118 @@
+= Variables de modèle de réseau
+:page-languages: [en, de, es, fr, ja, pt, zh]
+:revdate: 2025-08-15
+:page-revdate: {revdate}
+
+Les informations collectées dans les variables de modèle de réseau définissent les attributs des interfaces réseau disponibles dans le système.
+
+Les NIC sont suivies à la fois par numéro (0, 1, 2, ...) et par nom d'interface (_eth0_, _virbr0_, ...).
+
+Les adresses IPv4 et IPv6 sont suivies par numéro (0, 1, ...) et les premières entrées d'adresses IPv4 et IPv6 (c'est-à-dire, IPv4Addresses.0 et IPv6Addresses.0) sont suivies dans les variables IPv4Address et IPv6Address.
+
+Par exemple, si `${Network/NICs/2/Name}` est égal à `eth0`, alors l'adresse MAC de l'interface réseau peut être récupérée via les variables `${Network/NICs/2/MacAddress}` et `${Network/NICs/eth0/MacAddress}`.
+
+La première adresse IPv4 (`eth0`) peut être récupérée avec les variables `${Network/NICs/eth0/IPv4Address}` et `${Network/NICs/eth0/IPv4Addresses/0}`. L'adresse IPv4 secondaire `eth0` peut être récupérée avec `${Network/NICs/eth0/IPv4Addresses/1}` à la place.
+
+|===
+| Variable | Description | from
+
+| `${Network/NICs/_<IfaceName>_/AdvertisedLinkModes}`
+| Modes de lien Ethernet annoncés comme disponibles
+| 1.7.0
+
+| `${Network/NICs/_<IfaceName>_/Duplex}`
+| Mode duplex Ethernet
+| 1.7.0
+
+| `${Network/NICs/_<IfaceName>_/IPv4Address}`
+| Première adresse IPv4 assignée à l'interface
+| 1.7.2
+
+| `${Network/NICs/_<IfaceName>_/IPv4Addresses/_<Number>_}`
+| La <Number>ième adresse IPv4 assignée à l'interface.
+| 1.7.2
+
+| `${Network/NICs/_<IfaceName>_/IPv6Address}`
+| Première adresse IPv6 assignée à l'interface
+| 1.7.2
+
+| `${Network/NICs/_<IfaceName>_/IPv6Addresses/_<Number>_}`
+| La <Number>ième adresse IPv6 assignée à l'interface.
+| 1.7.2
+
+| `${Network/NICs/_<IfaceName>_/IsVirtual}`
+| Si la NIC est réelle ("false") ou non ("true")
+| 1.7.0
+
+| `${Network/NICs/_<IfaceName>_/MacAddress}`
+| MAC de l'interface
+| 1.7.0
+
+| `${Network/NICs/_<IfaceName>_/Name}`
+| Nom de l'interface
+| 1.7.0
+
+| `${Network/NICs/_<IfaceName>_/Speed}`
+| Vitesse du lien
+| 1.7.0
+
+| `${Network/NICs/_<IfaceName>_/SupportedLinkModes}`
+| Modes de lien Ethernet supportés par la NIC
+| 1.7.0
+
+| `${Network/NICs/_<IfaceName>_/SupportedPorts}`
+| Ports disponibles de la NIC
+| 1.7.0
+
+| `${Network/NICs/_<Number>_/AdvertisedLinkModes}`
+| Modes de lien Ethernet annoncés comme disponibles
+| 1.7.0
+
+| `${Network/NICs/_<Number>_/Duplex}`
+| Mode duplex Ethernet
+| 1.7.0
+
+| `${Network/NICs/_<Number>_/IPv4Address}`
+| Première adresse IPv4 assignée à l'interface
+| 1.7.2
+
+| `${Network/NICs/_<Number>_/IPv4Addresses/_<Number>_}`
+| La <Number>ième adresse IPv4 assignée à l'interface.
+| 1.7.2
+
+| `${Network/NICs/_<Number>_/IPv6Address}`
+| Première adresse IPv6 assignée à l'interface
+| 1.7.2
+
+| `${Network/NICs/_<Number>_/IPv6Addresses/_<Number>_}`
+| La <Number>ième adresse IPv6 assignée à l'interface.
+| 1.7.2
+
+| `${Network/NICs/_<Number>_/IsVirtual}`
+| Si la NIC est réelle ("false") ou non ("true")
+| 1.7.0
+
+| `${Network/NICs/_<Number>_/MacAddress}`
+| Adresse MAC de l'interface
+| 1.7.0
+
+| `${Network/NICs/_<Number>_/Name}`
+| Nom de l'interface
+| 1.7.0
+
+| `${Network/NICs/_<Number>_/Speed}`
+| Vitesse du lien
+| 1.7.0
+
+| `${Network/NICs/_<Number>_/SupportedLinkModes}`
+| Modes de lien Ethernet supportés par la NIC
+| 1.7.0
+
+| `${Network/NICs/_<Number>_/SupportedPorts}`
+| Ports disponibles de la NIC
+| 1.7.0
+
+| `${Network/TotalNICs/}`
+| Nombre de NIC présentes dans le système
+| 1.7.0
+|===
