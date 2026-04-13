@@ -1,5 +1,5 @@
 = Label Templates Overview
-:revdate: 2025-09-08
+:revdate: 2026-04-01
 :page-revdate: {revdate}
 
 Elemental allows to specify _label templates_ in the `spec.machineInventoryLabels` and `spec.machineInventoryAnnotations` sections of the xref:references/machineregistration-reference.adoc[MachineRegistration] resources.
@@ -147,8 +147,6 @@ For more information on how to define the hostname for Elemental hosts, see the 
 
 == Label Templates Example
 
-.registration example with Label Templates' variables
-[,yaml]
-----
-include::example$quickstart/registration-hardware-dhcphostname.yaml[]
-----
+Registration example using Label templates variables:
+
+include::example$quickstart/registration-hardware-dhcphostname.adoc[]

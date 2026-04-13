@@ -64,8 +64,4 @@ to ensure uniqueness of a group of host sharing the same custom prefix and/or su
 
 Check the xref:installation/hostname.adoc[HowTo/Customize hostname] section for more information.
 
-.registration example Random template variables
-[,yaml]
-----
-include::example$quickstart/registration-random-hostname.yaml[]
-----
+include::example$quickstart/registration-random-hostname.adoc[]

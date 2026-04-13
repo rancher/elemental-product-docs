@@ -50,8 +50,4 @@ you to use selectors down the line to select similar machines.
 
 For example using the following label `cpuFamily: "${Processor Information/Family}` would allow you to use a selector to search for i7 cpus in your machine fleet.
 
-.Registration example with smbios labels
-[,yaml]
-----
-include::example$quickstart/registration.yaml[]
-----
+include::example$quickstart/registration.adoc[]

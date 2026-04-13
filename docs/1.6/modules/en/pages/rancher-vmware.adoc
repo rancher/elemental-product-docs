@@ -75,22 +75,7 @@ The installation media needs to be tied to a specific registration end point. Th
 
 Consider the following example:
 
-[,yaml]
-.seedimage.yaml
-----
-apiVersion: elemental.cattle.io/v1beta1
-kind: SeedImage
-metadata:
-  name: fire-img
-  namespace: fleet-default
-spec:
-  baseImage: registry.suse.com/suse/sle-micro-iso/5.5:2.0.2
-  registrationRef:
-    apiVersion: elemental.cattle.io/v1beta1
-    kind: MachineRegistration
-    name: fire-nodes
-    namespace: fleet-default
-----
+include::example$quickstart/seedimage.adoc[]
 
 Once the SeedImage resource is created it starts building an ISO with the provided OS image and linking it to
 the given registration end point. Once done a download URL will be available in the SeedImage resource status.

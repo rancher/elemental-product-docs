@@ -1,5 +1,5 @@
 = Customize hostname
-:revdate: 2025-10-27
+:revdate: 2026-04-01
 :page-revdate: {revdate}
 
 == {elemental-product-name} hostname management overview
@@ -46,21 +46,12 @@ registering host will be successful while the others will fail: the `MachineInve
 unique.
 ====
 
-
-import Registration from "!!raw-loader!@site/examples/quickstart/registration-hardware-dhcphostname.yaml"
-
 == Keep the hostname assigned from DHCP
 
 In order to keep the hostname assigned from the DHCP server before the host registers to the operator,
 the `MachineRegistration` xref:machineregistration-reference.adoc#_machinename[`machineName field`] should be set
 to the `${System Data/Runtime/Hostname}` xref:hardwarelabels.adoc[Hardware Label].
 
-This way {elemental-product-name} will use the current hostname as the `MachineInventory` name during
-the registration phase, which will be later set as the static hostname of the host during the
-provisioning phase.
+This way {elemental-product-name} will use the current hostname as the `MachineInventory` name during the registration phase, which will be later set as the static hostname of the host during the provisioning phase. Below is a registration example with the hostname and `MachineInventory` name set on the hostname received by the DHCP server.
 
-.registration example with hostname and MachineInventory name set on the hostname got by the DHCP server
-[,yaml]
-----
-include::example$quickstart/registration-hardware-dhcphostname.yaml[]
-----
+include::example$quickstart/registration-hardware-dhcphostname.adoc[]
