@@ -5,11 +5,7 @@
 
 Gegeben ist die folgende Beispielregistrierung:
 
-.Beispiel für die Maschinenregistrierung mit deklarativem Networking
-[,yaml]
-----
-include::example$network/machineregistration.yaml[]
-----
+include::example$network/machineregistration.adoc[]
 
 Wir können erwarten, dass jede Elementar-Maschine mit der definierten `nm-configurator` `_all.yaml` Vorlage konfiguriert wird.
 
@@ -89,7 +85,7 @@ Sie werden feststellen, dass der `MachineInventory` dasselbe `network.config` wi
       inventory-ip: 192.168.122.150
 ----
 
-Dieser `inventory-ip` wird dann in der `nm-configurator` Konfiguration ersetzt, wann immer `{inventory-ip}` definiert wurde.
+Dieser `inventory-ip` wird dann in der `nm-configurator` Konfiguration ersetzt, wann immer `\{inventory-ip}` definiert wurde.
 
 Beachten Sie auch, dass der `MachineInventory` jede `IPAddressClaim` referenziert und besitzt, die mit ihm verbunden ist. Jede Beanspruchung folgt der vorhersehbaren `$MachineInventoryName-$IPPoolRefKey` Namenskonvention: `m-e5331e3b-1e1b-4ce7-b080-235ed9a6d07c-inventory-ip`.
 

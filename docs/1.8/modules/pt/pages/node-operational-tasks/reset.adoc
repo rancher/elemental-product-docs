@@ -13,6 +13,7 @@ image::reset-cluster-deletion.png[Excluir um Cluster para reinicializar todas as
 +
 image::reset-single-node-deletion.png[Excluir um único nó para reinicializá-lo]
 
+[#_reset_workflow]
 == Fluxo de trabalho de reinicialização
 
 Uma vez que o `MachineInventory` relacionado é sinalizado para exclusão, um plano de reinicialização será executado pelo `elemental-system-agent` em execução na máquina.

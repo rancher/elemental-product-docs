@@ -5,6 +5,7 @@
 
 image::upgrade-lifecycle.png[升级流程]
 
+[#_components]
 == 组件
 
 * https://documentation.suse.com/cloudnative/os-manager/[{elemental-product-name} Operator]

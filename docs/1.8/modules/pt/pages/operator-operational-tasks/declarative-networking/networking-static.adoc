@@ -17,11 +17,7 @@ Neste exemplo, vamos personalizar uma imagem Elemental e incluir uma xref:refere
 
 A configuração a seguir cobre 2 nós com uma configuração de rede muito básica.
 
-.99_static_network_config.yaml
-[,yaml]
-----
-include::example$network/yip-nmc-static-config.yaml[]
-----
+include::example$network/yip-nmc-static-config.adoc[]
 
 == Inclua a configuração de rede estática em uma imagem de SO personalizada
 

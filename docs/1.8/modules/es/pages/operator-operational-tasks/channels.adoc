@@ -14,11 +14,7 @@ Sincronizador Json::
 ====
 Este sincronizador obtendrá un JSON de la URL y lo analizará en recursos válidos de `ManagedOSVersion`. 
 
-.managed-os-version-channel-json.yaml
-[,yaml]
-----
-include::example$upgrade/managed-os-version-channel-json.yaml[]
-----
+include::example$upgrade/managed-os-version-channel-json.adoc[]
 ====
 
 Sincronizador personalizado::
@@ -26,11 +22,7 @@ Sincronizador personalizado::
 ====
 Un sincronizador personalizado permite más flexibilidad sobre cómo reunir `ManagedOSVersion` al permitir comandos personalizados con imágenes personalizadas. Este tipo de sincronizador permite ejecutar un comando dado con argumentos y variables de entorno en una imagen personalizada y generar un archivo JSON en `/data/output`. Los datos generados son luego montados automáticamente por el sincronizador y luego analizados para poder crear las versiones adecuadas. {elemental-product-name} El proyecto proporciona canales para listar todos los `ManagedOSVersions` lanzados como un sincronizador personalizado. Consulta la definición del recurso del canal a continuación: 
 
-.managed-os-version-channel-custom.yaml
-[,yaml]
-----
-include::example$upgrade/managed-os-version-channel-custom.yaml[]
-----
+include::example$upgrade/managed-os-version-channel-custom.adoc[]
 ====
 ======
 
@@ -121,7 +113,7 @@ kubectl -n fleet-default get managedosimages -l elemental.cattle.io/managed-os-v
 ----
 
 Al utilizar múltiples canales, es importante mantener una estrategia de nomenclatura adecuada para tener siempre una referencia rápida y legible por humanos del `ManagedOSVersions`. +
-Se recomienda nombrar cualquier canal como: `{BaseOS}-{BaseOSVersion}-{Flavor}`.
+Se recomienda nombrar cualquier canal como: `\{BaseOS}-\{BaseOSVersion}-\{Flavor}`.
 
 Esto debería permitir al usuario utilizar el nombre del `ManagedOSVersion` como la versión de construcción específica del {elemental-product-name} de la imagen, mientras mantiene una referencia sobre el sistema operativo base y la versión del sistema operativo base del canal padre. +
 En la interfaz de Rancher, esto se verá algo como la siguiente imagen:

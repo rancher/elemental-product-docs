@@ -115,6 +115,7 @@ spec:
             NO_PROXY="localhost, 127.0.0.1"
 ----
 
+[#_custom_suse_rancher_prime_os_manager_client_configuration_file]
 === 自定义 {elemental-product-name} 客户端配置文件
 
 https://github.com/rancher/elemental-toolkit/blob/main/docs/elemental.md[Elemental 客户端] `install`、`upgrade` 和 `reset` 命令可以通过位于 `/etc/elemental/config.yaml` 的 https://rancher.github.io/elemental-toolkit/docs/customizing/general_configuration/[自定义配置文件] 进行配置。如果您有多个 yaml 文件，则需要将它们添加到 `/etc/elemental/config.d` 目录中。

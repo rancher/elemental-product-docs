@@ -17,11 +17,7 @@
 
 以下配置涵盖了 2 个节点，具有非常基本的网络配置。
 
-.99_static_network_config.yaml
-[,yaml]
-----
-include::example$network/yip-nmc-static-config.yaml[]
-----
+include::example$network/yip-nmc-static-config.adoc[]
 
 == 在自定义操作系统镜像中包含静态网络配置
 

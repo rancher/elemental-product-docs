@@ -14,6 +14,7 @@ Para simplificar a adoção das novas variáveis, verifique as tabelas que mapei
 * <<_hardware_labels_to_new_label_templates_variables_table,Rótulos de Hardware para novas variáveis dos Modelos de Rótulos>>
 * <<_smbios_labels_to_new_label_templates_variable_table,Rótulos SMBIOS para novas variáveis dos Modelos de Rótulos>>
 
+[#_hardware_labels_to_new_label_templates_variables_table]
 == Tabela de Rótulos de Hardware para novas variáveis dos Modelos de Rótulos
 
 |===
@@ -77,6 +78,7 @@ Para simplificar a adoção das novas variáveis, verifique as tabelas que mapei
 | `${Runtime/Hostname}`
 |===
 
+[#_smbios_labels_to_new_label_templates_variable_table]
 == Tabela de Rótulos SMBIOS para novas variáveis dos Modelos de Rótulos
 
 |===

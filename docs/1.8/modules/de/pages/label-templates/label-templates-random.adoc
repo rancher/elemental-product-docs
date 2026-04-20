@@ -64,8 +64,4 @@ Da der Hostname eindeutig sein muss und über das xref:references/machineregistr
 
 Weitere Informationen finden Sie im Abschnitt xref:installation/hostname.adoc[HowTo/Customize hostname].
 
-.Registrierungsbeispiel Zufällige Vorlagenvariablen
-[,yaml]
-----
-include::example$quickstart/registration-random-hostname.yaml[]
-----
+include::example$quickstart/registration-random-hostname.adoc[]

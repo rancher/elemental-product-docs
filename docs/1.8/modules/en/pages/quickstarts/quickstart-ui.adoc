@@ -93,6 +93,7 @@ image::quickstart-ui-extension-operator-install-3.png[Install {elemental-product
 If you do not see them, make sure to select the correct namespace at the top of the page.
 ====
 
+[#_add_a_machine_registration_endpoint]
 == Add a Machine Registration Endpoint
 
 In the OS Management dashboard, click the `Create Registration Endpoint` button.

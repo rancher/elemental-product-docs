@@ -49,6 +49,7 @@ Da die Registrierungs-YAML-Konfiguration bereits im ISO enthalten ist, kennt `el
 
 Bei einer erfolgreichen Registrierung wird das Installationsmedium die Installation auf dem Host basierend auf der bereits im Medium enthaltenen Konfiguration und den Maschinenregistrierungsparametern starten. Sobald die Installation abgeschlossen ist, ist der Knoten bereit zum Neustart. Das bereitgestellte OS enthält einen Systemagentenplan, der einen regulären Rancher-Provisionsprozess startet, um die ausgewählte Kubernetes-Version zu installieren. Nachdem der Knoten gebootet wurde, wird die Installation – nach einigen Minuten – abgeschlossen, und der Knoten wird dem Cluster hinzugefügt sowie in der Rancher-Benutzeroberfläche angezeigt.
 
+[#_deployed_partition_table]
 == Bereitgestellte Partitionstabelle
 
 Sobald das Betriebssystem installiert ist, sieht die OS-Partitionstabelle gemäß den Standardwerten so aus:

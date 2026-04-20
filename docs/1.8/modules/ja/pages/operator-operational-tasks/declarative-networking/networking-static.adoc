@@ -17,11 +17,7 @@
 
 以下の設定は、非常に基本的なネットワークセットアップで2ノードをカバーします。
 
-.99_static_network_config.yaml
-[,yaml]
-----
-include::example$network/yip-nmc-static-config.yaml[]
-----
+include::example$network/yip-nmc-static-config.adoc[]
 
 == カスタムOSイメージに静的ネットワーク設定を含める
 

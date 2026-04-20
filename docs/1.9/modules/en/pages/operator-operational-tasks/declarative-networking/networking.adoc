@@ -163,7 +163,7 @@ config:
         enabled: false
 ----
 
-The snippet above is almost 1:1 https://github.com/suse-edge/nm-configurator?tab=readme-ov-file#unified-configurations[nm-configurator syntax], with the only exception of the `+{inventory-ip}+` placeholder. During the installation or reset phases of Elemental machines, the `elemental-operator` will claim one IP Address from the referenced IP Pool, and substitute the `+{inventory-ip}+` placeholder with a real IP Address.
+The snippet above is almost 1:1 https://github.com/suse-edge/nm-configurator?tab=readme-ov-file#unified-configurations[nm-configurator syntax], with the only exception of the `\{inventory-ip}` placeholder. During the installation or reset phases of Elemental machines, the `elemental-operator` will claim one IP Address from the referenced IP Pool, and substitute the `\{inventory-ip}` placeholder with a real IP Address.
 
 === Claimed IPAddresses
 
@@ -196,6 +196,7 @@ Whenever a `MachineInventory` is deleted, the default (DHCP) network configurati
 
 For more information and details on how troubleshoot issues, please consult the xref:troubleshooting/troubleshooting-network.adoc[Troubleshooting Declarative Networking documentation].
 
+[#_configurators]
 === Configurators
 
 On the Elemental machine, `elemental-register` can configure the `NetworkManager` in different ways. The configurator in use is defined in the xref:references/machineregistration-reference.adoc#_config_network[MachineRegistration.spec.network]:

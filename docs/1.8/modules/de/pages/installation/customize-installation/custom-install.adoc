@@ -115,6 +115,7 @@ spec:
             NO_PROXY="localhost, 127.0.0.1"
 ----
 
+[#_custom_suse_rancher_prime_os_manager_client_configuration_file]
 === Benutzerdefinierte {elemental-product-name} Client-Konfigurationsdatei
 
 https://github.com/rancher/elemental-toolkit/blob/main/docs/elemental.md[Elemental-Client] `install`, `upgrade` und `reset` Befehle können mit einer https://rancher.github.io/elemental-toolkit/docs/customizing/general_configuration/[benutzerdefinierten Konfigurationsdatei] konfiguriert werden, die standardmäßig in `/etc/elemental/config.yaml` zu finden ist. Wenn Sie mehrere YAML-Dateien haben, müssen Sie diese im `/etc/elemental/config.d` Verzeichnis hinzufügen.

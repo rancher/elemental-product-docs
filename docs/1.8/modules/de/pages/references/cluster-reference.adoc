@@ -171,8 +171,4 @@ Das folgende Beispiel erstellt einen Cluster, der 2 verschiedene ``machinePool``
 Die Labels für das Beispiel sind manuell festgelegte Labels, sie werden nicht automatisch von {elemental-product-name} gesetzt.
 ====
 
-.Beispiel eines Clusters mit mehr als einem machinePool
-[,yaml]
-----
-include::example$clusters/clusters-several-machinepools.yml[]
-----
+include::example$clusters/clusters-several-machinepools.adoc[]

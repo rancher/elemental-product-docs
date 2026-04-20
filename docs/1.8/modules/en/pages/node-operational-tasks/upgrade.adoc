@@ -16,6 +16,7 @@ Upgrade can be achieve either with CLI or UI:
 * <<_upgrade_via_command_line_interface,Command Line Interface>>
 * <<_upgrade_via_user_interface,User Interface>>
 
+[#_upgrade_via_command_line_interface]
 == Upgrade via command line interface
 
 There are two ways of selecting nodes for upgrading. Via a cluster target, which will match ALL nodes in a cluster that matches our
@@ -85,13 +86,14 @@ include::example$upgrade/upgrade-managedos-version.adoc[]
 If both `osImage` and `ManagedOSVersion` are defined in the same `ManagedOSImage` be aware that `osImage` takes precedence.
 ====
 
-
+[#_managing_available_versions]
 === Managing available versions
 
 It is possible to create xref:references/managedosversion-reference.adoc[ManagedOSVersions] directly, or to subscribe to xref:references/managedosversionchannel-reference.adoc[ManagedOSVersionChannels] to automatically sync `ManagedOSVersions` from them.
 
 For more details and a list of available channels, or to even make your own, please read the xref:operator-operational-tasks/channels.adoc[documentation].
 
+[#_upgrade_via_user_interface]
 == Upgrade via user interface
 
 To upgrade via the UI, you have to go in the {elemental-product-name} Advanced menu, then click on `Update Groups`.

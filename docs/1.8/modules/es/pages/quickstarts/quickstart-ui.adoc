@@ -93,6 +93,7 @@ image::quickstart-ui-extension-operator-install-3.png[Instalar {elemental-produc
 Si no los ves, asegúrate de seleccionar el espacio de nombres correcto en la parte superior de la página.
 ====
 
+[#_add_a_machine_registration_endpoint]
 == Añadir un endpoint de registro de máquina
 
 En el panel de Gestión de OS, haz clic en el botón `Create Registration Endpoint`.

@@ -64,8 +64,4 @@ Puisque le nom d'hôte doit être unique et est attribué via le champ xref:refe
 
 Consultez la section xref:installation/hostname.adoc[HowTo/Customize hostname] pour plus d'informations.
 
-.exemple d'inscription Variables de modèle aléatoires
-[,yaml]
-----
-include::example$quickstart/registration-random-hostname.yaml[]
-----
+include::example$quickstart/registration-random-hostname.adoc[]

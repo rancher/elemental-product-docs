@@ -37,6 +37,7 @@ Beim Upgrade von einer elemental-operator-Version, die die {elemental-product-na
 Sie müssen zuerst das elemental-operator Chart upgraden und erst dann das elemental-operator-crds Chart installieren.
 ----
 
+[#_non_stable_installations]
 === Nicht-stabile Installationen
 
 Neben den oben aufgeführten Helm-Charts sind zwei weitere `non-stable` Versionen verfügbar.

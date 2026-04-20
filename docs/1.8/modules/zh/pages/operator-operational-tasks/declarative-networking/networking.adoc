@@ -109,11 +109,7 @@ spec:
 . IPPool 引用的映射。
 . 网络配置模板（在这种情况下使用 `nmc` 配置器）。
 
-.使用声明式网络的示例 MachineRegistration
-[,yaml]
-----
-include::example$network/machineregistration.yaml[]
-----
+include::example$network/machineregistration.adoc[]
 
 在这里我们可以观察到已经定义了一个 `InClusterIPPool`，因为我们在这个示例中使用了 https://github.com/kubernetes-sigs/cluster-api-ipam-provider-in-cluster[InCluster IPAM 提供者]。
 
@@ -168,7 +164,7 @@ config:
         enabled: false
 ----
 
-上面的代码片段几乎是 1:1 的 https://github.com/suse-edge/nm-configurator?tab=readme-ov-file#unified-configurations[nm-configurator 语法]，唯一的例外是 `{inventory-ip}` 占位符。在元素机器的安装或重置阶段，`elemental-operator` 将从引用的 IP 池中获取一个 IP 地址，并用真实的 IP 地址替换 `{inventory-ip}` 占位符。
+上面的代码片段几乎是 1:1 的 https://github.com/suse-edge/nm-configurator?tab=readme-ov-file#unified-configurations[nm-configurator 语法]，唯一的例外是 `\{inventory-ip}` 占位符。在元素机器的安装或重置阶段，`elemental-operator` 将从引用的 IP 池中获取一个 IP 地址，并用真实的 IP 地址替换 `\{inventory-ip}` 占位符。
 
 === 已获取的 IP 地址
 
@@ -201,6 +197,7 @@ status:
 
 有关更多信息和故障排除问题的详细信息，请查阅 xref:troubleshooting/troubleshooting-network.adoc[Troubleshooting Declarative Networking 文档]。
 
+[#_configurators]
 === 配置器
 
 在元素机器上，`elemental-register` 可以以不同的方式配置 `NetworkManager`。正在使用的配置器在 xref:references/machineregistration-reference.adoc#_config_network[MachineRegistration.spec.network] 中定义：
@@ -216,11 +213,7 @@ nmc::
 --
 `nmc` 配置器使用 https://github.com/suse-edge/nm-configurator?tab=readme-ov-file#unified-configurations[nm-configurator 统一语法] 来生成 NetworkManager 的连接文件。
 
-.使用 nmc 配置器的示例机器注册
-[,yaml]
-----
-include::example$network/machineregistration-nmc.yaml[]
-----
+include::example$network/machineregistration-nmc.adoc[]
 
 --
 
@@ -229,11 +222,7 @@ nmstate::
 --
 `nmstate` 配置器使用 https://nmstate.io/examples.html[nmstate 语法] 来生成 NetworkManager 的连接文件。请注意，https://github.com/nmstate/nmstate/releases[nmstatectl] 需要在元素系统上安装才能使用此配置器。这在元素镜像中默认不包含，但可以在构建 xref:operator-operational-tasks/custom-images.adoc[自定义镜像] 时安装。
 
-.使用 nmstate 配置器的示例机器注册
-[,yaml]
-----
-include::example$network/machineregistration-nmstate.yaml[]
-----
+include::example$network/machineregistration-nmstate.adoc[]
 
 --
 
@@ -245,10 +234,7 @@ nmconnections::
 .点击这里查看使用 nmstate 配置器的 MachineRegistration 示例。
 [%collapsible]
 ====
-[,yaml]
-----
-include::example$network/machineregistration-nmconnections.yaml[]
-----
+include::example$network/machineregistration-nmconnections.adoc[]
 ====
 
 --

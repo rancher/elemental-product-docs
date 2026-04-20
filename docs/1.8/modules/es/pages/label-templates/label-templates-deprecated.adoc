@@ -14,6 +14,7 @@ Para simplificar la adopción de las nuevas variables, consulta las tablas que m
 * <<_hardware_labels_to_new_label_templates_variables_table,Etiquetas de Hardware a nuevas variables de plantillas de etiquetas>>
 * <<_smbios_labels_to_new_label_templates_variable_table,Etiquetas SMBIOS a nuevas variables de plantillas de etiquetas>>
 
+[#_hardware_labels_to_new_label_templates_variables_table]
 == Tabla de etiquetas de hardware a nuevas variables de plantillas de etiquetas
 
 |===
@@ -77,6 +78,7 @@ Para simplificar la adopción de las nuevas variables, consulta las tablas que m
 | `${Runtime/Hostname}`
 |===
 
+[#_smbios_labels_to_new_label_templates_variable_table]
 == Tabla de etiquetas SMBIOS a nuevas variables de plantillas de etiquetas
 
 |===

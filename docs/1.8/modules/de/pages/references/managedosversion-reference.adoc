@@ -25,6 +25,7 @@ spec:
   version: v2.0.2
 ----
 
+[#_managedosversionspec_reference]
 == `ManagedOSVersionSpec` Referenz
 
 |===
@@ -84,6 +85,7 @@ version: v2.2.0
 ----
 ====
 
+[#_metadata]
 == Metadaten
 
 Dies beschreibt die benötigten Informationen zur Definition eines OS-Images in {elemental-product-name}.

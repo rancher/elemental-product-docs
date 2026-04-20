@@ -14,6 +14,7 @@ La actualización se puede realizar tanto con CLI como con UI:
 * <<_upgrade_via_command_line_interface,Interfaz de Línea de Comandos>>
 * <<_upgrade_via_user_interface,Interfaz de usuario>>
 
+[#_upgrade_via_command_line_interface]
 == Actualizar a través de la interfaz de línea de comandos
 
 Hay dos formas de seleccionar los nodos a actualizar. A través de un objetivo de clúster, que coincidirá con TODOS los nodos en un clúster que coincida con nuestro selector o a través del selector de nodos, que coincidirá con los nodos según las etiquetas de nodo. El selector de nodos nos permite ser más específicos en la actualización, mientras que el selector de clúster simplemente selecciona todos los nodos en un clúster coincidente.
@@ -27,11 +28,7 @@ Con 'clusterTarget'::
 ====
 Puedes seleccionar los nodos para la actualización mediante un `clusterTarget` configurándolo con el nombre del clúster que deseas actualizar. Todos los nodos en un clúster que coincida con ese nombre serán seleccionados y actualizados. 
 
-.upgrade-cluster-target.yaml
-[,yaml]
-----
-include::example$upgrade/upgrade-cluster-target.yaml[]
-----
+include::example$upgrade/upgrade-cluster-target.adoc[]
 ====
 
 Con nodeSelector::
@@ -39,11 +36,7 @@ Con nodeSelector::
 ====
 Puedes seleccionar los nodos para la actualización mediante un `nodeSelector` configurándolo con la etiqueta y el valor que deseas que coincidan. Cualquier nodo que contenga esa clave con el valor coincidirá y será actualizado. 
 
-.upgrade-node-selector.yaml
-[,yaml]
-----
-include::example$upgrade/upgrade-node-selector.yaml[]
-----
+include::example$upgrade/upgrade-node-selector.adoc[]
 ====
 
 Con la bandera FORCE::
@@ -51,11 +44,7 @@ Con la bandera FORCE::
 ====
 Al actualizar a una versión anterior o a la misma versión que ya se está ejecutando, se omitirá el procedimiento de actualización. Es posible forzar actualizaciones a versiones anteriores configurando la variable de entorno FORCE como se muestra a continuación. 
 
-.upgrade-force.yaml
-[,yaml]
-----
-include::example$upgrade/upgrade-force.yaml[]
-----
+include::example$upgrade/upgrade-force.adoc[]
 ====
 
 Con la bandera UPGRADE_RECOVERY::
@@ -63,11 +52,7 @@ Con la bandera UPGRADE_RECOVERY::
 ====
 Puedes decidir actualizar la partición de recuperación al actualizar el sistema, o alternativamente, actualizar solo la partición de recuperación.
 
-.upgrade-recovery.yaml
-[,yaml]
-----
-include::example$upgrade/upgrade-recovery.yaml[]
-----
+include::example$upgrade/upgrade-recovery.adoc[]
 ====
 ======
 
@@ -80,11 +65,7 @@ A través de 'osImage'::
 ====
 Solo especifica una imagen OCI en el campo `osImage` 
 
-.upgrade-cluster-target.yaml
-[,yaml]
-----
-include::example$upgrade/upgrade-cluster-target.yaml[]
-----
+include::example$upgrade/upgrade-cluster-target.adoc[]
 ====
 
 Pestaña a través de 'ManagedOSVersion'::
@@ -92,11 +73,7 @@ Pestaña a través de 'ManagedOSVersion'::
 ====
 En este caso, utilizamos los recursos `ManagedOSVersion` autocompletados para establecer el campo `managedOSVersionName` deseado. Consulta la sección [Gestionando versiones disponibles](#managing-available-versions) para entender cómo se gestionan los `ManagedOSVersion`. 
 
-.upgrade-managedos-version.yaml
-[,yaml]
-----
-include::example$upgrade/upgrade-managedos-version.yaml[]
-----
+include::example$upgrade/upgrade-managedos-version.adoc[]
 ====
 ======
 
@@ -105,13 +82,14 @@ include::example$upgrade/upgrade-managedos-version.yaml[]
 Si tanto `osImage` como `ManagedOSVersion` están definidos en el mismo `ManagedOSImage`, ten en cuenta que `osImage` tiene prioridad.
 ====
 
-
+[#_managing_available_versions]
 === Gestionando versiones disponibles
 
 Es posible crear xref:references/managedosversion-reference.adoc[ManagedOSVersions] directamente, o suscribirse a xref:references/managedosversionchannel-reference.adoc[ManagedOSVersionChannels] para sincronizar automáticamente `ManagedOSVersions` desde ellos.
 
 Para más detalles y una lista de canales disponibles, o incluso para crear el tuyo propio, por favor lee la xref:operator-operational-tasks/channels.adoc[documentación].
 
+[#_upgrade_via_user_interface]
 == Actualizar a través de la interfaz de usuario
 
 Para actualizar a través de la UI, debes acceder al {elemental-product-name} menú avanzado y luego hacer clic en `Update Groups`.

@@ -22,7 +22,7 @@ The Elemental templating functionality covers also the xref:references/machinere
 See the <<_custom_machine_names,Machine Name>> section for more details.
 ====
 
-
+[#_label_templates_variables]
 == Label Templates' Variables
 
 Elemental Label Templating includes a set of predefined variables that could be used inside the `value` of the _label templates_ specified in the xref:references/machineregistration-reference.adoc[MachineRegistration].
@@ -70,7 +70,7 @@ Template variables can be mixed with static text to form the actual labels assig
  ** rendered label: *sbios-UUID: fd95324a-c26b-4e28-8727-1dcec293a0ec*
 ====
 
-
+[#_sanitization]
 == Sanitization
 
 Once the label template value has been rendered accordingly to the included <<_label_templates_variables,label template variables>>, the resulting value is `sanitized` before being assigned to the resulting label.
@@ -122,6 +122,7 @@ with special hardware properties to form new Kubernetes Clusters.
 
 The labels attached to each xref:references/machineinventory-reference.adoc[MachineInventory] are eligible to _selector_ for the xref:references/machineinventoryselectortemplate-reference.adoc[MachineInventorySelectorTemplate] resource (see the xref:rancher-os-management/architecture/services/architecture-clusterdeployment.adoc[Kubernetes Cluster provisioning] section for more details).
 
+[#_custom_machine_names]
 === Custom Machine Names
 
 The hostname of the onboarding machine can be specified using the xref:references/machineregistration-reference.adoc[MachineRegistration] `spec.machineName` field.

@@ -37,6 +37,7 @@ Al actualizar desde una versión de elemental-operator que incorpora la incrusta
 Necesitarás actualizar el chart elemental-operator primero, y solo entonces instalar el chart elemental-operator-crds.
 ----
 
+[#_non_stable_installations]
 === Instalaciones no estables
 
 Además de los charts de Helm listados arriba, hay otras dos versiones de `non-stable` disponibles.

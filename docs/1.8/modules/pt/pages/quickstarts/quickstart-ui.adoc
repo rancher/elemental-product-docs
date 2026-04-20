@@ -93,6 +93,7 @@ image::quickstart-ui-extension-operator-install-3.png[Captura de tela da instala
 Se você não os vir, certifique-se de selecionar o namespace correto na parte superior da página.
 ====
 
+[#_add_a_machine_registration_endpoint]
 == Adicione um Endpoint de Registro de Máquina
 
 No painel de Gerenciamento de OS, clique no `Create Registration Endpoint` botão.

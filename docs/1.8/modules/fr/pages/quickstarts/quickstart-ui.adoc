@@ -93,6 +93,7 @@ image::quickstart-ui-extension-operator-install-3.png[Installer l'opérateur {el
 Si vous ne les voyez pas, assurez-vous de sélectionner l'espace de noms correct en haut de la page.
 ====
 
+[#_add_a_machine_registration_endpoint]
 == Ajoutez un point de terminaison d'enregistrement de machine
 
 Dans le tableau de bord de gestion du système d'exploitation, cliquez sur le bouton `Create Registration Endpoint`.

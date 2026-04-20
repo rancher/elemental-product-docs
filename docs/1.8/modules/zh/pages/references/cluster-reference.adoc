@@ -171,8 +171,4 @@ spec:
 示例的标签是手动设置的标签，它们不是由{elemental-product-name}自动设置的。
 ====
 
-.具有多个机器池的集群示例
-[,yaml]
-----
-include::example$clusters/clusters-several-machinepools.yml[]
-----
+include::example$clusters/clusters-several-machinepools.adoc[]

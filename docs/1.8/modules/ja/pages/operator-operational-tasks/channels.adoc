@@ -14,11 +14,7 @@ JSON syncer::
 ====
 このsyncerは、URLからJSONを取得し、有効な`ManagedOSVersion`リソースに解析します。
 
-.managed-os-version-channel-json.yaml
-[,yaml]
-----
-include::example$upgrade/managed-os-version-channel-json.yaml[]
-----
+include::example$upgrade/managed-os-version-channel-json.adoc[]
 ====
 
 カスタムsyncer::
@@ -26,11 +22,7 @@ include::example$upgrade/managed-os-version-channel-json.yaml[]
 ====
 カスタムsyncerは、カスタムイメージを使用してカスタムコマンドを実行することで、`ManagedOSVersion`の収集方法に柔軟性をもたらします。このタイプのsyncerは、カスタムイメージ内で引数と環境変数を指定されたコマンドで実行し、`/data/output`にJSONファイルを出力することを許可します。生成されたデータは、その後、syncerによって自動マウントされ、適切なバージョンを作成するために解析されます。{elemental-product-name}プロジェクトは、カスタムsyncerとしてリリースされたすべての`ManagedOSVersions`をリストするためのチャネルを提供します。以下のチャネルリソース定義を参照してください：
 
-.managed-os-version-channel-custom.yaml
-[,yaml]
-----
-include::example$upgrade/managed-os-version-channel-custom.yaml[]
-----
+include::example$upgrade/managed-os-version-channel-custom.adoc[]
 ====
 ======
 
@@ -121,7 +113,7 @@ kubectl -n fleet-default get managedosimages -l elemental.cattle.io/managed-os-v
 ----
 
 複数のチャネルを使用する場合、所有されている`ManagedOSVersions`に対して常に迅速で人間が読みやすい参照を持つために、適切な命名戦略を維持することが重要です。 +
-任意のチャネルに次のように名前を付けることをお勧めします：`{BaseOS}-{BaseOSVersion}-{Flavor}`。
+任意のチャネルに次のように名前を付けることをお勧めします：`\{BaseOS}-\{BaseOSVersion}-\{Flavor}`。
 
 これにより、ユーザーは`ManagedOSVersion`名をイメージの特定の{elemental-product-name}ビルドバージョンとして使用できるようになり、親チャネルからのベースOSおよびベースOSバージョンの参照を保持できます。 +
 Rancher UIでは、次の画像のように表示されます:

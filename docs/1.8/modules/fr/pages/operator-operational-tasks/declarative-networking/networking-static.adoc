@@ -17,11 +17,7 @@ Dans cet exemple, nous allons personnaliser une image Elemental et inclure un xr
 
 La configuration suivante couvre 2 nœuds avec une configuration réseau très basique.
 
-.99_static_network_config.yaml
-[,yaml]
-----
-include::example$network/yip-nmc-static-config.yaml[]
-----
+include::example$network/yip-nmc-static-config.adoc[]
 
 == Inclure la configuration réseau statique dans une image OS personnalisée
 

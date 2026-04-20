@@ -7,11 +7,7 @@ O recurso ManagedOSImage é responsável por definir uma imagem de sistema opera
 
 Existem várias chaves que podem ser configuradas sob uma especificação de recurso `ManagedOSImage`.
 
-.upgrade-cluster-target.yaml
-[,yaml]
-----
-include::example$upgrade/upgrade-cluster-target.yaml[]
-----
+include::example$upgrade/upgrade-cluster-target.adoc[]
 
 == `ManagedOSImageSpec` Referência
 

@@ -37,6 +37,7 @@ Lors de la mise à niveau depuis une version de elemental-operator avec l'incorp
 Vous devrez d'abord mettre à niveau le chart elemental-operator, et seulement ensuite installer le chart elemental-operator-crds.
 ----
 
+[#_non_stable_installations]
 === Installations non stables
 
 En plus des charts Helm listés ci-dessus, il existe deux autres `non-stable` versions disponibles.

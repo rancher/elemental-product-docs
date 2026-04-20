@@ -9,6 +9,7 @@ include::partial$quickstart-prereqs.adoc[]
 
 include::partial$operator-install.adoc[]
 
+[#_prepare_your_kubernetes_resources]
 == Prepare seus recursos do Kubernetes
 
 A implantação do nó começa com um `MachineRegistration`, identificando um conjunto de máquinas que compartilham a mesma configuração (discos, rede etc.).
@@ -28,19 +29,11 @@ Criando manualmente os arquivos de recurso yamls::
 ========
 Você precisará criar os seguintes arquivos: 
 
-.selector.yaml
-[,yaml]
-----
-include::example$quickstart/selector.yaml[]
-----
+include::example$quickstart/selector.adoc[]
 
 Como você pode ver, este é um seletor muito simples que procura por `MachineInventory`s que têm um rótulo com a chave `element` e o valor `fire`. 
 
-.cluster.yaml
-[,yaml]
-----
-include::example$quickstart/cluster.yaml[]
-----
+include::example$quickstart/cluster.adoc[]
 
 Como você pode ver, o `machineConfigRef` é do tipo `MachineInventorySelectorTemplate` com o nome `fire-machine-selector`: ele corresponde ao seletor que criamos. Você pode obter mais informações sobre opções de cluster como https://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-deployment/configuration/rke2.html#_machineglobalconfig[`machineGlobalConfig`] ou https://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-deployment/configuration/rke2.html#_machineselectorconfig[`machineSelectorConfig`] diretamente na https://documentation.suse.com/cloudnative/rancher-manager/latest/en/about-rancher/what-is-rancher.html[documentação do Rancher Manager].
 
@@ -49,21 +42,13 @@ Como você pode ver, o `machineConfigRef` é do tipo `MachineInventorySelectorTe
 Registro::
 +
 ====
-.register.yaml
-[,yaml]
-----
-include::example$quickstart/registration.yaml[]
-----
+include::example$quickstart/registration.adoc[]
 ====
 
 Registro para Raspberry Pi::
 +
 ====
-.rpi-registration.yaml
-[,yaml]
-----
-include::example$quickstart/rpi-registration.yaml[]
-----
+include::example$quickstart/rpi-registration.adoc[]
 
 Para implantação no Raspberry Pi, você precisa habilitar o TPM emulado (exceto se você tiver [um TPM de hardware para Raspberry Pi](https://thepihut.com/products/letstrust-tpm-for-raspberry-pi)). Você também precisa desativar a gravação na loja EFI (já que o Raspberry Pi não possui uma) via `disable-boot-entry: true`.
 ====
@@ -83,11 +68,7 @@ O cartão SD em um Raspberry Pi é geralmente `/dev/mmcblk0`.
 Imagem de Seed (x86_64)::
 +
 ====
-.seedimage.yaml
-[,yaml]
-----
-include::example$quickstart/seedimage.yaml[]
-----
+include::example$quickstart/seedimage.adoc[]
 
 O `SeedImage` é necessário para gerar a *imagem de seed* (como um ISO inicializável) que irá inicializar e iniciar o provisionamento {elemental-product-name} nas máquinas de destino.
 
@@ -146,6 +127,7 @@ O `seedimage.yaml` não suporta aarch64 atualmente.
 ========
 ==========
 
+[#_preparing_the_installation_seed_image]
 == Preparando a imagem de instalação (seed)
 
 Este é o último passo: você precisa de uma imagem de seed {elemental-product-name} que inclua a configuração de registro inicial, para que possa ser registrada automaticamente, instalada e totalmente implantada como parte do seu cluster.

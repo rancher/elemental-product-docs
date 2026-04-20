@@ -37,8 +37,4 @@ Las etiquetas pueden añadirse a los campos xref:references/machineregistration-
 
 Ejemplo: xref:references/machineregistration-reference.adoc[Registro de Máquinas] donde los nodos tendrán la dirección IP interna configurada desde la interfaz eth0 y la dirección IP externa desde eth1.
 
-.registration.yaml
-[,yaml]
-----
-include::example$labeltemplates/registration.yaml[]
-----
+include::example$labeltemplates/registration.adoc[]

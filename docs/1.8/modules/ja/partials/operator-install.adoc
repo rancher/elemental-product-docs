@@ -37,6 +37,7 @@ elemental-operator-64f88fc695-b8qhn   1/1     Running   0          16s
 まずelemental-operatorチャートをアップグレードし、その後にelemental-operator-crdsチャートをインストールする必要があります。
 ----
 
+[#_non_stable_installations]
 === 非安定なインストール
 
 上記のHelmチャートに加えて、他に2つの`non-stable`バージョンが利用可能です。

@@ -27,6 +27,7 @@
 种子映像保存在节点的本地存储中：请注意您同时启动的 `SeedImage` 资源数量，以及在禁用自动清理功能时可能遗留的那些资源 (`cleanupAfterMinutes` = `0`)，因为这可能会耗尽集群节点上的存储空间。
 ====
 
+[#_seedimagespec_reference]
 == SeedImageSpec 参考
 
 |===
@@ -113,6 +114,7 @@ buildContainer:
 - `ELEMENTAL_BASE_IMAGE`：在 `SeedImage` 中定义的基础镜像。
 - `ELEMENTAL_OUTPUT_NAME`：构建工件的预期文件名。
 
+[#_iso_and_raw_images]
 === ISO 和 Raw 镜像
 
 `SeedImage` 能够构建 `iso` 或 `raw` 类型的镜像。
@@ -164,6 +166,7 @@ spec:
 ----
 ====
 
+[#_multi_platform_support]
 === 多平台支持
 
 Elemental 为大多数变体提供 `linux/x86_64` 和 `linux/aarch64` 镜像。

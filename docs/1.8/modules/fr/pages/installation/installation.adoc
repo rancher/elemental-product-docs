@@ -49,6 +49,7 @@ Comme la configuration yaml d'enregistrement est déjà incluse dans l'ISO, `ele
 
 Une fois l'enregistrement réussi, le support d'installation commencera l'installation sur l'hôte en fonction de la configuration déjà incluse dans le support et des paramètres de MachineRegistration. Dès que l'installation est terminée, le nœud est prêt à redémarrer. Le système d'exploitation déployé inclut un plan d'agent système pour démarrer un processus de provisionnement Rancher régulier afin d'installer la version de Kubernetes sélectionnée, une fois démarré, après quelques minutes, l'installation du nœud est finalisée et le nœud est inclus dans le cluster et visible via l'interface utilisateur Rancher.
 
+[#_deployed_partition_table]
 == Table de partition déployée
 
 Une fois le système d'exploitation installé, la table de partition du système d'exploitation, selon les valeurs par défaut, ressemblera à

@@ -13,6 +13,7 @@ image::reset-cluster-deletion.png[Elimina un Clúster para reiniciar todas las m
 +
 image::reset-single-node-deletion.png[Elimina un único nodo para reiniciarlo]
 
+[#_reset_workflow]
 == Reiniciar Flujo de Trabajo
 
 Una vez que el `MachineInventory` relacionado esté marcado para eliminación, se ejecutará un plan de reinicio por el `elemental-system-agent` que se esté ejecutando en la máquina.

@@ -23,6 +23,7 @@ Dans {elemental-product-name} Operator, toutes les ressources Kubernetes, y comp
 Contrairement à des projets similaires tels que _Cloud Init_, Yip ne conserve pas d'enregistrements ou de caches des étapes et des phases exécutées, toutes les étapes et leur configuration associée sont exécutées à chaque démarrage.
 ====
 
+[#_elemental_client_cloud_config_hooks]
 == Hooks cloud-config du client Elemental
 
 En plus des étapes cloud-config définies au démarrage décrites dans la section précédente, le client Elemental respecte également certaines étapes spécifiques, référencées comme hooks, pour personnaliser le comportement de ces sous-commandes : `install`, `upgrade`, `reset` et `build-disk`. Chacune de ces sous-commandes a son propre ensemble de quatre étapes cloud-config différentes exécutées à des phases analogues de l'exécution de la sous-commande spécifique.
@@ -49,6 +50,7 @@ Après les étapes : après-installation, après-mise à niveau, après-réiniti
 Notez que les crochets d'installation ne sont pas appliqués dans le cadre du xref:references/machineregistration-reference.adoc#_config_cloud_config[`MachineRegistration.config.cloud-config`]. Pour fournir des crochets d'installation, ils peuvent être inclus dans le cadre du xref:[`SeedImage.cloud-config`], car ils doivent être présents dans le support d'installation.
 ====
 
+[#_configuration_syntax]
 == Syntaxe de configuration
 
 Yip a sa propre syntaxe, elle nécessite essentiellement de définir _étapes_ et une liste d'étapes pour chaque étape. Les étapes sont exécutées dans l'ordre et chaque étape peut être une combinaison de différents types d'actions (par exemple, exécuter des commandes, créer des fichiers, définir un nom d'hôte, etc.).
@@ -143,6 +145,7 @@ Lors de l'exécution d'une étape, tous les fichiers sont chargés et un graphe 
 
 Pour synchroniser l'exécution, l'utilisateur peut utiliser les étapes post/pré ou se référer au mot-clé `after` dans le https://github.com/rancher/yip/blob/ee4051d9ec2782989344f813bc6a0975bbd8f3fe/pkg/executor/default_test.go#L222[syntaxe yip].
 
+[#_compatibility_with_cloud_init_format]
 == Compatibilité avec le format Cloud Init
 
 Un sous-ensemble de la spécification officielle http://cloudinit.readthedocs.org/en/latest/topics/format.html#cloud-config-data[cloud-config] est implémenté par yip. Plus précisément, les clés cloud-init prises en charge, à savoir `users`, `ssh_authorized_keys`, `runcmd`, `hostname` et `write_files`, sont implémentées.

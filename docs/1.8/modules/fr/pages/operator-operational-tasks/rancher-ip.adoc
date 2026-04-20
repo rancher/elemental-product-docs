@@ -37,8 +37,4 @@ Les étiquettes peuvent être ajoutées aux champs xref:references/machineregist
 
 Exemple : xref:references/machineregistration-reference.adoc[MachineRegistration] où les nœuds auront l'adresse IP interne définie à partir de l'interface eth0 et l'adresse IP externe à partir de l'interface eth1.
 
-.registration.yaml
-[,yaml]
-----
-include::example$labeltemplates/registration.yaml[]
-----
+include::example$labeltemplates/registration.adoc[]

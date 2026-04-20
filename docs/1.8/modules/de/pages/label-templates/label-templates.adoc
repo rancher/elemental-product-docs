@@ -23,7 +23,7 @@ Die Templating-Funktionalität von Elemental umfasst auch das xref:references/ma
 Siehe den Abschnitt <<_custom_machine_names,Maschinenname>> für weitere Details.
 ====
 
-
+[#_label_templates_variables]
 == Variablen der Etikettenvorlagen
 
 Das Elemental-Label-Templating umfasst eine Reihe vordefinierter Variablen, die im `value` der _Etikettenvorlagen_ in der xref:references/machineregistration-reference.adoc[Maschinenregistrierung] verwendet werden können.
@@ -71,7 +71,7 @@ Template-Variablen können mit statischem Text gemischt werden, um die tatsächl
  ** rendered label: *sbios-UUID: fd95324a-c26b-4e28-8727-1dcec293a0ec*
 ====
 
-
+[#_sanitization]
 == Bereinigung
 
 Sobald der Wert der Etikettenvorlage entsprechend den enthaltenen <<_label_templates_variables,Variablen der Etikettenvorlage>> gerendert wurde, ist der resultierende Wert `sanitized`, bevor er dem resultierenden Etikett zugewiesen wird.
@@ -122,6 +122,7 @@ Das `Label Templates` kann verwendet werden, um Labels zu generieren, die zur Id
 
 Die an jede xref:references/machineinventory-reference.adoc[MachineInventory] angehängten Labels können als _selector_ für die xref:references/machineinventoryselectortemplate-reference.adoc[MachineInventorySelectorTemplate]-Ressource verwendet werden (siehe den Abschnitt xref:rancher-os-management/architecture/services/architecture-clusterdeployment.adoc[Kubernetes Clusterbereitstellung] für weitere Details).
 
+[#_custom_machine_names]
 === Benutzerdefinierte Maschinenamen
 
 Der Hostname der Onboarding-Maschine kann mit dem xref:references/machineregistration-reference.adoc[MachineRegistration] `spec.machineName` Feld angegeben werden.
@@ -147,8 +148,4 @@ Für weitere Informationen zur Definition des Hostnamens für Elemental-Hosts, s
 
 == Beispiel für Etikettenvorlagen
 
-.Registrierungsbeispiel mit Variablen der Etikettenvorlagen
-[,yaml]
-----
-include::example$quickstart/registration-hardware-dhcphostname.yaml[]
-----
+include::example$quickstart/registration-hardware-dhcphostname.adoc[]

@@ -44,8 +44,4 @@ import Registration from "!!raw-loader!@site/examples/quickstart/registration-ha
 
 この方法で、{elemental-product-name} は登録フェーズ中に現在のホスト名を `MachineInventory` 名として使用し、その後、プロビジョニングフェーズ中にホストの静的ホスト名として設定されます。
 
-.DHCP サーバーから取得したホスト名と MachineInventory 名が設定された登録の例
-[,yaml]
-----
-include::example$quickstart/registration-hardware-dhcphostname.yaml[]
-----
+include::example$quickstart/registration-hardware-dhcphostname.adoc[]

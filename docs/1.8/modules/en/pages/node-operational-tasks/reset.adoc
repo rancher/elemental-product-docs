@@ -13,6 +13,7 @@ image::reset-cluster-deletion.png[Delete a Cluster to reset all machines]
 +
 image::reset-single-node-deletion.png[Delete a single node to reset it]
 
+[#_reset_workflow]
 == Reset workflow
 
 Once the related `MachineInventory` is flagged for deletion, a reset plan will be executed by the `elemental-system-agent` running on the machine.

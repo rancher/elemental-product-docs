@@ -23,7 +23,7 @@ La fonctionnalité de modélisation d'Elemental couvre également le champ xref:
 Voir la section <<_custom_machine_names,Nom de la machine>> pour plus de détails.
 ====
 
-
+[#_label_templates_variables]
 == Variables des modèles d'étiquettes
 
 La modélisation d'étiquettes d'Elemental inclut un ensemble de variables prédéfinies qui peuvent être utilisées à l'intérieur du `value` des _modèles d'étiquettes_ spécifiés dans le xref:references/machineregistration-reference.adoc[EnregistrementMachine].
@@ -71,7 +71,7 @@ Les variables de modèle peuvent être mélangées avec du texte statique pour f
  ** étiquette rendue : *sbios-UUID: fd95324a-c26b-4e28-8727-1dcec293a0ec*
 ====
 
-
+[#_sanitization]
 == Sanitization
 
 Une fois que la valeur du modèle d'étiquette a été rendue conformément aux <<_label_templates_variables,variables de modèle d'étiquette>> incluses, la valeur résultante est `sanitized` avant d'être assignée à l'étiquette résultante.
@@ -122,6 +122,7 @@ Le `Label Templates` peut être utilisé pour générer des étiquettes utilisé
 
 Les étiquettes attachées à chaque xref:references/machineinventory-reference.adoc[InventaireMachine] sont éligibles au _selector_ pour la ressource xref:references/machineinventoryselectortemplate-reference.adoc[MachineInventorySelectorTemplate] (voir la section xref:rancher-os-management/architecture/services/architecture-clusterdeployment.adoc[Kubernetes Cluster provisioning] pour plus de détails).
 
+[#_custom_machine_names]
 === Noms de Machine Personnalisés
 
 Le nom d'hôte de la machine d'intégration peut être spécifié en utilisant le champ xref:references/machineregistration-reference.adoc[MachineRegistration] `spec.machineName`.
@@ -147,8 +148,4 @@ Pour plus d'informations sur la façon de définir le nom d'hôte pour les hôte
 
 == Exemple de Modèles d'Étiquettes
 
-.exemple d'enregistrement avec des variables de modèles d'étiquettes
-[,yaml]
-----
-include::example$quickstart/registration-hardware-dhcphostname.yaml[]
-----
+include::example$quickstart/registration-hardware-dhcphostname.adoc[]

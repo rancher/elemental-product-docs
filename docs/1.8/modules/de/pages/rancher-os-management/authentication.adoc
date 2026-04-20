@@ -34,11 +34,7 @@ Die Schlüssel des emulierten TPM-Geräts werden alle deterministisch aus einem 
 
 Die TPM-Emulation wird aktiviert, indem die `emulate-tpm` und `emulated-tpm-seed` Felder in der `MachineRegistration` Konfiguration gesetzt werden (siehe den xref:references/machineregistration-reference.adoc#_config_elemental_registration[config:elemental:registration Abschnitt in der MachineRegistration-Referenz] für weitere Details).
 
-.Beispiel für eine MachineRegistration mit TPM-Emulation
-[,yaml]
-----
-include::example$authentication/registration-emulate-tpm.yaml[]
-----
+include::example$authentication/registration-emulate-tpm.adoc[]
 
 Die Konfiguration der TPM-Emulation ist im xref:operator-operational-tasks/tpm.adoc#_add_tpm_emulation_to_bare_metal_machine[Abschnitt zur TPM-Emulationskonfiguration] detailliert.
 
@@ -49,11 +45,7 @@ Falls die Maschine mehr als eine Netzwerkschnittstelle hat, werden die MAC-Adres
 
 Um die TPM-Authentifizierung durch die Identifizierung der MAC-Adresse zu ersetzen, reicht es aus, den `mac` Wert im `auth` Feld des xref:references/machineregistration-reference.adoc#_config_elemental_registration[config:elemental:registration-Abschnitts in der MachineRegistration-Referenz] zu setzen.
 
-.Beispiel für MachineRegistration, die die MAC-Adresse als Maschinenidentifikator verwendet
-[,yaml]
-----
-include::example$authentication/registration-mac.yaml[]
-----
+include::example$authentication/registration-mac.adoc[]
 
 [CAUTION]
 ====
@@ -68,11 +60,7 @@ Die System Management BIOS (SMBIOS) Spezifikation definiert Datenstrukturen, die
 
 Bei Verwendung des `sys-uuid` Wertes als `auth`-Feld des xref:references/machineregistration-reference.adoc#_config_elemental_registration[config:elemental:registration-Abschnitts in der MachineRegistration-Referenz] registriert sich der Host beim {elemental_operator_name} unter Verwendung des `UUID` Wertes aus der `System Information` Tabelle der SMBIOS-Daten des Hosts.
 
-.Beispiel für eine MachineRegistration, die die UUID aus der SMBIOS-Systeminformationstabelle als Maschinenidentifikator verwendet
-[,yaml]
-----
-include::example$authentication/registration-sys-uuid.yaml[]
-----
+include::example$authentication/registration-sys-uuid.adoc[]
 
 [CAUTION]
 ====

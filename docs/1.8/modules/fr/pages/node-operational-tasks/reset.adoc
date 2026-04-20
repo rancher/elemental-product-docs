@@ -13,6 +13,7 @@ image::reset-cluster-deletion.png[Supprimer un Cluster pour réinitialiser toute
 +
 image::reset-single-node-deletion.png[Supprimer un nœud unique pour le réinitialiser]
 
+[#_reset_workflow]
 == Réinitialiser le flux de travail
 
 Une fois que le `MachineInventory` concerné est signalé pour suppression, un plan de réinitialisation sera exécuté par le `elemental-system-agent` fonctionnant sur la machine.

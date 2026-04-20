@@ -14,6 +14,7 @@
 * <<_hardware_labels_to_new_label_templates_variables_table,硬件标签到新标签模板变量>>
 * <<_smbios_labels_to_new_label_templates_variable_table,SMBIOS 标签到新标签模板变量>>
 
+[#_hardware_labels_to_new_label_templates_variables_table]
 == 硬件标签到新标签模板变量表
 
 |===
@@ -77,6 +78,7 @@
 | `${Runtime/Hostname}`
 |===
 
+[#_smbios_labels_to_new_label_templates_variable_table]
 == SMBIOS 标签到新标签模板变量表
 
 |===

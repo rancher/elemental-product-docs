@@ -82,6 +82,7 @@ kick start a regular rancher provisioning process to install the selected kubern
 some minutes the node installation is finalized and the node is included into the cluster and visible through
 the Rancher UI.
 
+[#_deployed_partition_table]
 == Deployed Partition Table
 
 Once the operating system is installed the OS partition table, according to default values, will look like

@@ -13,6 +13,7 @@ image::reset-cluster-deletion.png[Löschen Sie einen Cluster, um alle Maschinen 
 +
 image::reset-single-node-deletion.png[Löschen Sie einen einzelnen Knoten, um ihn zurückzusetzen]
 
+[#_reset_workflow]
 == Rücksetz-Workflow
 
 Sobald das zugehörige `MachineInventory` zum Löschen markiert ist, wird ein Rücksetzplan vom `elemental-system-agent` ausgeführt, der auf der Maschine läuft.

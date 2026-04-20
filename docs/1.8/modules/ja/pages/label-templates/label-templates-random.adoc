@@ -64,8 +64,4 @@
 
 詳細については、xref:installation/hostname.adoc[ホスト名のカスタマイズ方法]セクションを確認してください。
 
-.登録例 ランダムテンプレート変数
-[,yaml]
-----
-include::example$quickstart/registration-random-hostname.yaml[]
-----
+include::example$quickstart/registration-random-hostname.adoc[]

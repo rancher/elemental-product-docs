@@ -93,6 +93,7 @@ image::quickstart-ui-extension-operator-install-3.png[安装 {elemental-product-
 如果您没有看到它们，请确保在页面顶部选择正确的名称空间。
 ====
 
+[#_add_a_machine_registration_endpoint]
 == 添加机器注册端点
 
 在操作系统管理仪表板中，单击 `Create Registration Endpoint` 按钮。

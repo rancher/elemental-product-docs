@@ -35,10 +35,7 @@ Vous pouvez le faire soit avec xref:quickstarts/quickstart-ui.adoc#_add_a_machin
 CLI::
 +
 ====
-[,yaml]
-----
-include::example$proxy/registration-proxy.yaml[]
-----
+include::example$proxy/registration-proxy.adoc[]
 ====
 
 UI::
@@ -60,10 +57,7 @@ Au moment de la rédaction, il n'est possible de configurer les paramètres de p
 Le processus se produit lorsque vous démarrez votre {elemental-product-name} ISO pour la première fois, afin de configurer les paramètres de proxy, vous devez inclure une `cloud-init` définition dans l'ISO.
 Pour ce faire, vous devez créer une définition de xref:references/seedimage-reference.adoc[SeedImage].
 
-[,yaml]
-----
-include::example$proxy/seedimage-proxy.yaml[]
-----
+include::example$proxy/seedimage-proxy.adoc[]
 
 Appliquez le YAML avec `kubectl` puis, imprimez votre définition de SeedImage pour obtenir l'URL pour le télécharger :
 
@@ -84,10 +78,7 @@ Pour cette étape, vous pouvez utiliser soit l'UI, soit le CLI.
 CLI::
 +
 ====
-[,yaml]
-----
-include::example$proxy/cluster-proxy.yaml[]
-----
+include::example$proxy/cluster-proxy.adoc[]
 ====
 
 UI::

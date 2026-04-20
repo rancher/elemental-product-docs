@@ -27,6 +27,7 @@ Ein SeedImage für eine andere Plattform wird unter Verwendung des `targetPlatfo
 Achten Sie auf die Anzahl der `SeedImage` Ressourcen, die Sie gleichzeitig starten, und auf die, die Sie möglicherweise mit der deaktivierten automatischen Bereinigungsfunktion zurücklassen (`cleanupAfterMinutes` = `0`), da Sie den Speicher auf Ihren Cluster-Knoten erschöpfen könnten.
 ====
 
+[#_seedimagespec_reference]
 == SeedImageSpec-Referenz
 
 |===
@@ -113,6 +114,7 @@ Die folgende Liste von Umgebungsvariablen kann ebenfalls innerhalb des benutzerd
 - `ELEMENTAL_BASE_IMAGE`: Das Basis-Image, das in `SeedImage` definiert ist.
 - `ELEMENTAL_OUTPUT_NAME`: Der erwartete Dateiname des Build-Artefakts.
 
+[#_iso_and_raw_images]
 === ISO- und Raw-Images
 
 Der `SeedImage` ist in der Lage, `iso` oder `raw` Bildtypen zu erstellen.
@@ -165,6 +167,7 @@ spec:
 ----
 ====
 
+[#_multi_platform_support]
 === Unterstützung mehrerer Plattformen
 
 Elemental stellt `linux/x86_64` und `linux/aarch64` Images für die meisten Varianten bereit.

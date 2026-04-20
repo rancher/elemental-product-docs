@@ -9,6 +9,7 @@ include::partial$quickstart-prereqs.adoc[]
 
 include::partial$operator-install.adoc[]
 
+[#_prepare_your_kubernetes_resources]
 == Prepare your kubernetes resources
 
 Node deployment starts with a `MachineRegistration`, identifying a set of machines sharing the same configuration (disk drives, network, etc.).
@@ -127,6 +128,7 @@ The `seedimage.yaml` does not support aarch64 currently.
 ========
 ==========
 
+[#_preparing_the_installation_seed_image]
 == Preparing the installation (seed) image
 
 This is the last step: you need an {elemental-product-name} seed image that includes the initial registration config, so it can be auto registered, installed and fully deployed as part of your cluster.
