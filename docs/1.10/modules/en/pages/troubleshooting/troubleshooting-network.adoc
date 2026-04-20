@@ -84,7 +84,7 @@ You will notice that the `MachineInventory` carries the same `network.config` as
       inventory-ip: 192.168.122.150
 ----
 
-This `inventory-ip` will then be substituted in the `nm-configurator` config whenever `+{inventory-ip}+` has been defined.
+This `inventory-ip` will then be substituted in the `nm-configurator` config whenever `\{inventory-ip}` has been defined.
 
 Also note that the `MachineInventory` references and owns each `IPAddressClaim` associated with it. Each claim follow the predictable `$MachineInventoryName-$IPPoolRefKey` naming convention: `m-e5331e3b-1e1b-4ce7-b080-235ed9a6d07c-inventory-ip`.
 

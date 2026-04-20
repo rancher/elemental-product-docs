@@ -2,6 +2,7 @@
 :revdate: 2025-09-08
 :page-revdate: {revdate}
 
+[#_remastering_an_os_image_with_a_custom_dockerfile]
 == Remastering an OS image with a custom Dockerfile
 
 Since OS images provided by {elemental-product-name} are container images, they can also be used as a base image in a Dockerfile in order to create a new container image.
@@ -60,7 +61,8 @@ be run and verified using docker with
 docker run -it myrepo/custom-build:v1.1.1 bash
 ----
 
-## Create a custom bootable installation ISO
+[#_create_a_custom_bootable_installation_iso]
+== Create a custom bootable installation ISO
 
 {elemental-product-name} leverages container images to build its root filesystems; therefore, it is possible to use it in a multi-stage environment to create custom bootable media that bundles a custom container image.
 

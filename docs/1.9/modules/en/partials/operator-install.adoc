@@ -37,6 +37,7 @@ When upgrading from an elemental-operator release embedding the {elemental-produ
 You will need to upgrade the elemental-operator chart first, and only then install the elemental-operator-crds chart.
 ----
 
+[#_non_stable_installations]
 === Non-stable installations
 
 Besides the Helm charts listed above, there are two other `non-stable`
