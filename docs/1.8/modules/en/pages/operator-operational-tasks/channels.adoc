@@ -113,7 +113,7 @@ kubectl -n fleet-default get managedosimages -l elemental.cattle.io/managed-os-v
 ----
 
 When using multiple channels it's important to keep a proper naming strategy to always have a quick, human readable reference on the owned `ManagedOSVersions`. +
-It is recommended to name any channel as: `+{BaseOS}-{BaseOSVersion}-{Flavor}+`.
+It is recommended to name any channel as: `\{BaseOS}-\{BaseOSVersion}-\{Flavor}`.
 
 This should allow the user to use the `ManagedOSVersion` name as the specific {elemental-product-name} build version of the image, while keeping a reference on the Base OS and Base OS version from the parent channel. +
 On the Rancher UI this will look something like the following image:

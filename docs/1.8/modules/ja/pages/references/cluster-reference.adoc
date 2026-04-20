@@ -171,8 +171,4 @@ spec:
 例のラベルは手動で設定されたラベルであり、{elemental-product-name}によって自動的に設定されるものではありません。
 ====
 
-.複数のmachinePoolを持つクラスターの例
-[,yaml]
-----
-include::example$clusters/clusters-several-machinepools.yml[]
-----
+include::example$clusters/clusters-several-machinepools.adoc[]

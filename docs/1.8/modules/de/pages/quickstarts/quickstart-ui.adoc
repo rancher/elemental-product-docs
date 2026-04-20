@@ -93,6 +93,7 @@ image::quickstart-ui-extension-operator-install-3.png[Installieren {elemental-pr
 Wenn Sie sie nicht sehen, stellen Sie sicher, dass Sie den richtigen Namespace oben auf der Seite auswählen.
 ====
 
+[#_add_a_machine_registration_endpoint]
 == Fügen Sie einen Maschinenregistrierungsendpunkt hinzu
 
 Klicken Sie im OS Management Dashboard auf die `Create Registration Endpoint` Schaltfläche.

@@ -14,11 +14,7 @@ Sincronizador JSON::
 ====
 Esse sincronizador buscará um JSON de uma URL e o analisará em recursos válidos de `ManagedOSVersion`. 
 
-.managed-os-version-channel-json.yaml
-[,yaml]
-----
-include::example$upgrade/managed-os-version-channel-json.yaml[]
-----
+include::example$upgrade/managed-os-version-channel-json.adoc[]
 ====
 
 Sincronizador personalizado::
@@ -26,11 +22,7 @@ Sincronizador personalizado::
 ====
 Um sincronizador personalizado permite mais flexibilidade sobre como reunir `ManagedOSVersion` ao permitir comandos personalizados com imagens personalizadas. Esse tipo de sincronizador permite executar um comando específico com argumentos e variáveis de ambiente em uma imagem personalizada e gerar um arquivo JSON para `/data/output`. Os dados gerados são então montados automaticamente pelo sincronizador e, em seguida, analisados para que possam criar as versões apropriadas. O projeto {elemental-product-name} fornece canais para listar todos os `ManagedOSVersions` lançados como um sincronizador personalizado. Veja a definição do recurso do canal abaixo: 
 
-.managed-os-version-channel-custom.yaml
-[,yaml]
-----
-include::example$upgrade/managed-os-version-channel-custom.yaml[]
-----
+include::example$upgrade/managed-os-version-channel-custom.adoc[]
 ====
 ======
 
@@ -121,7 +113,7 @@ kubectl -n fleet-default get managedosimages -l elemental.cattle.io/managed-os-v
 ----
 
 Ao usar múltiplos canais, é importante manter uma estratégia de nomenclatura adequada para sempre ter uma referência rápida e legível por humanos sobre o `ManagedOSVersions` possuído. +
-Recomenda-se nomear qualquer canal como: `{BaseOS}-{BaseOSVersion}-{Flavor}`.
+Recomenda-se nomear qualquer canal como: `\{BaseOS}-\{BaseOSVersion}-\{Flavor}`.
 
 Isso deve permitir que o usuário use o nome do `ManagedOSVersion` como a versão de build específica do {elemental-product-name} da imagem, enquanto mantém uma referência sobre o SO Base e a versão do SO Base do canal pai. +
 Na interface do Rancher, isso parecerá algo como a imagem a seguir:

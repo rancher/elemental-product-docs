@@ -5,11 +5,7 @@
 
 Dado o seguinte registro de exemplo:
 
-.exemplo de Registro de Máquina usando Rede Declarativa
-[,yaml]
-----
-include::example$network/machineregistration.yaml[]
-----
+include::example$network/machineregistration.adoc[]
 
 Podemos esperar que cada Máquina Elementar seja configurada usando o template definido `nm-configurator` `_all.yaml`.
 
@@ -89,7 +85,7 @@ Você notará que o `MachineInventory` carrega o mesmo `network.config` que o `M
       inventory-ip: 192.168.122.150
 ----
 
-Este `inventory-ip` será então substituído na configuração do `nm-configurator` sempre que `{inventory-ip}` tiver sido definido.
+Este `inventory-ip` será então substituído na configuração do `nm-configurator` sempre que `\{inventory-ip}` tiver sido definido.
 
 Observe também que o `MachineInventory` referencia e possui cada `IPAddressClaim` associado a ele. Cada reivindicação segue a previsível convenção de nomenclatura `$MachineInventoryName-$IPPoolRefKey`: `m-e5331e3b-1e1b-4ce7-b080-235ed9a6d07c-inventory-ip`.
 

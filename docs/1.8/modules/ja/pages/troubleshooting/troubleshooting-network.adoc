@@ -5,11 +5,7 @@
 
 以下のサンプル登録:
 
-.宣言型ネットワーキングを使用した例のマシン登録
-[,yaml]
-----
-include::example$network/machineregistration.yaml[]
-----
+include::example$network/machineregistration.adoc[]
 
 各エレメンタルマシンは、定義された`nm-configurator` `_all.yaml`テンプレートを使用して設定されることが期待されます。
 
@@ -89,7 +85,7 @@ status:
       inventory-ip: 192.168.122.150
 ----
 
-この`inventory-ip`は、`{inventory-ip}`が定義されている場合に`nm-configurator`設定で置き換えられます。
+この`inventory-ip`は、`\{inventory-ip}`が定義されている場合に`nm-configurator`設定で置き換えられます。
 
 また、`MachineInventory`はそれに関連する各`IPAddressClaim`を参照し、所有していることに注意してください。各要求は予測可能な`$MachineInventoryName-$IPPoolRefKey`命名規則に従います：`m-e5331e3b-1e1b-4ce7-b080-235ed9a6d07c-inventory-ip`。
 

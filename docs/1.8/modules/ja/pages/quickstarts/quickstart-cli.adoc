@@ -9,6 +9,7 @@ include::partial$quickstart-prereqs.adoc[]
 
 include::partial$operator-install.adoc[]
 
+[#_prepare_your_kubernetes_resources]
 == Kubernetesリソースを準備します
 
 ノードのデプロイメントは、`MachineRegistration`同じ設定（ディスクドライブ、ネットワークなど）を共有する一連のマシンを特定するから始まります。
@@ -28,19 +29,11 @@ include::partial$operator-install.adoc[]
 ========
 次のファイルを作成する必要があります：
 
-.selector.yaml
-[,yaml]
-----
-include::example$quickstart/selector.yaml[]
-----
+include::example$quickstart/selector.adoc[]
 
 ご覧の通り、これはキー`element`、値`fire`のラベルが設定された`MachineInventory`を探す非常にシンプルなセレクターです。
 
-.cluster.yaml
-[,yaml]
-----
-include::example$quickstart/cluster.yaml[]
-----
+include::example$quickstart/cluster.adoc[]
 
 ご覧の通り、`machineConfigRef`は種類`MachineInventorySelectorTemplate`で名前`fire-machine-selector`です：それは私たちが作成したセレクターにマッチします。https://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-deployment/configuration/rke2.html#_machineglobalconfig[`machineGlobalConfig`]やhttps://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-deployment/configuration/rke2.html#_machineselectorconfig[`machineSelectorConfig`]のようなクラスターオプションに関する詳細情報は、https://documentation.suse.com/cloudnative/rancher-manager/latest/en/about-rancher/what-is-rancher.html[Rancher Managerのドキュメント]で直接取得できます。
 
@@ -49,21 +42,13 @@ include::example$quickstart/cluster.yaml[]
 登録::
 +
 ====
-.register.yaml
-[,yaml]
-----
-include::example$quickstart/registration.yaml[]
-----
+include::example$quickstart/registration.adoc[]
 ====
 
 Raspberry Piの登録::
 +
 ====
-.rpi-registration.yaml
-[,yaml]
-----
-include::example$quickstart/rpi-registration.yaml[]
-----
+include::example$quickstart/rpi-registration.adoc[]
 
 Raspberry Piにデプロイするには、エミュレートされたTPMを有効にする必要があります（Raspberry Pi用のハードウェアTPMを持っている場合を除く）。また、`disable-boot-entry: true`を介してEFIストアへの書き込みを無効にする必要があります（Raspberry Piにはそれがないため）。
 ====
@@ -83,11 +68,7 @@ Raspberry PiのSDカードは通常`/dev/mmcblk0`です。
 シードイメージ（x86_64）::
 +
 ====
-.seedimage.yaml
-[,yaml]
-----
-include::example$quickstart/seedimage.yaml[]
-----
+include::example$quickstart/seedimage.adoc[]
 
 `SeedImage`は、ターゲットマシンで{elemental-product-name}によるプロビジョニングを起動するための、ブート可能なISO（いわゆる*シードイメージ*）を生成するために必要です。
 
@@ -146,6 +127,7 @@ kubectl apply -f https://raw.githubusercontent.com/rancher/elemental-docs/main/e
 ========
 ==========
 
+[#_preparing_the_installation_seed_image]
 == インストール（シード）イメージの準備
 
 これが最後のステップです：初期登録構成を含む{elemental-product-name}シードイメージが必要です。これにより、自動登録、インストール、およびクラスターの一部として完全に展開されることができます。

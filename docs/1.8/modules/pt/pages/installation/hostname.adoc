@@ -44,8 +44,4 @@ Para manter o nome do host atribuído pelo servidor DHCP antes que o host se reg
 
 Dessa forma, {elemental-product-name} usará o nome do host atual como o nome `MachineInventory` durante a fase de registro, que será posteriormente definido como o nome do host estático durante a fase de provisionamento.
 
-.exemplo de registro com nome do host e nome do MachineInventory definidos com base no nome do host obtido pelo servidor DHCP
-[,yaml]
-----
-include::example$quickstart/registration-hardware-dhcphostname.yaml[]
-----
+include::example$quickstart/registration-hardware-dhcphostname.adoc[]

@@ -27,6 +27,7 @@ Construir uma SeedImage para uma plataforma diferente é realizado usando o camp
 As imagens de seed são mantidas no armazenamento local do nó: preste atenção ao número de recursos `SeedImage` que você inicia simultaneamente e àqueles que você deixa com o recurso de limpeza automática desativado (`cleanupAfterMinutes` = `0`), pois você pode esgotar o armazenamento dos nós do seu cluster.
 ====
 
+[#_seedimagespec_reference]
 == Referência de SeedImageSpec
 
 |===
@@ -113,6 +114,7 @@ A seguinte lista de variáveis de ambiente também pode ser usada dentro do cont
 - `ELEMENTAL_BASE_IMAGE`: A imagem base definida em `SeedImage`.
 - `ELEMENTAL_OUTPUT_NAME`: O nome do arquivo esperado do artefato de construção.
 
+[#_iso_and_raw_images]
 === Imagens ISO e Raw
 
 O `SeedImage` é capaz de construir tipos de imagem `iso` ou `raw`.
@@ -164,6 +166,7 @@ spec:
 ----
 ====
 
+[#_multi_platform_support]
 === Suporte a várias plataformas
 
 Elemental envia imagens `linux/x86_64` e `linux/aarch64` para a maioria dos sabores.

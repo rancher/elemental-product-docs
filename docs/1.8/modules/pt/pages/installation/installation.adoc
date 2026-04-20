@@ -49,6 +49,7 @@ Como a configuração yaml de registro já está incluída na ISO, `elemental-re
 
 Com um registro bem-sucedido, a mídia de instalação iniciará a instalação no host com base na configuração já incluída na mídia e nos parâmetros do registro da máquina. Assim que a instalação estiver concluída, o nó estará pronto para reiniciar. O sistema operacional implantado inclui um plano de agente de sistema para iniciar um processo regular de provisionamento do Rancher para instalar a versão do Kubernetes selecionada; uma vez inicializado, após alguns minutos, a instalação do nó é finalizada e o nó é incluído no cluster e visível através da UI do Rancher.
 
+[#_deployed_partition_table]
 == Tabela de Partição Implantada
 
 Uma vez que o sistema operacional esteja instalado, a tabela de partição do SO, de acordo com os valores padrão, ficará assim:

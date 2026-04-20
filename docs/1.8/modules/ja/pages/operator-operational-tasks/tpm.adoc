@@ -5,6 +5,7 @@
 
 信頼できるプラットフォームモジュール (TPM、ISO/IEC 11889としても知られる) は、統合された暗号鍵を通じてハードウェアを保護するために設計された専用マイクロコントローラである安全な暗号プロセッサの国際標準です。この用語は、標準に準拠したチップを指すこともあります。
 
+[#_add_tpm_module_to_virtual_machine]
 == TPMモジュールを仮想マシンに追加する
 
 TPMを仮想マシンに追加する簡単な方法は、LibvirtとVirt-managerを使用することです。
@@ -33,6 +34,7 @@ image::tpm3.png[TPMモジュールを追加]
 
 image::tpm4.png[TPMを確認]
 
+[#_add_tpm_emulation_to_bare_metal_machine]
 == ベアメタルマシンにTPMエミュレーションを追加する
 
 `#!yaml MachineRegistration`を適用する際に、yamlに次のキーを追加します `config:elemental:registration:emulate-tpm: true`
@@ -42,8 +44,4 @@ image::tpm4.png[TPMを確認]
 TPMエミュレーションを使用して1台以上のマシンをデプロイする予定がある場合は、`config:elemental:registration:emulated-tpm-seed: -1`を設定して、TPMエミュレーションに使用されるシードがマシンごとにランダム化されるようにしてください。そうしないと、すべてのデプロイされたマシンに対して同じTPMハッシュが得られ、最後に登録されたものだけが有効になります。
 ====
 
-.registration-tpm.yaml
-[,yaml]
-----
-include::example$quickstart/registration-tpm.yaml[]
-----
+include::example$quickstart/registration-tpm.adoc[]

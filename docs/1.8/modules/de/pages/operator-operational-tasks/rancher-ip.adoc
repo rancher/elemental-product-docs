@@ -37,8 +37,4 @@ Die Labels können in die xref:references/machineregistration-reference.adoc[Mac
 
 Beispiel: xref:references/machineregistration-reference.adoc[MachineRegistration], wo die Knoten die interne IP-Adresse von der Netzwerkschnittstelle eth0 und die externe IP-Adresse von der Netzwerkschnittstelle eth1 erhalten.
 
-.registration.yaml
-[,yaml]
-----
-include::example$labeltemplates/registration.yaml[]
-----
+include::example$labeltemplates/registration.adoc[]

@@ -14,6 +14,7 @@
 * <<_upgrade_via_command_line_interface,命令行界面>>
 * <<_upgrade_via_user_interface,用户界面>>
 
+[#_upgrade_via_command_line_interface]
 == 通过命令行界面进行升级
 
 有两种选择节点进行升级的方法。通过集群目标，可以匹配与我们选择器相符的集群中的所有节点；或者通过节点选择器，根据节点标签匹配节点。节点选择器使我们能够更有针对性地进行升级，而集群选择器则仅选择匹配集群中的所有节点。
@@ -27,11 +28,7 @@
 ====
 您可以通过在`clusterTarget`中设置为要升级的集群名称，从而针对节点进行升级。与该名称匹配的集群中的所有节点将匹配并被升级。
 
-.upgrade-cluster-target.yaml
-[,yaml]
-----
-include::example$upgrade/upgrade-cluster-target.yaml[]
-----
+include::example$upgrade/upgrade-cluster-target.adoc[]
 ====
 
 使用nodeSelector::
@@ -39,11 +36,7 @@ include::example$upgrade/upgrade-cluster-target.yaml[]
 ====
 您可以通过在`nodeSelector`中设置为要匹配的标签和值，从而针对节点进行升级。任何包含该键及其值的节点将匹配并被升级。
 
-.upgrade-node-selector.yaml
-[,yaml]
-----
-include::example$upgrade/upgrade-node-selector.yaml[]
-----
+include::example$upgrade/upgrade-node-selector.adoc[]
 ====
 
 使用FORCE标志::
@@ -51,11 +44,7 @@ include::example$upgrade/upgrade-node-selector.yaml[]
 ====
 当升级至较旧版本或与当前运行版本相同时，将跳过升级程序。可以通过设置FORCE环境变量来强制升级到旧版本，如下所示。
 
-.upgrade-force.yaml
-[,yaml]
-----
-include::example$upgrade/upgrade-force.yaml[]
-----
+include::example$upgrade/upgrade-force.adoc[]
 ====
 
 使用UPGRADE_RECOVERY标志::
@@ -63,11 +52,7 @@ include::example$upgrade/upgrade-force.yaml[]
 ====
 您可以在升级系统时选择是否升级恢复分区，或者仅对恢复分区进行升级。
 
-.upgrade-recovery.yaml
-[,yaml]
-----
-include::example$upgrade/upgrade-recovery.yaml[]
-----
+include::example$upgrade/upgrade-recovery.adoc[]
 ====
 ======
 
@@ -80,11 +65,7 @@ Via 'osImage'::
 ====
 只需在`osImage`字段中指定一个OCI镜像。 
 
-.upgrade-cluster-target.yaml
-[,yaml]
-----
-include::example$upgrade/upgrade-cluster-target.yaml[]
-----
+include::example$upgrade/upgrade-cluster-target.adoc[]
 ====
 
 Tab Via 'ManagedOSVersion'::
@@ -92,11 +73,7 @@ Tab Via 'ManagedOSVersion'::
 ====
 在这种情况下，我们使用自动填充的`ManagedOSVersion`资源来设置所需的`managedOSVersionName`字段。请参阅[管理可用版本](#managing-available-versions)部分以了解`ManagedOSVersion`是如何管理的。
 
-.upgrade-managedos-version.yaml
-[,yaml]
-----
-include::example$upgrade/upgrade-managedos-version.yaml[]
-----
+include::example$upgrade/upgrade-managedos-version.adoc[]
 ====
 ======
 
@@ -105,13 +82,14 @@ include::example$upgrade/upgrade-managedos-version.yaml[]
 如果在同一个`ManagedOSImage`中定义了`osImage`和`ManagedOSVersion`，请注意`osImage`具有优先权。
 ====
 
-
+[#_managing_available_versions]
 === 管理可用版本
 
 可以直接创建xref:references/managedosversion-reference.adoc[ManagedOSVersions]，或订阅xref:references/managedosversionchannel-reference.adoc[ManagedOSVersionChannels]以自动从中同步`ManagedOSVersions`。
 
 有关更多详细信息和可用频道的列表，或甚至创建您自己的频道，请阅读xref:operator-operational-tasks/channels.adoc[文档]。
 
+[#_upgrade_via_user_interface]
 == 通过用户界面进行升级
 
 要通过UI进行升级，您必须进入{elemental-product-name}高级菜单，然后单击`Update Groups`。

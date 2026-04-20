@@ -35,10 +35,7 @@
 CLI::
 +
 ====
-[,yaml]
-----
-include::example$proxy/registration-proxy.yaml[]
-----
+include::example$proxy/registration-proxy.adoc[]
 ====
 
 UI::
@@ -60,10 +57,7 @@ xref:rancher-os-management/architecture/architecture-components.adoc#_elemental_
 该过程发生在您第一次启动 {elemental-product-name} ISO 时，为了配置代理设置，您必须在 ISO 中包含 `cloud-init` 定义。
 要做到这一点，您必须创建一个 xref:references/seedimage-reference.adoc[SeedImage] 定义。
 
-[,yaml]
-----
-include::example$proxy/seedimage-proxy.yaml[]
-----
+include::example$proxy/seedimage-proxy.adoc[]
 
 应用带有 `kubectl` 的 YAML，然后打印您的 SeedImage 定义以获取下载 URL：
 
@@ -84,10 +78,7 @@ kubectl get seedimage <seed_image_name> -n <namespace> -o yaml
 CLI::
 +
 ====
-[,yaml]
-----
-include::example$proxy/cluster-proxy.yaml[]
-----
+include::example$proxy/cluster-proxy.adoc[]
 ====
 
 UI::

@@ -64,8 +64,4 @@
 
 有关更多信息，请查看xref:installation/hostname.adoc[如何/自定义主机名]部分。
 
-.注册示例随机模板变量
-[,yaml]
-----
-include::example$quickstart/registration-random-hostname.yaml[]
-----
+include::example$quickstart/registration-random-hostname.adoc[]

@@ -7,11 +7,7 @@ Die ManagedOSImage-Ressource ist verantwortlich für die Definition eines Betrie
 
 Es gibt mehrere Schlüssel, die unter einer `ManagedOSImage`-Ressourcenspezifikation konfiguriert werden können.
 
-.upgrade-cluster-target.yaml
-[,yaml]
-----
-include::example$upgrade/upgrade-cluster-target.yaml[]
-----
+include::example$upgrade/upgrade-cluster-target.adoc[]
 
 == `ManagedOSImageSpec` Referenz
 

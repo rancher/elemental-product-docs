@@ -13,6 +13,7 @@ image::reset-cluster-deletion.png[删除集群以重置所有机器]
 +
 image::reset-single-node-deletion.png[删除单个节点以重置它]
 
+[#_reset_workflow]
 == 重置工作流
 
 一旦相关的`MachineInventory`被标记为删除，将由在机器上运行的`elemental-system-agent`执行重置计划。

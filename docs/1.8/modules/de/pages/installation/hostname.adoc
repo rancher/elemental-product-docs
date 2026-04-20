@@ -44,8 +44,4 @@ Um den vom DHCP-Server zugewiesenen Hostnamen zu behalten, bevor sich der Host b
 
 Auf diese Weise wird {elemental-product-name} den aktuellen Hostnamen als `MachineInventory` Namen während der Registrierungsphase verwenden, der später als der statische Hostname des Hosts während der Bereitstellungsphase festgelegt wird.
 
-.Registrierungsbeispiel, bei dem sowohl der Hostname als auch der Maschineninventar-Name auf den vom DHCP-Server zugewiesenen Hostnamen gesetzt werden.
-[,yaml]
-----
-include::example$quickstart/registration-hardware-dhcphostname.yaml[]
-----
+include::example$quickstart/registration-hardware-dhcphostname.adoc[]

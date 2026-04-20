@@ -14,11 +14,7 @@ Json-Synchronisierer::
 ====
 Dieser Synchronisierer ruft einen JSON von der URL ab und parst ihn in gültige `ManagedOSVersion` Ressourcen. 
 
-.managed-os-version-channel-json.yaml
-[,yaml]
-----
-include::example$upgrade/managed-os-version-channel-json.yaml[]
-----
+include::example$upgrade/managed-os-version-channel-json.adoc[]
 ====
 
 Benutzerdefinierter Synchronisierer::
@@ -26,11 +22,7 @@ Benutzerdefinierter Synchronisierer::
 ====
 Ein benutzerdefinierter Synchronisierer ermöglicht mehr Flexibilität, wie `ManagedOSVersion` gesammelt werden können, indem er benutzerdefinierte Befehle mit benutzerdefinierten Images zulässt. Dieser Typ von Synchronisierer ermöglicht es, einen bestimmten Befehl mit Argumenten und Umgebungsvariablen in einem benutzerdefinierten Image auszuführen und eine JSON-Datei an `/data/output` auszugeben. Die generierten Daten werden dann vom Synchronisierer automatisch eingehängt und geparst, damit daraus die richtigen Versionen erstellt werden können. Das {elemental-product-name} Projekt bietet Kanäle, um alle `ManagedOSVersions` aufzulisten, die als benutzerdefinierter Synchronisierer veröffentlicht wurden. Siehe die Definition der Kanalressource unten: 
 
-.managed-os-version-channel-custom.yaml
-[,yaml]
-----
-include::example$upgrade/managed-os-version-channel-custom.yaml[]
-----
+include::example$upgrade/managed-os-version-channel-custom.adoc[]
 ====
 ======
 
@@ -121,7 +113,7 @@ kubectl -n fleet-default get managedosimages -l elemental.cattle.io/managed-os-v
 ----
 
 Bei der Verwendung mehrerer Kanäle ist es wichtig, eine geeignete Namensstrategie zu verfolgen, um immer eine schnelle, menschenlesbare Referenz auf die eigenen `ManagedOSVersions` zu haben. +
-Es wird empfohlen, jeden Kanal wie folgt zu benennen: `{BaseOS}-{BaseOSVersion}-{Flavor}`.
+Es wird empfohlen, jeden Kanal wie folgt zu benennen: `\{BaseOS}-\{BaseOSVersion}-\{Flavor}`.
 
 Dies sollte es dem Benutzer ermöglichen, den Namen des `ManagedOSVersion` als spezifische {elemental-product-name}-Build-Version des Images zu verwenden, während er eine Referenz auf das Basis-OS und die Basis-OS-Version aus dem übergeordneten Kanal behält. +
 In der Rancher-Benutzeroberfläche wird dies etwa wie das folgende Bild aussehen:

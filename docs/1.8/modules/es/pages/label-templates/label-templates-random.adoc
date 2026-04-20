@@ -64,8 +64,4 @@ Dado que el nombre de host debe ser único y se asigna a través del campo xref:
 
 Consulta la sección xref:installation/hostname.adoc[Cómo personalizar el nombre de host] para más información.
 
-.Ejemplo de registro: variables de plantilla aleatorias
-[,yaml]
-----
-include::example$quickstart/registration-random-hostname.yaml[]
-----
+include::example$quickstart/registration-random-hostname.adoc[]

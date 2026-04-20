@@ -11,6 +11,7 @@ xref:rancher-os-management/architecture/services/architecture-services.adoc[{ele
 * <<_elemental_system_agent_daemon,`elemental-system-agent`>>デーモン
 * 1つ以上の<<_suse_rancher_prime_os_manager_os_container_image,{elemental-product-name} OSコンテナイメージ>>
 
+[#_elemental_command_line_tool]
 == `elemental`コマンドラインツール
 
 `elemental`ツールは、link:{elemental_toolkit_url}[{elemental_toolkit_name}]プロジェクトの一部です。
@@ -18,6 +19,7 @@ xref:rancher-os-management/architecture/services/architecture-services.adoc[{ele
 
 `elemental`バイナリは、{elemental-product-name}と共に配布されるすべてのベースOSイメージに含まれています。
 
+[#_elemental_operator_daemon]
 == `elemental-operator`デーモン
 
 *elemental-operator*デーモンは、2つの主なタスクを実行します：
@@ -27,6 +29,7 @@ xref:rancher-os-management/architecture/services/architecture-services.adoc[{ele
 
 `elemental-operator`デーモンは、`Deployment`としてRancherクラスターにデプロイされ、xref:references/operatorchart-reference.adoc[{elemental-product-name} Operator Helm Chart]を介して実行されます。
 
+[#_elemental_register_command_line_tool]
 == `elemental-register`コマンドラインツール
 
 *elemental-register*バイナリは、<<_elemental_operator_daemon,elemental-operator>>によって公開された_registration endpoints_に対してホストを登録するために使用されるクライアントです。ホストデータを収集して転送し、<<_elemental_operator_daemon,elemental-operator>>がSMBIOSおよびハードウェアラベルテンプレートを埋めることを可能にします。
@@ -34,11 +37,13 @@ xref:rancher-os-management/architecture/services/architecture-services.adoc[{ele
 登録フェーズが成功裏に実行されると、*elemental-register*は*elemental-operator*からxref:references/machineregistration-reference.adoc[MachineRegistration]に保存された完全な設定を取得します。
 最後のステップとして、*elemental-register*クライアントは、取得した構成を渡してOSインストールを開始するために<<_elemental_command_line_tool,elemental>>バイナリを呼び出します。
 
+[#_elemental_system_agent_daemon]
 == `elemental-system-agent`デーモン
 
 `elemental-system-agent`は、https://github.com/rancher/system-agent[Rancher System Agentプロジェクト]から構築され、{elemental-product-name}がホストプロビジョニングを支援するために_プラン_をデプロイできるようにします。
 特に、`rancher-system-agent`のインストールおよび構成は、xref:rancher-os-management/architecture/services/architecture-clusterdeployment.adoc[Kubernetesクラスターのプロビジョニングサービス]に必要であり、`elemental-system-agent` _プラン_を通じて実行されます。
 
+[#_suse_rancher_prime_os_manager_os_container_image]
 == {elemental-product-name} OSコンテナイメージ
 
 link:{elemental_toolkit_url}[{elemental_toolkit_name}] OSイメージは、ターゲットホストのOSを構成するすべてのファイルを含むOCIコンテナイメージです。それは、すべてのバイナリとライブラリだけでなく、Linuxシステムに必要なカーネルとブートファイルも含んでいます。

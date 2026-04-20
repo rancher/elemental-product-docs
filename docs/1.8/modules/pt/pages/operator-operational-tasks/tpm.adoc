@@ -5,6 +5,7 @@
 
 O Módulo de Plataforma Confiável (TPM, também conhecido como ISO/IEC 11889) é um padrão internacional para um criptoprocessador seguro, um microcontrolador dedicado projetado para proteger hardware por meio de chaves criptográficas integradas. O termo também pode se referir a um chip que atende ao padrão.
 
+[#_add_tpm_module_to_virtual_machine]
 == Adicionar módulo TPM à máquina virtual
 
 A maneira mais fácil de adicionar TPM à máquina virtual é usar Libvirt com Virt-manager
@@ -33,6 +34,7 @@ Na última tela, verifique mais uma vez se o módulo TPM foi adicionado corretam
 
 image::tpm4.png[Verificar TPM]
 
+[#_add_tpm_emulation_to_bare_metal_machine]
 == Adicionar emulação de TPM à máquina bare metal
 
 Durante a aplicação `#!yaml MachineRegistration`, adicione a seguinte chave ao yaml `config:elemental:registration:emulate-tpm: true`
@@ -42,8 +44,4 @@ Durante a aplicação `#!yaml MachineRegistration`, adicione a seguinte chave ao
 Se você planeja implantar mais de uma máquina com emulação de TPM, certifique-se de definir `config:elemental:registration:emulated-tpm-seed: -1` para que a semente usada para a emulação de TPM seja randomizada por máquina. Caso contrário, você obterá o mesmo Hash de TPM para todas as máquinas implantadas e apenas a última a ser registrada será válida.
 ====
 
-.registration-tpm.yaml
-[,yaml]
-----
-include::example$quickstart/registration-tpm.yaml[]
-----
+include::example$quickstart/registration-tpm.adoc[]

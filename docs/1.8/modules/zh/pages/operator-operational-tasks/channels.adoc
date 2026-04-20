@@ -14,11 +14,7 @@ Json 同步器::
 ====
 此同步器将从 URL 获取 JSON 并将其解析为有效的 `ManagedOSVersion` 资源。
 
-.managed-os-version-channel-json.yaml
-[,yaml]
-----
-include::example$upgrade/managed-os-version-channel-json.yaml[]
-----
+include::example$upgrade/managed-os-version-channel-json.adoc[]
 ====
 
 自定义同步器::
@@ -26,11 +22,7 @@ include::example$upgrade/managed-os-version-channel-json.yaml[]
 ====
 自定义同步器允许通过自定义命令和自定义镜像来收集 `ManagedOSVersion`，提供更多灵活性。这种类型的同步器允许在自定义镜像中运行给定命令及其参数和环境变量，并将输出 JSON 文件到 `/data/output`。生成的数据随后由同步器自动挂载并解析，以便创建适当的版本。{elemental-product-name} 项目提供通道以列出作为自定义同步器发布的所有 `ManagedOSVersions`。请参见下面的通道资源定义：
 
-.managed-os-version-channel-custom.yaml
-[,yaml]
-----
-include::example$upgrade/managed-os-version-channel-custom.yaml[]
-----
+include::example$upgrade/managed-os-version-channel-custom.adoc[]
 ====
 ======
 
@@ -121,7 +113,7 @@ kubectl -n fleet-default get managedosimages -l elemental.cattle.io/managed-os-v
 ----
 
 使用多个通道时，保持适当的命名策略非常重要，以确保对所拥有的 `ManagedOSVersions` 始终能快速获得清晰易读的引用。 +
-建议将任何通道命名为：`{BaseOS}-{BaseOSVersion}-{Flavor}`。
+建议将任何通道命名为：`\{BaseOS}-\{BaseOSVersion}-\{Flavor}`。
 
 这应该允许用户将 `ManagedOSVersion` 名称用作镜像的特定 {elemental-product-name} 构建版本，同时保留对父通道的基础操作系统和基础操作系统版本的引用。 +
 在 Rancher UI 上，这看起来像下面的图像：

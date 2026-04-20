@@ -23,7 +23,7 @@ A funcionalidade de modelagem do Elemental cobre também o campo xref:references
 Veja a seção <<_custom_machine_names,Nome da Máquina>> para mais detalhes.
 ====
 
-
+[#_label_templates_variables]
 == Variáveis dos Modelos de Rótulos
 
 A Modelagem de Rótulos do Elemental inclui um conjunto de variáveis predefinidas que podem ser usadas dentro do `value` dos _modelos de rótulos_ especificados no xref:references/machineregistration-reference.adoc[MachineRegistration].
@@ -71,7 +71,7 @@ As variáveis de template podem ser misturadas com texto estático para formar o
  ** rótulo renderizado: *sbios-UUID: fd95324a-c26b-4e28-8727-1dcec293a0ec*
 ====
 
-
+[#_sanitization]
 == Sanitização
 
 Uma vez que o valor do modelo de etiqueta tenha sido renderizado de acordo com as variáveis do modelo de etiqueta incluídas <<_label_templates_variables,variáveis do modelo de etiqueta>>, o valor resultante é `sanitized` antes de ser atribuído à etiqueta resultante.
@@ -122,6 +122,7 @@ O `Label Templates` pode ser usado para gerar rótulos utilizados para identific
 
 Os rótulos anexados a cada xref:references/machineinventory-reference.adoc[Inventário de Máquinas] são elegíveis para _seletor_ para o recurso xref:references/machineinventoryselectortemplate-reference.adoc[Modelo Seletor de Inventário de Máquinas] (veja a seção xref:rancher-os-management/architecture/services/architecture-clusterdeployment.adoc[provisionamento de Cluster Kubernetes] para mais detalhes).
 
+[#_custom_machine_names]
 === Nomes de Máquinas Personalizados
 
 O nome do host da máquina em integração pode ser especificado usando o campo xref:references/machineregistration-reference.adoc[MachineRegistration] `spec.machineName`.
@@ -147,8 +148,4 @@ Para mais informações sobre como definir o nome do host para hosts Elemental, 
 
 == Exemplo de Modelos de Rótulos
 
-.Exemplo de registro com variáveis de Modelos de Rótulos
-[,yaml]
-----
-include::example$quickstart/registration-hardware-dhcphostname.yaml[]
-----
+include::example$quickstart/registration-hardware-dhcphostname.adoc[]

@@ -5,11 +5,7 @@
 
 给定以下示例注册：
 
-.使用声明式网络的示例机器注册
-[,yaml]
-----
-include::example$network/machineregistration.yaml[]
-----
+include::example$network/machineregistration.adoc[]
 
 我们可以预期每个元素机器将使用定义的 `nm-configurator` `_all.yaml` 模板进行配置。
 
@@ -89,7 +85,7 @@ status:
       inventory-ip: 192.168.122.150
 ----
 
-每当定义了 `{inventory-ip}` 时，这个 `inventory-ip` 将在 `nm-configurator` 的配置中被替换。
+每当定义了 `\{inventory-ip}` 时，这个 `inventory-ip` 将在 `nm-configurator` 的配置中被替换。
 
 还请注意，`MachineInventory` 引用并拥有与之相关的每个 `IPAddressClaim`。每个声明遵循可预测的 `$MachineInventoryName-$IPPoolRefKey` 命名约定：`m-e5331e3b-1e1b-4ce7-b080-235ed9a6d07c-inventory-ip`。
 

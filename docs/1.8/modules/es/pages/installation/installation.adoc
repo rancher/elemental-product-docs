@@ -56,6 +56,7 @@ Como la configuración yaml de registro ya está incluida en la ISO, `elemental-
 
 Con un registro exitoso, el medio de instalación comenzará la instalación en el host basado en la configuración ya incluida en el medio y los parámetros de MachineRegistration. Tan pronto como la instalación esté completa, el nodo estará listo para reiniciar. El sistema operativo desplegado incluye un plan de agente del sistema para iniciar un proceso de aprovisionamiento regular de Rancher para instalar la versión de Kubernetes seleccionada; una vez arrancado, después de unos minutos, la instalación del nodo se finaliza y el nodo se incluye en el clúster y es visible a través de la interfaz de usuario de Rancher.
 
+[#_deployed_partition_table]
 == Tabla de particiones desplegada
 
 Una vez que el sistema operativo esté instalado, la tabla de particiones del SO, según los valores predeterminados, se verá así

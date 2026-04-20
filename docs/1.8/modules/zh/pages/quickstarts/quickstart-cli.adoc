@@ -9,6 +9,7 @@ include::partial$quickstart-prereqs.adoc[]
 
 include::partial$operator-install.adoc[]
 
+[#_prepare_your_kubernetes_resources]
 == 准备您的 Kubernetes 资源
 
 节点部署从 `MachineRegistration` 开始，识别一组共享相同配置（磁盘驱动器、网络等）的机器。
@@ -28,19 +29,11 @@ include::partial$operator-install.adoc[]
 ========
 您需要创建以下文件：
 
-.selector.yaml
-[,yaml]
-----
-include::example$quickstart/selector.yaml[]
-----
+include::example$quickstart/selector.adoc[]
 
 如您所见，这是一个非常简单的选择器，它查找具有键 `element` 和值 `fire` 的 `MachineInventory` 标签。
 
-.cluster.yaml
-[,yaml]
-----
-include::example$quickstart/cluster.yaml[]
-----
+include::example$quickstart/cluster.adoc[]
 
 如您所见，`machineConfigRef` 的类型为 `MachineInventorySelectorTemplate`，名称为 `fire-machine-selector`：它与我们创建的选择器匹配。您可以在 https://documentation.suse.com/cloudnative/rancher-manager/latest/en/about-rancher/what-is-rancher.html[Rancher Manager 文档] 中直接获取有关集群选项的更多信息，例如 https://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-deployment/configuration/rke2.html#_machineglobalconfig[`machineGlobalConfig`] 或 https://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-deployment/configuration/rke2.html#_machineselectorconfig[`machineSelectorConfig`]。
 
@@ -49,21 +42,13 @@ include::example$quickstart/cluster.yaml[]
 注册::
 +
 ====
-.register.yaml
-[,yaml]
-----
-include::example$quickstart/registration.yaml[]
-----
+include::example$quickstart/registration.adoc[]
 ====
 
 树莓派的注册::
 +
 ====
-.rpi-registration.yaml
-[,yaml]
-----
-include::example$quickstart/rpi-registration.yaml[]
-----
+include::example$quickstart/rpi-registration.adoc[]
 
 要在树莓派上进行部署，您需要启用模拟 TPM（除非您有 [树莓派的硬件 TPM](https://thepihut.com/products/letstrust-tpm-for-raspberry-pi)）。您还需要通过 `disable-boot-entry: true` 禁用对 EFI 存储的写入（因为树莓派没有 EFI 存储）。
 ====
@@ -83,11 +68,7 @@ include::example$quickstart/rpi-registration.yaml[]
 种子镜像（x86_64）::
 +
 ====
-.seedimage.yaml
-[,yaml]
-----
-include::example$quickstart/seedimage.yaml[]
-----
+include::example$quickstart/seedimage.adoc[]
 
 生成*种子镜像*（如可启动的.iso 映像）所需的`SeedImage`，该镜像将在目标机器上启动并开始{elemental-product-name}的配置。
 
@@ -146,6 +127,7 @@ kubectl apply -f https://raw.githubusercontent.com/rancher/elemental-docs/main/e
 ========
 ==========
 
+[#_preparing_the_installation_seed_image]
 == 准备安装（种子）镜像
 
 这是最后一步：您需要一个包含初始注册配置的{elemental-product-name}种子镜像，以便它可以自动注册、安装并作为集群的一部分完全部署。

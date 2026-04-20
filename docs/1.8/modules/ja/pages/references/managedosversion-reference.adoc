@@ -25,6 +25,7 @@ spec:
   version: v2.0.2
 ----
 
+[#_managedosversionspec_reference]
 == `ManagedOSVersionSpec` リファレンス
 
 |===
@@ -84,6 +85,7 @@ version: v2.2.0
 ----
 ====
 
+[#_metadata]
 == metadata
 
 これは {elemental-product-name} で OS イメージを定義するために必要な情報を説明します。

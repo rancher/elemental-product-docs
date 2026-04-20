@@ -16,6 +16,7 @@ To simplify the adoption of the new variables, check the tables mapping the depr
 * <<_hardware_labels_to_new_label_templates_variables_table,Hardware Labels to new Label Templates' variables>>
 * <<_smbios_labels_to_new_label_templates_variable_table,SMBIOS labels to new Label Templates' variables>>
 
+[#_hardware_labels_to_new_label_templates_variables_table]
 == Hardware Labels to new Label Templates' variables table
 
 |===
@@ -79,6 +80,7 @@ To simplify the adoption of the new variables, check the tables mapping the depr
 | `${Runtime/Hostname}`
 |===
 
+[#_smbios_labels_to_new_label_templates_variable_table]
 == SMBIOS Labels to new Label Templates' variable table
 
 |===

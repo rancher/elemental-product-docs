@@ -58,6 +58,7 @@ helm upgrade -n cattle-elemental-system \
 
 _Siehe https://helm.sh/docs/helm/helm_upgrade/[helm upgrade] für die Befehlsdokumentation._
 
+[#_configuration]
 == Konfiguration
 
 Siehe https://helm.sh/docs/intro/using_helm/#customizing-the-chart-before-installing[Anpassen des Charts vor der Installation]. Um alle konfigurierbaren Optionen mit detaillierten Kommentaren zu sehen, besuchen Sie die <<_values,Werte>> des Charts oder führen Sie diese Konfigurationsbefehle aus:
@@ -65,7 +66,7 @@ Siehe https://helm.sh/docs/intro/using_helm/#customizing-the-chart-before-instal
 `console showLineNumbers
 helm show values oci://registry.suse.com/rancher/elemental-operator-chart
 `
-
+[#_values]
 == Werte
 
 [cols="2,1,2,2"]

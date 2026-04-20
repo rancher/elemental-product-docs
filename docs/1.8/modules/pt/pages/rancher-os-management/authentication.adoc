@@ -34,11 +34,7 @@ As chaves do dispositivo TPM emulado são todas geradas por uma única semente d
 
 A emulação de TPM é ativada configurando os campos `emulate-tpm` e `emulated-tpm-seed` na configuração `MachineRegistration` (veja a xref:references/machineregistration-reference.adoc#_config_elemental_registration[seção config:elemental:registration do MachineRegistration] para mais detalhes).
 
-.exemplo de MachineRegistration usando emulação de TPM
-[,yaml]
-----
-include::example$authentication/registration-emulate-tpm.yaml[]
-----
+include::example$authentication/registration-emulate-tpm.adoc[]
 
 A configuração de emulação de TPM é detalhada na xref:operator-operational-tasks/tpm.adoc#_add_tpm_emulation_to_bare_metal_machine[seção de configuração de emulação de TPM].
 
@@ -49,11 +45,7 @@ Caso a máquina tenha mais de uma interface de rede, os endereços MAC são orde
 
 Para substituir a autenticação TPM pela identificação por endereço MAC, basta definir o valor `mac` no campo `auth` na xref:references/machineregistration-reference.adoc#_config_elemental_registration[seção config:elemental:registration do MachineRegistration].
 
-.exemplo de MachineRegistration usando o endereço MAC como identificador da máquina
-[,yaml]
-----
-include::example$authentication/registration-mac.yaml[]
-----
+include::example$authentication/registration-mac.adoc[]
 
 [CAUTION]
 ====
@@ -68,11 +60,7 @@ A especificação do System Management BIOS (SMBIOS) define estruturas de dados 
 
 Ao usar o valor `sys-uuid` como o campo `auth` da xref:references/machineregistration-reference.adoc#_config_elemental_registration[seção config:elemental:registration do MachineRegistration], o host se registra no {elemental_operator_name} usando o valor `UUID` da tabela `System Information` dos dados SMBIOS do host.
 
-.Exemplo de MachineRegistration usando o UUID da tabela de informações do sistema SMBIOS como identificador da máquina
-[,yaml]
-----
-include::example$authentication/registration-sys-uuid.yaml[]
-----
+include::example$authentication/registration-sys-uuid.adoc[]
 
 [CAUTION]
 ====

@@ -34,11 +34,7 @@ Les clés du dispositif TPM émulé sont toutes générées par une seule graine
 
 L'émulation TPM est activée en configurant les champs `emulate-tpm` et `emulated-tpm-seed` dans la configuration `MachineRegistration` (voir la xref:references/machineregistration-reference.adoc#_config_elemental_registration[section config:elemental:registration dans la référence MachineRegistration] pour plus de détails).
 
-.exemple de MachineRegistration utilisant l'émulation TPM
-[,yaml]
-----
-include::example$authentication/registration-emulate-tpm.yaml[]
-----
+include::example$authentication/registration-emulate-tpm.adoc[]
 
 La configuration de l'émulation TPM est détaillée dans la xref:operator-operational-tasks/tpm.adoc#_add_tpm_emulation_to_bare_metal_machine[section de configuration de l'émulation TPM].
 
@@ -49,11 +45,7 @@ Dans le cas où la machine dispose de plusieurs interfaces réseau, les adresses
 
 Pour remplacer l'authentification TPM par l'identification par adresse MAC, il suffit de définir la valeur `mac` dans le champ `auth` de la section xref:references/machineregistration-reference.adoc#_config_elemental_registration[config:elemental:registration dans la référence MachineRegistration].
 
-.exemple de MachineRegistration utilisant l'adresse MAC comme identifiant de machine
-[,yaml]
-----
-include::example$authentication/registration-mac.yaml[]
-----
+include::example$authentication/registration-mac.adoc[]
 
 [CAUTION]
 ====
@@ -68,11 +60,7 @@ La spécification du BIOS de gestion du système (SMBIOS) définit des structure
 
 Lors de l'utilisation de la valeur `sys-uuid` comme champ `auth` de la section xref:references/machineregistration-reference.adoc#_config_elemental_registration[config:elemental:registration dans la MachineRegistration], l'hôte s'enregistre auprès du {elemental_operator_name} en utilisant la valeur `UUID` de la table `System Information` des données SMBIOS de l'hôte.
 
-.exemple de MachineRegistration utilisant l'UUID de la table d'informations système SMBIOS comme identifiant de machine
-[,yaml]
-----
-include::example$authentication/registration-sys-uuid.yaml[]
-----
+include::example$authentication/registration-sys-uuid.adoc[]
 
 [CAUTION]
 ====

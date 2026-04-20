@@ -11,6 +11,7 @@ Os componentes necessários para fornecer os xref:rancher-os-management/architec
 * o daemon <<_elemental_system_agent_daemon,`elemental-system-agent`>>
 * uma ou mais imagens de contêiner de SO <<_suse_rancher_prime_os_manager_os_container_image,{elemental-product-name}>>
 
+[#_elemental_command_line_tool]
 == `elemental` ferramenta de linha de comando
 
 A ferramenta `elemental` faz parte do projeto link:{elemental_toolkit_url}[{elemental_toolkit_name}].
@@ -18,6 +19,7 @@ Ela realiza as operações reais de instalação e de upgrade do SO no host e é
 
 O binário `elemental` está incluído em todas as imagens base do SO distribuídas com {elemental-product-name}.
 
+[#_elemental_operator_daemon]
 == `elemental-operator` daemon
 
 O daemon *elemental-operator* realiza duas tarefas principais:
@@ -27,6 +29,7 @@ O daemon *elemental-operator* realiza duas tarefas principais:
 
 O daemon `elemental-operator` é implantado no cluster Rancher como um `Deployment` via o xref:references/operatorchart-reference.adoc[{elemental-product-name} Operator Helm Chart].
 
+[#_elemental_register_command_line_tool]
 == `elemental-register` ferramenta de linha de comando
 
 O binário *elemental-register* é o cliente usado para registrar o host contra os _endpoints de registro_ expostos pelo <<_elemental_operator_daemon,elemental-operator>>. Ele coleta e encaminha os dados do host para permitir que o <<_elemental_operator_daemon,elemental-operator>> preencha os templates de SMBIOS e de rótulo de Hardware.
@@ -34,11 +37,13 @@ O binário *elemental-register* é o cliente usado para registrar o host contra 
 Se a fase de registro for realizada com sucesso, o *elemental-register* obtém a configuração completa armazenada no xref:references/machineregistration-reference.adoc[MachineRegistration] do *elemental-operator*.
 Como último passo, o cliente *elemental-register* chama o binário <<_elemental_command_line_tool,elemental>> passando a configuração recuperada para iniciar a instalação do SO.
 
+[#_elemental_system_agent_daemon]
 == `elemental-system-agent` daemon
 
 O `elemental-system-agent` é construído a partir do projeto https://github.com/rancher/system-agent[Rancher System Agent project] e permite que {elemental-product-name} implante _planos_ para auxiliar na provisão do host.
 Notavelmente, a `rancher-system-agent` instalação e configuração necessárias para o xref:rancher-os-management/architecture/services/architecture-clusterdeployment.adoc[serviço de provisão do Cluster Kubernetes] são realizadas através de um `elemental-system-agent`_plano_.
 
+[#_suse_rancher_prime_os_manager_os_container_image]
 == {elemental-product-name} imagem de contêiner de SO
 
 Uma imagem de SO link:{elemental_toolkit_url}[{elemental_toolkit_name}] é uma imagem de contêiner OCI que contém todos os arquivos que compõem o sistema operacional do host de destino. Ela contém não apenas todos os binários e bibliotecas, mas também o kernel e os arquivos de inicialização necessários para um sistema Linux.

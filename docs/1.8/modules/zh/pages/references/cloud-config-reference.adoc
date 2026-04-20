@@ -23,6 +23,7 @@
 与类似项目（如_Cloud Init_）相比，Yip不保留已执行阶段和步骤的记录或缓存，所有阶段及其相关配置在每次启动时执行。
 ====
 
+[#_elemental_client_cloud_config_hooks]
 == Elemental客户端cloud-config钩子
 
 除了前一部分中描述的启动时定义的cloud-config阶段外，Elemental客户端还尊重一些特定阶段，称为钩子，以自定义这些子命令的行为：`install`、`upgrade`、`reset`和`build-disk`。每个子命令都有自己的一组四个不同的cloud-config阶段，在特定子命令执行的相应阶段执行。
@@ -49,6 +50,7 @@
 注意，安装钩子未作为 xref:references/machineregistration-reference.adoc#_config_cloud_config[`MachineRegistration.config.cloud-config`] 的一部分应用。为了提供安装钩子，它们可以作为 xref:[`SeedImage.cloud-config`] 的一部分包含，因为它们需要存在于安装介质中。
 ====
 
+[#_configuration_syntax]
 == 配置语法
 
 Yip 有其自己的语法，基本上需要定义 _stages_ 和每个阶段的步骤列表。步骤按顺序执行，每个步骤可以是不同操作类型的组合（例如运行命令、创建文件、设置主机名等）。
@@ -143,6 +145,7 @@ spec:
 
 为了同步执行，用户可以使用后置/前置阶段或在 https://github.com/rancher/yip/blob/ee4051d9ec2782989344f813bc6a0975bbd8f3fe/pkg/executor/default_test.go#L222[yip 语法] 中引用 `after` 关键字。
 
+[#_compatibility_with_cloud_init_format]
 == 与 Cloud Init 格式的兼容性
 
 yip 实现了官方 http://cloudinit.readthedocs.org/en/latest/topics/format.html#cloud-config-data[cloud-config 规范] 的一个子集。更具体地说，支持的 cloud-init 键包括：`users`、`ssh_authorized_keys`、`runcmd`、`hostname` 和 `write_files`。

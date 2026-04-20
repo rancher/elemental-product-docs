@@ -14,6 +14,7 @@ Pour simplifier l'adoption des nouvelles variables, consultez les tableaux qui f
 * <<_hardware_labels_to_new_label_templates_variables_table,Étiquettes Matériel aux nouvelles variables des modèles d'étiquettes>>
 * <<_smbios_labels_to_new_label_templates_variable_table,Étiquettes SMBIOS aux nouvelles variables des modèles d'étiquettes>>
 
+[#_hardware_labels_to_new_label_templates_variables_table]
 == Tableau des étiquettes Matériel aux nouvelles variables des modèles d'étiquettes
 
 |===
@@ -77,6 +78,7 @@ Pour simplifier l'adoption des nouvelles variables, consultez les tableaux qui f
 | `${Runtime/Hostname}`
 |===
 
+[#_smbios_labels_to_new_label_templates_variable_table]
 == Tableau des étiquettes SMBIOS aux nouvelles variables des modèles d'étiquettes
 
 |===

@@ -37,6 +37,7 @@ elemental-operator-64f88fc695-b8qhn   1/1     Running   0          16s
 您需要先升级 elemental-operator 图表，然后再安装 elemental-operator-crds 图表。
 ----
 
+[#_non_stable_installations]
 === 非稳定安装
 
 除了上述列出的 Helm 图表外，还有两个其他 `non-stable` 版本可用。

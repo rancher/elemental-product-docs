@@ -93,6 +93,7 @@ image::quickstart-ui-extension-operator-install-3.png[インストール{element
 それらが表示されない場合は、ページの上部で正しいネームスペースを選択していることを確認してください。
 ====
 
+[#_add_a_machine_registration_endpoint]
 == マシン登録エンドポイントを追加します。
 
 OS管理ダッシュボードで、`Create Registration Endpoint`ボタンをクリックします。

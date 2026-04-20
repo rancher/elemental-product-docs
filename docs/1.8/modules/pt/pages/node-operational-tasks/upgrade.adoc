@@ -14,6 +14,7 @@ Fazer upgrade pode ser realizado tanto com CLI quanto com UI:
 * <<_upgrade_via_command_line_interface,Interface de Linha de Comando>>
 * <<_upgrade_via_user_interface,Interface do usuário>>
 
+[#_upgrade_via_command_line_interface]
 == Fazer upgrade via Interface de Linha de Comando
 
 Existem duas maneiras de selecionar nós para fazer upgrade. Via um alvo de cluster, que corresponderá a TODOS os nós em um cluster que corresponder ao nosso seletor ou via seletor de nó, que corresponderá aos nós com base nos rótulos dos nós. O seletor de nó nos permite ser mais direcionados com o upgrade, enquanto o seletor de cluster apenas seleciona todos os nós em um cluster correspondente.
@@ -27,11 +28,7 @@ Com 'clusterTarget'::
 ====
 Você pode direcionar nós para fazer upgrade via um `clusterTarget`, definindo-o com o nome do cluster que deseja fazer upgrade. Todos os nós em um cluster que correspondam a esse nome serão selecionados e farão upgrade. 
 
-.upgrade-cluster-target.yaml
-[,yaml]
-----
-include::example$upgrade/upgrade-cluster-target.yaml[]
-----
+include::example$upgrade/upgrade-cluster-target.adoc[]
 ====
 
 Com nodeSelector::
@@ -39,11 +36,7 @@ Com nodeSelector::
 ====
 Você pode direcionar nós para fazer upgrade via um `nodeSelector`, definindo-o com o rótulo e o valor que você deseja corresponder. Quaisquer nós contendo essa chave com o valor serão selecionados e farão upgrade. 
 
-.upgrade-node-selector.yaml
-[,yaml]
-----
-include::example$upgrade/upgrade-node-selector.yaml[]
-----
+include::example$upgrade/upgrade-node-selector.adoc[]
 ====
 
 Com a flag FORCE::
@@ -51,11 +44,7 @@ Com a flag FORCE::
 ====
 Ao fazer upgrade para uma versão mais antiga ou para a mesma versão que já está em execução, o procedimento de upgrade será pulado. É possível forçar o upgrade para versões mais antigas, definindo a variável de ambiente FORCE, conforme mostrado abaixo. 
 
-.upgrade-force.yaml
-[,yaml]
-----
-include::example$upgrade/upgrade-force.yaml[]
-----
+include::example$upgrade/upgrade-force.adoc[]
 ====
 
 Com a flag UPGRADE_RECOVERY::
@@ -63,11 +52,7 @@ Com a flag UPGRADE_RECOVERY::
 ====
 Você pode decidir fazer upgrade da partição de Recuperação ao fazer upgrade do sistema ou, alternativamente, fazer upgrade apenas da partição de Recuperação.
 
-.upgrade-recovery.yaml
-[,yaml]
-----
-include::example$upgrade/upgrade-recovery.yaml[]
-----
+include::example$upgrade/upgrade-recovery.adoc[]
 ====
 ======
 
@@ -80,11 +65,7 @@ Via 'osImage'::
 ====
 Basta especificar uma imagem OCI no campo `osImage` 
 
-.upgrade-cluster-target.yaml
-[,yaml]
-----
-include::example$upgrade/upgrade-cluster-target.yaml[]
-----
+include::example$upgrade/upgrade-cluster-target.adoc[]
 ====
 
 Aba Via 'ManagedOSVersion'::
@@ -92,11 +73,7 @@ Aba Via 'ManagedOSVersion'::
 ====
 Neste caso, usamos os recursos `ManagedOSVersion` preenchidos automaticamente para definir o campo `managedOSVersionName` desejado. Veja a seção [Gerenciando versões disponíveis](#managing-available-versions) para entender como os `ManagedOSVersion` são gerenciados. 
 
-.upgrade-managedos-version.yaml
-[,yaml]
-----
-include::example$upgrade/upgrade-managedos-version.yaml[]
-----
+include::example$upgrade/upgrade-managedos-version.adoc[]
 ====
 ======
 
@@ -105,13 +82,14 @@ include::example$upgrade/upgrade-managedos-version.yaml[]
 Se tanto `osImage` quanto `ManagedOSVersion` estiverem definidos no mesmo `ManagedOSImage`, esteja ciente de que `osImage` tem precedência.
 ====
 
-
+[#_managing_available_versions]
 === Gerenciando versões disponíveis
 
 É possível criar xref:references/managedosversion-reference.adoc[ManagedOSVersions] diretamente ou se inscrever em xref:references/managedosversionchannel-reference.adoc[ManagedOSVersionChannels] para sincronizar automaticamente `ManagedOSVersions` a partir deles.
 
 Para mais detalhes e uma lista de canais disponíveis, ou até mesmo para criar o seu, leia a xref:operator-operational-tasks/channels.adoc[documentação].
 
+[#_upgrade_via_user_interface]
 == Fazer upgrade via interface do usuário
 
 Para fazer upgrade via a UI, você deve acessar o {elemental-product-name} menu Avançado, e então clicar em `Update Groups`.

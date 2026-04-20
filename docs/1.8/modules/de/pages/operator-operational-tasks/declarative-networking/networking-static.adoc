@@ -17,11 +17,8 @@ In diesem Beispiel werden wir ein Elemental-Image anpassen und eine xref:referen
 
 Die folgende Konfiguration umfasst 2 Knoten mit einem sehr einfachen Netzwerk-Setup.
 
-.99_static_network_config.yaml
-[,yaml]
-----
-include::example$network/yip-nmc-static-config.yaml[]
-----
+
+include::example$network/yip-nmc-static-config.adoc[]
 
 == Fügen Sie die statische Netzwerkkonfiguration in ein benutzerdefiniertes Betriebssystem-Image ein
 

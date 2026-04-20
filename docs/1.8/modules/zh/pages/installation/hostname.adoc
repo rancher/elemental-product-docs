@@ -44,8 +44,4 @@
 
 这样 {elemental-product-name} 在注册阶段将使用当前主机名作为 `MachineInventory` 名称，稍后将在配置阶段设置为主机的静态主机名。
 
-.注册示例：将主机名和 MachineInventory 名称都设置为从 DHCP 服务器获取的主机名。
-[,yaml]
-----
-include::example$quickstart/registration-hardware-dhcphostname.yaml[]
-----
+include::example$quickstart/registration-hardware-dhcphostname.adoc[]

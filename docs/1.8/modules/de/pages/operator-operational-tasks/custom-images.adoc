@@ -3,6 +3,7 @@
 :revdate: 2025-09-08
 :page-revdate: {revdate}
 
+[#_remastering_an_os_image_with_a_custom_dockerfile]
 == Remastering eines Betriebssystem-Images mit einer benutzerdefinierten Dockerfile
 
 Da die von {elemental-product-name} bereitgestellten Betriebssystem-Images Container-Images sind, können sie auch als Basis-Image in einer Dockerfile verwendet werden, um ein neues Container-Image zu erstellen.
@@ -60,7 +61,8 @@ Das neue angepasste Betriebssystem ist als Docker-Image `myrepo/custom-build:v1.
 docker run -it myrepo/custom-build:v1.1.1 bash
 ----
 
-## Erstellen Sie ein benutzerdefiniertes bootfähiges Installations-ISO
+[#_create_a_custom_bootable_installation_iso]
+== Erstellen Sie ein benutzerdefiniertes bootfähiges Installations-ISO
 
 {elemental-product-name} nutzt Container-Images, um seine Root-Dateisysteme zu erstellen; daher ist es möglich, es in einer Multi-Stage-Umgebung zu verwenden, um benutzerdefinierte Bootmedien zu erstellen, die ein benutzerdefiniertes Container-Image bündeln.
 

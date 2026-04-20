@@ -7,11 +7,7 @@ La ressource ManagedOSImage est responsable de la définition d'une image OS ou 
 
 Il existe plusieurs clés qui peuvent être configurées sous une spécification de ressource `ManagedOSImage`.
 
-.upgrade-cluster-target.yaml
-[,yaml]
-----
-include::example$upgrade/upgrade-cluster-target.yaml[]
-----
+include::example$upgrade/upgrade-cluster-target.adoc[]
 
 == `ManagedOSImageSpec` Référence
 

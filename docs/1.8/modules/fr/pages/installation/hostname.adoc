@@ -44,8 +44,4 @@ Pour conserver le nom d'hôte attribué par le serveur DHCP avant que l'hôte ne
 
 De cette manière, {elemental-product-name} utilisera le nom d'hôte actuel comme nom `MachineInventory` pendant la phase d'enregistrement, qui sera ensuite défini comme le nom d'hôte statique de l'hôte pendant la phase de provisionnement.
 
-.Exemple d'enregistrement avec le nom d'hôte et le nom MachineInventory définis sur le nom d'hôte obtenu par le serveur DHCP.
-[,yaml]
-----
-include::example$quickstart/registration-hardware-dhcphostname.yaml[]
-----
+include::example$quickstart/registration-hardware-dhcphostname.adoc[]

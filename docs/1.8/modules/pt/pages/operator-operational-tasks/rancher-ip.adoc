@@ -37,8 +37,4 @@ Os rótulos podem ser adicionados aos campos xref:references/machineregistration
 
 Exemplo: xref:references/machineregistration-reference.adoc[MachineRegistration] onde os nós terão o endereço IP interno definido a partir da interface eth0 e o endereço IP externo a partir da eth1.
 
-.registration.yaml
-[,yaml]
-----
-include::example$labeltemplates/registration.yaml[]
-----
+include::example$labeltemplates/registration.adoc[]

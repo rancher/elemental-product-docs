@@ -3,6 +3,7 @@
 :revdate: 2025-09-08
 :page-revdate: {revdate}
 
+[#_remastering_an_os_image_with_a_custom_dockerfile]
 == Remasterizando uma imagem de sistema operacional com um Dockerfile personalizado
 
 Como as imagens de sistema operacional fornecidas por {elemental-product-name} são imagens de contêiner, elas também podem ser usadas como uma imagem base em um Dockerfile para criar uma nova imagem de contêiner.
@@ -60,7 +61,8 @@ O novo sistema operacional personalizado está disponível como a imagem Docker 
 docker run -it myrepo/custom-build:v1.1.1 bash
 ----
 
-## Crie uma imagem ISO de instalação inicializável personalizada
+[#_create_a_custom_bootable_installation_iso]
+== Crie uma imagem ISO de instalação inicializável personalizada
 
 {elemental-product-name} utiliza imagens de contêiner para construir seus sistemas de arquivos raiz; portanto, é possível usá-lo em um ambiente de múltiplas etapas para criar mídias inicializáveis personalizadas que agrupam uma imagem de contêiner personalizada.
 

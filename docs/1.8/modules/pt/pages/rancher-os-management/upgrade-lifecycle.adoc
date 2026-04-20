@@ -5,6 +5,7 @@
 
 image::upgrade-lifecycle.png[Fluxo de upgrade]
 
+[#_components]
 == Componentes
 
 * https://documentation.suse.com/cloudnative/os-manager/[{elemental-product-name} Operador]

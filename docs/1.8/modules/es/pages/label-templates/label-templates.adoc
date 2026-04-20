@@ -23,7 +23,7 @@ La funcionalidad de plantillas de Elemental también cubre el campo xref:referen
 Consulta la sección <<_custom_machine_names,Nombre de la Máquina>> para más detalles.
 ====
 
-
+[#_label_templates_variables]
 == Variables de plantillas de etiquetas
 
 La funcionalidad de plantillas de etiquetas de Elemental incluye un conjunto de variables predefinidas que se pueden utilizar dentro del `value` de las _plantillas de etiquetas_ especificadas en el xref:references/machineregistration-reference.adoc[Registro de Máquina].
@@ -71,7 +71,7 @@ Las variables de plantilla se pueden mezclar con texto estático para formar las
  ** rendered label: *sbios-UUID: fd95324a-c26b-4e28-8727-1dcec293a0ec*
 ====
 
-
+[#_sanitization]
 == Sanitización
 
 Una vez que el valor de la plantilla de etiqueta ha sido renderizado de acuerdo con las variables de plantilla de etiqueta incluidas <<_label_templates_variables,variables de plantilla de etiqueta>>, el valor resultante es `sanitized` antes de ser asignado a la etiqueta resultante.
@@ -122,6 +122,7 @@ El `Label Templates` se puede utilizar para generar etiquetas que se utilizan pa
 
 Las etiquetas adjuntas a cada xref:references/machineinventory-reference.adoc[Inventario de Máquinas] son elegibles para _selector_ para el recurso xref:references/machineinventoryselectortemplate-reference.adoc[Plantilla de Selector de Inventario de Máquinas] (ver la sección xref:rancher-os-management/architecture/services/architecture-clusterdeployment.adoc[provisión de clústeres de Kubernetes] para más detalles).
 
+[#_custom_machine_names]
 === Nombres de máquinas personalizados
 
 El nombre de host de la máquina de incorporación se puede especificar utilizando el campo xref:references/machineregistration-reference.adoc[Registro de Máquina] `spec.machineName`.
@@ -147,8 +148,4 @@ Para más información sobre cómo definir el nombre de host para los hosts Elem
 
 == Ejemplo de plantillas de etiquetas
 
-.ejemplo de registro con variables de plantillas de etiquetas
-[,yaml]
-----
-include::example$quickstart/registration-hardware-dhcphostname.yaml[]
-----
+include::example$quickstart/registration-hardware-dhcphostname.adoc[]

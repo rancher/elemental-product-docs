@@ -23,6 +23,7 @@ In {elemental-product-name} Operator, all kubernetes resources including a `clou
 In contrast to similar projects such as _Cloud Init_, Yip does not keep records or caches of executed stages and steps, all stages and its associated configuration is executed at every boot.
 ====
 
+[#_elemental_client_cloud_config_hooks]
 == Elemental client cloud-config hooks
 
 In addition to the defined cloud-config stages at boot described in the previous section the Elemental client also honors some specific stages, referenced as hooks, to customize the behavior of these subcommands: `install`, `upgrade`, `reset` and `build-disk`. Each of these subcommands has it's own set of four different cloud-config stages executed at analog phases of the specific subcommand execution.
@@ -49,6 +50,7 @@ Post stages: post-install, post-upgrade, post-reset, post-disk These stages are 
 Note installation hooks are not applied as part of the xref:references/machineregistration-reference.adoc#_config_cloud_config[`MachineRegistration.config.cloud-config`]. In order to provide installation hooks they can be included as part of the xref:[`SeedImage.cloud-config`], as they need to be present in the installation media.
 ====
 
+[#_configuration_syntax]
 == Configuration syntax
 
 Yip has its own syntax, it essentially requires to define _stages_ and a list of steps for each stage. Steps are executed in order and each step can be a combination different action types (e.g run commands, create files, set hostname, etc.).
@@ -144,6 +146,7 @@ During execution of a stage all files are loaded and a graph is computed and the
 
 In order to synchronize execution, the user can use the post/pre stages or refer to the `after` keyword in the https://github.com/rancher/yip/blob/ee4051d9ec2782989344f813bc6a0975bbd8f3fe/pkg/executor/default_test.go#L222[yip syntax].
 
+[#_compatibility_with_cloud_init_format]
 == Compatibility with Cloud Init format
 
 A subset of the official http://cloudinit.readthedocs.org/en/latest/topics/format.html#cloud-config-data[cloud-config spec] is implemented by yip. More specifically, the supported cloud-init keys are: `users`, `ssh_authorized_keys`, `runcmd`, `hostname` and `write_files` are implemented.

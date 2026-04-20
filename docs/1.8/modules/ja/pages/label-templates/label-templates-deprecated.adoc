@@ -14,6 +14,7 @@
 * <<_hardware_labels_to_new_label_templates_variables_table,ハードウェアラベルから新しいラベルテンプレートの変数へのマッピング>>
 * <<_smbios_labels_to_new_label_templates_variable_table,SMBIOSラベルから新しいラベルテンプレートの変数へのマッピング>>
 
+[#_hardware_labels_to_new_label_templates_variables_table]
 == ハードウェアラベルから新しいラベルテンプレートの変数へのマッピング表
 
 |===
@@ -77,6 +78,7 @@
 | `${Runtime/Hostname}`
 |===
 
+[#_smbios_labels_to_new_label_templates_variable_table]
 == SMBIOSラベルから新しいラベルテンプレートの変数へのマッピング表
 
 |===

@@ -5,6 +5,7 @@
 
 Trusted Platform Module (TPM, also known as ISO/IEC 11889) is an international standard for a secure cryptoprocessor, a dedicated microcontroller designed to secure hardware through integrated cryptographic keys. The term can also refer to a chip conforming to the standard.
 
+[#_add_tpm_module_to_virtual_machine]
 == Add TPM module to virtual machine
 
 Easy way to add TPM to virtual machine is to use Libvirt with Virt-manager
@@ -33,6 +34,7 @@ On the last screen verify once again if TPM module was added properly
 
 image::tpm4.png[Verify TPM]
 
+[#_add_tpm_emulation_to_bare_metal_machine]
 == Add TPM emulation to bare metal machine
 
 During applying `#!yaml MachineRegistration` add following key to the yaml `config:elemental:registration:emulate-tpm: true`

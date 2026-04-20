@@ -23,6 +23,7 @@ https://github.com/elemental-toolkit[{elemental-product-name}ツールキット]
 _Cloud Init_のような類似プロジェクトとは対照的に、Yipは実行されたステージやステップの記録やキャッシュを保持せず、すべてのステージとその関連する設定は、毎回のブート時に実行されます。
 ====
 
+[#_elemental_client_cloud_config_hooks]
 == Elementalクライアントのcloud-configフック
 
 前のセクションで説明したブート時に定義されたcloud-configステージに加えて、Elementalクライアントは、これらのサブコマンドの動作をカスタマイズするために、フックとして参照される特定のステージも尊重します：`install`、`upgrade`、`reset`、および`build-disk`。これらのサブコマンドのそれぞれには、特定のサブコマンドの実行のアナログフェーズで実行される4つの異なるcloud-configステージの独自のセットがあります。
@@ -49,6 +50,7 @@ chroot後のステージ：after-install-chroot、after-upgrade-chroot、after-r
 インストールフックは、xref:references/machineregistration-reference.adoc#_config_cloud_config[`MachineRegistration.config.cloud-config`]の一部として適用されないことに注意してください。インストールフックを提供するためには、xref:[`SeedImage.cloud-config`]の一部として含める必要があります。これは、インストールメディアに存在する必要があります。
 ====
 
+[#_configuration_syntax]
 == 設定の構文
 
 Yipには独自の構文があり、基本的には_stages_を定義し、各ステージのステップのリストを必要とします。ステップは順番に実行され、各ステップは異なるアクションタイプの組み合わせ（例：コマンドの実行、ファイルの作成、ホスト名の設定など）であることができます。
@@ -143,6 +145,7 @@ spec:
 
 実行を同期させるために、ユーザーはポスト/プレーステージを使用するか、`after`キーワードをhttps://github.com/rancher/yip/blob/ee4051d9ec2782989344f813bc6a0975bbd8f3fe/pkg/executor/default_test.go#L222[yip構文]で参照することができます。
 
+[#_compatibility_with_cloud_init_format]
 == Cloud Init形式との互換性
 
 公式のhttp://cloudinit.readthedocs.org/en/latest/topics/format.html#cloud-config-data[cloud-config仕様]のサブセットがyipによって実装されています。より具体的には、サポートされているcloud-initキーは、`users`、`ssh_authorized_keys`、`runcmd`、`hostname`、および`write_files`が実装されています。

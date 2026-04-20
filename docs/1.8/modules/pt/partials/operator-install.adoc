@@ -37,6 +37,7 @@ Ao atualizar de uma versão do elemental-operator que incorpora os CRDs do {elem
 Você precisará atualizar primeiro o chart elemental-operator e só então instalar o chart elemental-operator-crds.
 ----
 
+[#_non_stable_installations]
 === Instalações não estáveis
 
 Além dos gráficos Helm listados acima, há duas outras versões do `non-stable` disponíveis.

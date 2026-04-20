@@ -171,8 +171,4 @@ O exemplo abaixo cria um cluster que utiliza 2 diferentes ``machinePool`` para d
 Os rótulos para o exemplo são rótulos definidos manualmente, não são definidos automaticamente por {elemental-product-name}.
 ====
 
-.Exemplo de um cluster com mais de um machinePool
-[,yaml]
-----
-include::example$clusters/clusters-several-machinepools.yml[]
-----
+include::example$clusters/clusters-several-machinepools.adoc[]

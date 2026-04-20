@@ -27,6 +27,7 @@ Building a SeedImage for a different platform is accomplished using the `targetP
 The seed images are kept on the node's local storage: pay attention to the number of `SeedImage` resources you start concurrently and to the ones you may leave around with the auto-cleanup feature disabled (`cleanupAfterMinutes` = `0`) as you may exhaust the storage on your cluster nodes.
 ====
 
+[#_seedimagespec_reference]
 == SeedImageSpec reference
 
 |===
@@ -113,6 +114,7 @@ The following list of environment variables can also be used within the custom b
 - `ELEMENTAL_BASE_IMAGE`: The base image defined in the `SeedImage`.
 - `ELEMENTAL_OUTPUT_NAME`: The expected file name of the build artifact.
 
+[#_iso_and_raw_images]
 === ISO and Raw images
 
 The `SeedImage` is able to build `iso` or `raw` image types.  
@@ -165,6 +167,7 @@ spec:
 ----
 ====
 
+[#_multi_platform_support]
 === Multi-Platform support
 
 Elemental ships `linux/x86_64` and `linux/aarch64` images for most flavors.  

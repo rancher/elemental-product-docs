@@ -109,11 +109,7 @@ La sección `network` del `MachineRegistration` permite a los usuarios definir:
 . Un mapa de referencias de IPPool.
 . Una plantilla de configuración de red (en este caso se está utilizando el configurador `nmc`).
 
-.ejemplo de MachineRegistration utilizando Redes Declarativas
-[,yaml]
-----
-include::example$network/machineregistration.yaml[]
-----
+include::example$network/machineregistration.adoc[]
 
 Aquí podemos observar que se ha definido un `InClusterIPPool`, ya que estamos utilizando el https://github.com/kubernetes-sigs/cluster-api-ipam-provider-in-cluster[Proveedor IPAM InCluster] para este ejemplo.
 
@@ -168,7 +164,7 @@ config:
         enabled: false
 ----
 
-El fragmento anterior es casi 1:1 https://github.com/suse-edge/nm-configurator?tab=readme-ov-file#unified-configurations[sintaxis nm-configurator], con la única excepción del marcador de posición `{inventory-ip}`. Durante las fases de instalación o reinicio de las máquinas Elemental, el `elemental-operator` reclamará una dirección IP del Pool de IP referenciado y sustituirá el marcador de posición `{inventory-ip}` con una dirección IP real.
+El fragmento anterior es casi 1:1 https://github.com/suse-edge/nm-configurator?tab=readme-ov-file#unified-configurations[sintaxis nm-configurator], con la única excepción del marcador de posición `\{inventory-ip}`. Durante las fases de instalación o reinicio de las máquinas Elemental, el `elemental-operator` reclamará una dirección IP del Pool de IP referenciado y sustituirá el marcador de posición `\{inventory-ip}` con una dirección IP real.
 
 === Direcciones IP reclamadas
 
@@ -201,6 +197,7 @@ Siempre que se elimine un `MachineInventory`, se restaurará la configuración d
 
 Para más información y detalles sobre cómo solucionar problemas, consulte la xref:troubleshooting/troubleshooting-network.adoc[documentación de resolución de problemas de Redes Declarativas].
 
+[#_configurators]
 === Configuradores
 
 En la máquina Elemental, `elemental-register` puede configurar el `NetworkManager` de diferentes maneras. El configurador en uso se define en el xref:references/machineregistration-reference.adoc#_config_network[MachineRegistration.spec.network]:
@@ -216,11 +213,7 @@ nmc::
 --
 El configurador `nmc` utiliza la https://github.com/suse-edge/nm-configurator?tab=readme-ov-file#unified-configurations[nm-configurator unified syntax] para generar los archivos de conexión de NetworkManager.
 
-.ejemplo de MachineRegistration utilizando el configurador nmc
-[,yaml]
-----
-include::example$network/machineregistration-nmc.yaml[]
-----
+include::example$network/machineregistration-nmc.adoc[]
 
 --
 
@@ -229,11 +222,7 @@ nmstate::
 --
 El configurador `nmstate` utiliza https://nmstate.io/examples.html[nmstate syntax] para generar los archivos de conexión de NetworkManager. Tenga en cuenta que https://github.com/nmstate/nmstate/releases[nmstatectl] necesita estar instalado en el sistema Elemental para usar este configurador. Esto no está incluido por defecto en las imágenes Elemental, pero se puede instalar al construir una xref:operator-operational-tasks/custom-images.adoc[imagen personalizada].
 
-.ejemplo de MachineRegistration utilizando el configurador nmstate
-[,yaml]
-----
-include::example$network/machineregistration-nmstate.yaml[]
-----
+include::example$network/machineregistration-nmstate.adoc[]
 
 --
 
@@ -245,10 +234,7 @@ El `nmconnections` configurador es la opción más sencilla disponible y permite
 .Haz clic aquí para el ejemplo de MachineRegistration utilizando el configurador nmstate.
 [%collapsible]
 ====
-[,yaml]
-----
-include::example$network/machineregistration-nmconnections.yaml[]
-----
+include::example$network/machineregistration-nmconnections.adoc[]
 ====
 
 --

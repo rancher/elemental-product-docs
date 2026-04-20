@@ -23,7 +23,7 @@ Elemental模板功能还涵盖了xref:references/machineregistration-reference.a
 有关更多详细信息，请参见<<_custom_machine_names,机器名称>>部分。
 ====
 
-
+[#_label_templates_variables]
 == 标签模板的变量
 
 Elemental标签模板包括一组预定义变量，可在xref:references/machineregistration-reference.adoc[机器注册]中指定的`value`的_标签模板_内部使用。
@@ -71,7 +71,7 @@ Elemental当前支持以下_模板变量家族_：
  ** 渲染标签： *sbios-UUID: fd95324a-c26b-4e28-8727-1dcec293a0ec*
 ====
 
-
+[#_sanitization]
 == 清理
 
 一旦标签模板值根据包含的 <<_label_templates_variables,标签模板变量>> 渲染，结果值为 `sanitized`，然后分配给结果标签。
@@ -122,6 +122,7 @@ Elemental当前支持以下_模板变量家族_：
 
 附加到每个 xref:references/machineinventory-reference.adoc[机器清单] 的标签可以用于 _选择器_，以便于 xref:references/machineinventoryselectortemplate-reference.adoc[机器库存选择器模板] 资源（有关更多详细信息，请参见 xref:rancher-os-management/architecture/services/architecture-clusterdeployment.adoc[Kubernetes 集群配置] 部分）。
 
+[#_custom_machine_names]
 === 自定义机器名称
 
 可以使用 xref:references/machineregistration-reference.adoc[机器注册] `spec.machineName` 字段指定入驻机器的主机名。
@@ -147,8 +148,4 @@ xref:references/machineregistration-reference.adoc[机器注册] `spec.machineNa
 
 == 标签模板示例
 
-.带有标签模板变量的注册示例
-[,yaml]
-----
-include::example$quickstart/registration-hardware-dhcphostname.yaml[]
-----
+include::example$quickstart/registration-hardware-dhcphostname.adoc[]

@@ -35,10 +35,7 @@
 CLI::
 +
 ====
-[,yaml]
-----
-include::example$proxy/registration-proxy.yaml[]
-----
+include::example$proxy/registration-proxy.adoc[]
 ====
 
 UI::
@@ -60,10 +57,7 @@ xref:rancher-os-management/architecture/architecture-components.adoc#_elemental_
 このプロセスは、{elemental-product-name} ISOを初めてブートする際に発生し、プロキシ設定を構成するにはISOに`cloud-init`定義を含める必要があります。
 それを行うには、xref:references/seedimage-reference.adoc[SeedImage]定義を作成する必要があります。
 
-[,yaml]
-----
-include::example$proxy/seedimage-proxy.yaml[]
-----
+include::example$proxy/seedimage-proxy.adoc[]
 
 YAMLを`kubectl`に適用し、その後、SeedImage定義を表示してダウンロード用のURLを取得してください。
 
@@ -84,10 +78,7 @@ ISOを起動すると、新しいシステムがxref:references/machineinventory
 CLI::
 +
 ====
-[,yaml]
-----
-include::example$proxy/cluster-proxy.yaml[]
-----
+include::example$proxy/cluster-proxy.adoc[]
 ====
 
 UI::

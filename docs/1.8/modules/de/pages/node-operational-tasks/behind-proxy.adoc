@@ -35,10 +35,7 @@ Sie können dies entweder mit xref:quickstarts/quickstart-ui.adoc#_add_a_machine
 CLI::
 +
 ====
-[,yaml]
-----
-include::example$proxy/registration-proxy.yaml[]
-----
+include::example$proxy/registration-proxy.adoc[]
 ====
 
 UI::
@@ -60,10 +57,7 @@ Zum Zeitpunkt des Schreibens ist es nur möglich, die Proxy-Einstellungen für d
 Der Prozess erfolgt, wenn Sie Ihre {elemental-product-name} ISO zum ersten Mal starten. Um die Proxy-Einstellungen zu konfigurieren, müssen Sie eine `cloud-init` Definition in die ISO einfügen.
 Um dies zu tun, müssen Sie eine xref:references/seedimage-reference.adoc[SeedImage] Definition erstellen.
 
-[,yaml]
-----
-include::example$proxy/seedimage-proxy.yaml[]
-----
+include::example$proxy/seedimage-proxy.adoc[]
 
 Wenden Sie die YAML mit `kubectl` an und drucken Sie dann Ihre SeedImage-Definition aus, um die URL zum Herunterladen zu erhalten:
 
@@ -84,10 +78,7 @@ Für diesen Schritt können Sie entweder die Benutzeroberfläche oder die Komman
 CLI::
 +
 ====
-[,yaml]
-----
-include::example$proxy/cluster-proxy.yaml[]
-----
+include::example$proxy/cluster-proxy.adoc[]
 ====
 
 UI::

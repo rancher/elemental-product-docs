@@ -14,6 +14,7 @@ Um die Einführung der neuen Variablen zu erleichtern, überprüfen Sie die Tabe
 * <<_hardware_labels_to_new_label_templates_variables_table,Hardware-Labels zu neuen Variablen der Label-Vorlagen>>
 * <<_smbios_labels_to_new_label_templates_variable_table,SMBIOS-Labels zu neuen Variablen der Label-Vorlagen>>
 
+[#_hardware_labels_to_new_label_templates_variables_table]
 == Tabelle der Hardware-Labels zu neuen Variablen der Label-Vorlagen
 
 |===
@@ -77,6 +78,7 @@ Um die Einführung der neuen Variablen zu erleichtern, überprüfen Sie die Tabe
 | `${Runtime/Hostname}`
 |===
 
+[#_smbios_labels_to_new_label_templates_variable_table]
 == Tabelle der SMBIOS-Labels zu neuen Variablen der Label-Vorlagen
 
 |===
