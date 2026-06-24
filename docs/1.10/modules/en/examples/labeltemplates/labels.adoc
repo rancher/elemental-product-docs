@@ -1,0 +1,7 @@
+./etc/elemental/labels.yaml
+[,yaml]
+----
+localMachineUUID: "${System Information/UUID}"
+localHostname: "${Runtime/Hostname}"
+localCluster: "fire"
+----

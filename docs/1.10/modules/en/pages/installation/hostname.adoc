@@ -1,5 +1,5 @@
 = Customize hostname
-:revdate: 2026-04-01
+:revdate: 2026-06-24
 :page-revdate: {revdate}
 
 == {elemental-product-name} hostname management overview
@@ -31,7 +31,7 @@ the corresponding host, overriding the previous assigned hostname (`rancher-{$RA
 The hostname can be specified setting the xref:references/machineregistration-reference.adoc#_machinename[`machineName`] field in the
 xref:references/machineregistration-reference.adoc['MachineRegistration'] resource.
 
-The hostname set in the `machineName` field is expected to be in a template form, in order to be uniquely generated for each registering node, using SMBIOS and Hardware Labels data.
+The hostname set in the `machineName` field is expected to be in a template form, in order to be uniquely generated for each registering node, using the xref:label-templates/label-templates-random.adoc[Random] variables from the xref:label-templates/label-templates.adoc[Label Templates] feature.
 
 [IMPORTANT]
 ====

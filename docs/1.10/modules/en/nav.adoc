@@ -39,6 +39,7 @@
 ** xref:operator-operational-tasks/custom-images.adoc[Build Custom OS Images]
 ** xref:operator-operational-tasks/unmanaged-os.adoc[Register an Unmanaged OS]
 ** xref:operator-operational-tasks/tpm.adoc[Trusted Platform Module (TPM)]
+** xref:operator-operational-tasks/local-node-labels.adoc[Local Node Labels]
 ** xref:operator-operational-tasks/rancher-ip.adoc[Rancher IP Address Options]
 * xref:label-templates/label-templates.adoc[Label Templates]
 ** xref:label-templates/label-templates-baseboard.adoc[BaseBoard]

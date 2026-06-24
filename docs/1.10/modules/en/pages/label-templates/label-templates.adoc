@@ -1,5 +1,5 @@
 = Label Templates Overview
-:revdate: 2026-04-01
+:revdate: 2026-06-24
 :page-revdate: {revdate}
 
 Elemental allows to specify _label templates_ in the `spec.machineInventoryLabels` and `spec.machineInventoryAnnotations` sections of the xref:references/machineregistration-reference.adoc[MachineRegistration] resources.
@@ -8,7 +8,7 @@ Their format is the canonical `key`:``value`` used in Kubernetes labels and anno
 
 These label templates are converted to actual labels and annotations attached to each xref:references/machineinventory-reference.adoc[MachineInventory] resource created during the xref:rancher-os-management/architecture/services/architecture-machineonboarding.adoc[machine onboarding] phase.
 
-The resulting labels and annotations have the same `key` of the label template.
+The resulting labels and annotations have the same `key` of the label template. Note that system-generated labels and annotations use the prefix defined in the `labelPrefix` field of the `MachineRegistration` (defaults to `elemental.cattle.io`).
 
 The associated `value` is generated:
 
