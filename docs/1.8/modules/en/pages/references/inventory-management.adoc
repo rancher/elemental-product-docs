@@ -26,34 +26,34 @@ The following annotations are automatically added to the `MachineInventory` trac
 | Key | Description
 
 | `<labelPrefix>/auth`
-| Authentication used during registration (one of 'tpm', 'emulated-tpm', 'mac', 'sys-uuid')
+| Authentication used during registration (one of `tpm`, `emulated-tpm`, `mac`, `sys-uuid`)
 
 | `<labelPrefix>/registration-ip`
 | IP address used during last registration
 
 | `<labelPrefix>/os.unmanaged`
-| Only present when set to 'true', disables OS management functionality on the tracked host
+| Only present when set to `true`, disables OS management functionality on the tracked host
 
 | `<labelPrefix>/name`
-| 'NAME' from `/etc/os-release`
+| `NAME` from `/etc/os-release`
 
 | `<labelPrefix>/version`
-| 'VERSION' from `/etc/os-release`
+| `VERSION` from `/etc/os-release`
 
 | `<labelPrefix>/version-id`
-| 'VERSION_ID' from `/etc/os-release`
+| `VERSION_ID` from `/etc/os-release`
 
 | `<labelPrefix>/id`
-| 'ID' from `/etc/os-release`
+| `ID` from `/etc/os-release`
 
 | `<labelPrefix>/pretty-name`
-| 'PRETTY_NAME' from `/etc/os-release`
+| `PRETTY_NAME` from `/etc/os-release`
 
 | `<labelPrefix>/image`
-| 'IMAGE' from `/etc/os-release`
+| `IMAGE` from `/etc/os-release`
 
 | `<labelPrefix>/cpe-name`
-| 'CPE_NAME' from `/etc/os-release`
+| `CPE_NAME` from `/etc/os-release`
 |===
 
 === Reference
