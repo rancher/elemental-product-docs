@@ -399,7 +399,7 @@ The value is interpolated using xref:label-templates/label-templates.adoc[Label 
 ====
 If no `machineName` is specified, a default one in the form `m-$UUID` will be set.
 
-See the xref:hostname.adoc#_customize_hostname[Customize Hostname section] for further details.
+See the xref:installation/hostname.adoc[Customize Hostname documentation] for further details.
 ====
 
 .Click here for details
