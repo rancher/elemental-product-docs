@@ -13,7 +13,7 @@ De todos modos, los métodos para recoger esas opciones de IP para los Clusters 
 
 La provisión de Rancher permite especificar en la sección del Agente de Rancher las interfaces de red que deben estar vinculadas a las direcciones IP internas y externas de cada nodo provisionado.
 
-Esto se realiza añadiendo los nombres de las interfaces de red de las cuales se deben extraer las direcciones IP en las Variables de Entorno del Agente `CATTLE_INTERNAL_ADDRESS` y `CATTLE_ADDRESS`. Depending on your cluster provisioning,refer to the https://ranchermanager.docs.rancher.com/reference-guides/cluster-configuration/rancher-server-configuration/rke2-cluster-configuration#agent-environment-vars[RKE2] or https://ranchermanager.docs.rancher.com/reference-guides/cluster-configuration/rancher-server-configuration/k3s-cluster-configuration#agent-environment-vars[K3s] Cluster Configuration Rancher documentation for more information.
+Esto se realiza añadiendo los nombres de las interfaces de red de las cuales se deben extraer las direcciones IP en las Variables de Entorno del Agente `CATTLE_INTERNAL_ADDRESS` y `CATTLE_ADDRESS`. Depending on your cluster provisioning,refer to the https://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-deployment/configuration/rke2.html#_agent_environment_vars[RKE2] or https://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-deployment/configuration/k3s.html#_agent_environment_vars[K3s] Cluster Configuration Rancher documentation for more information.
 
 [NOTE]
 ====

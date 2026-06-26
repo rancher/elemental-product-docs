@@ -13,7 +13,7 @@ Die Methoden zur Erfassung dieser IP-Optionen für _Custom_ Rancher-Cluster und 
 
 Die Rancher-Bereitstellung ermöglicht es, im Abschnitt Rancher-Agent die Netzwerkschnittstellen anzugeben, die an die internen und externen IP-Adressen jedes bereitgestellten Knotens gebunden werden sollen.
 
-Dies erfolgt durch Hinzufügen der Namen der Netzwerkschnittstellen, von denen die IP-Adressen extrahiert werden sollen, in die `CATTLE_INTERNAL_ADDRESS` und die `CATTLE_ADDRESS` Agent-Umgebungsvariablen. Depending on your cluster provisioning,refer to the https://ranchermanager.docs.rancher.com/reference-guides/cluster-configuration/rancher-server-configuration/rke2-cluster-configuration#agent-environment-vars[RKE2] or https://ranchermanager.docs.rancher.com/reference-guides/cluster-configuration/rancher-server-configuration/k3s-cluster-configuration#agent-environment-vars[K3s] Cluster Configuration Rancher documentation for more information.
+Dies erfolgt durch Hinzufügen der Namen der Netzwerkschnittstellen, von denen die IP-Adressen extrahiert werden sollen, in die `CATTLE_INTERNAL_ADDRESS` und die `CATTLE_ADDRESS` Agent-Umgebungsvariablen. Depending on your cluster provisioning,refer to the https://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-deployment/configuration/rke2.html#_agent_environment_vars[RKE2] or https://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-deployment/configuration/k3s.html#_agent_environment_vars[K3s] Cluster Configuration Rancher documentation for more information.
 
 [NOTE]
 ====
