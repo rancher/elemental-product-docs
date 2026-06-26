@@ -1,6 +1,6 @@
 = Installieren Sie {elemental-product-name} in einer Air-Gapped-Umgebung
 :page-languages: [en, de, es, fr, ja, pt, zh]
-:revdate: 2025-11-06
+:revdate: 2026-06-26
 :page-revdate: {revdate}
 
 == Annahmen
@@ -120,7 +120,7 @@ helm upgrade --create-namespace -n cattle-elemental-system \
 Aus einem Hauler-Archiv installieren::
 +
 ======
-Um aus einem https://rancherfederal.github.io/hauler-docs/[Hauler] Archiv zu installieren (`-ha` Option in `elemental-airgap.sh`), ist die Hauler-Installation auch eine Voraussetzung auf dem Host, von dem aus die Installation durchgeführt wird. 
+Um aus einem https://github.com/rancherfederal/hauler-docs[Hauler] Archiv zu installieren (`-ha` Option in `elemental-airgap.sh`), ist die Hauler-Installation auch eine Voraussetzung auf dem Host, von dem aus die Installation durchgeführt wird. 
 
 Wenn das private Registry eine Authentifizierung erfordert, müssen Sie sich mit Hauler dort anmelden: 
 
