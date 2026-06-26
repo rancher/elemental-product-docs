@@ -1,6 +1,6 @@
 = {elemental-product-name}をエアギャップ環境にインストールする
 :page-languages: [en, de, es, fr, ja, pt, zh]
-:revdate: 2025-11-06
+:revdate: 2026-06-26
 :page-revdate: {revdate}
 
 == 前提
@@ -117,7 +117,7 @@ helm upgrade --create-namespace -n cattle-elemental-system \
 Haulerアーカイブからインストールする::
 +
 ======
-https://rancherfederal.github.io/hauler-docs/[Hauler]アーカイブからインストールするには（`-ha`の`elemental-airgap.sh`オプション）、インストールを実行するホストにHaulerのインストールも必要です。
+https://github.com/rancherfederal/hauler-docs[Hauler]アーカイブからインストールするには（`-ha`の`elemental-airgap.sh`オプション）、インストールを実行するホストにHaulerのインストールも必要です。
 
 プライベートレジストリが認証を必要とする場合、Haulerでログインする必要があります：
 

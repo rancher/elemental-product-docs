@@ -1,6 +1,6 @@
 = 在隔离环境中安装{elemental-product-name}
 :page-languages: [en, de, es, fr, ja, pt, zh]
-:revdate: 2025-11-06
+:revdate: 2026-06-26
 :page-revdate: {revdate}
 
 == 假设条件
@@ -117,7 +117,7 @@ helm upgrade --create-namespace -n cattle-elemental-system \
 从 Hauler 归档安装::
 +
 ======
-要从 https://rancherfederal.github.io/hauler-docs/[Hauler] 归档安装（`-ha` 选项在 `elemental-airgap.sh` 中），在执行安装的主机上也需要安装 Hauler。
+要从 https://github.com/rancherfederal/hauler-docs[Hauler] 归档安装（`-ha` 选项在 `elemental-airgap.sh` 中），在执行安装的主机上也需要安装 Hauler。
 
 如果私有镜像仓库需要身份验证，您需要使用 Hauler 登录：
 

@@ -1,5 +1,5 @@
 = Configure K3s and RKE2 internal and external IP addresses
-:revdate: 2025-09-08
+:revdate: 2026-06-26
 :page-revdate: {revdate}
 
 K3s and RKE2 allow to specify the internal and external IP addresses of a node via the `--node-ip` and `--node-external-ip` parameters.
@@ -12,7 +12,7 @@ Anyway, the methods to collect those ip options for _Custom_ Rancher Clusters an
 
 Rancher provisioning allows to specify in the Rancher Agent section the network interfaces that should be bound to the internal and external IP addresses of each provisioned node.
 
-This is performed by adding the network interface names from which the IP addresses should be extracted in the `CATTLE_INTERNAL_ADDRESS` and the `CATTLE_ADDRESS` Agent Environment Variables (https://ranchermanager.docs.rancher.com/reference-guides/cluster-configuration/rancher-server-configuration/use-existing-nodes/rancher-agent-options#ip-address-options[see Rancher docs]).
+This is performed by adding the network interface names from which the IP addresses should be extracted in the `CATTLE_INTERNAL_ADDRESS` and the `CATTLE_ADDRESS` Agent Environment Variables. Depending on your cluster provisioning,refer to the https://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-deployment/configuration/rke2.html#_agent_environment_vars[RKE2] or https://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-deployment/configuration/k3s.html#_agent_environment_vars[K3s] Cluster Configuration Rancher documentation for more information.
 
 [NOTE]
 ====

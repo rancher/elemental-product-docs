@@ -1,6 +1,6 @@
 = Installer {elemental-product-name} dans un environnement isolé physiquement
 :page-languages: [en, de, es, fr, ja, pt, zh]
-:revdate: 2025-11-06
+:revdate: 2026-06-26
 :page-revdate: {revdate}
 
 == Hypothèses
@@ -117,7 +117,7 @@ helm upgrade --create-namespace -n cattle-elemental-system \
 Installer à partir d'une archive Hauler::
 +
 ======
-Pour installer à partir d'une archive https://rancherfederal.github.io/hauler-docs/[Hauler] (`-ha` option dans `elemental-airgap.sh`), l'installation de Hauler est également une exigence sur l'hôte à partir duquel l'installation est effectuée. 
+Pour installer à partir d'une archive https://github.com/rancherfederal/hauler-docs[Hauler] (`-ha` option dans `elemental-airgap.sh`), l'installation de Hauler est également une exigence sur l'hôte à partir duquel l'installation est effectuée. 
 
 Si le registre privé nécessite une authentification, vous devez vous connecter avec Hauler : 
 
