@@ -1,6 +1,6 @@
 = Visão geral da arquitetura
 :page-languages: [en, de, es, fr, ja, pt, zh]
-:revdate: 06-11-2025
+:revdate: 2025-06-11
 :page-revdate: {revdate}
 
 {elemental-product-name} é a combinação de dois projetos principais: o link:{elemental_toolkit_url}[{elemental_toolkit_name}] e o link:{elemental_operator_url}[{elemental_operator_name}].

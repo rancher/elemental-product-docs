@@ -1,6 +1,6 @@
 = Implantação de cluster Kubernetes
 :page-languages: [en, de, es, fr, ja, pt, zh]
-:revdate: 06-11-2025
+:revdate: 2025-06-11
 :page-revdate: {revdate}
 
 O objetivo da fase de implantação do Cluster Kubernetes é criar um novo cluster RKE2 ou K3s usando os xref:references/machineinventory-reference.adoc[Inventários de Máquinas] disponíveis, ou seja, os hosts que completaram com sucesso a fase de xref:rancher-os-management/architecture/services/architecture-machineonboarding.adoc[Onboarding de Máquinas].

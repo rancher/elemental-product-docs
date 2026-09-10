@@ -1,6 +1,6 @@
 = Variables de plantilla de GPU
 :page-languages: [en, de, es, fr, ja, pt, zh]
-:revdate: 15/08/2025
+:revdate: 2025-08-15
 :page-revdate: {revdate}
 
 La información recopilada en las variables de plantilla de GPU define los atributos de las tarjetas gráficas instaladas en el sistema.

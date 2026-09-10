@@ -1,6 +1,6 @@
 = Variables de plantilla del BIOS
 :page-languages: [en, de, es, fr, ja, pt, zh]
-:revdate: 15/08/2025
+:revdate: 2025-08-15
 :page-revdate: {revdate}
 
 Información del BIOS.
