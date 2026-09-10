@@ -1,6 +1,6 @@
 = Incorporación de máquinas
 :page-languages: [en, de, es, fr, ja, pt, zh]
-:revdate: 2025-06-11
+:revdate: 2025-11-06
 :page-revdate: {revdate}
 
 El objetivo del servicio de Incorporación de Máquinas es registrar una nueva máquina en el catálogo del {elemental-product-name} Operador (xref:references/machineinventory-reference.adoc[InventarioDeMáquinas] recursos) y aprovisionar el host con el sistema operativo, aplicando la configuración deseada.

@@ -1,6 +1,6 @@
 = Referência do ManagedOSImage
 :page-languages: [en, de, es, fr, ja, pt, zh]
-:revdate: 2025-06-11
+:revdate: 2025-11-06
 :page-revdate: {revdate}
 
 O recurso ManagedOSImage é responsável por definir uma imagem de sistema operacional ou versão de imagem que precisa ser aplicada a cada nó em um conjunto de Clusters alvo. Uma vez criado, o recurso ManagedOSImage pode ser atualizado com um novo `osImage` ou `managedOSVersionName` para acionar um novo upgrade. Da mesma forma, um ManagedOSImage existente pode ser atualizado para direcionar novos Clusters.

@@ -1,6 +1,6 @@
 = Integração de Máquinas
 :page-languages: [en, de, es, fr, ja, pt, zh]
-:revdate: 2025-06-11
+:revdate: 2025-11-06
 :page-revdate: {revdate}
 
 O objetivo do serviço de Integração de Máquinas é registrar uma nova máquina no catálogo do {elemental-product-name} Operador (xref:references/machineinventory-reference.adoc[InventárioDeMáquinas] recursos) e provisionar o host com o sistema operacional, aplicando a configuração desejada.

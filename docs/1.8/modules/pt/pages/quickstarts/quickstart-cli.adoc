@@ -1,6 +1,6 @@
 = {elemental-product-name} a maneira da linha de comando
 :page-languages: [en, de, es, fr, ja, pt, zh]
-:revdate: 2025-06-11
+:revdate: 2025-11-06
 :page-revdate: {revdate}
 
 Siga este guia para ter um cluster autoimplantado via rke2/k3s e gerenciado pelo Rancher com a única ajuda de um {elemental-product-name} ISO.
