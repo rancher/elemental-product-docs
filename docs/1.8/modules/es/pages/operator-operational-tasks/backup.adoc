@@ -1,6 +1,6 @@
 = Copia de seguridad
 :page-languages: [en, de, es, fr, ja, pt, zh]
-:revdate: 6/11/2025
+:revdate: 2025-11-06
 :page-revdate: {revdate}
 
 Dado que {elemental-product-name} se ejecuta como parte de Rancher, los recursos {elemental-product-name} están incluidos en la copia de seguridad de Rancher.

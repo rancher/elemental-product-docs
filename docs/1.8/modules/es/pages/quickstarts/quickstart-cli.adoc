@@ -1,6 +1,6 @@
 = {elemental-product-name} la forma de usar la línea de comandos
 :page-languages: [en, de, es, fr, ja, pt, zh]
-:revdate: 6/11/2025
+:revdate: 2025-11-06
 :page-revdate: {revdate}
 
 Sigue esta guía para tener un clúster auto-desplegado a través de rke2/k3s y gestionado por Rancher con la única ayuda de un {elemental-product-name} ISO.
