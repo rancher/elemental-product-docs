@@ -1,4 +1,5 @@
 = Cluster reference
+:description: Create a cluster by defining a kubernetesVersion and specifying machinePools with roles, quantity, and configurations
 :revdate: 2025-07-03
 :page-revdate: {revdate}
 

@@ -1,3 +1,4 @@
+:description: Create a registration form by using example random template variables in YAML format to define fields and structure data for user input
 .registration example Random template variables
 [,yaml]
 ----

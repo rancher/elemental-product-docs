@@ -1,3 +1,4 @@
+:description: Configure the cluster upgrade target using the upgrade-cluster-target.yaml file to define the desired version and settings for the cluster update process
 .upgrade-cluster-target.yaml
 [,yaml]
 ----

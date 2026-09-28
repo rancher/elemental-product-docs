@@ -1,4 +1,5 @@
 = Services
+:description: Find the services that manage OS provisioning and Kubernetes cluster deployment in SUSE Rancher Prime OS Manager
 :revdate: 2025-07-03
 :page-revdate: {revdate}
 

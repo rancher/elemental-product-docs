@@ -1,4 +1,5 @@
 = MachineInventorySelectorTemplate reference
+:description: Create MachineInventorySelectors by defining matching criteria in the MachineInventorySelectorTemplate
 :revdate: 2025-06-27
 :page-revdate: {revdate}
 

@@ -1,4 +1,5 @@
 = Runtime Template Variables
+:description: Runtime template variables collect information about the system configuration and help generate dynamic content based on current settings and conditions
 :revdate: 2025-08-15
 :page-revdate: {revdate}
 

@@ -1,4 +1,5 @@
 = MachineRegistration reference
+:description: Create a MachineRegistration resource to generate a registration URL and configure settings for nodes to register and start the onboarding process
 :revdate: 2026-06-24
 :page-revdate: {revdate}
 

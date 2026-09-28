@@ -1,3 +1,4 @@
+:description: Configure the registration settings by editing the YAML file to define how users are registered and managed in the system
 .registration.yaml
 [,yaml]
 ----

@@ -1,4 +1,5 @@
 = How to build raw disk images for Raspberry Pi
+:description: Build a raw disk image for Raspberry Pi that can be written to an SD card and booted without other installation media
 :revdate: 2024-09-24
 :page-revdate: {revdate}
 

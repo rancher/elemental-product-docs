@@ -1,3 +1,4 @@
+:description: Configure a machine registration process with Declarative Networking by defining network settings and automation rules in a YAML file to ensure consistent
 .example MachineRegistration using Declarative Networking
 [,yaml]
 ----

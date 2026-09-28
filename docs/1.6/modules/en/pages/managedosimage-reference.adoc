@@ -1,4 +1,5 @@
 = ManagedOSImage reference
+:description: Create a ManagedOSImage resource to define an OS image or version that will be applied to specific clusters and to control how upgrades are triggered
 :revdate: 2025-11-06
 :page-revdate: {revdate}
 

@@ -1,4 +1,5 @@
 = OS Management for Rancher
+:description: Manage operating systems in a Kubernetes environment using Rancher with elemental-cli, elemental-operator, and rancher-system-agent
 :page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2026-06-24
 :page-revdate: {revdate}

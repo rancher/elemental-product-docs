@@ -1,4 +1,5 @@
 = {elemental-product-name} the command line way
+:description: Use the SUSE® Rancher Prime OS Manager ISO to automatically deploy and manage a Kubernetes cluster with rke2 or k3s through command-line tools by creating
 :page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-11-06
 :page-revdate: {revdate}

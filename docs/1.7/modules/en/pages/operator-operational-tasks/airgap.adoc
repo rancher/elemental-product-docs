@@ -1,4 +1,5 @@
 = Install {elemental-product-name} in an Air-Gapped Environment
+:description: Install SUSE Rancher Prime OS Manager in an air-gapped environment by running the elemental-airgap.sh script and using a private registry
 :revdate: 2026-06-26
 :page-revdate: {revdate}
 

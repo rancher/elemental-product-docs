@@ -1,4 +1,5 @@
 = Hardware Labels
+:description: Create hardware labels by collecting and using hardware data during node registration to help identify and select machines through MachineSelector
 :revdate: 2026-04-01
 :page-revdate: {revdate}
 

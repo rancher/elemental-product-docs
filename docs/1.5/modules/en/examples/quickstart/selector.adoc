@@ -1,3 +1,4 @@
+:description: Configure the .selector.yaml file to define how the system selects and processes data based on rules and conditions listed in the file
 .selector.yaml
 [,yaml]
 ----

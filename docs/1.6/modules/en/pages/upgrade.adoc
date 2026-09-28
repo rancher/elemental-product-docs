@@ -1,4 +1,5 @@
 = Upgrade
+:description: Upgrade components in SUSE Rancher Prime OS Manager using Kubernetes methods through the user interface or command line
 :revdate: 2025-07-03
 :page-revdate: {revdate}
 

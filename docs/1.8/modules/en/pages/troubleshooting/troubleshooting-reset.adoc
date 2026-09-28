@@ -1,4 +1,5 @@
 = Troubleshooting reset
+:description: Investigate why a MachineInventory has not been deleted by examining its annotation, finalizer, and related plan Secret
 :page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-07-03
 :page-revdate: {revdate}

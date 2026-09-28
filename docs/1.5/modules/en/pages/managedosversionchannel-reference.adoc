@@ -1,4 +1,5 @@
 = ManagedOSVersionChannel reference
+:description: Configure a ManagedOSVersionChannel resource to define the OS image channel and set upgrade settings for System Upgrade Controller plans
 :revdate: 2025-06-27
 :page-revdate: {revdate}
 

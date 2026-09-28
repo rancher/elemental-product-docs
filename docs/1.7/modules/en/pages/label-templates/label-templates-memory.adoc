@@ -1,4 +1,5 @@
 = Memory Template Variables
+:description: Define memory template variables to describe the attributes of volatile memory available on the system, such as size, type, and configuration details
 :revdate: 2025-08-15
 :page-revdate: {revdate}
 

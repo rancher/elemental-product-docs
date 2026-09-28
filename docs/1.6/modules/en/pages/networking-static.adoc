@@ -1,4 +1,5 @@
 = Static Network with nm-configurator
+:description: Create a static network configuration for individual machines using nm-configurator and MAC address mappings
 :revdate: 2025-06-27
 :page-revdate: {revdate}
 

@@ -1,4 +1,5 @@
 = Introduction
+:description: Configure proxy settings for SUSE Rancher Prime OS Manager deployment in environments without Internet access
 :revdate: 2025-11-06
 :page-revdate: {revdate}
 

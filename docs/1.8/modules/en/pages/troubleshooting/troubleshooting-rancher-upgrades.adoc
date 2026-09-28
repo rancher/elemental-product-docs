@@ -1,4 +1,5 @@
 = Troubleshooting Rancher upgrades
+:description: Fix the upgrade issue by creating an empty dynamicschemas.management.cattle.io resource named machineinventoryselectortemplate
 :page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-07-03
 :page-revdate: {revdate}

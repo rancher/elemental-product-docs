@@ -1,4 +1,5 @@
 = MachineInventory
+:description: Create a MachineInventory resource when a new host registers successfully to track its TPM hash and allow execution of commands on the machine
 :revdate: 2025-07-03
 :page-revdate: {revdate}
 include::partial$global-variables.adoc[]

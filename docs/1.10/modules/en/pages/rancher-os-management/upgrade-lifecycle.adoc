@@ -1,4 +1,5 @@
 = Upgrade Lifecycle
+:description: Understand how to manage and verify upgrades using the Fleet and System Upgrade Controller in the Upgrade Lifecycle
 :revdate: 2025-11-06
 :page-revdate: {revdate}
 

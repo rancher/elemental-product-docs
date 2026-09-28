@@ -1,4 +1,5 @@
 = {elemental-product-name} the command line way
+:description: Create a Kubernetes cluster using SUSE® Rancher Prime OS Manager by deploying resources with an ISO
 :revdate: 2025-11-06
 :page-revdate: {revdate}
 

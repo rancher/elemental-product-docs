@@ -1,3 +1,4 @@
+:description: Configure a MachineRegistration resource that writes HTTP and HTTPS proxy settings during Elemental install and uses TPM emulation for registration
 [,yaml]
 ----
 apiVersion: elemental.cattle.io/v1beta1

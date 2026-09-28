@@ -1,4 +1,5 @@
 = Customize {elemental-product-name} Installation
+:description: Customize the installation process of SUSE® Rancher Prime OS Manager by adding configuration files, cloud-init files, and installation hooks to the ISO
 :revdate: 2025-07-03
 :page-revdate: {revdate}
 

@@ -1,4 +1,5 @@
 = Upgrade Lifecycle
+:description: Upgrade Lifecycle explains how to manage and verify the upgrade process for SUSE Rancher Prime OS Manager clusters using Fleet and System Upgrade Controller
 :revdate: 2025-11-06
 :page-revdate: {revdate}
 

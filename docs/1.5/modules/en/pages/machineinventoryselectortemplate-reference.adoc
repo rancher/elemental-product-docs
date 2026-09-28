@@ -1,4 +1,5 @@
 = MachineInventorySelectorTemplate reference
+:description: Create a MachineInventorySelectorTemplate to define matching criteria that pair inventoried machines with Cluster resources
 :revdate: 2025-06-27
 :page-revdate: {revdate}
 

@@ -1,4 +1,5 @@
 = MachineInventory
+:description: Create a MachineInventory resource to track a registered host, store its TPM hash, and run commands on it with conditions that show when it is ready to be
 :page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-07-03
 :page-revdate: {revdate}

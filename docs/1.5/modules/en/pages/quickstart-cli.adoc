@@ -1,4 +1,5 @@
 = {elemental-product-name} the command line way
+:description: Deploy a Kubernetes cluster using SUSE® Rancher Prime OS Manager by creating and applying configuration files for MachineRegistration, Cluster, and SeedImage
 :revdate: 2025-11-06
 :page-revdate: {revdate}
 

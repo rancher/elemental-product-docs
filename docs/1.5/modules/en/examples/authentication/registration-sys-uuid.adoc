@@ -1,3 +1,4 @@
+:description: Register a machine by using the UUID from the SMBIOS System Information table to uniquely identify the machine in the example MachineRegistration configuration
 .example MachineRegistration using the UUID from the SMBIOS System Information table as machine identifier
 [,yaml]
 ----

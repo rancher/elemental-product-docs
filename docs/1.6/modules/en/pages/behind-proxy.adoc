@@ -1,4 +1,5 @@
 = Behind a proxy
+:description: Configure proxy settings for SUSE Rancher Prime OS Manager deployment to enable communication through an HTTP(S) proxy in an enterprise environment
 :revdate: 2025-11-06
 :page-revdate: {revdate}
 

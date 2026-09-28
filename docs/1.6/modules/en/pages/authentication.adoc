@@ -1,4 +1,5 @@
 = Authentication
+:description: Configure authentication methods for machines registering to the SUSE Rancher Prime OS Manager Operator using TPM attestation, MAC address, or SMBIOS UUID
 :revdate: 2025-07-03
 :page-revdate: {revdate}
 

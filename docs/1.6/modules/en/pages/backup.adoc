@@ -1,4 +1,5 @@
 = Backup
+:description: Backup SUSE® Rancher Prime OS Manager resources using the rancher-backup operator and Kubernetes cluster tools
 :revdate: 2025-11-06
 :page-revdate: {revdate}
 

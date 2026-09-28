@@ -1,4 +1,5 @@
 = Machine onboarding
+:description: Register a new machine by creating a MachineRegistration resource that defines the OS installation configuration, then generate a self-installing image
 :revdate: 2025-11-06
 :page-revdate: {revdate}
 

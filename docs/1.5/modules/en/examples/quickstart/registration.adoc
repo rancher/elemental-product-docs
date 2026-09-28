@@ -1,3 +1,4 @@
+:description: Configure the register settings by editing the YAML file to define the structure and parameters of the system components that will be registered during
 .register.yaml
 [,yaml]
 ----

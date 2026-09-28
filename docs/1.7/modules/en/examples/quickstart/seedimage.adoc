@@ -1,3 +1,4 @@
+:description: Configure the seed image using the YAML file to define settings and parameters that control how the system initializes and operates during deployment
 .seedimage.yaml
 [,yaml]
 ----

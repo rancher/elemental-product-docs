@@ -1,4 +1,5 @@
 = How to use {elemental-product-name} with Rancher and VMware
+:description: Create a virtual machine in VMware with TPM support and use it to install and register Elemental OS with Rancher
 :page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2026-04-01
 :page-revdate: {revdate}

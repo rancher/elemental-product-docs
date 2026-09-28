@@ -1,3 +1,4 @@
+:description: Configure the upgrade recovery settings using the upgrade-recovery.yaml file to define how the system handles failures during an update process
 .upgrade-recovery.yaml
 [,yaml]
 ----

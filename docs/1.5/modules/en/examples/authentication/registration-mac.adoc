@@ -1,3 +1,4 @@
+:description: Register a machine using its MAC address as the unique identifier in a YAML configuration file to define how the system recognizes and associates the device
 .example MachineRegistration using the MAC address as machine identifier
 [,yaml]
 ----

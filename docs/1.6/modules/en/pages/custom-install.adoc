@@ -1,4 +1,5 @@
 = Customize {elemental-product-name} Installation
+:description: Customize the OS Manager installation by adding cloud-config files or a custom Elemental client configuration during installation
 :revdate: 2025-08-15
 :page-revdate: {revdate}
 

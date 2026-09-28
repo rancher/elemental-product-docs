@@ -1,3 +1,4 @@
+:description: Create and edit a cluster configuration file using the cluster.yaml format to define the setup and settings for your system cluster
 .cluster.yaml
 [,yaml]
 ----

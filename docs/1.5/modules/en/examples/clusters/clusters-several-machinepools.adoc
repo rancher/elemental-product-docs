@@ -1,3 +1,4 @@
+:description: Configure a cluster with multiple machine pools to manage different workloads and resources efficiently by defining each pool's specifications in a YAML file
 .Example of a cluster with more than one machinePool
 [,yaml]
 ----

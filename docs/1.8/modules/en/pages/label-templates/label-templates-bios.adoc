@@ -1,4 +1,5 @@
 = BIOS Template Variables
+:description: Define BIOS template variables to specify details about the system's basic input/output system, including information that is part of the SMBIOS BIOS data
 :page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-08-15
 :page-revdate: {revdate}

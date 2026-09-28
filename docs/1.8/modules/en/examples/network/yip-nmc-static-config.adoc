@@ -1,3 +1,4 @@
+:description: Configure the static network settings using the provided YAML file to define the network parameters for the system
 .99_static_network_config.yaml
 [,yaml]
 ----

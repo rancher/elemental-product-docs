@@ -1,4 +1,5 @@
 = Architecture Components
+:description: Describe the architecture components that make up the system by explaining the roles of the command line tool, daemon, and other elements that work together
 :revdate: 2025-09-08
 :page-revdate: {revdate}
 

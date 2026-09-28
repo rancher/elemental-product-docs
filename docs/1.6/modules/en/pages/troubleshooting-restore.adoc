@@ -1,4 +1,5 @@
 = Troubleshooting restore
+:description: Troubleshoot restore by copying the rancher2connectioninfo.json file and running the rancher-agent-token-update.sh script
 :revdate: 2025-07-03
 :page-revdate: {revdate}
 

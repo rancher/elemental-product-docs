@@ -1,3 +1,4 @@
+:description: Configure the .rpi-registration.yaml file to define how the system registers and communicates with external services during deployment
 .rpi-registration.yaml
 [,yaml]
 ----
