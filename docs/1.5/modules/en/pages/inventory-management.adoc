@@ -1,4 +1,5 @@
 = Inventory Management
+:description: Manage inventory of machines and their configuration details by using the MachineInventory and MachineRegistration resources to track, update, and control
 :revdate: 2025-10-27
 :page-revdate: {revdate}
 

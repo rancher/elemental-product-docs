@@ -1,4 +1,5 @@
 = Troubleshooting upgrade
+:description: Check the status of each upgrade job by looking at the job names, which include the Plan name and the target machine hostname, and use the provided commands
 :revdate: 2025-07-03
 :page-revdate: {revdate}
 

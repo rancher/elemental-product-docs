@@ -1,3 +1,4 @@
+:description: Configure the managed operating system version channel by editing the YAML file to specify the desired update settings and ensure the system stays up to date
 .managed-os-version-channel-json.yaml
 [,yaml]
 ----

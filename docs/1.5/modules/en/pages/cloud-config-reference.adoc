@@ -1,4 +1,5 @@
 = Cloud-config Reference
+:description: Configure a system using cloud-config by defining stages and actions in YAML files with Yip. Apply settings during specific phases of the boot process
 :revdate: 2025-07-03
 :page-revdate: {revdate}
 

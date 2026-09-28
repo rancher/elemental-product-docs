@@ -1,3 +1,4 @@
+:description: Configure a machine registration using the nmc configurator by editing a YAML file to define settings and parameters for the machine
 .example MachineRegistration using nmc configurator
 [,yaml]
 ----

@@ -1,4 +1,5 @@
 = Storage Template Variables
+:description: Define storage template variables to identify disk attributes by number and device name, allowing you to access disk information such as model using either
 :revdate: 2025-08-15
 :page-revdate: {revdate}
 

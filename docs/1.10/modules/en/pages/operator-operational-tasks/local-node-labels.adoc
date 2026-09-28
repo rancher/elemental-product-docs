@@ -1,4 +1,5 @@
 = Local Node Labels
+:description: Create local node labels by editing a file on each node to set extra inventory labels during registration
 :revdate: 2026-06-24
 :page-revdate: {revdate}
 

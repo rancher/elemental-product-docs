@@ -1,3 +1,4 @@
+:description: Configure a machine registration process using TPM emulation to securely enroll devices in a network without requiring hardware-based TPM modules by defining
 .example MachineRegistration using TPM emulation
 [,yaml]
 ----

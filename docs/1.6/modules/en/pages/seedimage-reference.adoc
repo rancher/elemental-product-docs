@@ -1,4 +1,5 @@
 = SeedImage reference
+:description: Create a SeedImage to build installation media for SUSE Rancher Prime OS Manager using a base image and registration reference
 :revdate: 2025-08-15
 :page-revdate: {revdate}
 

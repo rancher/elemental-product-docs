@@ -1,4 +1,5 @@
 = Customize hostname
+:description: Customize hostname by setting the machineName field in the MachineRegistration resource to define a unique and static hostname for each host during K8s
 :page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2026-06-24
 :page-revdate: {revdate}

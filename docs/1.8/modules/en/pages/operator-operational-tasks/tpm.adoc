@@ -1,4 +1,5 @@
 = Trusted Platform Module 2.0 (TPM)
+:description: Add a TPM module to a virtual machine by using Libvirt with Virt-manager to configure hardware settings and select the TPM module from the list
 :page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2024-09-24
 :page-revdate: {revdate}

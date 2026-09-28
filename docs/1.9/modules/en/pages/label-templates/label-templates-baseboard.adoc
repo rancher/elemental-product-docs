@@ -1,4 +1,5 @@
 = BaseBoard Template Variables
+:description: Find out what information is collected in the BaseBoard template variables and how it defines system baseboard attributes
 :revdate: 2025-08-15
 :page-revdate: {revdate}
 

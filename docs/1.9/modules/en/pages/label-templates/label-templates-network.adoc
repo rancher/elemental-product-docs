@@ -1,4 +1,5 @@
 = Network Template Variables
+:description: Find out how to use network template variables to access information about network interfaces, their addresses, and how they are tracked by number and name
 :revdate: 2025-08-15
 :page-revdate: {revdate}
 

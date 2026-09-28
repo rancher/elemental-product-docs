@@ -1,4 +1,5 @@
 = Inventory Management
+:description: Manage machine inventory by tracking configurations, clusters, and system annotations automatically updated every 30 minutes
 :revdate: 2026-06-24
 :page-revdate: {revdate}
 

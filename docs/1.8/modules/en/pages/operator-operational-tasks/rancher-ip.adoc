@@ -1,4 +1,5 @@
 = Configure K3s and RKE2 internal and external IP addresses
+:description: Configure K3s and RKE2 internal and external IP addresses by specifying node IP parameters and using network interface labels during Rancher Cluster provisioning
 :page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2026-06-26
 :page-revdate: {revdate}

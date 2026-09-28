@@ -1,4 +1,5 @@
 = Network configuration with {elemental-product-name}
+:description: Create custom network settings for SUSE Rancher Prime OS Manager by using NetworkManager connection profile files with cloud-config
 :revdate: 2025-07-03
 :page-revdate: {revdate}
 

@@ -1,4 +1,5 @@
 = Channels
+:description: Create or use channels to manage OS versions for building ISOs or upgrading nodes in SUSE Rancher Prime OS Manager
 :revdate: 2025-08-15
 :page-revdate: {revdate}
 

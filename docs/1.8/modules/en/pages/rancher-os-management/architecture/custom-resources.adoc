@@ -1,4 +1,5 @@
 = Custom Resources
+:description: Create custom resources to manage OS Manager nodes by using Kubernetes CRDs from the OS Manager Operator
 :page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-09-08
 :page-revdate: {revdate}

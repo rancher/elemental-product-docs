@@ -1,4 +1,5 @@
 = Troubleshooting and verification steps
+:description: Troubleshoot Elemental issues by identifying the phase and checking resources, logs, and configurations for errors
 :revdate: 2026-03-09
 :page-revdate: {revdate}
 

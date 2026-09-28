@@ -1,4 +1,5 @@
 = SMBIOS
+:description: Gather SMBIOS data from a computer's BIOS to read hardware information and use it to create labels and names for systems during registration
 :revdate: 2025-07-03
 :page-revdate: {revdate}
 

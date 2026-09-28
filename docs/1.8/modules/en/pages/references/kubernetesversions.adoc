@@ -1,4 +1,5 @@
 = Valid Versions
+:description: Find valid versions for the kubernetesVersion field using Rancher metadata and the provided commands
 :page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2024-09-24
 :page-revdate: {revdate}

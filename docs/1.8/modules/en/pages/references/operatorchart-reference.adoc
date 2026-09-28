@@ -1,4 +1,5 @@
 = {elemental-product-name} Operator Helm Chart
+:description: Install the OS Manager Operator Helm chart to deploy and manage OS Manager on a Rancher Manager v2.6 cluster using Helm
 :page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-07-03
 :page-revdate: {revdate}

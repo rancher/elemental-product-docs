@@ -1,4 +1,5 @@
 = NTP configuration with {elemental-product-name}
+:description: Configure NTP servers for SUSE Rancher Prime OS Manager by creating a custom configuration file in the /etc/systemd/timesyncd.conf.d directory
 :revdate: 2025-10-27
 :page-revdate: {revdate}
 

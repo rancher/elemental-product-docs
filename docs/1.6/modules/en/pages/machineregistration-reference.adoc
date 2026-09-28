@@ -1,4 +1,5 @@
 = MachineRegistration reference
+:description: Configure a MachineRegistration resource to define OS installation and registration settings for SUSE Rancher Prime OS Manager
 :revdate: 2025-08-15
 :page-revdate: {revdate}
 

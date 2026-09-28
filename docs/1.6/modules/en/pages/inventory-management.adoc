@@ -1,4 +1,5 @@
 = Inventory Management
+:description: Manage machine inventory to track registered machines, their configuration, and cluster assignments using MachineInventory and MachineRegistration definitions
 :revdate: 2025-07-03
 :page-revdate: {revdate}
 

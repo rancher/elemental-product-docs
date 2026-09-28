@@ -1,3 +1,4 @@
+:description: Configure the system to manage data using the specified format and ensure all settings match the required structure for proper operation
 [,yaml]
 ----
 apiVersion: ipam.cluster.x-k8s.io/v1alpha2

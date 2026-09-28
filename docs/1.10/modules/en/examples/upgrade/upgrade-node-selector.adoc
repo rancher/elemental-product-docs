@@ -1,3 +1,4 @@
+:description: Configure a node selector to control where Kubernetes pods run by editing the upgrade-node-selector.yaml file
 .upgrade-node-selector.yaml
 [,yaml]
 ----

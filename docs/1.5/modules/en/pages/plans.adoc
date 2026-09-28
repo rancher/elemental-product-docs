@@ -1,4 +1,5 @@
 = Introduction
+:description: Introduce the page by explaining what the reader can do or learn about the system agent and how it uses plans to configure a node during initial setup
 :revdate: 2025-10-27
 :page-revdate: {revdate}
 

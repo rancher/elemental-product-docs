@@ -1,4 +1,5 @@
 = GPU Template Variables
+:description: Define GPU template variables to collect information about installed graphics cards, allowing users to reference specific cards by number or use default values
 :revdate: 2025-08-15
 :page-revdate: {revdate}
 

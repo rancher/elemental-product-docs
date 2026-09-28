@@ -1,4 +1,5 @@
 = CPU Template Variables
+:description: Find information about CPU template variables that define processor attributes and how to reference them by number
 :revdate: 2025-08-15
 :page-revdate: {revdate}
 

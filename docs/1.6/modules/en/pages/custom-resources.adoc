@@ -1,4 +1,5 @@
 = Custom Resources
+:description: Create custom resources to manage SUSE Rancher Prime OS Manager nodes using Kubernetes CRDs from the OS Manager Operator
 :revdate: 2025-07-03
 :page-revdate: {revdate}
 

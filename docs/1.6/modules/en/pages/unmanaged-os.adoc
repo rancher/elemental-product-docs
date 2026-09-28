@@ -1,4 +1,5 @@
 = Register an Unmanaged OS
+:description: Register an unmanaged operating system by using elemental-register and configuring MachineRegistration with the no-toolkit flag
 :revdate: 2025-07-03
 :page-revdate: {revdate}
 

@@ -1,4 +1,5 @@
 = Architecture overview
+:description: Explain the system architecture by describing how the two main components work together to install and manage operating systems using container images
 :revdate: 2025-11-06
 :page-revdate: {revdate}
 include::partial$global-variables.adoc[]

@@ -1,3 +1,4 @@
+:description: Configure the registration settings for the trusted platform module by editing the YAML file to define how devices enroll and authenticate securely
 .registration-tpm.yaml
 [,yaml]
 ----

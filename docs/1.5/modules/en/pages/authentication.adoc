@@ -1,4 +1,5 @@
 = Authentication
+:description: Configure authentication methods for machines registering to the OS Manager Operator using TPM, MAC address, or SMBIOS UUID
 :revdate: 2025-07-03
 :page-revdate: {revdate}
 

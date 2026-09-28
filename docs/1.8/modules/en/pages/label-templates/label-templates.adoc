@@ -1,4 +1,5 @@
 = Label Templates Overview
+:description: Create label templates to define labels and annotations for MachineInventory resources using predefined variables and formatting rules
 :page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2026-06-24
 :page-revdate: {revdate}

@@ -1,4 +1,5 @@
 = Troubleshooting Label Templates
+:description: Use the dumpdata command with the elemental-register binary to view available Label Templates and their values in the console for troubleshooting
 :page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-08-15
 :page-revdate: {revdate}

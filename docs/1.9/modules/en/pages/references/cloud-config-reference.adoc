@@ -1,4 +1,5 @@
 = Cloud-config Reference
+:description: Learn how to use cloud-config files to configure system settings during different stages of the boot process
 :revdate: 2025-10-21
 :page-revdate: {revdate}
 

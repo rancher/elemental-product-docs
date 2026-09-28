@@ -1,4 +1,5 @@
 = Release Notes
+:description: Find information about the latest versions, installation, upgrade steps, and known issues for the SUSE® Rancher Prime OS Manager project stack components
 :page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2026-06-24
 :page-revdate: {revdate}

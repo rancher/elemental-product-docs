@@ -1,4 +1,5 @@
 = {elemental-product-name} Support
+:description: Run elemental-support to collect logs and configuration files from a SUSE® Rancher Prime OS Manager node for troubleshooting and debugging issues
 :page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-07-03
 :page-revdate: {revdate}

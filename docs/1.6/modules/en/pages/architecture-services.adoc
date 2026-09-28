@@ -1,4 +1,5 @@
 = Services
+:description: Find the services that support OS provisioning, host registration, and Kubernetes cluster deployment in the SUSE Rancher Prime OS Manager Operator catalog
 :revdate: 2025-07-03
 :page-revdate: {revdate}
 

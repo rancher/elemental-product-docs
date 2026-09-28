@@ -1,4 +1,5 @@
 = Troubleshooting restore
+:description: Troubleshooting restore requires copying the rancher2connectioninfo.json file from the elemental node to a location accessible through the Rancher UI before
 :page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-07-03
 :page-revdate: {revdate}

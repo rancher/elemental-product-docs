@@ -1,3 +1,4 @@
+:description: Configure the server settings using the provided YAML format to define how the system processes incoming requests and manages data flow between the client and server
 [,yaml]
 ----
 apiVersion: elemental.cattle.io/v1beta1

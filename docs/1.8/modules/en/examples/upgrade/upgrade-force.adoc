@@ -1,3 +1,4 @@
+:description: Configure the upgrade-force.yaml file to define how the system handles forced upgrades by specifying rules and conditions that determine when and how updates occur
 .upgrade-force.yaml
 [,yaml]
 ----

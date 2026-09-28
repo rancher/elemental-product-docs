@@ -1,4 +1,5 @@
 = Machine Reset
+:description: Reset a machine by deleting its Node or Cluster to trigger a reset plan that reboots the machine and reapplies its cloud-config settings
 :revdate: 2025-10-27
 :page-revdate: {revdate}
 

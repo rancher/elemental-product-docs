@@ -1,4 +1,5 @@
 = ManagedOSVersion reference
+:description: Define a ManagedOSVersion to specify an OS image version for use with SeedImage or ManagedOSImage resources
 :revdate: 2025-07-03
 :page-revdate: {revdate}
 

@@ -1,3 +1,4 @@
+:description: Configure your managed server to upgrade its operating system version using the provided YAML file to ensure the system runs the latest stable release
 .upgrade-managedos-version.yaml
 [,yaml]
 ----

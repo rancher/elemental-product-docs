@@ -1,4 +1,5 @@
 = Restore
+:description: Restore a SUSE Rancher Prime OS Manager configuration using the rancher-backup operator and backup files
 :page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-09-08
 :page-revdate: {revdate}
