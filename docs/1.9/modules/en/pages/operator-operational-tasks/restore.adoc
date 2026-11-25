@@ -1,9 +1,9 @@
 = Restore
 :description: Restore a SUSE Rancher Prime OS Manager configuration using the rancher-backup operator and backup files
-:revdate: 2025-09-08
+:revdate: 2026-11-25
 :page-revdate: {revdate}
 
-Follow this guide to restore an {elemental-product-name} configuration from a backup with Rancher.
+Follow this guide to restore an {elemental-product-name} configuration from a backup with {rancher-product-name}.
 
 == Prepare rancher-backup operator and backup files for restoring
 

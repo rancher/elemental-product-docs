@@ -1,6 +1,6 @@
 = Upgrade Lifecycle
 :description: Understand how to manage and verify upgrades using the Fleet and System Upgrade Controller in the Upgrade Lifecycle
-:revdate: 2025-11-06
+:revdate: 2026-11-25
 :page-revdate: {revdate}
 
 image::upgrade-lifecycle.png[Upgrade Flow]
@@ -24,7 +24,7 @@ The System Upgrade Controller is an upgrade tool used by https://documentation.s
 
 == Versioning and components lifecycle
 
-The https://documentation.suse.com/cloudnative/continuous-delivery/[Fleet] and https://github.com/rancher/system-upgrade-controller[System Upgrade Controller] versions are controlled by Rancher.
+The https://documentation.suse.com/cloudnative/continuous-delivery/[Fleet] and https://github.com/rancher/system-upgrade-controller[System Upgrade Controller] versions are controlled by {rancher-product-name}.
 
 On the Rancher cluster, you can run:
 

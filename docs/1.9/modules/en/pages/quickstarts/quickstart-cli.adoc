@@ -1,10 +1,9 @@
 = {elemental-product-name} the command line way
 :description: Use the SUSE® Rancher Prime OS Manager ISO to automatically deploy and manage a Kubernetes cluster with rke2 or k3s through command-line tools by creating
-:revdate: 2025-11-06
+:revdate: 2026-11-25
 :page-revdate: {revdate}
 
-Follow this guide to have an auto-deployed cluster via rke2/k3s and managed by Rancher
-with the only help of an {elemental-product-name} ISO.
+Follow this guide to have an auto-deployed cluster via RKE2/K3s and managed by {rancher-product-name} with the help of an {elemental-product-name} ISO.
 
 include::partial$quickstart-prereqs.adoc[]
 
@@ -37,7 +36,7 @@ As you can see this is a very simple selector that looks for `MachineInventory`s
 
 include::example$quickstart/cluster.adoc[]
 
-As you can see the `machineConfigRef` is of kind `MachineInventorySelectorTemplate` with the name `fire-machine-selector`: it matches the selector we created. You can get more information about cluster options like https://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-deployment/configuration/rke2.html#_machineglobalconfig[`machineGlobalConfig`] or https://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-deployment/configuration/rke2.html#_machineselectorconfig[`machineSelectorConfig`] directly in the https://documentation.suse.com/cloudnative/rancher-manager/latest/en/about-rancher/what-is-rancher.html[Rancher Manager documentation].
+As you can see the `machineConfigRef` is of kind `MachineInventorySelectorTemplate` with the name `fire-machine-selector`: it matches the selector we created. You can get more information about cluster options like https://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-deployment/configuration/rke2.html#_machineglobalconfig[`machineGlobalConfig`] or https://documentation.suse.com/cloudnative/rancher-manager/latest/en/cluster-deployment/configuration/rke2.html#_machineselectorconfig[`machineSelectorConfig`] directly in the https://documentation.suse.com/cloudnative/rancher-manager/latest/en/about-rancher/what-is-rancher.html[{rancher-product-name} documentation].
 
 [tabs]
 ======

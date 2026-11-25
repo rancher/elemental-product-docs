@@ -1,6 +1,6 @@
 = {elemental-product-name} the visual way
 :description: Install the SUSE® Rancher Prime OS Manager plugin and operator to manage and provision clusters based on RKE2 or K3s
-:revdate: 2025-11-06
+:revdate: 2026-11-25
 :page-revdate: {revdate}
 
 [NOTE]
@@ -8,7 +8,7 @@
 The following instructions need Rancher 2.9.x at least.
 ====
 
-This quickstart will show you how to deploy the {elemental-product-name} plugin and operator into an existing Rancher Manager instance.
+This quickstart will show you how to deploy the {elemental-product-name} plugin and operator into an existing {rancher-product-name} instance.
 
 Once installed, you'll be able to provision a new {elemental-product-name} cluster based on RKE2 or K3s.
 
