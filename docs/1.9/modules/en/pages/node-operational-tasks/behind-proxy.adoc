@@ -1,6 +1,6 @@
 = Behind a proxy
 :description: Configure proxy settings for SUSE® Rancher Prime OS Manager deployment to allow communication through an HTTP(S) proxy in environments without direct Internet access
-:revdate: 2025-11-06
+:revdate: 2026-11-25
 :page-revdate: {revdate}
 
 :tabs-sync-option:
@@ -9,7 +9,7 @@ In a lot of enterprise environments, servers or VMs running on premises do not h
 
 [IMPORTANT]
 ====
-This guide will not cover the Rancher installation behind a proxy. It's a different use case and you can find the detailed documentation at the https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/other-installation-methods/http-proxy/http-proxy.html[Installing SUSE Rancher Prime behind an HTTP Proxy] page.
+This guide will not cover the {rancher-product-name} installation behind a proxy. It's a different use case and you can find the detailed documentation at the https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/other-installation-methods/http-proxy/http-proxy.html[Installing {rancher-product-name} behind an HTTP Proxy] page.
 ====
 
 

@@ -1,10 +1,9 @@
 = Valid Versions
-:description: Find valid versions for the kubernetesVersion field using Rancher metadata and the provided commands
-:revdate: 2024-09-24
+:description: Find valid versions for the kubernetesVersion field using {rancher-product-name} metadata and the provided commands
+:revdate: 2026-11-25
 :page-revdate: {revdate}
 
-The list of valid versions for the `kubernetesVersion` field can be determined
-from the Rancher metadata using the following commands.
+The list of valid versions for the `kubernetesVersion` field can be determined from the {rancher-product-name} metadata using the following commands.
 
 *K3s:*
 

@@ -1,6 +1,6 @@
 = Installation
 :description: Install the SUSE Rancher Prime OS Manager Operator and prepare installation media to deploy and manage OS on cluster nodes
-:revdate: 2025-09-08
+:revdate: 2026-11-25
 :page-revdate: {revdate}
 
 == Overview
@@ -13,17 +13,15 @@ read about the interaction of the components.
 
 The installation configuration is mostly applied and set as part of the registration process.
 The registration process is done by the `elemental-register` (the {elemental_operator_name} client part)
-who is the responsible to register nodes in a Rancher management cluster and fetch the installation configuration.
+who is the responsible to register nodes in a {rancher-product-name} cluster and fetch the installation configuration.
 
 Please refer to the xref:quickstarts/quickstart-cli.adoc[Quick Start] guide for simple step by step deployment instructions.
 
 == {elemental-product-name} Operator Installation
 
-The {elemental_operator_name} is responsible for managing the {elemental-product-name} versions and
-maintaining a machine inventory to assist with edge or bare metal installations. {elemental_operator_name}
-requires a cluster including the Rancher Manager and it can be installed with a helm chart.
+The {elemental_operator_name} is responsible for managing the {elemental-product-name} versions and maintaining a machine inventory to assist with edge or bare metal installations. {elemental_operator_name} requires a cluster including the {rancher-product-name} and it can be installed with a Helm chart.
 
-See {elemental_operator_name} xref:references/operatorchart-reference.adoc[helm chart reference] for install,
+See {elemental_operator_name} xref:references/operatorchart-reference.adoc[Helm chart reference] for install,
 uninstall, upgrade and configuration details.
 
 == Prepare Kubernetes Resources

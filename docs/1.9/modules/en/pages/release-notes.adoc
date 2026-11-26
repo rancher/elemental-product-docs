@@ -1,6 +1,6 @@
 = Release Notes
 :description: Find information about the latest versions, installation, upgrade steps, and known issues for the SUSE® Rancher Prime OS Manager project stack components
-:revdate: 2026-06-24
+:revdate: 2026-11-25
 :page-revdate: {revdate}
 
 The {elemental-product-name} project stack is made of various components such as the `Operator` and `UI` for example.
@@ -72,10 +72,9 @@ helm upgrade --install -n cattle-elemental-system --create-namespace \
 
 == Known issues
 
-=== Rancher compatibility
+=== {rancher-product-name} compatibility
 
-Since version v1.9.x Elemental Operator must be paired with Rancher v2.14.x or later. Kubernetes provisioning
-is not functional otherwise, MachineInventory resources do not succeed when attempting to join an Elemental cluster.
+Since version v1.9.x Elemental Operator must be paired with {rancher-product-name} v2.14 or later. Kubernetes provisioning is not functional otherwise, MachineInventory resources do not succeed when attempting to join an Elemental cluster.
 
 === SElinux in permissive mode
 

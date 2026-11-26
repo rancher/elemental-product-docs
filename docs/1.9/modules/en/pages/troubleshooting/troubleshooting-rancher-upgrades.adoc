@@ -1,6 +1,6 @@
-= Troubleshooting Rancher upgrades
+= Troubleshooting {rancher-product-name} upgrades
 :description: Fix the upgrade issue by creating an empty dynamicschemas.management.cattle.io resource named machineinventoryselectortemplate
-:revdate: 2025-07-03
+:revdate: 2026-11-25
 :page-revdate: {revdate}
 
 [WARNING]
@@ -23,4 +23,4 @@ EOF
 
 ----
 
-The crash loop will stop and Rancher upgrade will complete successfully.
+The crash loop will stop and the Rancher upgrade will complete successfully.

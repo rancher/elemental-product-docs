@@ -1,6 +1,6 @@
 = Network configuration with {elemental-product-name}
 :description: Configure network settings for machines using the OS Manager by defining IP pools and network templates in MachineRegistration
-:revdate: 2025-09-08
+:revdate: 2026-11-25
 :page-revdate: {revdate}
 
 
@@ -16,7 +16,7 @@ The xref:references/machineregistration-reference.adoc[MachineRegistration] supp
 == Prerequisites
 
 * A DHCP server is still required for the first boot registration and reset of machines. For this reason Lease Time can be kept minimal, as for the entire lifecycle of the machine, the IPAM driven IP Addresses will be used.
-* An IPAM Provider of your choice is installed on the Rancher management cluster.
+* An IPAM Provider of your choice is installed on the {rancher-product-name} cluster.
 For example the https://github.com/kubernetes-sigs/cluster-api-ipam-provider-in-cluster[InCluster IPAM Provider].
 * https://networkmanager.dev[NetworkManager] needs to be installed on OS images and it can be directly configured using the `nmconnections` network <<_configurators,configurator>>.
 Already included in Elemental provided images.
